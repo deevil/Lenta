@@ -599,30 +599,33 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfoImpl() {
     //ППП блок 6.172
     private fun saveCategory() {
         val countAdd = if (currentQualityInfoCode == TYPE_DISCREPANCIES_QUALITY_NORM) acceptTotalCount.value.toString() else count.value
-        val shelfLifeDate =
-                if (currentTermControlCode == TERM_CONTROL_CODE_PRODUCTION_DATE) {
-                    val shelfLife = Calendar.getInstance()
-                    shelfLife.time = formatterRU.parse(enteredDate.value)
-                    shelfLife.add(Calendar.DATE, generalShelfLife.value?.toInt() ?: 0)
-                    shelfLife.time?.let { formatterERP.format(it) }.orEmpty()
-                } else {
-                    enteredDate.value
-                            ?.takeIf { it.isNotEmpty() }
-                            ?.let { formatterERP.format(formatterRU.parse(it)) }
-                            .orEmpty()
-                }
 
-        val shelfLifeTime =
-                if (isVisibilityEnteredTime.value == true) {
-                    enteredTime.value.orEmpty().replace(":", "") + "00"
-                } else {
-                    ""
-                }
-
-        processZBatchesPPPService.add(countAdd.orEmpty(), currentTypeDiscrepanciesCode, currentManufactureCode, shelfLifeDate, shelfLifeTime)
+        processZBatchesPPPService.add(countAdd.orEmpty(), currentTypeDiscrepanciesCode, currentManufactureCode, getShelfLifeDate(), getShelfLifeTime())
 
         //ППП блок 6.176
         clickBtnApply()
+    }
+
+    private fun getShelfLifeDate(): String {
+        return if (currentTermControlCode == TERM_CONTROL_CODE_PRODUCTION_DATE) {
+            val shelfLife = Calendar.getInstance()
+            shelfLife.time = formatterRU.parse(enteredDate.value)
+            shelfLife.add(Calendar.DATE, generalShelfLife.value?.toInt() ?: 0)
+            shelfLife.time?.let { formatterERP.format(it) }.orEmpty()
+        } else {
+            enteredDate.value
+                    ?.takeIf { it.isNotEmpty() }
+                    ?.let { formatterERP.format(formatterRU.parse(it)) }
+                    .orEmpty()
+        }
+    }
+
+    private fun getShelfLifeTime(): String {
+        return if (isVisibilityEnteredTime.value == true) {
+            enteredTime.value.orEmpty().replace(":", "") + "00"
+        } else {
+            ""
+        }
     }
 
     //ППП блок 6.176 и ПГЕ блок 7.188
