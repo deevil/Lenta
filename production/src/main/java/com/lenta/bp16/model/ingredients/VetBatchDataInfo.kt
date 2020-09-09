@@ -6,17 +6,17 @@ data class VetBatchDataInfo(
 
         /** Номер ЗСЖ */
         @SerializedName("ENTRYID")
-        val entryId: String,
+        val entryId: String?,
 
         /** Наименование производителя */
         @SerializedName("PROD_NAME")
-        val prodName: String,
+        val prodName: String?,
 
         /** Код производителя */
         @SerializedName("ZPROD")
-        val prodCode: String,
+        val prodCode: String?,
 
         /** Дата производства */
         @SerializedName("PROD_DATE")
-        val prodDate: String
+        val prodDate: String?
 )

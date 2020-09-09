@@ -57,14 +57,15 @@ class IngredientDetailsViewModel : CoreViewModel() {
     var parentCode: String by Delegates.notNull()
 
     // выбранный ингредиент
-    val orderIngredient by unsafeLazy {
-        MutableLiveData<OrderIngredientDataInfo>()
-    }
+    val orderIngredient = MutableLiveData<OrderIngredientDataInfo>()
 
     //Список параметров EAN для ингредиента
-    val eanInfo by unsafeLazy {
-        MutableLiveData<OrderByBarcodeUI>()
-    }
+    val eanInfo = MutableLiveData<OrderByBarcodeUI>()
+
+    private val mercuryDataInfo = MutableLiveData<List<MercuryPartDataInfo>>()
+    private val zPartDataInfo = MutableLiveData<List<ZPartDataInfo>>()
+    private val addedAttribute = MutableLiveData<List<AddAttributeInfo>>()
+    private val warehouseSelected = MutableLiveData<List<String>>()
 
     // Комплектация
     val weightField: MutableLiveData<String> = MutableLiveData(DEFAULT_WEIGHT)
@@ -90,11 +91,6 @@ class IngredientDetailsViewModel : CoreViewModel() {
     val totalWithUnits = total.map {
         "${it.dropZeros()} ${resourceManager.kgSuffix()}"
     }
-
-    private val mercuryDataInfo = MutableLiveData<List<MercuryPartDataInfo>>()
-    private val zPartDataInfo = MutableLiveData<List<ZPartDataInfo>>()
-    private val addedAttribute = MutableLiveData<List<AddAttributeInfo>>()
-    private val warehouseSelected = MutableLiveData<List<String>>()
 
     val producerNameList =
             /** Если был передан производитель из AddAttributeFragment, то заполнять данными из нее*/
@@ -170,9 +166,9 @@ class IngredientDetailsViewModel : CoreViewModel() {
         /*if (!orderIngredient.value?.isVet.isNullOrBlank()) { //Ветеринарный пока никак не должен определяться
         GoodTypeIcon.IS_VET
     } else */if (!orderIngredient.value?.isFact.isNullOrBlank()) {
-        GoodTypeIcon.IS_FACT
+        GoodTypeIcon.FACT
     } else {
-        GoodTypeIcon.IS_PLAN
+        GoodTypeIcon.PLAN
     }
     }
 
@@ -292,14 +288,16 @@ class IngredientDetailsViewModel : CoreViewModel() {
      *
      * */
     private fun setWeight(barcode: String) {
-        val ean = eanInfo.value?.ean
-        if (ean == barcode) {
-            val umrez = eanInfo.value?.ean_umrez?.toDouble() //Числитель
-            val umren = eanInfo.value?.ean_umren?.toDouble() //Знаменатель
-            val result = umrez?.div(umren ?: 0.0)
-            weighted.value = result
-        } else {
-            weighted.value = barcode.takeLast(6).take(5).toDouble().div(DIV_TO_KG)
+        eanInfo.value?.let { eanInfoValue ->
+            val ean = eanInfoValue.ean
+            if (ean == barcode) {
+                val umrez = eanInfoValue.ean_umrez.toDouble() //Числитель
+                val umren = eanInfoValue.ean_umren.toDouble() //Знаменатель
+                val result = umrez.div(umren)
+                weighted.value = result
+            } else {
+                weighted.value = barcode.takeLast(6).take(5).toDouble().div(DIV_TO_KG)
+            }
         }
     }
 

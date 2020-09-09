@@ -152,9 +152,9 @@ class MaterialRemakeDetailsViewModel : CoreViewModel() {
         /*if (!materialIngredient.value?.isVet.isNullOrBlank()) { //Ветеринарный пока никак не должен определяться
         GoodTypeIcon.IS_VET
     } else */if (!materialIngredient.value?.isFact.isNullOrBlank()) {
-        GoodTypeIcon.IS_FACT
+        GoodTypeIcon.FACT
     } else {
-        GoodTypeIcon.IS_PLAN
+        GoodTypeIcon.PLAN
     }
     }
 

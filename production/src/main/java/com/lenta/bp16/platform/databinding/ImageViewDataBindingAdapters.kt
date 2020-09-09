@@ -61,9 +61,9 @@ fun setIngredientStatusWorkIcon(imageView: ImageView, ingredientStatusWork: Ingr
 fun setGoodTypeIcon(imageView: ImageView, goodTypeIcon: GoodTypeIcon) {
     imageView.apply {
             setImageResource(when (goodTypeIcon) {
-                GoodTypeIcon.IS_PLAN ->  R.drawable.ic_plan_attribute_white_32dp
-                GoodTypeIcon.IS_FACT ->  R.drawable.ic_fact_attribute_white_32dp
-                GoodTypeIcon.IS_VET -> R.drawable.ic_mercury_white_32dp
+                GoodTypeIcon.PLAN ->  R.drawable.ic_plan_attribute_white_32dp
+                GoodTypeIcon.FACT ->  R.drawable.ic_fact_attribute_white_32dp
+                GoodTypeIcon.VET -> R.drawable.ic_mercury_white_32dp
             })
             setVisible()
     }

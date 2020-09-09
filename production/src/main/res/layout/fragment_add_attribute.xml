@@ -18,9 +18,9 @@
     <LinearLayout
         android:id="@+id/text_view_add_attribute"
         android:layout_width="match_parent"
-        android:layout_height="128dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_height="@dimen/size_128dp"
+        android:layout_marginEnd="@dimen/margin_small"
+        android:layout_marginStart="@dimen/margin_small"
         app:layout_constraintBottom_toTopOf="@id/spinner_producer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -56,8 +56,7 @@
 
         <com.lenta.shared.view.ClickableSpinner
             style="@style/CellSpinnerStyle"
-            android:layout_width="0dp"
-            android:layout_margin="8dp"
+            android:layout_margin="@dimen/margin_small"
             android:layout_weight="1"
             app:items = "@{vm.producerNameList}"
             app:position="@={vm.selectedProducerPosition}"
@@ -163,7 +162,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/producer_time"/>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -7,9 +7,9 @@ enum class IngredientStatusWork {
 }
 
 enum class GoodTypeIcon{
-    IS_PLAN,
-    IS_FACT,
-    IS_VET
+    PLAN,
+    FACT,
+    VET
 }
 
 enum class IngredientStatusBlock{

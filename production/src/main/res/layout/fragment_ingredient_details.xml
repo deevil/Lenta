@@ -197,8 +197,7 @@
                 <com.lenta.shared.view.ClickableSpinner
                     style="@style/CellSpinnerStyle"
                     android:enabled="@{vm.disableSpinner}"
-                    android:layout_width="0dp"
-                    android:layout_margin="8dp"
+                    android:layout_margin="@dimen/margin_small"
                     android:layout_weight="1"
                     app:items="@{vm.productionDateField}"
                     app:position="@={vm.selectedDateProductionPosition}"
@@ -206,9 +205,9 @@
 
                 <ImageButton
                     android:enabled="@{vm.addPartAttributeEnable}"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginEnd="8dp"
+                    android:layout_width="@dimen/size_40dp"
+                    android:layout_height="@dimen/size_40dp"
+                    android:layout_marginEnd="@dimen/margin_small"
                     android:onClick="@{(v) -> vm.onClickAddAttributeButton()}"
                     android:background="@drawable/bg_border_rectangle"
                     android:foreground="?selectableItemBackground"

@@ -61,33 +61,16 @@ class MaterialRemakesListViewModel : CoreViewModel() {
     lateinit var setZPartDataInfoUseCase: SetZPartDataInfoUseCase
 
     @Inject
-    lateinit var setWarehouseForSelectedItemUseCase:SetWarehouseForSelectedItemUseCase
+    lateinit var setWarehouseForSelectedItemUseCase: SetWarehouseForSelectedItemUseCase
 
 
     // выбранный ингредиент
-    val ingredient by unsafeLazy {
-        MutableLiveData<IngredientInfo>()
-    }
-
-    private val allEanMaterialIngredients: MutableLiveData<List<OrderByBarcodeUI>> by unsafeLazy {
-        MutableLiveData<List<OrderByBarcodeUI>>()
-    }
-
-    private val allMaterialIngredients: MutableLiveData<List<MaterialIngredientDataInfo>> by unsafeLazy {
-        MutableLiveData<List<MaterialIngredientDataInfo>>()
-    }
-
-    private val allProducersList: MutableLiveData<List<ProducerDataInfo>> by unsafeLazy {
-        MutableLiveData<List<ProducerDataInfo>>()
-    }
-
-    private val allMercuryPartDataInfoList: MutableLiveData<List<MercuryPartDataInfo>> by unsafeLazy {
-        MutableLiveData<List<MercuryPartDataInfo>>()
-    }
-
-    private val zPartDataInfoList: MutableLiveData<List<ZPartDataInfo>> by unsafeLazy {
-        MutableLiveData<List<ZPartDataInfo>>()
-    }
+    val ingredient = MutableLiveData<IngredientInfo>()
+    private val allEanMaterialIngredients = MutableLiveData<List<OrderByBarcodeUI>>()
+    private val allMaterialIngredients = MutableLiveData<List<MaterialIngredientDataInfo>>()
+    private val allProducersList = MutableLiveData<List<ProducerDataInfo>>()
+    private val allMercuryPartDataInfoList = MutableLiveData<List<MercuryPartDataInfo>>()
+    private val zPartDataInfoList = MutableLiveData<List<ZPartDataInfo>>()
 
     // суффикс
     val suffix: String by unsafeLazy {
