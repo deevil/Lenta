@@ -32,6 +32,12 @@ android {
         dataBinding = true
     }
 
+    sourceSets {
+        main {
+            res.srcDirs = ['src/main/res', 'src/main/res/components', 'src/main/res/fragments', 'src/main/res/items']
+        }
+    }
+
     flavorDimensions "server"
 
     productFlavors {
