@@ -33,7 +33,6 @@ import com.lenta.bp16.features.warehouse_selection.WarehouseSelectionFragment
 import com.lenta.bp16.model.ingredients.IngredientInfo
 import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
 import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
-import com.lenta.bp16.model.ingredients.OrderByBarcode
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
 import com.lenta.bp16.model.pojo.GoodParams
 import com.lenta.bp16.platform.Constants
@@ -186,9 +185,9 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun openAddAttributeScreen() {
+    override fun openAddAttributeScreen(material: String, name: String, parentCode: String) {
         runOrPostpone {
-            getFragmentStack()?.push(AddAttributeFragment())
+            getFragmentStack()?.push(AddAttributeFragment.newInstance(material, name, parentCode))
         }
     }
 
@@ -482,7 +481,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openDefectListScreen()
     fun openGoodInfoScreen(goodParams: GoodParams)
     fun openSelectGoodScreen()
-    fun openAddAttributeScreen()
+    fun openAddAttributeScreen(material: String, name: String, parentCode: String)
     fun openIngredientsListScreen()
     fun openOrderDetailsScreen(selectedIngredient: IngredientInfo, barcode: OrderByBarcodeUI)
     fun openIngredientDetailsScreen(selectedIngredient: OrderIngredientDataInfo, parentCode: String, eanInfo: OrderByBarcodeUI)

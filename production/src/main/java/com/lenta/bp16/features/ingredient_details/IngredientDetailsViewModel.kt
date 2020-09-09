@@ -14,11 +14,9 @@ import com.lenta.bp16.platform.resource.IResourceManager
 import com.lenta.bp16.request.CompleteIngredientByOrderNetRequest
 import com.lenta.bp16.request.ingredients_use_case.get_data.GetAddAttributeInfoUseCase
 import com.lenta.bp16.request.ingredients_use_case.get_data.GetMercuryPartDataInfoUseCase
-import com.lenta.bp16.request.ingredients_use_case.get_data.GetProducerDataInfoUseCase
 import com.lenta.bp16.request.ingredients_use_case.get_data.GetZPartDataInfoUseCase
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -351,7 +349,10 @@ class IngredientDetailsViewModel : CoreViewModel() {
     }
 
     fun onClickAddAttributeButton() {
-        navigator.openAddAttributeScreen()
+        val orderIngredient = orderIngredient.value
+        val material = orderIngredient?.getFormattedMaterial().orEmpty()
+        val name = orderIngredient?.name.orEmpty()
+        navigator.openAddAttributeScreen(material, name, parentCode)
     }
 
     fun onClickAdd() {

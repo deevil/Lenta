@@ -15,7 +15,6 @@ import com.lenta.bp16.platform.resource.IResourceManager
 import com.lenta.bp16.request.CompleteIngredientByMaterialNetRequest
 import com.lenta.bp16.request.ingredients_use_case.get_data.GetAddAttributeInfoUseCase
 import com.lenta.bp16.request.ingredients_use_case.get_data.GetMercuryPartDataInfoUseCase
-import com.lenta.bp16.request.ingredients_use_case.get_data.GetProducerDataInfoUseCase
 import com.lenta.bp16.request.ingredients_use_case.get_data.GetZPartDataInfoUseCase
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.Uom
@@ -331,7 +330,10 @@ class MaterialRemakeDetailsViewModel : CoreViewModel() {
     }
 
     fun onClickAddAttributeButton() {
-        navigator.openAddAttributeScreen()
+        val material = materialIngredient.value?.ltxa1.orEmpty()
+        val name = materialIngredient.value?.name.orEmpty()
+
+        navigator.openAddAttributeScreen(material, name, parentCode)
     }
 
     fun onScanResult(data: String) {
