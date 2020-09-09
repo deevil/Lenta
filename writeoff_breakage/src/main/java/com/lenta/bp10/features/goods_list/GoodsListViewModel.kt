@@ -1,7 +1,6 @@
 package com.lenta.bp10.features.goods_list
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.bp10.models.repositories.getTotalCountForProduct
 import com.lenta.bp10.models.task.TaskWriteOffReason
@@ -48,6 +47,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     @Inject
     lateinit var sendWriteOffDataNetRequest: SendWriteOffDataNetRequest
+
     @Inject
     lateinit var printTaskNetRequest: PrintTaskNetRequest
 
@@ -99,8 +99,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     init {
         launchUITryCatch {
-            searchProductDelegate.init(viewModelScope = this@GoodsListViewModel::viewModelScope,
-                    scanResultHandler = this@GoodsListViewModel::handleProductSearchResult)
+            searchProductDelegate.init(scanResultHandler = this@GoodsListViewModel::handleProductSearchResult)
             updateCounted()
             updateFilter()
         }

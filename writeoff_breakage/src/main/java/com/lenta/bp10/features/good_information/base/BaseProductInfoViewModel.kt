@@ -112,7 +112,6 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardLis
             )
 
             searchProductDelegate.init(
-                    viewModelScope = this@BaseProductInfoViewModel::viewModelScope,
                     scanResultHandler = this@BaseProductInfoViewModel::handleProductSearchResult,
                     limitsChecker = limitsChecker
             )
@@ -162,16 +161,17 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardLis
         this.productInfo.value = productInfo
     }
 
-    /*override fun handleFragmentResult(code: Int?): Boolean {
-        return if (searchProductDelegate.handleResultCode(code)) {
-            true
-        } else super.handleFragmentResult(code)
-    }*/
-
-
     protected fun getSelectedReason(): WriteOffReason {
         return writeOffReasons.value?.getOrNull((reasonPosition.value ?: -1))
                 ?: WriteOffReason.empty
+    }
+
+    protected fun showNotPossibleSaveScreen() {
+        if (getSelectedReason() === WriteOffReason.empty) {
+            screenNavigator.openNotPossibleSaveWithoutReasonScreen()
+        } else {
+            screenNavigator.openNotPossibleSaveNegativeQuantityScreen()
+        }
     }
 
     abstract fun handleProductSearchResult(scanInfoResult: ScanInfoResult?): Boolean

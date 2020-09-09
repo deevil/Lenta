@@ -35,7 +35,6 @@ class ExciseAlcoInfoViewModel : BaseProductInfoViewModel() {
     init {
         launchUITryCatch {
             exciseAlcoDelegate.init(
-                    viewModelScope = this@ExciseAlcoInfoViewModel::viewModelScope,
                     handleNewStamp = this@ExciseAlcoInfoViewModel::handleNewStamp,
                     tkNumber = getTaskDescription().tkNumber,
                     materialNumber = productInfo.value!!.materialNumber
@@ -76,13 +75,8 @@ class ExciseAlcoInfoViewModel : BaseProductInfoViewModel() {
 
     private fun addGood(): Boolean {
         countValue.value?.let {
-
             if (enabledApplyButton.value != true && it != 0.0) {
-                if (getSelectedReason() === WriteOffReason.empty) {
-                    screenNavigator.openNotPossibleSaveWithoutReasonScreen()
-                } else {
-                    screenNavigator.openNotPossibleSaveNegativeQuantityScreen()
-                }
+                showNotPossibleSaveScreen()
                 return false
             }
 
@@ -94,6 +88,7 @@ class ExciseAlcoInfoViewModel : BaseProductInfoViewModel() {
 
             return true
         }
+
         return false
     }
 

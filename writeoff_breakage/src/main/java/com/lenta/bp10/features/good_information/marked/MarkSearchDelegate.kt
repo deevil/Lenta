@@ -9,15 +9,20 @@ import com.lenta.bp10.requests.network.pojo.Property
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.ProductInfo
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.coroutines.CoroutineContext
 
 class MarkSearchDelegate @Inject constructor(
         private val navigator: IScreenNavigator,
         private val markedInfoNetRequest: MarkedInfoNetRequest
-) {
+) : CoroutineScope {
 
-    private lateinit var viewModelScope: () -> CoroutineScope
+    private val job = SupervisorJob()
+
+    override val coroutineContext: CoroutineContext = Dispatchers.Main + job
 
     private lateinit var tkNumber: String
 
@@ -30,14 +35,12 @@ class MarkSearchDelegate @Inject constructor(
     private lateinit var handleScannedBox: (marks: List<MarkInfo>) -> Unit
 
 
-    fun init(viewModelScope: () -> CoroutineScope,
-             tkNumber: String,
+    fun init(tkNumber: String,
              productInfo: ProductInfo?,
              handleScannedMark: (mark: String) -> Unit,
              handleScannedBox: (marks: List<MarkInfo>) -> Unit,
              updateProperties: (properties: List<Property>) -> Unit) {
 
-        this.viewModelScope = viewModelScope
         this.tkNumber = tkNumber
         this.productInfo = productInfo
         this.updateProperties = updateProperties
@@ -46,7 +49,7 @@ class MarkSearchDelegate @Inject constructor(
     }
 
     fun requestMarkInfo(number: String) {
-        viewModelScope().launch {
+        launch {
             navigator.showProgress(markedInfoNetRequest)
             markedInfoNetRequest(MarkedInfoParams(
                     tkNumber = tkNumber,
@@ -62,7 +65,7 @@ class MarkSearchDelegate @Inject constructor(
     }
 
     fun requestPackInfo(number: String) {
-        viewModelScope().launch {
+        launch {
             navigator.showProgress(markedInfoNetRequest)
             markedInfoNetRequest(MarkedInfoParams(
                     tkNumber = tkNumber,

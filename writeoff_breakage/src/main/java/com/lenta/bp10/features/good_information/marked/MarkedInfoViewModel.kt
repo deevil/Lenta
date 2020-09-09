@@ -79,7 +79,6 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
             markSearchDelegate.init(
                     tkNumber = getTaskDescription().tkNumber,
                     updateProperties = this@MarkedInfoViewModel::updateProperties,
-                    viewModelScope = this@MarkedInfoViewModel::viewModelScope,
                     handleScannedMark = this@MarkedInfoViewModel::handleScannedMark,
                     handleScannedBox = this@MarkedInfoViewModel::handleScannedBox,
                     productInfo = productInfo.value
@@ -149,11 +148,7 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
     private fun addGood(): Boolean {
         countValue.value?.let {
             if (enabledApplyButton.value != true && it != 0.0) {
-                if (getSelectedReason() === WriteOffReason.empty) {
-                    screenNavigator.openNotPossibleSaveWithoutReasonScreen()
-                } else {
-                    screenNavigator.openNotPossibleSaveNegativeQuantityScreen()
-                }
+                showNotPossibleSaveScreen()
                 return false
             }
 
@@ -165,6 +160,7 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
 
             return true
         }
+
         return false
     }
 

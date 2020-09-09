@@ -18,8 +18,11 @@ import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.actionByNumber
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.coroutines.CoroutineContext
 
 class SearchProductDelegate @Inject constructor(
         private val database: DatabaseRepository,
@@ -28,15 +31,17 @@ class SearchProductDelegate @Inject constructor(
         private val processServiceManager: IWriteOffTaskManager,
         private val sessionInfo: ISessionInfo,
         private var permissionToWriteoffNetRequest: PermissionToWriteoffNetRequest
-) {
+) : CoroutineScope {
+
+    private val job = SupervisorJob()
+
+    override val coroutineContext: CoroutineContext = Dispatchers.Main + job
 
     private var scanInfoResult: ScanInfoResult? = null
 
     private var checksEnabled: Boolean = true
 
     private var limitsChecker: LimitsChecker? = null
-
-    private lateinit var viewModelScope: () -> CoroutineScope
 
     private var scanResultHandler: ((ScanInfoResult?) -> Boolean)? = null
 
@@ -50,14 +55,12 @@ class SearchProductDelegate @Inject constructor(
                 permissionToWriteoffNetRequest
         )
 
-        searchProductDelegate.init(viewModelScope, scanResultHandler, checksEnabled, limitsChecker)
+        searchProductDelegate.init(scanResultHandler, checksEnabled, limitsChecker)
 
         return searchProductDelegate
     }
 
-    fun init(viewModelScope: () -> CoroutineScope, scanResultHandler: ((ScanInfoResult?) -> Boolean)? = null, checksEnabled: Boolean = true, limitsChecker: LimitsChecker? = null) {
-        Logg.d { "viewModelScope hash: ${viewModelScope.hashCode()}" }
-        this.viewModelScope = viewModelScope
+    fun init(scanResultHandler: ((ScanInfoResult?) -> Boolean)? = null, checksEnabled: Boolean = true, limitsChecker: LimitsChecker? = null) {
         this.scanResultHandler = scanResultHandler
         this.checksEnabled = checksEnabled
         this.limitsChecker = limitsChecker
@@ -97,7 +100,7 @@ class SearchProductDelegate @Inject constructor(
     }
 
     private fun searchGoodInfoByNumber(code: String, fromScan: Boolean, isBarCode: Boolean? = null) {
-        viewModelScope().launch {
+        launch {
             navigator.showProgress(scanInfoRequest)
             scanInfoRequest(
                     ScanInfoRequestParams(
@@ -113,12 +116,12 @@ class SearchProductDelegate @Inject constructor(
     }
 
     private fun checkPermissions() {
-        viewModelScope().launch {
+        launch {
             val taskTypeCode = processServiceManager.getWriteOffTask()?.taskDescription?.taskType?.code.orEmpty()
             if (checksEnabled && database.isChkOwnpr(taskTypeCode)) {
                 navigator.showProgress(permissionToWriteoffNetRequest)
 
-                viewModelScope().launch {
+                launch {
                     permissionToWriteoffNetRequest(
                             PermissionToWriteoffPrams(
                                     matnr = scanInfoResult!!.productInfo.materialNumber,
@@ -144,18 +147,22 @@ class SearchProductDelegate @Inject constructor(
                 }
             }
 
-            with(infoResult) {
-                openProductScreen(
-                        productInfo = productInfo,
-                        quantity = if (productInfo.type == ProductType.ExciseAlcohol && !productInfo.isSet ||
-                                productInfo.type == ProductType.Marked) 0.0 else quantity
-                )
-            }
+            openProductScreen(
+                    productInfo = infoResult.productInfo,
+                    quantity = if (isMarkedProductType(infoResult)) 0.0 else infoResult.quantity
+            )
+        }
+    }
+
+    private fun isMarkedProductType(infoResult: ScanInfoResult): Boolean {
+        return with(infoResult) {
+            productInfo.type == ProductType.ExciseAlcohol && !productInfo.isSet ||
+                    productInfo.type == ProductType.Marked
         }
     }
 
     private fun handleFailure(failure: Failure) {
-        navigator.openAlertScreen(failure, "97")
+        navigator.openAlertScreen(failure)
     }
 
     private fun handleSearchSuccess(scanInfoResult: ScanInfoResult) {
@@ -181,7 +188,9 @@ class SearchProductDelegate @Inject constructor(
         scanInfoResult?.let {
             var goodsForTask = false
 
-            processServiceManager.getWriteOffTask()?.taskDescription!!.materialTypes.firstOrNull { taskMatType ->
+            val taskDescription = processServiceManager.getWriteOffTask()?.taskDescription
+
+            taskDescription?.materialTypes?.firstOrNull { taskMatType ->
                 taskMatType == it.productInfo.materialType
             }?.let {
                 goodsForTask = true
@@ -194,12 +203,11 @@ class SearchProductDelegate @Inject constructor(
 
             goodsForTask = false
 
-            val gisControls = processServiceManager.getWriteOffTask()?.taskDescription!!.gisControls
-
-            Logg.d { "--> gisControls = $gisControls" }
-
-            if (gisControls.contains(it.productInfo.type.code)) {
-                goodsForTask = true
+            taskDescription?.gisControls?.let { gisControls ->
+                Logg.d { "--> gisControls = $gisControls" }
+                if (gisControls.contains(it.productInfo.type.code)) {
+                    goodsForTask = true
+                }
             }
 
             if (!goodsForTask) {
