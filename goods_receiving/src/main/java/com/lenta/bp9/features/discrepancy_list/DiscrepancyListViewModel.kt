@@ -73,6 +73,16 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     val countNotProcessed: MutableLiveData<List<GoodsDiscrepancyItem>> = MutableLiveData()
     val countProcessed: MutableLiveData<List<GoodsDiscrepancyItem>> = MutableLiveData()
     val countControl: MutableLiveData<List<GoodsDiscrepancyItem>> = MutableLiveData()
+
+    private val receivingTask by lazy { taskManager.getReceivingTask() }
+    private val taskType by lazy {
+        taskManager
+                .getReceivingTask()
+                ?.taskHeader
+                ?.taskType
+                ?: TaskType.None
+    }
+
     private val isBatches: MutableLiveData<Boolean> = MutableLiveData(false)
     private val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     private val paramGrzGrundMarkCode: MutableLiveData<String> = MutableLiveData("")
@@ -800,28 +810,62 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickSave() {
+        if (getCountZBatchesProduct() > 0) {
+            screenNavigator.openSaveCountedQuantitiesAndGoToLabelPrintingDialog(
+                    yesCallbackFunc = {
+                        removingTemporaryDataFromRepository()
+                        dataTransferToServer()
+                    }
+            )
+        } else {
+            removingTemporaryDataFromRepository()
+            dataTransferToServer()
+        }
+    }
+
+    private fun getCountZBatchesProduct(): Int {
+        return receivingTask
+                ?.getProcessedProducts()
+                ?.filter {
+                    it.isZBatches
+                            && !it.isVet
+                }
+                ?.map { zBatch->
+                    receivingTask
+                            ?.getProcessedProductsDiscrepancies()
+                            ?.findLast {
+                                it.materialNumber == zBatch.materialNumber
+                                        && it.typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM
+                            }
+                }
+                ?.size
+                ?: 0
+    }
+
+    private fun removingTemporaryDataFromRepository() {
+        /**
+         * очищаем таблицу ET_TASK_DIFF от не акцизного (партионного) алкоголя и веттоваров,
+         * т.к. для партионного товара необходимо передавать только данные из таблицы ET_PARTS_DIFF, а для веттоваров - ET_VET_DIFF
+         */
+        val taskRepository = taskManager.getReceivingTask()?.taskRepository
+        receivingTask
+                ?.getProcessedProductsDiscrepancies()
+                ?.mapNotNull { productDiscr ->
+                    taskRepository
+                            ?.getProducts()
+                            ?.findProduct(productDiscr.materialNumber)
+                }
+                ?.filter { filterClearTabTaskDiff(it) }
+                ?.forEach { productForDel ->
+                    taskRepository
+                            ?.getProductsDiscrepancies()
+                            ?.deleteProductsDiscrepanciesForProduct(productForDel.materialNumber)
+                }
+    }
+
+    private fun dataTransferToServer() {
         launchUITryCatch {
             screenNavigator.showProgressLoadingData(::handleFailure)
-            /**
-             * очищаем таблицу ET_TASK_DIFF от не акцизного (партионного) алкоголя и веттоваров,
-             * т.к. для партионного товара необходимо передавать только данные из таблицы ET_PARTS_DIFF, а для веттоваров - ET_VET_DIFF
-             */
-            val receivingTask = taskManager.getReceivingTask()
-            val taskRepository = taskManager.getReceivingTask()?.taskRepository
-            receivingTask
-                    ?.getProcessedProductsDiscrepancies()
-                    ?.mapNotNull { productDiscr ->
-                        taskRepository
-                                ?.getProducts()
-                                ?.findProduct(productDiscr.materialNumber)
-                    }
-                    ?.filter { filterClearTabTaskDiff(it) }
-                    ?.forEach { productForDel ->
-                        taskRepository
-                                ?.getProductsDiscrepancies()
-                                ?.deleteProductsDiscrepanciesForProduct(productForDel.materialNumber)
-                    }
-
             endRecountDirectDeliveries(EndRecountDDParameters(
                     taskNumber = receivingTask
                             ?.taskHeader
@@ -867,22 +911,11 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     private fun handleSuccess(result: EndRecountDDResult) {
-        val taskType =
-                taskManager
-                        .getReceivingTask()
-                        ?.taskHeader
-                        ?.taskType
-                        ?: TaskType.None
         taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
         screenNavigator.openTaskCardScreen(
                 mode = TaskCardMode.Full,
                 taskType = taskType
         )
-    }
-
-    override fun handleFailure(failure: Failure) {
-        super.handleFailure(failure)
-        screenNavigator.openAlertScreen(failure, pageNumber = "97")
     }
 
     private fun normEnteredButControlNotPassed(productInfo: TaskProductInfo): Boolean {

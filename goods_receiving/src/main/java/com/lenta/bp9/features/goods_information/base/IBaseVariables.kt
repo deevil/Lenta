@@ -27,4 +27,6 @@ interface IBaseVariables {
 
     val spinManufacturers: MutableLiveData<List<String>>
     val spinManufacturersSelectedPosition: MutableLiveData<Int>
+
+    val isDefect: MutableLiveData<Boolean>
 }

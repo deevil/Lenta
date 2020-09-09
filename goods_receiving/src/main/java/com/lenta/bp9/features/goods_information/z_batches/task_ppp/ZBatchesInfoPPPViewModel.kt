@@ -14,6 +14,7 @@ import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.date_time.DateTimeUtil
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.launchUITryCatch
@@ -91,8 +92,8 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfoImpl() {
                     .combineLatest(enteredTime)
                     .map {
                         (it?.first?.first ?: 0.0) > 0.0
-                                && enteredDate.value.orEmpty().length == 10
-                                && (isVisibilityEnteredTime.value == false || (isVisibilityEnteredTime.value == true && enteredTime.value.orEmpty().length == 5))
+                                && ((enteredDate.value.orEmpty().length == 10 && (isVisibilityEnteredTime.value == false || (isVisibilityEnteredTime.value == true && enteredTime.value.orEmpty().length == 5)))
+                                || isDefect.value == true)
                     }
 
     val isVisibilityEnteredTime: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -576,7 +577,12 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfoImpl() {
     //ППП блок 6.172
     private fun saveCategory() {
         val countAdd = if (currentQualityInfoCode == TYPE_DISCREPANCIES_QUALITY_NORM) acceptTotalCount.value.toString() else count.value
-        val shelfLifeDate = formatterERP.format(formatterRU.parse(enteredDate.value.orEmpty()))
+        val shelfLifeDate =
+                enteredDate.value
+                        ?.takeIf { it.isNotEmpty() }
+                        ?.let { formatterERP.format(formatterRU.parse(it)) }
+                        .orEmpty()
+
         val shelfLifeTime =
                 if (isVisibilityEnteredTime.value == true) {
                     enteredTime.value.orEmpty().replace(":", "") + "00"

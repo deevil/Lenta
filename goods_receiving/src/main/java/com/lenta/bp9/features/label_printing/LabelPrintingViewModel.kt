@@ -3,18 +3,19 @@ package com.lenta.bp9.features.label_printing
 import android.content.Context
 import android.os.Bundle
 import androidx.lifecycle.MutableLiveData
+import com.google.gson.annotations.SerializedName
 import com.lenta.bp9.features.loading.tasks.TaskCardMode
 import com.lenta.bp9.model.task.*
 import com.lenta.bp9.platform.navigation.IScreenNavigator
-import com.lenta.bp9.requests.network.EndRecountDDParameters
-import com.lenta.bp9.requests.network.EndRecountDDResult
-import com.lenta.bp9.requests.network.EndRecountDirectDeliveriesNetRequest
+import com.lenta.bp9.repos.IRepoInMemoryHolder
+import com.lenta.bp9.requests.network.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.launchUITryCatch
+import com.mobrun.plugin.api.HyperHive
 import javax.inject.Inject
 
 class LabelPrintingViewModel : CoreViewModel() {
@@ -26,13 +27,19 @@ class LabelPrintingViewModel : CoreViewModel() {
     lateinit var taskManager: IReceivingTaskManager
 
     @Inject
-    lateinit var endRecountDirectDeliveries: EndRecountDirectDeliveriesNetRequest
+    lateinit var zmpUtzGrz45V001NetRequest: ZmpUtzGrz45V001NetRequest
 
     @Inject
     lateinit var context: Context
 
     @Inject
     lateinit var sessionInfo: ISessionInfo
+
+    @Inject
+    lateinit var hyperHive: HyperHive
+
+    @Inject
+    lateinit var repoInMemoryHolder: IRepoInMemoryHolder
 
     val labels: MutableLiveData<List<LabelPrintingItem>> = MutableLiveData()
     val labelSelectionsHelper = SelectionItemsHelper()
@@ -41,6 +48,37 @@ class LabelPrintingViewModel : CoreViewModel() {
 
     init {
         launchUITryCatch {
+            screenNavigator.showProgressLoadingData(::handleFailure)
+            zmpUtzGrz45V001NetRequest(ZmpUtzGrz45V001Params(
+                    taskNumber = taskManager
+                            .getReceivingTask()
+                            ?.taskHeader
+                            ?.taskNumber
+                            .orEmpty(),
+                    deviceIP = context.getDeviceIp(),
+                    personalNumber = sessionInfo.personnelNumber.orEmpty(),
+                    discrepanciesZBatches = taskManager
+                            .getReceivingTask()
+                            ?.getProcessedZBatchesDiscrepancies()
+                            ?.map { TaskZBatchesDiscrepanciesRestData.from(it) }
+                            .orEmpty()
+            )).either(::handleFailure, ::handleSuccess)
+            screenNavigator.hideProgress()
+        }
+    }
+
+    private fun handleSuccess(result: ZmpUtzGrz45V001Result) {
+        launchUITryCatch {
+            val zBatchesDiscrepancies = result.taskZBatchesDiscrepancies
+                    ?.map { TaskZBatchesDiscrepancies.from(hyperHive, it) }
+                    .orEmpty()
+
+            taskManager
+                    .getReceivingTask()
+                    ?.taskRepository
+                    ?.getZBatchesDiscrepancies()
+                    ?.updateZBatchesDiscrepancy(zBatchesDiscrepancies)
+
             updateLabels()
         }
     }
@@ -50,34 +88,7 @@ class LabelPrintingViewModel : CoreViewModel() {
 
         zBatches?.let {
             labels.value =
-                    listOf(LabelPrintingItem(
-                            number = 3,
-                            productName = "000021 Соль",
-                            batchName = "ДП-04.09.2020 123456789",
-                            quantityUnit = "30 шт",
-                            isPrinted = false,
-                            productionDate = "ДП-04.09.2020",
-                            batchDiscrepancies = null
-                    ),
-                            LabelPrintingItem(
-                                    number = 2,
-                                    productName = "000055 Сахар",
-                                    batchName = "ДП-08.08.2020 987654321",
-                                    quantityUnit = "5 шт",
-                                    isPrinted = false,
-                                    productionDate = "ДП-08.08.2020",
-                                    batchDiscrepancies = null
-                            ),
-                            LabelPrintingItem(
-                                    number = 1,
-                                    productName = "000077 Мука",
-                                    batchName = "ДП-12.12.2020 456",
-                                    quantityUnit = "77 шт",
-                                    isPrinted = false,
-                                    productionDate = "ДП-12.12.2020",
-                                    batchDiscrepancies = null
-                            ))
-                    /**it.mapIndexed { index, label ->
+                    it.mapIndexed { index, label ->
                         val productDiscrepancies =
                                 taskManager
                                         .getReceivingTask()
@@ -93,16 +104,24 @@ class LabelPrintingViewModel : CoreViewModel() {
                         LabelPrintingItem(
                                 number = index + 1,
                                 productName = "${product?.getMaterialLastSix().orEmpty()} ${product?.description.orEmpty()}",
-                                batchName = "ДП-${label.shelfLifeDate} // ${label.manufactureCode}", //todo заменить на наименование производителя
+                                batchName = "ДП-${label.shelfLifeDate} // ${getManufacturerName(label.manufactureCode)}",
                                 quantityUnit = "${productDiscrepancies?.numberDiscrepancies.orEmpty()} ${product?.uom?.name.orEmpty()}",
                                 isPrinted = false,
                                 productionDate = "",
-                                batchNumber = label.batchNumber
+                                batchDiscrepancies = label
                         )
-                    }.reversed()*/
+                    }.reversed()
         }
 
         labelSelectionsHelper.clearPositions()
+    }
+
+    private fun getManufacturerName(manufacturerCode: String) : String {
+        return repoInMemoryHolder
+                .manufacturersForZBatches.value
+                ?.findLast { it.manufactureCode == manufacturerCode }
+                ?.manufactureName
+                .orEmpty()
     }
 
     fun getTitle(): String {
@@ -150,93 +169,8 @@ class LabelPrintingViewModel : CoreViewModel() {
         labelSelectionsHelper.clearPositions()
     }
 
-    private fun filterClearTabTaskDiff(productInfo: TaskProductInfo) : Boolean {
-        //партионный - это помеченный IS_ALCO и не помеченный IS_BOX_FL, IS_MARK_FL (Артем)
-        val isBatchNonExciseAlcoholProduct =
-                productInfo.type == ProductType.NonExciseAlcohol
-                        && !productInfo.isBoxFl
-                        && !productInfo.isMarkFl
-        val isVetProduct = productInfo.isVet && !productInfo.isNotEdit
-        //коробочный или марочный алкоголь
-        val isExciseAlcoholProduct =
-                productInfo.type == ProductType.ExciseAlcohol
-                        && (productInfo.isBoxFl || productInfo.isMarkFl)
-        return isBatchNonExciseAlcoholProduct
-                || isVetProduct
-                || isExciseAlcoholProduct
-    }
-
     fun onClickNext() {
-        launchUITryCatch {
-            screenNavigator.showProgressLoadingData(::handleFailure)
-            /**
-             * очищаем таблицу ET_TASK_DIFF от не акцизного (партионного) алкоголя и веттоваров,
-             * т.к. для партионного товара необходимо передавать только данные из таблицы ET_PARTS_DIFF, а для веттоваров - ET_VET_DIFF
-             */
-            val receivingTask = taskManager.getReceivingTask()
-            val taskRepository = taskManager.getReceivingTask()?.taskRepository
-            receivingTask
-                    ?.getProcessedProductsDiscrepancies()
-                    ?.mapNotNull { productDiscr ->
-                        taskRepository
-                                ?.getProducts()
-                                ?.findProduct(productDiscr.materialNumber)
-                    }
-                    ?.filter { filterClearTabTaskDiff(it) }
-                    ?.forEach { productForDel ->
-                        taskRepository
-                                ?.getProductsDiscrepancies()
-                                ?.deleteProductsDiscrepanciesForProduct(productForDel.materialNumber)
-                    }
-
-            endRecountDirectDeliveries(EndRecountDDParameters(
-                    taskNumber = receivingTask
-                            ?.taskHeader
-                            ?.taskNumber
-                            .orEmpty(),
-                    deviceIP = context.getDeviceIp(),
-                    personalNumber = sessionInfo.personnelNumber.orEmpty(),
-                    discrepanciesProduct = receivingTask
-                            ?.getProcessedProductsDiscrepancies()
-                            ?.map { TaskProductDiscrepanciesRestData.from(it) }
-                            .orEmpty(),
-                    discrepanciesBatches = receivingTask
-                            ?.getProcessedBatchesDiscrepancies()
-                            ?.map { TaskBatchesDiscrepanciesRestData.from(it) }
-                            .orEmpty(),
-                    discrepanciesBoxes = receivingTask
-                            ?.getProcessedBoxesDiscrepancies()
-                            ?.map { TaskBoxDiscrepanciesRestData.from(it) }
-                            .orEmpty(),
-                    discrepanciesExciseStamp = receivingTask
-                            ?.getProcessedExciseStampsDiscrepancies()
-                            ?.map { TaskExciseStampDiscrepanciesRestData.from(it) }
-                            .orEmpty(),
-                    exciseStampBad = receivingTask
-                            ?.getProcessedExciseStampsBad()
-                            ?.map { TaskExciseStampBadRestData.from(it) }
-                            .orEmpty(),
-                    discrepanciesMercury = receivingTask
-                            ?.getProcessedMercuryDiscrepancies()
-                            ?.map { TaskMercuryDiscrepanciesRestData.from(it) }
-                            .orEmpty(),
-                    discrepanciesBlocks = receivingTask
-                            ?.getProcessedBlocksDiscrepancies()
-                            ?.map { TaskBlockDiscrepanciesRestData.from(it) }
-                            .orEmpty(),
-                    discrepanciesZBatches = receivingTask
-                            ?.getProcessedZBatchesDiscrepancies()
-                            ?.map { TaskZBatchesDiscrepanciesRestData.from(it) }
-                            .orEmpty()
-            )).either(::handleFailure, ::handleSuccess)
-            screenNavigator.hideProgress()
-        }
-    }
-
-    private fun handleSuccess(result: EndRecountDDResult) {
-        taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
-        screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType
-                ?: TaskType.None)
+        screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
     }
 
 }

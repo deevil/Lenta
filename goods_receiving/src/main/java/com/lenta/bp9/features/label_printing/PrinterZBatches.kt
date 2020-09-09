@@ -1,4 +1,4 @@
-package com.lenta.bp9.data
+package com.lenta.bp9.features.label_printing
 
 import android.content.Context
 import androidx.annotation.WorkerThread
@@ -12,7 +12,6 @@ import java.io.InputStreamReader
 import java.net.InetSocketAddress
 import java.net.Socket
 import java.nio.charset.StandardCharsets
-import java.util.*
 import javax.inject.Inject
 
 class LabelPrintingZBatches @Inject constructor(

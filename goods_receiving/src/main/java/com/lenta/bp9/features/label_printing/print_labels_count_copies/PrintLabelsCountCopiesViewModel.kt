@@ -4,19 +4,15 @@ import android.content.Context
 import android.os.Bundle
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp9.R
-import com.lenta.bp9.data.IPrinterZBatches
-import com.lenta.bp9.data.LabelPrintingZBatches
-import com.lenta.bp9.data.LabelZBatchesInfo
+import com.lenta.bp9.features.label_printing.LabelPrintingZBatches
+import com.lenta.bp9.features.label_printing.LabelZBatchesInfo
 import com.lenta.bp9.features.label_printing.LabelPrintingItem
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.platform.navigation.IScreenNavigator
-import com.lenta.bp9.repos.IDataBaseRepo
+import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.shared.account.ISessionInfo
-import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.resources.dao_ext.getEanInfoByMaterialUnits
-import com.lenta.shared.fmp.resources.dao_ext.getEanInfoFromMaterial
 import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
-import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
@@ -25,8 +21,6 @@ import com.lenta.shared.utilities.extentions.map
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.text.SimpleDateFormat
-import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
 
@@ -52,6 +46,9 @@ class PrintLabelsCountCopiesViewModel : CoreViewModel() {
 
     @Inject
     lateinit var hyperHive: HyperHive
+
+    @Inject
+    lateinit var repoInMemoryHolder: IRepoInMemoryHolder
 
     private val labels: MutableLiveData<List<LabelPrintingItem>> = MutableLiveData()
 
@@ -127,7 +124,7 @@ class PrintLabelsCountCopiesViewModel : CoreViewModel() {
                                 delivery = taskManager.getReceivingTask()?.taskDescription?.deliveryNumber.orEmpty(),
                                 provider = "",
                                 batchNumber = labelItem.batchDiscrepancies?.batchNumber.orEmpty(),
-                                manufacturer = labelItem.batchDiscrepancies?.manufactureCode.orEmpty(), //todo наверное должено быть наименование
+                                manufacturer = getManufacturerName(labelItem.batchDiscrepancies?.manufactureCode.orEmpty()),
                                 weigher = sessionInfo.personnelNumber.orEmpty(),
                                 quantity = labelItem.batchDiscrepancies?.numberDiscrepancies.orEmpty(),
                                 barcode = barcode,
@@ -139,6 +136,14 @@ class PrintLabelsCountCopiesViewModel : CoreViewModel() {
                 }
             }
         }
+    }
+
+    private fun getManufacturerName(manufacturerCode: String) : String {
+        return repoInMemoryHolder
+                .manufacturersForZBatches.value
+                ?.findLast { it.manufactureCode == manufacturerCode }
+                ?.manufactureName
+                .orEmpty()
     }
 
     private fun goBackWithArgs() {

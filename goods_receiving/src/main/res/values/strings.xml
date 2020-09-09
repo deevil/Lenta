@@ -351,4 +351,6 @@
     <string name="specify_the_number_of_copies">Укажите количество копий</string>
     <string name="printing_by_goods">Печать по товарам</string>
     <string name="no_ip_printer_alert">IP адрес принтера не указан</string>
+    <string name="save_counted_quantities_and_go_to_label_printing">Сохранить посчитанные количества в SAP ERP и перейти к печати этикеток?</string>
+
 </resources>

@@ -5,6 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.features.loading.tasks.TaskCardMode
 import com.lenta.bp9.model.task.*
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.requests.network.EndRecountDDParameters
@@ -64,6 +66,8 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     val requestFocusCountedOrToProcessing: MutableLiveData<Boolean> = MutableLiveData()
     val requestFocusWithoutBarcodeOrProcessed: MutableLiveData<Boolean> = MutableLiveData()
     val taskType: MutableLiveData<TaskType> = MutableLiveData()
+
+    private val receivingTask by lazy { taskManager.getReceivingTask() }
     private val isBatches: MutableLiveData<Boolean> = MutableLiveData(false)
 
     val visibilityCleanButton: MutableLiveData<Boolean> = selectedPage.map {
@@ -559,88 +563,118 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     }
 
     fun onClickSave() {
-        //todo
-        /***screenNavigator.openLabelPrintingScreen()
-        return*/
-        launchUITryCatch {
-            if (getCountProductNotProcessed() > 0.0) {
-                screenNavigator.openDiscrepancyListScreen()
-            } else {
-                screenNavigator.showProgressLoadingData(::handleFailure)
-                /**
-                 * очищаем таблицу ET_TASK_DIFF от не акцизного (партионного) алкоголя и веттоваров,
-                 * т.к. для партионного товара необходимо передавать только данные из таблицы ET_PARTS_DIFF, а для веттоваров - ET_VET_DIFF
-                 */
-                val receivingTask = taskManager.getReceivingTask()
-                val taskRepository = taskManager.getReceivingTask()?.taskRepository
-                receivingTask
-                        ?.getProcessedProductsDiscrepancies()
-                        ?.mapNotNull { productDiscr ->
-                            taskRepository
-                                    ?.getProducts()
-                                    ?.findProduct(productDiscr.materialNumber)
-                        }
-                        ?.filter { filterClearTabTaskDiff(it) }
-                        ?.forEach { productForDel ->
-                            taskRepository
-                                    ?.getProductsDiscrepancies()
-                                    ?.deleteProductsDiscrepanciesForProduct(productForDel.materialNumber)
-                        }
+        if (getCountProductNotProcessed() > 0.0) {
+            screenNavigator.openDiscrepancyListScreen()
+            return
+        }
 
-                endRecountDirectDeliveries(EndRecountDDParameters(
-                        taskNumber = receivingTask
-                                ?.taskHeader
-                                ?.taskNumber
-                                .orEmpty(),
-                        deviceIP = context.getDeviceIp(),
-                        personalNumber = sessionInfo.personnelNumber.orEmpty(),
-                        discrepanciesProduct = receivingTask
-                                ?.getProcessedProductsDiscrepancies()
-                                ?.map { TaskProductDiscrepanciesRestData.from(it) }
-                                .orEmpty(),
-                        discrepanciesBatches = receivingTask
-                                ?.getProcessedBatchesDiscrepancies()
-                                ?.map { TaskBatchesDiscrepanciesRestData.from(it) }
-                                .orEmpty(),
-                        discrepanciesBoxes = receivingTask
-                                ?.getProcessedBoxesDiscrepancies()
-                                ?.map { TaskBoxDiscrepanciesRestData.from(it) }
-                                .orEmpty(),
-                        discrepanciesExciseStamp = receivingTask
-                                ?.getProcessedExciseStampsDiscrepancies()
-                                ?.map { TaskExciseStampDiscrepanciesRestData.from(it) }
-                                .orEmpty(),
-                        exciseStampBad = receivingTask
-                                ?.getProcessedExciseStampsBad()
-                                ?.map { TaskExciseStampBadRestData.from(it) }
-                                .orEmpty(),
-                        discrepanciesMercury = receivingTask
-                                ?.getProcessedMercuryDiscrepancies()
-                                ?.map { TaskMercuryDiscrepanciesRestData.from(it) }
-                                .orEmpty(),
-                        discrepanciesBlocks = receivingTask
-                                ?.getProcessedBlocksDiscrepancies()
-                                ?.map { TaskBlockDiscrepanciesRestData.from(it) }
-                                .orEmpty(),
-                        discrepanciesZBatches = receivingTask
-                                ?.getProcessedZBatchesDiscrepancies()
-                                ?.map { TaskZBatchesDiscrepanciesRestData.from(it) }
-                                .orEmpty()
-                )).either(::handleFailure, ::handleSuccess)
-                screenNavigator.hideProgress()
-            }
+        if (getCountZBatchesProduct() > 0) {
+            screenNavigator.openSaveCountedQuantitiesAndGoToLabelPrintingDialog(
+                    yesCallbackFunc = {
+                        removingTemporaryDataFromRepository()
+                        dataTransferToServer()
+                    }
+            )
+        } else {
+            removingTemporaryDataFromRepository()
+            dataTransferToServer()
+        }
+    }
+
+    private fun getCountZBatchesProduct(): Int {
+        return receivingTask
+                ?.getProcessedProducts()
+                ?.filter {
+                    it.isZBatches
+                            && !it.isVet
+                }
+                ?.map { zBatch->
+                    receivingTask
+                            ?.getProcessedProductsDiscrepancies()
+                            ?.findLast {
+                                it.materialNumber == zBatch.materialNumber
+                                        && it.typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM
+                            }
+                }
+                ?.size
+                ?: 0
+    }
+
+    private fun removingTemporaryDataFromRepository() {
+        /**
+         * очищаем таблицу ET_TASK_DIFF от не акцизного (партионного) алкоголя и веттоваров,
+         * т.к. для партионного товара необходимо передавать только данные из таблицы ET_PARTS_DIFF, а для веттоваров - ET_VET_DIFF
+         */
+        val taskRepository = taskManager.getReceivingTask()?.taskRepository
+        receivingTask
+                ?.getProcessedProductsDiscrepancies()
+                ?.mapNotNull { productDiscr ->
+                    taskRepository
+                            ?.getProducts()
+                            ?.findProduct(productDiscr.materialNumber)
+                }
+                ?.filter { filterClearTabTaskDiff(it) }
+                ?.forEach { productForDel ->
+                    taskRepository
+                            ?.getProductsDiscrepancies()
+                            ?.deleteProductsDiscrepanciesForProduct(productForDel.materialNumber)
+                }
+    }
+
+    private fun dataTransferToServer() {
+        launchUITryCatch {
+            screenNavigator.showProgressLoadingData(::handleFailure)
+            endRecountDirectDeliveries(EndRecountDDParameters(
+                    taskNumber = receivingTask
+                            ?.taskHeader
+                            ?.taskNumber
+                            .orEmpty(),
+                    deviceIP = context.getDeviceIp(),
+                    personalNumber = sessionInfo.personnelNumber.orEmpty(),
+                    discrepanciesProduct = receivingTask
+                            ?.getProcessedProductsDiscrepancies()
+                            ?.map { TaskProductDiscrepanciesRestData.from(it) }
+                            .orEmpty(),
+                    discrepanciesBatches = receivingTask
+                            ?.getProcessedBatchesDiscrepancies()
+                            ?.map { TaskBatchesDiscrepanciesRestData.from(it) }
+                            .orEmpty(),
+                    discrepanciesBoxes = receivingTask
+                            ?.getProcessedBoxesDiscrepancies()
+                            ?.map { TaskBoxDiscrepanciesRestData.from(it) }
+                            .orEmpty(),
+                    discrepanciesExciseStamp = receivingTask
+                            ?.getProcessedExciseStampsDiscrepancies()
+                            ?.map { TaskExciseStampDiscrepanciesRestData.from(it) }
+                            .orEmpty(),
+                    exciseStampBad = receivingTask
+                            ?.getProcessedExciseStampsBad()
+                            ?.map { TaskExciseStampBadRestData.from(it) }
+                            .orEmpty(),
+                    discrepanciesMercury = receivingTask
+                            ?.getProcessedMercuryDiscrepancies()
+                            ?.map { TaskMercuryDiscrepanciesRestData.from(it) }
+                            .orEmpty(),
+                    discrepanciesBlocks = receivingTask
+                            ?.getProcessedBlocksDiscrepancies()
+                            ?.map { TaskBlockDiscrepanciesRestData.from(it) }
+                            .orEmpty(),
+                    discrepanciesZBatches = receivingTask
+                            ?.getProcessedZBatchesDiscrepancies()
+                            ?.map { TaskZBatchesDiscrepanciesRestData.from(it) }
+                            .orEmpty()
+            )).either(::handleFailure, ::handleSuccess)
+            screenNavigator.hideProgress()
         }
     }
 
     private fun handleSuccess(result: EndRecountDDResult) {
         taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
-        screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType
-                ?: TaskType.None)
-    }
-
-    override fun handleFailure(failure: Failure) {
-        super.handleFailure(failure)
-        screenNavigator.openAlertScreen(failure, pageNumber = "97")
+        if (getCountZBatchesProduct() > 0) {
+            screenNavigator.openLabelPrintingScreen()
+        } else {
+            screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
+        }
     }
 
     fun onBackPressed() {
