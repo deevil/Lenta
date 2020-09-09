@@ -88,7 +88,7 @@ class TaskSearchViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 funcForMaterial = ::fillGoodNumberField,
                 funcForSapOrBar = navigator::showTwelveCharactersEntered,
                 funcForExcise = ::fillExciseNumberField,
-                funcForNotValidFormat = navigator::showIncorrectEanFormat
+                funcForNotValidBarFormat = navigator::showIncorrectEanFormat
         )
     }
 

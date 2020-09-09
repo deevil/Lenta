@@ -1,112 +1,91 @@
 package com.lenta.bp12.model.pojo.create_task
 
 import com.lenta.bp12.model.ControlType
+import com.lenta.bp12.model.Taskable
+import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.ReturnReason
 import com.lenta.bp12.model.pojo.TaskType
-import com.lenta.shared.utilities.extentions.sumList
-import com.lenta.shared.utilities.extentions.sumWith
+import com.lenta.bp12.model.pojo.extentions.*
 
 data class TaskCreate(
-        val name: String,
+        override val name: String,
         val storage: String,
         val reason: ReturnReason,
         val type: TaskType,
-        val control: ControlType = ControlType.UNKNOWN,
+        override val control: ControlType = ControlType.UNKNOWN,
         var isProcessed: Boolean = false,
 
         val goods: MutableList<GoodCreate> = mutableListOf(),
-        val baskets: MutableList<Basket> = mutableListOf()
-) {
+        override val baskets: MutableList<Basket> = mutableListOf()
+) : Taskable {
 
     fun getFormattedName(): String {
         return "${type.code} // $name"
     }
 
-    fun getQuantityByBasket(basket: Basket): Double {
-        return getGoodListByBasket(basket).map { good ->
-            val positionQuantity = good.positions.filter { it.provider.code == basket.provider.code }.map { it.quantity }.sumList()
-            val markQuantity = good.marks.filter { it.providerCode == basket.provider.code }.size.toDouble()
-            val partQuantity = good.parts.filter { it.providerCode == basket.provider.code }.map { it.quantity }.sumList()
-
-            positionQuantity.sumWith(markQuantity).sumWith(partQuantity)
-        }.sumList()
-    }
-
-    fun getGoodListByBasket(basket: Basket): List<GoodCreate> {
-        return goods.filter { good ->
-            good.section == basket.section && good.type == basket.goodType && good.control == basket.control &&
-                    (good.positions.find { it.provider == basket.provider } != null ||
-                            good.marks.find { it.providerCode == basket.provider.code } != null ||
-                            good.parts.find { it.providerCode == basket.provider.code } != null)
-        }
-    }
-
     fun getBasketsByGood(good: GoodCreate): List<Basket> {
         return baskets.filter { basket ->
-            basket.section == good.section && basket.goodType == good.type && basket.control == good.control &&
-                    good.positions.find { it.provider == basket.provider } != null
+            basket.getGoodList().any { it.material == good.material }
         }
     }
 
     fun getCountByBasket(basket: Basket): Int {
-        return getGoodListByBasket(basket).size
+        return basket.getGoodList().size
     }
 
     fun removeGoodByMaterials(materials: List<String>) {
         materials.forEach { material ->
             goods.remove(goods.find { it.material == material })
-        }
 
-        removeEmptyBaskets()
-    }
-
-    fun removeGoodByBasketAndMaterials(basket: Basket, materials: MutableList<String>) {
-        materials.forEach { material ->
-            goods.find { it.material == material }?.let { good ->
-                good.removeByProvider(basket.provider.code)
-                if (good.isEmpty()) {
-                    goods.remove(good)
+            baskets.forEach { basket ->
+                val goodList = basket.getGoodList().filter { it.material == material }
+                goodList.forEach { good ->
+                    basket.deleteGood(good)
                 }
             }
         }
-
-        removeEmptyGoods()
         removeEmptyBaskets()
     }
 
-    fun removeBaskets(basketList: MutableList<Basket>) {
-        basketList.forEach { basket ->
-            getGoodListByBasket(basket).forEach { good ->
-                good.removePositionsByProvider(basket.provider.code)
-                good.removeMarksByProvider(basket.provider.code)
-                good.removePartsByProvider(basket.provider.code)
-            }
-
-            baskets.remove(basket)
-        }
-
-        removeEmptyGoods()
+    override fun updateBasket(basket: Basket) {
+        val oldBasketIndex = baskets.indexOfFirst { it.index == basket.index }
+        baskets[oldBasketIndex] = basket
     }
 
-    fun removeEmptyGoods() {
+
+    override fun removeBaskets(basketList: MutableList<Basket>) {
+        //Пройдемся по всем корзинам что нужно удалить
+        basketList.forEach { basket ->
+            val basketIndex = basket.index
+            //Получим список товаров корзины
+            val goodsToDeleteFromBasket = basket.getGoodList()
+            //Найдем их в общем списке
+            goodsToDeleteFromBasket.forEach { goodToDeleteFromBasket ->
+                val goodToDeleteFromTask = goods.firstOrNull { goodFromTask ->
+                    goodToDeleteFromBasket.material == goodFromTask.material
+                }
+                goodToDeleteFromTask?.let { good ->
+                    //Удалим у этого товара марки и партии с номером корзины
+                    good.removeMarksByBasketIndex(basketIndex)
+                    good.removePartsByBasketNumber(basketIndex)
+                    good.removePositionsByBasketIndex(basketIndex)
+                    //Найдем у этого товара позиции с подходящим количеством
+                    good.deletePositionsFromTask(
+                            goodFromBasket = goodToDeleteFromBasket,
+                            basketToGetQuantity = basket
+                    )
+                }
+                baskets.remove(basket)
+            }
+            removeEmptyGoods()
+        }
+    }
+
+    override fun removeEmptyGoods() {
         goods.removeAll(goods.filter { it.getTotalQuantity() == 0.0 })
     }
 
-    fun removeEmptyBaskets() {
-        baskets.removeAll(baskets.filter { getGoodListByBasket(it).isEmpty() })
+    override fun removeEmptyBaskets() {
+        baskets.removeAll(baskets.filter { it.getGoodList().isEmpty() })
     }
-
-    fun isExistBasket(basket: Basket): Boolean {
-        return baskets.contains(basket)
-    }
-
-    fun getBasketNumber(good: GoodCreate, providerCode: String): String {
-        val basket = baskets.find {
-            it.section == good.section && it.goodType == good.type &&
-                    it.control == good.control && it.provider.code == providerCode
-        }
-
-        return "${baskets.indexOf(basket) + 1}"
-    }
-
 }

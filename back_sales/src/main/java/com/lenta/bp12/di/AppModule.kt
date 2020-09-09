@@ -48,6 +48,10 @@ class AppModule {
         @AppScope
         fun bindGeneralTaskManager(realisation: GeneralTaskManager): IGeneralTaskManager
 
+        @Binds
+        @AppScope
+        fun bindMarkManager(realisation: MarkManager): IMarkManager
+
     }
 
 }

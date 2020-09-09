@@ -44,10 +44,18 @@ object Constants {
     const val EXCISE_MARK_68 = 68
     const val EXCISE_BOX_26 = 26
 
+    val SHOES_MARK_RANGE_18_20 = IntRange(18, 20)
+    val TOBACCO_MARK_RANGE_0_21 = IntRange(0, 21)
+    val TOBACCO_BOX_MARK_RANGE_21_28 = IntRange(21, 28)
+    val TOBACCO_MARK_BLOCK_OR_BOX_RANGE_30_44 = IntRange(30, 44)
+    const val MARK_28 = 28
+    const val MARK_TOBACCO_PACK_29 = 29
+
     // Regex patterns
     const val CIGARETTES_MARK_PATTERN = "^(?<packBarcode>(?<gtin>\\d{14})(?<serial>\\S{7}))(?<MRC>\\S{4})(?:\\S{4})\$"
     const val CIGARETTES_BOX_PATTERN = "^.?(?<blockBarcode>01(?<gtin2>\\d{14})21(?<serial>\\S{7})).?8005(?<MRC>\\d{6}).?93(?<verificationKey>\\S{4}).?(?<other>\\S{1,})?\$"
     const val SHOES_MARK_PATTERN = "^(?<barcode>01(?<gtin>\\d{14})21(?<serial>\\S{13})).?(?:240(?<tradeCode>\\d{4}))?.?(?:91(?<verificationKey>\\S{4}))?.?(?:92(?<verificationCode>\\S{88}))?\$"
+    const val GTIN_REGEX_PATTERN = "(0{6}(?<ean8gs1>\\d{8})|0(?<ean13gs1>\\d{13}))"
 
     // ERP Requests
     const val OPERATING_SYSTEM_WINDOWS = "1"

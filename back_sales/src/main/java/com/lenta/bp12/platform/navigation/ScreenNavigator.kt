@@ -3,13 +3,15 @@ package com.lenta.bp12.platform.navigation
 import android.content.Context
 import com.lenta.bp12.R
 import com.lenta.bp12.features.auth.AuthFragment
+import com.lenta.bp12.features.basket.basket_good_list.BasketCreateGoodListFragment
+import com.lenta.bp12.features.basket.basket_good_list.BasketOpenGoodListFragment
+import com.lenta.bp12.features.basket.basket_properties.BasketPropertiesFragment
 import com.lenta.bp12.features.create_task.add_provider.AddProviderFragment
-import com.lenta.bp12.features.create_task.basket_good_list.BasketGoodListFragment
-import com.lenta.bp12.features.create_task.basket_properties.BasketPropertiesFragment
 import com.lenta.bp12.features.create_task.good_details.GoodDetailsCreateFragment
 import com.lenta.bp12.features.create_task.good_info.GoodInfoCreateFragment
+import com.lenta.bp12.features.create_task.marked_good_info.MarkedGoodInfoCreateFragment
 import com.lenta.bp12.features.create_task.task_card.TaskCardCreateFragment
-import com.lenta.bp12.features.create_task.task_composition.TaskCompositionFragment
+import com.lenta.bp12.features.create_task.task_content.TaskContentFragment
 import com.lenta.bp12.features.enter_employee_number.EnterEmployeeNumberFragment
 import com.lenta.bp12.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp12.features.main_menu.MainMenuFragment
@@ -17,12 +19,15 @@ import com.lenta.bp12.features.open_task.discrepancy_list.DiscrepancyListFragmen
 import com.lenta.bp12.features.open_task.good_details.GoodDetailsOpenFragment
 import com.lenta.bp12.features.open_task.good_info.GoodInfoOpenFragment
 import com.lenta.bp12.features.open_task.good_list.GoodListFragment
+import com.lenta.bp12.features.open_task.marked_good_info.MarkedGoodInfoOpenFragment
 import com.lenta.bp12.features.open_task.task_card.TaskCardOpenFragment
 import com.lenta.bp12.features.open_task.task_list.TaskListFragment
 import com.lenta.bp12.features.open_task.task_search.TaskSearchFragment
 import com.lenta.bp12.features.save_data.SaveDataFragment
 import com.lenta.bp12.features.select_market.SelectMarketFragment
+import com.lenta.bp12.model.pojo.Good
 import com.lenta.shared.account.IAuthenticator
+import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.CustomAnimation
@@ -86,13 +91,19 @@ class ScreenNavigator @Inject constructor(
     // Основные экраны
     override fun openTaskCompositionScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(TaskCompositionFragment())
+            getFragmentStack()?.push(TaskContentFragment())
         }
     }
 
-    override fun openBasketGoodListScreen() {
+    override fun openBasketCreateGoodListScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(BasketGoodListFragment())
+            getFragmentStack()?.push(BasketCreateGoodListFragment())
+        }
+    }
+
+    override fun openBasketOpenGoodListScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(BasketOpenGoodListFragment())
         }
     }
 
@@ -171,6 +182,18 @@ class ScreenNavigator @Inject constructor(
     override fun openAddProviderScreen() {
         runOrPostpone {
             getFragmentStack()?.push(AddProviderFragment())
+        }
+    }
+
+    override fun openMarkedGoodInfoCreateScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(MarkedGoodInfoCreateFragment())
+        }
+    }
+
+    override fun openMarkedGoodInfoOpenScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(MarkedGoodInfoOpenFragment())
         }
     }
 
@@ -254,6 +277,17 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "93",
                     message = context.getString(R.string.for_excise_alcohol_need_scan_first_mark),
+                    iconRes = R.drawable.ic_info_green_80dp,
+                    timeAutoExitInMillis = 3000
+            ))
+        }
+    }
+
+    override fun showForGoodNeedScanFirstMark() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "85",
+                    message = context.getString(R.string.for_good_need_scan_first_mark),
                     iconRes = R.drawable.ic_info_green_80dp,
                     timeAutoExitInMillis = 3000
             ))
@@ -378,6 +412,16 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showCantScanPackAlert() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "100",
+                    message = context.getString(R.string.cant_scan_tobacco_pack_scan_carton),
+                    iconRes = R.drawable.ic_warning_red_80dp
+            ))
+        }
+    }
+
     // Описание иконок
     override fun showExciseAlcoholGoodInfoScreen() {
         runOrPostpone {
@@ -403,6 +447,153 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showMarkedGoodInfoScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.marked_good),
+                    iconRes = com.lenta.shared.R.drawable.ic_marked_white_32dp), CustomAnimation.vertical)
+        }
+    }
+
+    override fun showCloseBasketDialog(yesCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "71",
+                    message = context.getString(R.string.close_basket),
+                    iconRes = R.drawable.ic_question_yellow_80dp,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes
+            ))
+        }
+    }
+
+    override fun showOpenBasketDialog(yesCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "71",
+                    message = context.getString(R.string.open_basket),
+                    iconRes = R.drawable.ic_question_yellow_80dp,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes
+            ))
+        }
+    }
+
+    override fun showSomeOfChosenBasketsNotClosedScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "79",
+                    message = context.getString(R.string.some_of_chosen_baskets_not_closed),
+                    iconRes = R.drawable.ic_warning_red_80dp
+            ))
+        }
+    }
+
+    override fun showSomeBasketsNotClosedCantSaveScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "84",
+                    message = context.getString(R.string.some_baskets_not_closed_cant_save),
+                    iconRes = R.drawable.ic_warning_red_80dp
+            ))
+        }
+    }
+
+    override fun showSomeBasketsAlreadyPrinted(yesCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "81",
+                    message = context.getString(R.string.some_baskets_already_printed),
+                    iconRes = R.drawable.ic_question_yellow_80dp,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes
+            ))
+        }
+    }
+
+    override fun showPalletListPrintedScreen(nextCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "81",
+                    message = context.getString(R.string.pallet_list_printed),
+                    iconRes = R.drawable.ic_done_green_80dp,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.next,
+                    leftButtonDecorationInfo = ButtonDecorationInfo.empty
+            ))
+        }
+    }
+
+    override fun showQuantityMoreThenPlannedScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "87",
+                    message = context.getString(R.string.quantity_more_than_planned),
+                    iconRes = R.drawable.ic_warning_red_80dp
+            ))
+        }
+    }
+
+    override fun showMarkAlreadyScannedDelete(yesCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "93",
+                    message = context.getString(R.string.mark_already_scanned_delete),
+                    iconRes = R.drawable.ic_warning_red_80dp,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback)
+            ))
+        }
+    }
+
+    override fun showCartonAlreadyScannedDelete(yesCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "91",
+                    message = context.getString(R.string.carton_already_scanned_delete),
+                    iconRes = R.drawable.ic_warning_red_80dp,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback)
+            ))
+        }
+    }
+
+    override fun showBoxAlreadyScannedDelete(yesCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "89",
+                    message = context.getString(R.string.box_already_scanned_delete),
+                    iconRes = R.drawable.ic_warning_red_80dp,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback)
+            ))
+        }
+    }
+
+    override fun showMrcNotSameAlert(good: Good) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "98",
+                    message = context.getString(R.string.scanned_wrong_mrc, good.ean, good.name),
+                    iconRes = R.drawable.ic_warning_red_80dp
+            ))
+        }
+    }
+
+    override fun showNoMarkTypeInSettings() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "98",
+                    message = context.getString(R.string.no_settings_for_that_markType),
+                    iconRes = R.drawable.ic_warning_red_80dp
+            ))
+        }
+    }
+
+    override fun showInternalError(cause: String) {
+        openAlertScreen(Failure.MessageFailure("Внутренняя ошибка программы: $cause", R.drawable.ic_warning_red_80dp))
+    }
+
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -415,20 +606,25 @@ interface IScreenNavigator : ICoreNavigator {
     fun openMainMenuScreen()
 
     fun openTaskCompositionScreen()
-    fun openBasketGoodListScreen()
+    fun openBasketCreateGoodListScreen()
+    fun openBasketOpenGoodListScreen()
     fun openGoodDetailsCreateScreen()
     fun openGoodDetailsOpenScreen()
     fun openSaveDataScreen()
     fun openTaskListScreen()
     fun openBasketPropertiesScreen()
     fun openDiscrepancyListScreen()
-    fun openGoodInfoCreateScreen()
-    fun openGoodInfoOpenScreen()
+
     fun openGoodListScreen()
     fun openTaskCardCreateScreen()
     fun openTaskCardOpenScreen()
     fun openTaskSearchScreen()
     fun openAddProviderScreen()
+
+    fun openGoodInfoCreateScreen()
+    fun openGoodInfoOpenScreen()
+    fun openMarkedGoodInfoCreateScreen()
+    fun openMarkedGoodInfoOpenScreen()
 
     fun showUnsentDataFoundOnDevice(deleteCallback: () -> Unit, goOverCallback: () -> Unit)
     fun showUnsavedDataWillBeLost(proceedCallback: () -> Unit)
@@ -436,6 +632,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun showTaskUnsentDataWillBeDeleted(taskName: String, applyCallback: () -> Unit)
     fun showScannedMarkBelongsToProduct(productName: String)
     fun showForExciseGoodNeedScanFirstMark()
+    fun showForGoodNeedScanFirstMark()
     fun showRawGoodsRemainedInTask(yesCallback: () -> Unit)
     fun showBoxWasLastScanned(afterShowCallback: () -> Unit)
     fun showDoYouReallyWantSetZeroQuantity(yesCallback: () -> Unit, counted: Int)
@@ -447,9 +644,28 @@ interface IScreenNavigator : ICoreNavigator {
     fun showFinishProcessingBox()
     fun showFinishProcessingCurrentBox()
     fun showGoodIsMissingInTask()
+    fun showCantScanPackAlert()
 
     fun showExciseAlcoholGoodInfoScreen()
     fun showAlcoholGoodInfoScreen()
     fun showCommonGoodInfoScreen()
+    fun showMarkedGoodInfoScreen()
 
+    fun showCloseBasketDialog(yesCallback: () -> Unit)
+    fun showOpenBasketDialog(yesCallback: () -> Unit)
+
+    fun showSomeOfChosenBasketsNotClosedScreen()
+    fun showSomeBasketsNotClosedCantSaveScreen()
+    fun showSomeBasketsAlreadyPrinted(yesCallback: () -> Unit)
+    fun showPalletListPrintedScreen(nextCallback: () -> Unit)
+
+    fun showInternalError(cause: String)
+    fun showQuantityMoreThenPlannedScreen()
+
+    fun showMarkAlreadyScannedDelete(yesCallback: () -> Unit)
+    fun showCartonAlreadyScannedDelete(yesCallback: () -> Unit)
+    fun showBoxAlreadyScannedDelete(yesCallback: () -> Unit)
+    fun showMrcNotSameAlert(good: Good)
+
+    fun showNoMarkTypeInSettings()
 }

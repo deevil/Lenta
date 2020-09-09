@@ -39,22 +39,29 @@ class GoodInfoOpenFragment : CoreFragment<FragmentGoodInfoOpenBinding, GoodInfoO
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.rollback)
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.details)
-        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.missing)
+
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply, enabled = false)
 
         connectLiveData(vm.rollbackVisibility, bottomToolbarUiModel.uiModelButton2.visibility)
         connectLiveData(vm.detailsVisibility, bottomToolbarUiModel.uiModelButton3.visibility)
-        connectLiveData(vm.missingVisibility, bottomToolbarUiModel.uiModelButton4.visibility)
-        connectLiveData(vm.missingEnabled, bottomToolbarUiModel.uiModelButton4.enabled)
         connectLiveData(vm.rollbackEnabled, bottomToolbarUiModel.uiModelButton2.enabled)
         connectLiveData(vm.applyEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
+
+        if (vm.isWholesale) {
+            bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.close)
+            connectLiveData(vm.closeEnabled, bottomToolbarUiModel.uiModelButton4.enabled)
+        } else {
+            bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.missing)
+            connectLiveData(vm.missingVisibility, bottomToolbarUiModel.uiModelButton4.visibility)
+            connectLiveData(vm.missingEnabled, bottomToolbarUiModel.uiModelButton4.enabled)
+        }
     }
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_2 -> vm.onClickRollback()
             R.id.b_3 -> vm.onClickDetails()
-            R.id.b_4 -> vm.onClickMissing()
+            R.id.b_4 -> if (vm.isWholesale) vm.onClickClose() else vm.onClickMissing()
             //R.id.b_4 -> vm.onScanResult("147300249826851018001FZSIZAB5I6KZKWEQKPKZJHW6MYKVGAETXLPV7M5AIF7OXTQFIM347EWQGXAK65QGJFKTR7EQDHJQTJFSW5DNWTBU3BRLKVM7D6YZMYRBV6IOQY5ZXLPKLBHUZPBTRFTLQ")
             //R.id.b_4 -> vm.onScanResult("22N00001CRDKFRWFBZ90123456789012345678901234567890123456789000000001") // Марка 156641
             //R.id.b_4 -> vm.onScanResult("4607149780488") // ШК
