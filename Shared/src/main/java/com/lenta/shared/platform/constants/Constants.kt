@@ -43,13 +43,14 @@ object Constants {
     const val EXCISE_MARK_150 = 150
     const val EXCISE_MARK_68 = 68
     const val EXCISE_BOX_26 = 26
+    const val MARK_TOBACCO_PACK_29 = 29
+    const val MARK_28 = 28 // Нигде не используется?
 
-    val SHOES_MARK_RANGE_18_20 = IntRange(18, 20)
-    val TOBACCO_MARK_RANGE_0_21 = IntRange(0, 21)
+    // Mark code ranges
     val TOBACCO_BOX_MARK_RANGE_21_28 = IntRange(21, 28)
     val TOBACCO_MARK_BLOCK_OR_BOX_RANGE_30_44 = IntRange(30, 44)
-    const val MARK_28 = 28
-    const val MARK_TOBACCO_PACK_29 = 29
+    val SHOES_MARK_RANGE_18_20 = IntRange(18, 20) // Нигде не используется?
+    val TOBACCO_MARK_RANGE_0_21 = IntRange(0, 21) // Нигде не используется?
 
     // Regex patterns
     const val CIGARETTES_MARK_PATTERN = "^(?<packBarcode>(?<gtin>\\d{14})(?<serial>\\S{7}))(?<MRC>\\S{4})(?:\\S{4})\$"
