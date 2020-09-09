@@ -3,10 +3,12 @@ package com.lenta.bp12.model.pojo
 import java.util.*
 
 data class Part(
-        var number: String,
-        var material: String,
-        var quantity: Double,
-        var providerCode: String,
-        var producerCode: String,
-        var date: Date
-)
+        val number: String,
+        val material: String,
+        val providerCode: String,
+        val producerCode: String,
+        val date: Date
+) {
+    var quantity: Double = 0.0
+    var basketNumber: Int = 0
+}

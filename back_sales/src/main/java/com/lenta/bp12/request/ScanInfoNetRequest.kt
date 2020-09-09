@@ -1,7 +1,7 @@
 package com.lenta.bp12.request
 
 import com.google.gson.annotations.SerializedName
-import com.lenta.bp12.request.pojo.MarkInfo
+import com.lenta.bp12.request.pojo.ExciseMarkInfo
 import com.lenta.bp12.request.pojo.ProducerInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
@@ -11,12 +11,17 @@ import com.lenta.shared.requests.FmpRequestsHelper
 import com.lenta.shared.requests.SapResponse
 import javax.inject.Inject
 
+/** Получение данных по акцизному товару "ZMP_UTZ_100_V001" */
 class ScanInfoNetRequest @Inject constructor(
         private val fmpRequestsHelper: FmpRequestsHelper
 ) : UseCase<ScanInfoResult, ScanInfoParams> {
 
     override suspend fun run(params: ScanInfoParams): Either<Failure, ScanInfoResult> {
-        return fmpRequestsHelper.restRequest("ZMP_UTZ_100_V001", params, ScanInfoStatus::class.java)
+        return fmpRequestsHelper.restRequest(RESOURCE_NAME, params, ScanInfoStatus::class.java)
+    }
+
+    companion object {
+        private const val RESOURCE_NAME = "ZMP_UTZ_100_V001"
     }
 
 }
@@ -68,7 +73,7 @@ data class ScanInfoResult(
         val statusDescription: String,
         /** Таблица марок в коробке */
         @SerializedName("ET_MARKS")
-        val marks: List<MarkInfo>,
+        val exciseMarks: List<ExciseMarkInfo>,
         /** Номер товара? */
         @SerializedName("EV_MATNR_COMP")
         val materialComp: String,

@@ -71,13 +71,13 @@
                         style="@style/CellTextStyle"
                         android:text="@{vm.totalTitle}"
                         android:textColor="@color/color_text_title_header"
-                        tools:text="Итого*" />
+                        tools:text="Итого" />
 
                     <TextView
                         style="@style/CellTextStyle"
                         android:text="@{vm.basketTitle}"
                         android:textColor="@color/color_text_title_header"
-                        tools:text="*По корзине" />
+                        tools:text="По корзине" />
 
                 </LinearLayout>
 
@@ -104,7 +104,9 @@
             <View style="@style/HorizontalDivider" />
 
             <!-- Производитель -->
-            <LinearLayout style="@style/LinearRowStyle">
+            <LinearLayout
+                style="@style/LinearRowStyle"
+                android:visibility="@{!vm.isWholesaleTaskType}">
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
@@ -117,8 +119,7 @@
                         android:layout_height="match_parent"
                         android:enabled="@{vm.providerEnabled}"
                         app:items="@{vm.providerList}"
-                        app:onPositionClickListener="@{vm.onSelectProvider}"
-                        app:position="@{vm.providerPosition}"
+                        app:position="@={vm.providerPosition}"
                         tools:entries="@array/test_list" />
 
                 </LinearLayout>
@@ -135,14 +136,16 @@
 
             </LinearLayout>
 
-            <View style="@style/HorizontalDivider" />
+            <View
+                style="@style/HorizontalDivider"
+                android:visibility="@{!vm.isWholesaleTaskType}" />
 
             <!-- Алкогольная часть -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:visibility="@{!vm.isCompactMode}">
+                android:visibility="@{!vm.isCommonGood}">
 
                 <!-- Импортер -->
                 <LinearLayout style="@style/LinearRowStyle">
@@ -157,8 +160,7 @@
                             android:layout_height="match_parent"
                             android:enabled="@{vm.producerEnabled}"
                             app:items="@{vm.producerList}"
-                            app:onPositionClickListener="@{vm.onSelectProducer}"
-                            app:position="@{vm.producerPosition}"
+                            app:position="@={vm.producerPosition}"
                             tools:entries="@array/test_list" />
 
                     </LinearLayout>
@@ -193,6 +195,7 @@
                         android:layout_weight="1">
 
                         <EditText
+                            android:id="@+id/bottlingDate"
                             style="@style/CellEditTextStyle"
                             android:digits="1234567890."
                             android:enabled="@{vm.dateEnabled}"
@@ -234,8 +237,9 @@
                     android:layout_height="30dp"
                     android:background="@drawable/bg_white_circle"
                     android:gravity="center"
-                    android:textSize="12sp"
+                    android:textSize="@dimen/text_12sp"
                     app:section="@{vm.good.section}"
+                    android:visibility="@{!vm.good.section.isEmpty()}"
                     tools:text="02" />
 
             </LinearLayout>

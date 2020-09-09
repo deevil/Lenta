@@ -30,3 +30,9 @@ fun String.encode(): String {
 inline fun <reified T> T?.orIfNull(input: () -> T): T {
     return this ?: input()
 }
+
+/**
+ * Из строки получает Enum
+ * */
+inline fun <reified T : Enum<*>> enumValueOrNull(name: String): T? =
+        T::class.java.enumConstants.firstOrNull { it.name == name }

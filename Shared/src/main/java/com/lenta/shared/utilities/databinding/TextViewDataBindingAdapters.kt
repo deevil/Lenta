@@ -132,7 +132,7 @@ fun setMatrixType(textView: TextView, matrixType: MatrixType?) {
 
 @BindingAdapter(value = ["section"])
 fun setSectionInfo(textView: TextView, section: String?) {
-    section?.let {
+    if (!section.isNullOrEmpty()) {
         textView.setVisible()
         textView.text = section
         textView.setBackgroundResource(R.drawable.bg_white_circle)
@@ -140,9 +140,7 @@ fun setSectionInfo(textView: TextView, section: String?) {
             dataBindingHelpHolder.coreNavigator.openSectionInfoScreen(section)
         }
         return
-    }
-    textView.setVisibleGone()
-
+    } else textView.setVisibleGone()
 }
 
 @BindingAdapter(value = ["zoom"], requireAll = false)

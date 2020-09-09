@@ -57,6 +57,14 @@ android {
                 outputFileName = name.replace(".apk", "-${variant.versionName}-${variant.versionCode}.apk")
             }
         }
+
+
+        if (variant.buildType.name == "debug") {
+            variant.outputs.all {
+                def name = outputFileName.replace("app-", "LentaBackSales-debug")
+                outputFileName = name.replace(".apk", "-${variant.versionName}-${variant.versionCode}.apk")
+            }
+        }
     }
 
     compileOptions {
@@ -76,6 +84,10 @@ android {
         pickFirst 'META-INF/kotlinx-io.kotlin_module'
         pickFirst 'META-INF/atomicfu.kotlin_module'
         pickFirst 'META-INF/kotlinx-coroutines-io.kotlin_module'
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
 }
@@ -108,4 +120,9 @@ dependencies {
     // Mockito
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0"
     testImplementation "io.mockk:mockk:1.9.3"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+}
+repositories {
+    maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
+    mavenCentral()
 }
