@@ -40,6 +40,7 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfoImpl() {
 
     val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData(false)
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
+    private val termControlInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     val spinEnteredDate: MutableLiveData<List<String>> = MutableLiveData()
     val spinEnteredDateSelectedPosition: MutableLiveData<Int> = MutableLiveData(-1)
     val spinReasonRejection: MutableLiveData<List<String>> = MutableLiveData()
@@ -50,6 +51,19 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfoImpl() {
     val remainingShelfLife: MutableLiveData<String> = MutableLiveData()
     val count: MutableLiveData<String> = MutableLiveData("0")
     val isDiscrepancy: MutableLiveData<Boolean> = MutableLiveData(false)
+
+    val currentTermControlCode: String
+        get() {
+            val position = spinEnteredDateSelectedPosition.value ?: -1
+            return position
+                    .takeIf { it >= 0 }
+                    ?.let {
+                        termControlInfo.value
+                                ?.getOrNull(it)
+                                ?.code
+                                .orEmpty()
+                    }.orEmpty()
+        }
 
     val tvAccept: MutableLiveData<String> by lazy {
         val isEizUnit = productInfo.value?.purchaseOrderUnits?.code != productInfo.value?.uom?.code
@@ -214,7 +228,8 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfoImpl() {
                             ?: listOf(context.getString(R.string.no_manufacturer_selection_required))
 
             infoForSpinEnteredDate.value = dataBase.getTermControlInfo()
-            spinEnteredDate.value = dataBase.getTermControlInfo()?.map { it.name }.orEmpty()
+            termControlInfo.value = dataBase.getTermControlInfo()
+            spinEnteredDate.value = termControlInfo.value?.map { it.name }.orEmpty()
 
             /** Z-партии всегда скоропорт */
             val productGeneralShelfLife = productInfo.value?.generalShelfLife?.toInt() ?: 0
@@ -585,10 +600,17 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfoImpl() {
     private fun saveCategory() {
         val countAdd = if (currentQualityInfoCode == TYPE_DISCREPANCIES_QUALITY_NORM) acceptTotalCount.value.toString() else count.value
         val shelfLifeDate =
-                enteredDate.value
-                        ?.takeIf { it.isNotEmpty() }
-                        ?.let { formatterERP.format(formatterRU.parse(it)) }
-                        .orEmpty()
+                if (currentTermControlCode == TERM_CONTROL_CODE_PRODUCTION_DATE) {
+                    val shelfLife = Calendar.getInstance()
+                    shelfLife.time = formatterRU.parse(enteredDate.value)
+                    shelfLife.add(Calendar.DATE, generalShelfLife.value?.toInt() ?: 0)
+                    shelfLife.time?.let { formatterERP.format(it) }.orEmpty()
+                } else {
+                    enteredDate.value
+                            ?.takeIf { it.isNotEmpty() }
+                            ?.let { formatterERP.format(formatterRU.parse(it)) }
+                            .orEmpty()
+                }
 
         val shelfLifeTime =
                 if (isVisibilityEnteredTime.value == true) {
@@ -596,6 +618,7 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfoImpl() {
                 } else {
                     ""
                 }
+
         processZBatchesPPPService.add(countAdd.orEmpty(), currentTypeDiscrepanciesCode, currentManufactureCode, shelfLifeDate, shelfLifeTime)
 
         //ППП блок 6.176
@@ -612,4 +635,7 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfoImpl() {
         }
     }
 
+    companion object {
+        private const val TERM_CONTROL_CODE_PRODUCTION_DATE = "002"
+    }
 }

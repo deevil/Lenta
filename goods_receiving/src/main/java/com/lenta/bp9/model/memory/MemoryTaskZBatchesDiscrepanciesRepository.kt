@@ -1,8 +1,13 @@
 package com.lenta.bp9.model.memory
 
 import com.lenta.bp9.model.repositories.ITaskZBatchesDiscrepanciesRepository
+import com.lenta.bp9.model.task.TaskBatchInfo
+import com.lenta.bp9.model.task.TaskBatchesDiscrepancies
 import com.lenta.bp9.model.task.TaskZBatchInfo
 import com.lenta.bp9.model.task.TaskZBatchesDiscrepancies
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS
 
 class MemoryTaskZBatchesDiscrepanciesRepository : ITaskZBatchesDiscrepanciesRepository {
 
@@ -12,12 +17,13 @@ class MemoryTaskZBatchesDiscrepanciesRepository : ITaskZBatchesDiscrepanciesRepo
         return zBatchesDiscrepancies
     }
 
-    override fun findZBatchDiscrepanciesOfZBatch(zBatch: TaskZBatchInfo): List<TaskZBatchesDiscrepancies> {
+    override fun findZBatchDiscrepancies(discrepancies: TaskZBatchesDiscrepancies): List<TaskZBatchesDiscrepancies> {
         val foundDiscrepancies = ArrayList<TaskZBatchesDiscrepancies>()
         for (i in zBatchesDiscrepancies.indices) {
-            if (zBatch.materialNumber == zBatchesDiscrepancies[i].materialNumber &&
-                    zBatch.processingUnit == zBatchesDiscrepancies[i].processingUnit &&
-                    zBatch.batchNumber == zBatchesDiscrepancies[i].batchNumber) {
+            if (discrepancies.materialNumber == zBatchesDiscrepancies[i].materialNumber
+                    && discrepancies.manufactureCode == zBatchesDiscrepancies[i].manufactureCode
+                    && discrepancies.shelfLifeDate == zBatchesDiscrepancies[i].shelfLifeDate
+                    && discrepancies.shelfLifeTime == zBatchesDiscrepancies[i].shelfLifeTime) {
                 foundDiscrepancies.add(zBatchesDiscrepancies[i])
             }
         }
@@ -165,6 +171,29 @@ class MemoryTaskZBatchesDiscrepanciesRepository : ITaskZBatchesDiscrepanciesRepo
             deleteZBatchDiscrepancies(it)
         }
         return true
+    }
+
+    override fun getCountAcceptOfZBatch(discrepancies: TaskZBatchesDiscrepancies): Double {
+        var countAccept = 0.0
+        findZBatchDiscrepancies(discrepancies)
+                .filter {
+                    it.typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM
+                }.map {disc ->
+                    countAccept += disc.numberDiscrepancies.toDouble()
+                }
+        return countAccept
+    }
+
+    override fun getCountAcceptOfZBatchPGE(discrepancies: TaskZBatchesDiscrepancies): Double {
+        var countAccept = 0.0
+        findZBatchDiscrepancies(discrepancies)
+                .filter {
+                    it.typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM
+                            || it.typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS
+                }.map {disc ->
+                    countAccept += disc.numberDiscrepancies.toDouble()
+                }
+        return countAccept
     }
 
     override fun clear() {

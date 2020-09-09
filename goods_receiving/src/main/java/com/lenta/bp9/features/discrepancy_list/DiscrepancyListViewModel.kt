@@ -829,6 +829,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                 ?.filter {
                     it.isZBatches
                             && !it.isVet
+                            && it.isNeedPrint
                 }
                 ?.map { zBatch->
                     receivingTask

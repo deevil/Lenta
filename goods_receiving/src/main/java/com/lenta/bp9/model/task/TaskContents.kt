@@ -284,7 +284,8 @@ class TaskContents
                     countPiecesBox = it.countPiecesBox,
                     numeratorConvertBaseUnitMeasure = eanInfo?.umrez?.toDouble() ?: 0.0,
                     denominatorConvertBaseUnitMeasure = eanInfo?.umren?.toDouble() ?: 0.0,
-                    isZBatches = it.isZBatches == "X"
+                    isZBatches = it.isZBatches == "X",
+                    isNeedPrint = it.isNeedPrint == "X"
             )
         }
     }
@@ -300,7 +301,7 @@ class TaskContents
         return batch
                 ?.bottlingDate
                 ?.takeIf { it.isNotEmpty() }
-                ?.run { formatterERP.format(formatterEN.parse(this)) }
+                ?.let { formatterERP.format(formatterEN.parse(it)) }
                 .orEmpty()
     }
 }

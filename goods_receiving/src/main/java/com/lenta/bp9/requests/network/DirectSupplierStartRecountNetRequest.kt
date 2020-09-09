@@ -158,5 +158,7 @@ data class TaskComposition(
         @SerializedName("QNTINCL_ALT_BSTME")
         val countPiecesBox: String, //маркированный товар, сколько пачек (штук) в одной коробке
         @SerializedName("IS_ZPARTS")
-        val isZBatches: String? // Z-партии
+        val isZBatches: String?, // Z-партии
+        @SerializedName("IS_NEEDPRINT")
+        val isNeedPrint: String? // Z-партии, печать этикеток
 )

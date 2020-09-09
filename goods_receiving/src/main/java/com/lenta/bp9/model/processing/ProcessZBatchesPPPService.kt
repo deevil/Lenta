@@ -19,7 +19,7 @@ class ProcessZBatchesPPPService
     val taskRepository by lazy { taskManager.getReceivingTask()?.taskRepository }
 
     fun newProcessZBatchesPPPService(initProductInfo: TaskProductInfo): ProcessZBatchesPPPService? {
-        return if (initProductInfo.isZBatches) {
+        return if (initProductInfo.isZBatches && !initProductInfo.isVet) { //см. SearchProductDelegate
             this.productInfo = initProductInfo.copy()
             this
         } else null
@@ -140,7 +140,9 @@ class ProcessZBatchesPPPService
 
         changeProductDiscrepancy(countAdd.toString(), typeDiscrepancies)
 
-        changeZBatchDiscrepancy(countAdd.toString(), typeDiscrepancies, manufactureCode, shelfLifeDate, shelfLifeTime)
+        if (typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM) {
+            changeZBatchDiscrepancy(countAdd.toString(), typeDiscrepancies, manufactureCode, shelfLifeDate, shelfLifeTime)
+        }
     }
 
     private fun changeProductDiscrepancy(countAdd: String, typeDiscrepancies: String) {

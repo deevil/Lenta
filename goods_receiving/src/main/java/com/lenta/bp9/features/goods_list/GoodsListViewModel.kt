@@ -1,5 +1,6 @@
 package com.lenta.bp9.features.goods_list
 
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -16,6 +17,7 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.models.core.Uom
+import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.Logg
@@ -27,6 +29,7 @@ import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.utilities.orIfNull
+import java.text.SimpleDateFormat
 import javax.inject.Inject
 
 class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
@@ -51,6 +54,12 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
 
     @Inject
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
+
+    @SuppressLint("SimpleDateFormat")
+    private val formatterRU = SimpleDateFormat("dd.MM.yyyy")
+
+    @SuppressLint("SimpleDateFormat")
+    private val formatterERP = SimpleDateFormat(Constants.DATE_FORMAT_yyyyMMdd)
 
     val selectedPage = MutableLiveData(0)
     val countedSelectionsHelper = SelectionItemsHelper()
@@ -79,7 +88,9 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     }
 
     val visibilityBatchesButton: MutableLiveData<Boolean> by lazy {
-        MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.isAlco == true && !(taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentPP || taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentRC)) //для заданий ОПП и ОРЦ не показываем кнопку Партия, уточнил у Артема
+        val taskDescription = taskManager.getReceivingTask()?.taskDescription
+        MutableLiveData((taskDescription?.isAlco == true || taskDescription?.isZBatches == true)
+                && !(taskType.value == TaskType.ShipmentPP || taskType.value == TaskType.ShipmentRC)) //для заданий ОПП и ОРЦ не показываем кнопку Партия, уточнил у Артема
     }
 
     val enabledBtnSaveForShipmentPP: MutableLiveData<Boolean> = listToProcessing.map {
@@ -172,6 +183,35 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                                                     visibilityNameBatch = true,
                                                     countAcceptWithUom = getAcceptTotalCountWithUomBatch(batchInfo, uom),
                                                     countRefusalWithUom = getRefusalTotalCountWithUomBatch(batchInfo, uom),
+                                                    isNotEdit = productInfo.isNotEdit,
+                                                    productInfo = productInfo,
+                                                    even = index % 2 == 0
+                                            )
+                                    )
+                                    index += 1
+                                }
+                            }
+                        } else if (isBatches.value == true && productInfo.isZBatches && !productInfo.isVet) { //см. SearchProductDelegate
+                            if (addBatchProduct != productInfo.materialNumber) { //показываем Z-партии без разбивки по расхождениям
+                                addBatchProduct = productInfo.materialNumber
+                                val zBatchesInfoOfProduct = task.taskRepository.getZBatchesDiscrepancies().findZBatchDiscrepanciesOfProduct(productInfo.materialNumber)
+                                zBatchesInfoOfProduct.map { zBatch ->
+                                    val shelfLifeDate =
+                                            zBatch
+                                                    .shelfLifeDate
+                                                    .takeIf { it.isNotEmpty() }
+                                                    ?.let { formatterRU.format(formatterERP.parse(it)) }
+                                                    .orEmpty()
+
+                                    arrayCounted.add(
+                                            ListCountedItem(
+                                                    number = index + 1,
+                                                    name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
+                                                    nameMaxLines = 1,
+                                                    nameBatch = "ДП-$shelfLifeDate // ${getManufacturerNameZBatch(zBatch.manufactureCode)}",
+                                                    visibilityNameBatch = true,
+                                                    countAcceptWithUom = getAcceptTotalCountWithUomZBatch(zBatch),
+                                                    countRefusalWithUom = "",
                                                     isNotEdit = productInfo.isNotEdit,
                                                     productInfo = productInfo,
                                                     even = index % 2 == 0
@@ -587,6 +627,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                 ?.filter {
                     it.isZBatches
                             && !it.isVet
+                            && it.isNeedPrint
                 }
                 ?.map { zBatch->
                     receivingTask
@@ -603,7 +644,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     private fun removingTemporaryDataFromRepository() {
         /**
          * очищаем таблицу ET_TASK_DIFF от не акцизного (партионного) алкоголя и веттоваров,
-         * т.к. для партионного товара необходимо передавать только данные из таблицы ET_PARTS_DIFF, а для веттоваров - ET_VET_DIFF
+         * т.к. для партионного товара необходимо передавать только данные из таблицы ET_PARTS_DIFF, а для веттоваров - ET_VET_DIFF,
          */
         val taskRepository = taskManager.getReceivingTask()?.taskRepository
         receivingTask
@@ -726,6 +767,16 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
         }?.name.orEmpty()
     }
 
+    private fun getManufacturerNameZBatch(manufactureCode: String?): String {
+        return repoInMemoryHolder
+                .manufacturersForZBatches.value
+                ?.findLast { manufacture ->
+                    manufacture.manufactureCode == manufactureCode
+                }
+                ?.manufactureName
+                .orEmpty()
+    }
+
     private fun getAcceptTotalCountWithUomBatch(batchInfo: TaskBatchInfo?, uom: Uom): String {
         val currentTaskType =
                 taskManager.getReceivingTask()
@@ -763,6 +814,32 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
             "- ${refusalTotalCountBatch.toStringFormatted()} ${uom.name}"
         } else {
             "0 ${uom.name}"
+        }
+    }
+
+    private fun getAcceptTotalCountWithUomZBatch(discrepancies: TaskZBatchesDiscrepancies?): String {
+        val currentTaskType =
+                taskManager.getReceivingTask()
+                        ?.taskHeader
+                        ?.taskType
+
+        val acceptTotalCountBatch = discrepancies?.let {
+            if (currentTaskType == TaskType.RecalculationCargoUnit) {
+                taskManager.getReceivingTask()
+                        ?.taskRepository
+                        ?.getZBatchesDiscrepancies()
+                        ?.getCountAcceptOfZBatchPGE(discrepancies)
+            } else {
+                taskManager.getReceivingTask()
+                        ?.taskRepository
+                        ?.getZBatchesDiscrepancies()
+                        ?.getCountAcceptOfZBatchPGE(discrepancies)
+            }
+        }
+        return if (acceptTotalCountBatch != 0.0) {
+            "+ ${acceptTotalCountBatch.toStringFormatted()} ${discrepancies?.uom?.name.orEmpty()}"
+        } else {
+            "0 ${discrepancies.uom.name}"
         }
     }
 

@@ -47,7 +47,8 @@ data class TaskDescription(val currentStatus: TaskStatus,   //Код текущ�
                       val quantityAll: Double, //Общее количество в задании
                       val isBksTN: Boolean,
                       val isWO: Boolean, //Товары для автосписания
-                      val isMark: Boolean //маркированный товар
+                      val isMark: Boolean, //маркированный товар
+                      val isZBatches: Boolean //маркированный товар
 ) {
 
     companion object {
@@ -96,7 +97,8 @@ data class TaskDescription(val currentStatus: TaskStatus,   //Код текущ�
                     quantityAll = restData.quantityAll.toDouble() ?: 0.0,
                     isBksTN = restData.isBksTN.isNotEmpty(),
                     isWO = restData.isWO.isNotEmpty(),
-                    isMark = restData.isMark.isNotEmpty()
+                    isMark = restData.isMark.isNotEmpty(),
+                    isZBatches = restData.isZBatches == "X"
             )
         }
     }
@@ -186,7 +188,9 @@ data class TaskDescriptionRestInfo(
         @SerializedName("IS_WO")
         val isWO: String,
         @SerializedName("IS_MARK")
-        val isMark: String
+        val isMark: String,
+        @SerializedName("IS_ZPARTS")
+        val isZBatches: String? // Z-партии
 
 ) {
 }

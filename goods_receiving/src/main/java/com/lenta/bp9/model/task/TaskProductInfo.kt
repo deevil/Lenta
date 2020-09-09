@@ -45,7 +45,8 @@ class TaskProductInfo(materialNumber: String,
                       val countPiecesBox: String, //маркированный товар, сколько пачек (штук) в одной коробке
                       val numeratorConvertBaseUnitMeasure: Double, //числитель для преобразования в базовую единицу измерения
                       val denominatorConvertBaseUnitMeasure: Double,  //знаменатель для преобразования в базовую единицу измерения
-                      val isZBatches: Boolean //Z-партии
+                      val isZBatches: Boolean, //Z-партии
+                      val isNeedPrint: Boolean
                         ) : ProductInfo(materialNumber, description, uom, type, isSet, sectionId, matrixType, materialType) {
 
     fun copy(materialNumber: String = this.materialNumber,
@@ -90,7 +91,8 @@ class TaskProductInfo(materialNumber: String,
              countPiecesBox: String= this.countPiecesBox,
              numeratorConvertBaseUnitMeasure: Double = this.numeratorConvertBaseUnitMeasure,
              denominatorConvertBaseUnitMeasure: Double = this.denominatorConvertBaseUnitMeasure,
-             isZBatches: Boolean = this.isZBatches) : TaskProductInfo {
+             isZBatches: Boolean = this.isZBatches,
+             isNeedPrint: Boolean = this.isNeedPrint) : TaskProductInfo {
         return TaskProductInfo(
                 materialNumber = materialNumber,
                 description = description,
@@ -134,7 +136,8 @@ class TaskProductInfo(materialNumber: String,
                 countPiecesBox = countPiecesBox,
                 numeratorConvertBaseUnitMeasure = numeratorConvertBaseUnitMeasure,
                 denominatorConvertBaseUnitMeasure = denominatorConvertBaseUnitMeasure,
-                isZBatches = isZBatches
+                isZBatches = isZBatches,
+                isNeedPrint = isNeedPrint
         )
     }
 }

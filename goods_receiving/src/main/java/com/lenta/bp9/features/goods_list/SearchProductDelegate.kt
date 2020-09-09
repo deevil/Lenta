@@ -199,7 +199,8 @@ class SearchProductDelegate @Inject constructor(
                 countPiecesBox = "0",
                 numeratorConvertBaseUnitMeasure = eanInfo?.umrez?.toDouble() ?: 0.0,
                 denominatorConvertBaseUnitMeasure = eanInfo?.umren?.toDouble() ?: 0.0,
-                isZBatches = false
+                isZBatches = false,
+                isNeedPrint = false
         )
         taskManager
                 .getReceivingTask()
