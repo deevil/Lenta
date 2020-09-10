@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 class SetZPartDataInfoUseCase @Inject constructor(
         private val ingredientDataPersistStorage: IIngredientDataPersistStorage
-) : IUseCase.In<ZPartDataInfo> {
+) : IUseCase.In<List<ZPartDataInfo>> {
     override suspend fun invoke(params: List<ZPartDataInfo>) {
         return withContext(Dispatchers.IO) {
             ingredientDataPersistStorage.saveZPartDataInfo(params)

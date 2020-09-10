@@ -8,7 +8,7 @@ import javax.inject.Inject
 
 class SetWarehouseForSelectedItemUseCase @Inject constructor(
         private val ingredientDataPersistStorage: IIngredientDataPersistStorage
-) : IUseCase.In<String> {
+) : IUseCase.In<List<String>> {
     override suspend fun invoke(params: List<String>) {
         return withContext(Dispatchers.IO) {
             ingredientDataPersistStorage.saveWarehouseForItemSelected(params)

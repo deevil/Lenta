@@ -11,6 +11,6 @@ interface IUseCase {
     }
 
     interface In<T> {
-        suspend operator fun invoke(params: List<T>)
+        suspend operator fun invoke(params: T)
     }
 }
