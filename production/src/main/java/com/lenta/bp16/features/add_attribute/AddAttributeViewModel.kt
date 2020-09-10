@@ -23,9 +23,12 @@ import com.lenta.shared.requests.network.ServerTimeRequestParam
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.getFormattedDate
+import com.lenta.shared.utilities.orIfNull
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class AddAttributeViewModel : CoreViewModel() {
+class AddAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
 
     @Inject
     lateinit var navigator: IScreenNavigator
@@ -55,7 +58,7 @@ class AddAttributeViewModel : CoreViewModel() {
     lateinit var setAddAttributeInfoUseCase: SetAddAttributeInfoUseCase
 
     private val producerDataInfo = MutableLiveData<List<ProducerDataInfo>>()
-    private val zPartDataInfo = MutableLiveData<List<ZPartDataInfo>>()
+    override val zPartDataInfo = MutableLiveData<List<ZPartDataInfo>>()
     val shelfLife = MutableLiveData<String>() //Срок годности
 
     val producerNameList = producerDataInfo.switchMap {
@@ -84,9 +87,12 @@ class AddAttributeViewModel : CoreViewModel() {
 
     /** Условие отображения производителя */
     val producerVisibleCondition by unsafeLazy {
-        val condition = checkZPartProducerVisibleCondition().first
-        alertNotFoundProducerName.value = checkZPartProducerVisibleCondition().second
-        condition
+        asyncLiveData<Boolean> {
+            val cond = producerConditions
+            val condition = cond.first
+            alertNotFoundProducerName.value = cond.second
+            emit(condition)
+        }
     }
 
     val timeFieldVisibleCondition by unsafeLazy {
@@ -115,42 +121,11 @@ class AddAttributeViewModel : CoreViewModel() {
         timeMonitor.setServerTime(time = serverTime.time, date = serverTime.date)
     }
 
-    private fun checkZPartProducerVisibleCondition(): Pair<Boolean, Boolean> {
-
-        val producerVisibleList = zPartDataInfo.switchMap {
-            asyncLiveData<List<String>> {
-                val zPartProducerNameList = it.map { it.prodName.orEmpty() }
-                emit(zPartProducerNameList)
-            }
-        }
-
-        val producersList = producerVisibleList.value.orEmpty()
-
-        var fullItemCount = 0
-        for (zPartName in producersList) {
-            if (zPartName.isNotEmpty()) {
-                fullItemCount++ //Считаем количество не пустых полей в списке
-            }
-        }
-
-        val visibleStatus = when {
-            (fullItemCount == 0) -> ProducerDataStatus.GONE
-            (fullItemCount == producersList.size) -> ProducerDataStatus.VISIBLE
-            else -> ProducerDataStatus.ALERT
-        }
-
-        return when(visibleStatus){
-            ProducerDataStatus.GONE -> false to false
-            ProducerDataStatus.VISIBLE -> true to false
-            ProducerDataStatus.ALERT -> true to true
-        }
-    }
-
     fun updateData(){
         launchUITryCatch {
-            producerDataInfo.value = producerDataInfoUseCase.invoke()
-            zPartDataInfo.value = zPartDataInfoUseCase.invoke()
-            if(alertNotFoundProducerName.value == true){
+            producerDataInfo.value = producerDataInfoUseCase()
+            zPartDataInfo.value = zPartDataInfoUseCase()
+            if (alertNotFoundProducerName.value == true) {
                 navigator.goBack()
                 navigator.showAlertProducerCodeNotFound()
             }
