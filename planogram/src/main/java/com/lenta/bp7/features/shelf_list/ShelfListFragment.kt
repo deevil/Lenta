@@ -93,10 +93,10 @@ class ShelfListFragment : CoreFragment<FragmentShelfListBinding, ShelfListViewMo
                     }
             )
 
-            recyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
+            oldRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                     recyclerView = layoutBinding.rv,
                     items = vm.shelves,
-                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
+                    previousPosInfo = oldRecyclerViewKeyHandler?.posInfo?.value,
                     onClickHandler = vm::onClickItemPosition
             )
         }

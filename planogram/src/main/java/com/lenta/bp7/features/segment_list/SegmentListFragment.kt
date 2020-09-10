@@ -73,10 +73,10 @@ class SegmentListFragment : CoreFragment<FragmentSegmentListBinding, SegmentList
                     itemId = BR.segment
             )
 
-            recyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
+            oldRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                     recyclerView = layoutBinding.rv,
                     items = vm.segments,
-                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
+                    previousPosInfo = oldRecyclerViewKeyHandler?.posInfo?.value,
                     onClickHandler = vm::onClickItemPosition
             )
         }

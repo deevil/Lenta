@@ -60,10 +60,10 @@ class TaskBasketFragment: CoreFragment<FragmentTaskBasketBinding, TaskBasketView
                     }
             )
 
-            recyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
+            oldRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                     recyclerView = recyclerView,
                     items = vm.goodsItemList,
-                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
+                    previousPosInfo = oldRecyclerViewKeyHandler?.posInfo?.value,
                     onClickHandler = vm::onItemClick
             )
         }
@@ -95,7 +95,7 @@ class TaskBasketFragment: CoreFragment<FragmentTaskBasketBinding, TaskBasketView
     }
 
     override fun onKeyDown(keyCode: KeyCode): Boolean {
-        recyclerViewKeyHandler?.let {
+        oldRecyclerViewKeyHandler?.let {
             if (!it.onKeyDown(keyCode)) {
                 keyCode.digit?.let { digit ->
                     vm.onDigitPressed(digit)

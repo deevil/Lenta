@@ -75,10 +75,10 @@ class MaterialRemakesListFragment : CoreFragment<FragmentRemakesByMaterialBindin
                     itemId = BR.item
             )
 
-            recyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
+            oldRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                     recyclerView = layoutBinding.rv,
                     items = vm.materialIngredients,
-                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
+                    previousPosInfo = oldRecyclerViewKeyHandler?.posInfo?.value,
                     onClickHandler = vm::onClickItemPosition
             )
         }

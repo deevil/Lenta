@@ -140,10 +140,10 @@ class SetsFragment :
                     )
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-                    recyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
+                    oldRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                             recyclerView = layoutBinding.rv,
                             items = vm.componentsLiveData,
-                            previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
+                            previousPosInfo = oldRecyclerViewKeyHandler?.posInfo?.value,
                             onClickHandler = vm::onClickItemPosition
                     )
                     return layoutBinding.root
@@ -178,7 +178,7 @@ class SetsFragment :
 
     override fun onKeyDown(keyCode: KeyCode): Boolean {
         if (vm.selectedPage.value == KEY_DOWN_SELECTED_PAGE) {
-            return recyclerViewKeyHandler?.onKeyDown(keyCode) ?: false
+            return oldRecyclerViewKeyHandler?.onKeyDown(keyCode) ?: false
         }
         return false
     }

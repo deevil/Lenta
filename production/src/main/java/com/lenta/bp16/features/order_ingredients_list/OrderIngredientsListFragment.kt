@@ -74,10 +74,10 @@ class OrderIngredientsListFragment : CoreFragment<FragmentIngredientsByOrderBind
                     itemId = BR.item
             )
 
-            recyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
+            oldRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                     recyclerView = layoutBinding.rv,
                     items = vm.orderIngredientsList,
-                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
+                    previousPosInfo = oldRecyclerViewKeyHandler?.posInfo?.value,
                     onClickHandler = vm::onClickItemPosition
             )
         }

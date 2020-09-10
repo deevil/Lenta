@@ -176,7 +176,7 @@ class TaskEOMergeFragment : CoreFragment<FragmentTaskEoMergeBinding, TaskEOMerge
                                         binding.tvCounter.tag = position
                                         binding.tvCounter.setOnClickListener(onClickSelectionListener)
                                         binding.selectedForDelete = vm.geSelectionHelper.isSelected(position)
-                                        recyclerViewKeyHandler?.let {
+                                        oldRecyclerViewKeyHandler?.let {
                                             binding.root.isSelected = it.isSelected(position)
                                         }
                                     }

@@ -121,7 +121,7 @@ class TaskGoodsFragment : CoreFragment<FragmentTaskGoodsBinding, TaskGoodsViewMo
                     processedRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                             recyclerView = layoutBinding.processedRecyclerView,
                             items = vm.processedList,
-                            previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
+                            previousPosInfo = oldRecyclerViewKeyHandler?.posInfo?.value,
                             onClickHandler = vm::onClickProcessedItem
                     )
                     layoutBinding.root

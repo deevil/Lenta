@@ -150,16 +150,16 @@ class NonExciseSetsPGEFragment : CoreFragment<FragmentNonExciseSetsPgeBinding, N
                                         onAdapterBindHandler(binding, position)
                                     },
                                     onAdapterItemClicked = {position ->
-                                        recyclerViewKeyHandler?.onItemClicked(position)
+                                        oldRecyclerViewKeyHandler?.onItemClicked(position)
                                     }
                             )
 
                             layoutBinding.vm = vm
                             layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-                            recyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
+                            oldRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                                     recyclerView = layoutBinding.rv,
-                                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
+                                    previousPosInfo = oldRecyclerViewKeyHandler?.posInfo?.value,
                                     items = vm.listComponents,
                                     onClickHandler = vm::onClickItemPosition
                             )

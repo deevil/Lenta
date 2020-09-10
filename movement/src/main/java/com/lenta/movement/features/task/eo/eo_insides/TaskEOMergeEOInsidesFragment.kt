@@ -53,7 +53,7 @@ class TaskEOMergeEOInsidesFragment : CoreFragment<FragmentTaskEoMergeEoInsidesBi
                                 position = position)
                     },
                     onAdapterItemClicked = { position ->
-                        recyclerViewKeyHandler?.let {
+                        oldRecyclerViewKeyHandler?.let {
                             if (it.isSelected(position).not()) {
                                 it.selectPosition(position)
                             }
@@ -61,10 +61,10 @@ class TaskEOMergeEOInsidesFragment : CoreFragment<FragmentTaskEoMergeEoInsidesBi
                     }
             )
 
-            recyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
+            oldRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                     recyclerView = recyclerView,
                     items = this@TaskEOMergeEOInsidesFragment.vm.goodsItemList,
-                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value
+                    previousPosInfo = oldRecyclerViewKeyHandler?.posInfo?.value
             )
         }
     }
@@ -85,7 +85,7 @@ class TaskEOMergeEOInsidesFragment : CoreFragment<FragmentTaskEoMergeEoInsidesBi
     }
 
     override fun onKeyDown(keyCode: KeyCode): Boolean {
-        recyclerViewKeyHandler?.let {
+        oldRecyclerViewKeyHandler?.let {
             if (it.onKeyDown(keyCode)) {
                 keyCode.digit?.let { digit ->
                     vm.onDigitPressed(digit)

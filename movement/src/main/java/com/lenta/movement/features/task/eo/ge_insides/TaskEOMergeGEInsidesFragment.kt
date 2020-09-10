@@ -73,10 +73,10 @@ class TaskEOMergeGEInsidesFragment : CoreFragment<FragmentTaskEoMergeGeInsidesBi
                     }
             )
 
-            recyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
+            oldRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                     recyclerView = recyclerView,
                     items = this@TaskEOMergeGEInsidesFragment.vm.eoItemsList,
-                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value
+                    previousPosInfo = oldRecyclerViewKeyHandler?.posInfo?.value
             )
         }
     }
@@ -118,7 +118,7 @@ class TaskEOMergeGEInsidesFragment : CoreFragment<FragmentTaskEoMergeGeInsidesBi
     }
 
     override fun onKeyDown(keyCode: KeyCode): Boolean {
-        recyclerViewKeyHandler?.let {
+        oldRecyclerViewKeyHandler?.let {
             if (it.onKeyDown(keyCode)) {
                 keyCode.digit?.let { digit ->
                     vm.onDigitPressed(digit)

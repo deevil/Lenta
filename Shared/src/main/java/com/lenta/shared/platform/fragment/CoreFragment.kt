@@ -46,7 +46,7 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
     private var timeForAllowHandleEnter = Long.MAX_VALUE
     private var mCount = 0
 
-    protected open var recyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
+    protected open var oldRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     private val keyHandlers = mutableMapOf<Int, RecyclerViewKeyHandler<*>>()
 
@@ -256,7 +256,7 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
     }
 
     protected open fun onAdapterBindHandler(bindItem: ViewBinding, position: Int) {
-        recyclerViewKeyHandler?.let {
+        oldRecyclerViewKeyHandler?.let {
             bindItem.root.isSelected = it.isSelected(position)
         }
     }
@@ -266,7 +266,7 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
     }
 
     protected open fun onAdapterItemClickHandler(position: Int) {
-        recyclerViewKeyHandler?.onItemClicked(position)
+        oldRecyclerViewKeyHandler?.onItemClicked(position)
     }
 
     protected fun getCurrentKeyHandler(): RecyclerViewKeyHandler<*>? {
@@ -287,7 +287,7 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
     abstract fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel)
 
     override fun onDestroyView() {
-        recyclerViewKeyHandler?.onClickPositionFunc = null
+        oldRecyclerViewKeyHandler?.onClickPositionFunc = null
         super.onDestroyView()
     }
 

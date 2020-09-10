@@ -59,9 +59,9 @@ class RawListFragment : KeyDownCoreFragment<FragmentRawListBinding, RawListViewM
                     itemId = BR.item
             )
 
-            recyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
+            oldRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                     recyclerView = layoutBinding.rv,
-                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
+                    previousPosInfo = oldRecyclerViewKeyHandler?.posInfo?.value,
                     items = vm.raws,
                     onClickHandler = vm::onClickItemPosition
             )

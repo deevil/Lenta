@@ -93,23 +93,23 @@ class GoodsListClFragment : KeyDownCoreFragment<FragmentGoodsListClBinding, Good
                                     binding.tvItemNumber.tag = position
                                     binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                                     binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
-                                    recyclerViewKeyHandler?.let {
+                                    oldRecyclerViewKeyHandler?.let {
                                         binding.root.isSelected = it.isSelected(position)
                                     }
                                 }
                             },
                             onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                                recyclerViewKeyHandler?.selectPosition(position)
+                                oldRecyclerViewKeyHandler?.selectPosition(position)
                             }
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-                    recyclerViewKeyHandler = RecyclerViewKeyHandler(
+                    oldRecyclerViewKeyHandler = RecyclerViewKeyHandler(
                             rv = layoutBinding.rv,
                             items = vm.goods,
                             lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                            initPosInfo = recyclerViewKeyHandler?.posInfo?.value
+                            initPosInfo = oldRecyclerViewKeyHandler?.posInfo?.value
                     )
 
                     return layoutBinding.root
@@ -117,7 +117,7 @@ class GoodsListClFragment : KeyDownCoreFragment<FragmentGoodsListClBinding, Good
     }
 
     override fun onAdapterItemClickHandler(position: Int) {
-        recyclerViewKeyHandler?.selectPosition(position)
+        oldRecyclerViewKeyHandler?.selectPosition(position)
     }
 
 
@@ -133,7 +133,7 @@ class GoodsListClFragment : KeyDownCoreFragment<FragmentGoodsListClBinding, Good
     }
 
     override fun onKeyDown(keyCode: KeyCode): Boolean {
-        recyclerViewKeyHandler?.let {
+        oldRecyclerViewKeyHandler?.let {
             if (!it.onKeyDown(keyCode)) {
                 keyCode.digit?.let { digit ->
                     vm.onDigitPressed(digit)

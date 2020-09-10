@@ -74,10 +74,10 @@ class TechOrdersListFragment : CoreFragment<FragmentTechOrdersListBinding, TechO
                     itemId = BR.item
             )
 
-            recyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
+            oldRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                     recyclerView = layoutBinding.rv,
                     items = vm.allTechOrdersList,
-                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value
+                    previousPosInfo = oldRecyclerViewKeyHandler?.posInfo?.value
             )
         }
     }

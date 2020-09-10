@@ -159,13 +159,13 @@ class CreateBoxesFragment : CoreFragment<FragmentCreateBoxesBinding, CreateBoxes
                                     binding.counterText.tag = position
                                     binding.counterText.setOnClickListener(onClickSelectionListener)
                                     binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
-                                    recyclerViewKeyHandler?.let {
+                                    oldRecyclerViewKeyHandler?.let {
                                         binding.root.isSelected = it.isSelected(position)
                                     }
                                 }
                             },
                             onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                                recyclerViewKeyHandler?.let {
+                                oldRecyclerViewKeyHandler?.let {
                                     if (it.isSelected(position)) {
                                         //vm.onClickItemPosition(position)
                                     } else {
@@ -176,11 +176,11 @@ class CreateBoxesFragment : CoreFragment<FragmentCreateBoxesBinding, CreateBoxes
                     )
 
                     binding?.lifecycleOwner?.let { lifecycleOwner ->
-                        recyclerViewKeyHandler = RecyclerViewKeyHandler(
+                        oldRecyclerViewKeyHandler = RecyclerViewKeyHandler(
                                 layoutBinding.recyclerView,
                                 vm.boxList,
                                 lifecycleOwner,
-                                recyclerViewKeyHandler?.posInfo?.value
+                                oldRecyclerViewKeyHandler?.posInfo?.value
                         )
                     }
                 }.root

@@ -62,10 +62,10 @@ class ExternalSupplyListFragment : KeyDownCoreFragment<FragmentExternalSupplyLis
                     itemId = BR.item
             )
 
-            recyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
+            oldRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                     recyclerView = layoutBinding.rv,
                     items = vm.goods,
-                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
+                    previousPosInfo = oldRecyclerViewKeyHandler?.posInfo?.value,
                     onClickHandler = vm::onClickItemPosition
             )
         }
@@ -77,11 +77,11 @@ class ExternalSupplyListFragment : KeyDownCoreFragment<FragmentExternalSupplyLis
     }
 
     override fun onKeyDown(keyCode: KeyCode): Boolean {
-        return recyclerViewKeyHandler?.onKeyDown(keyCode) ?: false
+        return oldRecyclerViewKeyHandler?.onKeyDown(keyCode) ?: false
     }
 
     override fun onDestroyView() {
-        recyclerViewKeyHandler?.onClickPositionFunc = null
+        oldRecyclerViewKeyHandler?.onClickPositionFunc = null
         super.onDestroyView()
     }
 

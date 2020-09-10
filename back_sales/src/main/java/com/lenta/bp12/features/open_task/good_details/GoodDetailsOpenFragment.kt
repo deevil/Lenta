@@ -87,10 +87,10 @@ class GoodDetailsOpenFragment : CoreFragment<FragmentGoodDetailsOpenBinding, Goo
 
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
-            recyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
+            oldRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                     recyclerView = layoutBinding.rv,
                     items = vm.categories,
-                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value
+                    previousPosInfo = oldRecyclerViewKeyHandler?.posInfo?.value
             )
 
             return layoutBinding.root

@@ -85,10 +85,10 @@ class ReprintLabelFragment : CoreFragment<FragmentReprintLabelBinding, ReprintLa
                     }
             )
 
-            recyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
+            oldRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                     recyclerView = layoutBinding.rv,
                     items = vm.labels,
-                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value
+                    previousPosInfo = oldRecyclerViewKeyHandler?.posInfo?.value
             )
         }
     }

@@ -98,7 +98,7 @@ class TransportMarriageCargoUnitFragment : CoreFragment<FragmentTransportMarriag
     }
 
     override fun onKeyDown(keyCode: KeyCode): Boolean {
-        recyclerViewKeyHandler?.let {
+        oldRecyclerViewKeyHandler?.let {
             if (!it.onKeyDown(keyCode)) {
                 keyCode.digit?.let { digit ->
                     vm.onDigitPressed(digit)

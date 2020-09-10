@@ -66,12 +66,12 @@ class TaskEOMergeFormedDocsFragment :
                             binding.item = list[position]
                         }
                         binding.selectedToPrint = vm.docsSelectionHelper.isSelected(position)
-                        recyclerViewKeyHandler?.let { handler ->
+                        oldRecyclerViewKeyHandler?.let { handler ->
                             binding.root.isSelected = handler.isSelected(position)
                         }
                     },
                     onAdapterItemClicked = { position ->
-                        recyclerViewKeyHandler?.let { handler ->
+                        oldRecyclerViewKeyHandler?.let { handler ->
                             if (!handler.isSelected(position)) {
                                 handler.selectPosition(position)
                             }
@@ -79,10 +79,10 @@ class TaskEOMergeFormedDocsFragment :
                     }
             )
 
-            recyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
+            oldRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                     recyclerView = recyclerView,
                     items = vm.docsItemList,
-                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value
+                    previousPosInfo = oldRecyclerViewKeyHandler?.posInfo?.value
             )
         }
     }

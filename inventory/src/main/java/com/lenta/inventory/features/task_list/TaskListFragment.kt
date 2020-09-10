@@ -50,10 +50,10 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
                     layoutId = R.layout.item_tile_tasks,
                     itemId = BR.item
             )
-            recyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
+            oldRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                     recyclerView = layoutBinding.rv,
                     items = vm.tasks,
-                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
+                    previousPosInfo = oldRecyclerViewKeyHandler?.posInfo?.value,
                     onClickHandler = vm::onClickItemPosition
             )
         }
@@ -72,7 +72,7 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
     }
 
     override fun onKeyDown(keyCode: KeyCode): Boolean {
-        return recyclerViewKeyHandler?.onKeyDown(keyCode) ?: false
+        return oldRecyclerViewKeyHandler?.onKeyDown(keyCode) ?: false
     }
 
 }

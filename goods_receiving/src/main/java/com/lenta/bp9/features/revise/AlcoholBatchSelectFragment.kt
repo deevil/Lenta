@@ -55,17 +55,17 @@ class AlcoholBatchSelectFragment : CoreFragment<FragmentAlcoholBatchSelectBindin
                         onAdapterBindHandler(binding, position)
                     },
                     onAdapterItemClicked = {position ->
-                        recyclerViewKeyHandler?.onItemClicked(position)
+                        oldRecyclerViewKeyHandler?.onItemClicked(position)
                     }
             )
 
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-            recyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
+            oldRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                     recyclerView = layoutBinding.rv,
                     items = vm.batches,
-                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
+                    previousPosInfo = oldRecyclerViewKeyHandler?.posInfo?.value,
                     onClickHandler = vm::onClickItemPosition
             )
         }

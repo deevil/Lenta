@@ -61,9 +61,9 @@ class ProcessingUnitListFragment : KeyDownCoreFragment<FragmentProcessingUnitLis
                     itemId = BR.item
             )
 
-            recyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
+            oldRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                     recyclerView = layoutBinding.rv,
-                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
+                    previousPosInfo = oldRecyclerViewKeyHandler?.posInfo?.value,
                     items = vm.goods,
                     onClickHandler = vm::onClickItemPosition
             )

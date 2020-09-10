@@ -135,10 +135,10 @@ class MarkedGoodInfoOpenFragment : CoreFragment<FragmentMarkedGoodInfoOpenBindin
         layoutBinding.vm = vm
         layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-        recyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
+        oldRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                 recyclerView = layoutBinding.rv,
                 items = vm.propertiesItems,
-                previousPosInfo = recyclerViewKeyHandler?.posInfo?.value
+                previousPosInfo = oldRecyclerViewKeyHandler?.posInfo?.value
         )
         return layoutBinding.root
     }
