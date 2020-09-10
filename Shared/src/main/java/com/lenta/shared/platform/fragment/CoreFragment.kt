@@ -150,12 +150,12 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
             @LayoutRes layoutId: Int,
             itemId: Int,
             onAdapterItemCreate: ((T) -> Unit)? = null,
-            onAdapterItemBind: ((T, keyHandler: RecyclerViewKeyHandler<*>?, Int) -> Unit)? = ::onAdapterBindHandler,
+            onAdapterItemBind: ((T, Int) -> Unit)? = null,
+            onAdapterItemBindKeyHandler: ((T, keyHandler: RecyclerViewKeyHandler<*>?, Int) -> Unit)? = ::onAdapterBindHandler,
             onAdapterItemClicked: ((keyHandler: RecyclerViewKeyHandler<*>?, Int) -> Unit)? = ::onAdapterItemClickHandler,
             tabPosition: Int,
             recyclerView: RecyclerView,
             items: LiveData<List<Item>>,
-            previousPosInfo: PosInfo? = null,
             onClickHandler: ((Int) -> Unit)? = null
     ): DataBindingRecyclerViewConfig<T> {
         val keyHandler = getKeyHandler(tabPosition) ?: initRecyclerViewKeyHandler(
@@ -175,7 +175,8 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
                     }
 
                     override fun onBind(binding: T, position: Int) {
-                        onAdapterItemBind?.invoke(binding, keyHandler, position)
+                        onAdapterItemBind?.invoke(binding, position)
+                        onAdapterItemBindKeyHandler?.invoke(binding, keyHandler, position)
                     }
                 },
                 onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
@@ -254,7 +255,7 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
         }
     }
 
-    protected open fun onAdapterBindHandler(bindItem: ViewBinding, keyHandler: RecyclerViewKeyHandler<*>? = null, position: Int) {
+    protected open fun onAdapterBindHandler(bindItem: ViewBinding, keyHandler: RecyclerViewKeyHandler<*>?, position: Int) {
         keyHandler?.let {
             bindItem.root.isSelected = it.isSelected(position)
         }

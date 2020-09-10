@@ -10,9 +10,6 @@ abstract class KeyDownCoreFragment<T, S> : CoreFragment<T, S>(),
         OnKeyDownListener where T : ViewDataBinding, S : CoreViewModel {
 
     override fun onKeyDown(keyCode: KeyCode): Boolean {
-        val keyHandler = getCurrentKeyHandler()
-        Logg.d { "--> keyHandler = $keyHandler" }
-
         return getCurrentKeyHandler()?.onKeyDown(keyCode) ?: false
     }
 

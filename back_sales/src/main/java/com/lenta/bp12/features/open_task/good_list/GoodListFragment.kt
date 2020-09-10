@@ -15,7 +15,6 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
-import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
@@ -23,10 +22,6 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel>(),
         ToolbarButtonsClickListener, ViewPagerSettings, OnScanResultListener {
-
-    private var processingRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
-    private var processedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
-    private var basketRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_good_list
 
@@ -90,7 +85,7 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
             layoutBinding.rv.adapter?.notifyItemChanged(position)
         }
 
-        layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
+        layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                 layoutId = R.layout.item_good_list_processing,
                 itemId = BR.item,
                 onAdapterItemBind = { binding: ItemGoodListProcessingBinding, position: Int ->
@@ -99,26 +94,16 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
                         binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                     }
                     binding.selectedForDelete = vm.processingSelectionsHelper.isSelected(position)
-                    processingRecyclerViewKeyHandler?.let {
-                        binding.root.isSelected = it.isSelected(position)
-                    }
                 },
-                onAdapterItemClicked = { position ->
-                    processingRecyclerViewKeyHandler?.onItemClicked(position)
-                }
+                tabPosition = TAB_PROCESSING,
+                recyclerView = layoutBinding.rv,
+                items = vm.processing,
+                onClickHandler = vm::onClickItemPosition
+
         )
 
         layoutBinding.vm = vm
         layoutBinding.lifecycleOwner = viewLifecycleOwner
-
-        processingRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
-                recyclerView = layoutBinding.rv,
-                items = vm.processing,
-                previousPosInfo = processingRecyclerViewKeyHandler?.posInfo?.value,
-                onClickHandler = { position ->
-                    vm.onClickItemPosition(position)
-                }
-        )
 
         return layoutBinding.root
     }
@@ -135,33 +120,22 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
             layoutBinding.rv.adapter?.notifyItemChanged(position)
         }
 
-        layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
+        layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                 layoutId = R.layout.item_good_list_processed,
                 itemId = BR.item,
                 onAdapterItemBind = { binding: ItemGoodListProcessedBinding, position: Int ->
                     binding.tvItemNumber.tag = position
                     binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                     binding.selectedForDelete = vm.processedSelectionsHelper.isSelected(position)
-                    processedRecyclerViewKeyHandler?.let {
-                        binding.root.isSelected = it.isSelected(position)
-                    }
                 },
-                onAdapterItemClicked =  { position ->
-                    processedRecyclerViewKeyHandler?.onItemClicked(position = position)
-                }
+                tabPosition = TAB_PROCESSED,
+                recyclerView = layoutBinding.rv,
+                items = vm.processed,
+                onClickHandler = vm::onClickItemPosition
         )
 
         layoutBinding.vm = vm
         layoutBinding.lifecycleOwner = viewLifecycleOwner
-
-        processedRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
-                recyclerView = layoutBinding.rv,
-                items = vm.processed,
-                previousPosInfo = processedRecyclerViewKeyHandler?.posInfo?.value,
-                onClickHandler = { position ->
-                    vm.onClickItemPosition(position)
-                }
-        )
 
         return layoutBinding.root
 
@@ -179,33 +153,23 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
             layoutBinding.rv.adapter?.notifyItemChanged(position)
         }
 
-        layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
+        layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                 layoutId = R.layout.item_wholesale_basket,
                 itemId = BR.item,
                 onAdapterItemBind = { binding: ItemWholesaleBasketBinding, position: Int ->
                     binding.tvItemNumber.tag = position
                     binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                     binding.selectedForDelete = vm.basketSelectionsHelper.isSelected(position)
-                    basketRecyclerViewKeyHandler?.let {
-                        binding.root.isSelected = it.isSelected(position)
-                    }
                 },
-                onAdapterItemClicked = { position ->
-                    basketRecyclerViewKeyHandler?.onItemClicked(position)
-                }
+                tabPosition = TAB_BASKET,
+                recyclerView = layoutBinding.rv,
+                items = vm.wholesaleBaskets,
+                onClickHandler = vm::onClickItemPosition
+
         )
 
         layoutBinding.vm = vm
         layoutBinding.lifecycleOwner = viewLifecycleOwner
-
-        basketRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
-                recyclerView = layoutBinding.rv,
-                items = vm.wholesaleBaskets,
-                previousPosInfo = basketRecyclerViewKeyHandler?.posInfo?.value,
-                onClickHandler = { position ->
-                    vm.onClickItemPosition(position)
-                }
-        )
 
         return layoutBinding.root
     }
@@ -223,31 +187,22 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
             layoutBinding.rv.adapter?.notifyItemChanged(position)
         }
 
-        layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
+        layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                 layoutId = R.layout.item_task_content_common_basket,
                 itemId = BR.item,
-                onAdapterItemBind = { binding: ItemTaskContentCommonBasketBinding, position ->
+                onAdapterItemBind = { binding: ItemWholesaleBasketBinding, position: Int ->
                     binding.tvItemNumber.tag = position
                     binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                     binding.selectedForDelete = vm.basketSelectionsHelper.isSelected(position)
-                    basketRecyclerViewKeyHandler?.let {
-                        binding.root.isSelected = it.isSelected(position)
-                    }
                 },
-                onAdapterItemClicked = { position ->
-                    basketRecyclerViewKeyHandler?.onItemClicked(position)
-                }
+                tabPosition = TAB_BASKET,
+                recyclerView = layoutBinding.rv,
+                items = vm.commonBaskets,
+                onClickHandler = vm::onClickItemPosition
         )
 
         layoutBinding.vm = vm
         layoutBinding.lifecycleOwner = viewLifecycleOwner
-
-        basketRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
-                recyclerView = layoutBinding.rv,
-                items = vm.commonBaskets,
-                previousPosInfo = basketRecyclerViewKeyHandler?.posInfo?.value,
-                onClickHandler = vm::onClickItemPosition
-        )
 
         return layoutBinding.root
     }
