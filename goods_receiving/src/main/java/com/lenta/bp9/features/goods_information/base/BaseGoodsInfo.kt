@@ -16,7 +16,7 @@ import com.lenta.shared.utilities.extentions.map
 import java.text.SimpleDateFormat
 import javax.inject.Inject
 
-abstract class BaseGoodsInfoImpl : BaseFeatures(),
+abstract class BaseGoodsInfo : BaseFeatures(),
         IBaseVariables,
         IBaseCountAcceptOfProductByTaskType,
         IBaseCountRefusalOfProductByTaskType,

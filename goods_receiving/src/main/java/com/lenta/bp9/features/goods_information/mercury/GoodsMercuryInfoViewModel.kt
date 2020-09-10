@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
-import com.lenta.bp9.features.goods_information.base.BaseGoodsInfoImpl
+import com.lenta.bp9.features.goods_information.base.BaseGoodsInfo
 import com.lenta.bp9.features.delegates.SearchProductDelegate
 import com.lenta.bp9.model.processing.*
 import com.lenta.bp9.model.task.TaskType
@@ -23,7 +23,7 @@ import org.joda.time.Days
 import java.util.*
 import javax.inject.Inject
 
-class GoodsMercuryInfoViewModel : BaseGoodsInfoImpl(), OnPositionClickListener {
+class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
 
     @Inject
     lateinit var processMercuryProductService: ProcessMercuryProductService

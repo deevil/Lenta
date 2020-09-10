@@ -67,10 +67,6 @@ class GoodsDetailsViewModel : CoreViewModel() {
         MutableLiveData(productInfo.value?.isVet ?: false)
     }
 
-    private val isNonExciseAlcoProduct: MutableLiveData<Boolean> by lazy {
-        MutableLiveData(productInfo.value?.type == ProductType.NonExciseAlcohol)
-    }
-
     private val isBatchProduct: MutableLiveData<Boolean> by lazy {
         MutableLiveData(productInfo.value?.type == ProductType.NonExciseAlcohol
                 && productInfo.value?.isBoxFl == false
@@ -242,6 +238,7 @@ class GoodsDetailsViewModel : CoreViewModel() {
 
     private fun updatingInfoZBatches() {
         val itemsZBatchesDiscrepancies: ArrayList<GoodsDetailsCategoriesItem> = ArrayList()
+        var quantityItem = 0
         taskManager
                 .getReceivingTask()
                 ?.taskRepository
@@ -269,6 +266,7 @@ class GoodsDetailsViewModel : CoreViewModel() {
                                     even = index % 2 == 0
                             )
                     )
+                    quantityItem += quantityItem
                 }
 
         taskManager
@@ -277,13 +275,11 @@ class GoodsDetailsViewModel : CoreViewModel() {
                 ?.getProductsDiscrepancies()
                 ?.findProductDiscrepanciesOfProduct(productInfo.value?.materialNumber.orEmpty())
                 ?.asSequence()
-                ?.filter {
-                    it.typeDiscrepancies != TYPE_DISCREPANCIES_QUALITY_NORM
-                }
+                ?.filter { it.typeDiscrepancies != TYPE_DISCREPANCIES_QUALITY_NORM }
                 ?.mapIndexed { index, discrepancy ->
                     itemsZBatchesDiscrepancies.add(
                             GoodsDetailsCategoriesItem(
-                                    number = index + 1,
+                                    number = quantityItem + index + 1,
                                     name = reasonRejectionInfo.value?.firstOrNull { it.code == discrepancy.typeDiscrepancies }?.name.orEmpty(),
                                     nameBatch = "",
                                     visibilityNameBatch = false,

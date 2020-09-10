@@ -74,7 +74,6 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     val requestFocusWithoutBarcodeOrProcessed: MutableLiveData<Boolean> = MutableLiveData()
     val taskType: MutableLiveData<TaskType> = MutableLiveData()
 
-    private val receivingTask by lazy { taskManager.getReceivingTask() }
     private val isBatches: MutableLiveData<Boolean> = MutableLiveData(false)
 
     val visibilityCleanButton: MutableLiveData<Boolean> = selectedPage.map {
@@ -213,7 +212,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                                                     nameMaxLines = 1,
                                                     nameBatch = "ДП-$shelfLifeDate // ${getManufacturerNameZBatch(zBatch.manufactureCode)}",
                                                     visibilityNameBatch = true,
-                                                    countAcceptWithUom = getAcceptTotalCountWithUomZBatch(zBatch),
+                                                    countAcceptWithUom = getAcceptTotalCountWithUomZBatch(zBatch, uom),
                                                     countRefusalWithUom = "",
                                                     isNotEdit = productInfo.isNotEdit,
                                                     productInfo = productInfo,
@@ -692,7 +691,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
         }
     }
 
-    private fun getAcceptTotalCountWithUomZBatch(discrepancies: TaskZBatchesDiscrepancies?): String {
+    private fun getAcceptTotalCountWithUomZBatch(discrepancies: TaskZBatchesDiscrepancies?, uom: Uom): String {
         val currentTaskType =
                 taskManager.getReceivingTask()
                         ?.taskHeader
@@ -708,13 +707,13 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                 taskManager.getReceivingTask()
                         ?.taskRepository
                         ?.getZBatchesDiscrepancies()
-                        ?.getCountAcceptOfZBatchPGE(discrepancies)
+                        ?.getCountAcceptOfZBatch(discrepancies)
             }
         }
         return if (acceptTotalCountBatch != 0.0) {
-            "+ ${acceptTotalCountBatch.toStringFormatted()} ${discrepancies?.uom?.name.orEmpty()}"
+            "+ ${acceptTotalCountBatch.toStringFormatted()} ${uom.name}"
         } else {
-            "0 ${discrepancies.uom.name}"
+            "0 ${uom.name}"
         }
     }
 

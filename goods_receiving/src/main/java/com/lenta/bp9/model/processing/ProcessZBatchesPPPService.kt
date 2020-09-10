@@ -39,10 +39,25 @@ class ProcessZBatchesPPPService
                 ?: 0.0
     }
 
-    private fun getCountOfDiscrepancies(typeDiscrepancies: String): Double {
+    private fun getCountOfDiscrepanciesOfProduct(typeDiscrepancies: String): Double {
         return taskRepository
                 ?.getProductsDiscrepancies()
                 ?.getCountOfDiscrepanciesOfProduct(productInfo, typeDiscrepancies)
+                ?: 0.0
+    }
+
+    private fun getCountOfDiscrepanciesOfProductOfZBatch(typeDiscrepancies: String, manufactureCode: String, shelfLifeDate: String, shelfLifeTime: String): Double {
+        return taskRepository
+                ?.getZBatchesDiscrepancies()
+                ?.findZBatchDiscrepanciesOfProduct(productInfo.materialNumber)
+                ?.findLast {
+                    it.typeDiscrepancies == typeDiscrepancies
+                            && it.manufactureCode == manufactureCode
+                            && it.shelfLifeDate == shelfLifeDate
+                            && it.shelfLifeTime == shelfLifeTime
+                }
+                ?.numberDiscrepancies
+                ?.toDoubleOrNull()
                 ?: 0.0
     }
 
@@ -92,7 +107,7 @@ class ProcessZBatchesPPPService
     }
 
     fun countWithoutParamGrsGrundNeg(paramGrsGrundNeg: String): Double {
-        return productInfo.origQuantity.toDouble() - getCountAcceptOfProduct() - getCountRefusalOfProduct() + getCountOfDiscrepancies(paramGrsGrundNeg)
+        return productInfo.origQuantity.toDouble() - getCountAcceptOfProduct() - getCountRefusalOfProduct() + getCountOfDiscrepanciesOfProduct(paramGrsGrundNeg)
     }
 
     fun removeDiscrepancyFromProduct(typeDiscrepancies: String) {
@@ -120,8 +135,8 @@ class ProcessZBatchesPPPService
         }
     }
 
-    fun getQuantityAllCategory(count: Double): Double {
-        return getCountAcceptOfProduct() + getCountRefusalOfProduct() + count
+    fun getQuantityAllCategory(): Double {
+        return getCountAcceptOfProduct() + getCountRefusalOfProduct()
     }
 
     fun overLimit(count: Double): Boolean {
@@ -131,21 +146,16 @@ class ProcessZBatchesPPPService
     }
 
     fun add(count: String, typeDiscrepancies: String, manufactureCode: String, shelfLifeDate: String, shelfLifeTime: String) {
-        val countAdd =
-                if (typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM) {
-                    count.toDouble()
-                } else {
-                    getCountOfDiscrepancies(typeDiscrepancies) + count.toDouble()
-                }
-
-        changeProductDiscrepancy(countAdd.toString(), typeDiscrepancies)
+        changeProductDiscrepancy(count, typeDiscrepancies)
 
         if (typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM) {
-            changeZBatchDiscrepancy(countAdd.toString(), typeDiscrepancies, manufactureCode, shelfLifeDate, shelfLifeTime)
+            changeZBatchDiscrepancy(count, typeDiscrepancies, manufactureCode, shelfLifeDate, shelfLifeTime)
         }
     }
 
-    private fun changeProductDiscrepancy(countAdd: String, typeDiscrepancies: String) {
+    private fun changeProductDiscrepancy(count: String, typeDiscrepancies: String) {
+        val countAdd = getCountOfDiscrepanciesOfProduct(typeDiscrepancies) + count.toDouble()
+
         var foundDiscrepancy =
                 taskRepository
                         ?.getProductsDiscrepancies()
@@ -154,11 +164,11 @@ class ProcessZBatchesPPPService
 
         foundDiscrepancy =
                 foundDiscrepancy
-                        ?.copy(numberDiscrepancies = countAdd)
+                        ?.copy(numberDiscrepancies = countAdd.toString())
                         ?: TaskProductDiscrepancies(
                                 materialNumber = productInfo.materialNumber,
                                 processingUnitNumber = productInfo.processingUnit,
-                                numberDiscrepancies = countAdd,
+                                numberDiscrepancies = countAdd.toString(),
                                 uom = productInfo.uom,
                                 typeDiscrepancies = typeDiscrepancies,
                                 isNotEdit = false,
@@ -171,21 +181,28 @@ class ProcessZBatchesPPPService
                 ?.changeProductDiscrepancy(foundDiscrepancy)
     }
 
-    private fun changeZBatchDiscrepancy(countAdd: String, typeDiscrepancies: String, manufactureCode: String, shelfLifeDate: String, shelfLifeTime: String) {
+    private fun changeZBatchDiscrepancy(count: String, typeDiscrepancies: String, manufactureCode: String, shelfLifeDate: String, shelfLifeTime: String) {
+        val countAdd = getCountOfDiscrepanciesOfProductOfZBatch(typeDiscrepancies, manufactureCode, shelfLifeDate, shelfLifeTime) + count.toDouble()
+
         var foundDiscrepancy =
                 taskRepository
                         ?.getZBatchesDiscrepancies()
                         ?.findZBatchDiscrepanciesOfProduct(productInfo.materialNumber)
-                        ?.findLast { it.typeDiscrepancies == typeDiscrepancies }
+                        ?.findLast {
+                            it.typeDiscrepancies == typeDiscrepancies
+                                    && it.manufactureCode == manufactureCode
+                                    && it.shelfLifeDate == shelfLifeDate
+                                    && it.shelfLifeTime == shelfLifeTime
+                        }
 
         foundDiscrepancy =
                 foundDiscrepancy
-                        ?.copy(numberDiscrepancies = countAdd)
+                        ?.copy(numberDiscrepancies = countAdd.toString())
                         ?: TaskZBatchesDiscrepancies(
                                 processingUnit = "",
                                 materialNumber = productInfo.materialNumber,
                                 batchNumber = "",
-                                numberDiscrepancies = countAdd,
+                                numberDiscrepancies = countAdd.toString(),
                                 uom = productInfo.uom,
                                 typeDiscrepancies = typeDiscrepancies,
                                 isNew = false,

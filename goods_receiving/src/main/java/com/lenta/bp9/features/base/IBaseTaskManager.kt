@@ -52,7 +52,4 @@ interface IBaseTaskManager {
     val processedZBatchesDiscrepancies: List<TaskZBatchesDiscrepancies>?
         get() = receivingTask?.getProcessedZBatchesDiscrepancies()
 
-
-
-
 }

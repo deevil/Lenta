@@ -4,12 +4,13 @@ import android.annotation.SuppressLint
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
-import com.lenta.bp9.features.goods_information.base.BaseGoodsInfoImpl
+import com.lenta.bp9.features.goods_information.base.BaseGoodsInfo
 import com.lenta.bp9.features.delegates.SearchProductDelegate
 import com.lenta.bp9.model.processing.ProcessZBatchesPPPService
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_DELIVERY_ERRORS
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_REASON_REJECTION_NOT_ORDER
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
@@ -26,7 +27,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 
-class ZBatchesInfoPPPViewModel : BaseGoodsInfoImpl() {
+class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
 
     @Inject
     lateinit var searchProductDelegate: SearchProductDelegate
@@ -557,12 +558,12 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfoImpl() {
         val enteredCount = countValue.value ?: 0.0
         //блок 6.187
         val productOrderQuantity = productInfo.value?.orderQuantity?.toDoubleOrNull() ?: 0.0
-        val productOverdToleranceLimit = productInfo.value?.overdToleranceLimit?.toDoubleOrNull()
-                ?: 0.0
+        val productOverdToleranceLimit = productInfo.value?.overdToleranceLimit?.toDoubleOrNull() ?: 0.0
         val countOverdelivery = productOrderQuantity + (productOverdToleranceLimit / 100) * productOrderQuantity
 
         //блок 6.190
-        if (processZBatchesPPPService.getQuantityAllCategory(enteredCount) > countOverdelivery) {//блок 6.190 (да)
+        val quantityAllCategoryAndEnteredCount = processZBatchesPPPService.getQuantityAllCategory() + enteredCount
+        if (quantityAllCategoryAndEnteredCount > countOverdelivery) {//блок 6.190 (да)
             //блок 6.193
             screenNavigator.openAlertCountMoreOverdelivery()
             return
@@ -572,10 +573,10 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfoImpl() {
         val productOrigQuantity = productInfo.value?.origQuantity?.toDoubleOrNull() ?: 0.0
         if (productOrigQuantity > productOrderQuantity) {
             val calculationOne = productOrigQuantity - productOrderQuantity
-            val calculationTwo = productOrigQuantity - processZBatchesPPPService.getQuantityAllCategory(enteredCount)
+            val calculationTwo = productOrigQuantity - (processZBatchesPPPService.getQuantityAllCategory() + enteredCount)
             val calculation = if (calculationOne < calculationTwo) calculationOne else calculationTwo
             if (calculation > 0.0) {
-                processZBatchesPPPService.add(calculation.toString(), "41", currentManufactureCode, getShelfLifeDate(), getShelfLifeTime())
+                processZBatchesPPPService.add(calculation.toString(), TYPE_DISCREPANCIES_REASON_REJECTION_NOT_ORDER, currentManufactureCode, getShelfLifeDate(), getShelfLifeTime())
             }
         }
 
@@ -593,9 +594,7 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfoImpl() {
 
     //ППП блок 6.172
     private fun saveCategory() {
-        val countAdd = if (currentQualityInfoCode == TYPE_DISCREPANCIES_QUALITY_NORM) acceptTotalCount.value.toString() else count.value
-
-        processZBatchesPPPService.add(countAdd.orEmpty(), currentTypeDiscrepanciesCode, currentManufactureCode, getShelfLifeDate(), getShelfLifeTime())
+        processZBatchesPPPService.add(count.value.orEmpty(), currentTypeDiscrepanciesCode, currentManufactureCode, getShelfLifeDate(), getShelfLifeTime())
 
         //ППП блок 6.176
         clickBtnApply()

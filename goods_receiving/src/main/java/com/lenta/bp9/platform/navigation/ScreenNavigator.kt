@@ -1749,13 +1749,16 @@ class ScreenNavigator(
 
     override fun openSaveCountedQuantitiesAndGoToLabelPrintingDialog(yesCallbackFunc: () -> Unit) {
         runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(
-                    message = context.getString(R.string.save_counted_quantities_and_go_to_label_printing),
-                    iconRes = R.drawable.ic_question_yellow_80dp,
-                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
-                    leftButtonDecorationInfo = ButtonDecorationInfo.no,
-                    rightButtonDecorationInfo = ButtonDecorationInfo.yes,
-                    pageNumber = PAGE_NUMBER_94), disableAnimations = true
+            getFragmentStack()?.push(
+                    AlertFragment.create(
+                            message = context.getString(R.string.save_counted_quantities_and_go_to_label_printing),
+                            iconRes = R.drawable.ic_question_yellow_80dp,
+                            codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
+                            leftButtonDecorationInfo = ButtonDecorationInfo.no,
+                            rightButtonDecorationInfo = ButtonDecorationInfo.yes,
+                            pageNumber = PAGE_NUMBER_94
+                    ),
+                    disableAnimations = true
             )
         }
     }

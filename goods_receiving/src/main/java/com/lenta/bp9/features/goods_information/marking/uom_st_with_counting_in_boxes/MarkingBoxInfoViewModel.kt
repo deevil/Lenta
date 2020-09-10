@@ -3,7 +3,7 @@ package com.lenta.bp9.features.goods_information.marking.uom_st_with_counting_in
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
-import com.lenta.bp9.features.goods_information.base.BaseGoodsInfoImpl
+import com.lenta.bp9.features.goods_information.base.BaseGoodsInfo
 import com.lenta.bp9.features.goods_information.marking.TypeLastStampScanned
 import com.lenta.bp9.features.delegates.SearchProductDelegate
 import com.lenta.bp9.model.processing.ProcessMarkingBoxProductService
@@ -29,7 +29,7 @@ import com.mobrun.plugin.api.HyperHive
 import javax.inject.Inject
 
 //https://trello.com/c/vl9wQg0Y
-class MarkingBoxInfoViewModel : BaseGoodsInfoImpl(),  OnPositionClickListener {
+class MarkingBoxInfoViewModel : BaseGoodsInfo(),  OnPositionClickListener {
 
     @Inject
     lateinit var processMarkingBoxProductService: ProcessMarkingBoxProductService
