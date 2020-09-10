@@ -2,14 +2,15 @@ package com.lenta.bp12.features.open_task.good_info
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.features.open_task.base_good_info.BaseGoodInfoOpenViewModel
+import com.lenta.bp12.managers.interfaces.IOpenTaskManager
 import com.lenta.bp12.model.*
+import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.Part
 import com.lenta.bp12.model.pojo.Position
 import com.lenta.bp12.model.pojo.extentions.addMark
 import com.lenta.bp12.model.pojo.extentions.addMarks
 import com.lenta.bp12.model.pojo.extentions.addPosition
-import com.lenta.bp12.model.pojo.open_task.GoodOpen
 import com.lenta.bp12.platform.extention.extractAlcoCode
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
@@ -354,7 +355,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
         }
     }
 
-    private fun setFoundGood(foundGood: GoodOpen) {
+    private fun setFoundGood(foundGood: Good) {
         manager.updateCurrentGood(foundGood)
         setScreenStatus(foundGood)
         setProducerList(foundGood)
@@ -364,7 +365,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
         Logg.d { "--> found good: $foundGood" }
     }
 
-    private fun setProducerList(good: GoodOpen) {
+    private fun setProducerList(good: Good) {
         if (good.kind == GoodKind.EXCISE) {
             updateProducers(emptyList())
         } else {
@@ -372,7 +373,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
         }
     }
 
-    private fun setDefaultQuantity(good: GoodOpen) {
+    private fun setDefaultQuantity(good: Good) {
         quantityField.value = if (good.kind == GoodKind.COMMON) {
             if (good.isDifferentUnits()) {
                 with(ScanCodeInfo(originalSearchNumber)) {
@@ -385,7 +386,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
         } else "0"
     }
 
-    private fun setScreenStatus(good: GoodOpen) {
+    private fun setScreenStatus(good: Good) {
         screenStatus.value = when (good.kind) {
             GoodKind.COMMON -> ScreenStatus.COMMON
             GoodKind.ALCOHOL -> ScreenStatus.ALCOHOL
@@ -465,7 +466,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
         launchUITryCatch {
             with(result) {
                 val markType = getMarkType()
-                good.value = GoodOpen(
+                good.value = Good(
                         ean = eanInfo?.ean.orEmpty(),
                         material = materialInfo?.material.orEmpty(),
                         name = materialInfo?.name.orEmpty(),
@@ -481,7 +482,8 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
                         volume = materialInfo?.volume?.toDoubleOrNull() ?: 0.0,
                         markType = markType,
                         markTypeGroup = database.getMarkTypeGroupByMarkType(markType),
-                        maxRetailPrice = ""
+                        maxRetailPrice = "",
+                        type = materialInfo?.goodType.orEmpty()
                 )
             }
 

@@ -3,6 +3,7 @@ package com.lenta.bp12.model.pojo.create_task
 import com.lenta.bp12.model.ControlType
 import com.lenta.bp12.model.Taskable
 import com.lenta.bp12.model.pojo.Basket
+import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.ReturnReason
 import com.lenta.bp12.model.pojo.TaskType
 import com.lenta.bp12.model.pojo.extentions.*
@@ -15,7 +16,7 @@ data class TaskCreate(
         override val control: ControlType = ControlType.UNKNOWN,
         var isProcessed: Boolean = false,
 
-        val goods: MutableList<GoodCreate> = mutableListOf(),
+        val goods: MutableList<Good> = mutableListOf(),
         override val baskets: MutableList<Basket> = mutableListOf()
 ) : Taskable {
 
@@ -23,7 +24,7 @@ data class TaskCreate(
         return "${type.code} // $name"
     }
 
-    fun getBasketsByGood(good: GoodCreate): List<Basket> {
+    fun getBasketsByGood(good: Good): List<Basket> {
         return baskets.filter { basket ->
             basket.getGoodList().any { it.material == good.material }
         }

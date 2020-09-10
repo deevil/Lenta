@@ -1,7 +1,7 @@
 package com.lenta.bp12.features.open_task.base_good_info
 
 import androidx.lifecycle.MutableLiveData
-import com.lenta.bp12.model.IOpenTaskManager
+import com.lenta.bp12.managers.interfaces.IOpenTaskManager
 import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
@@ -10,6 +10,13 @@ import com.lenta.bp12.request.ScanInfoNetRequest
 import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.account.ISessionInfo
 
+/**
+ * Базовый интерфейс для viewmodel карточки товара в разделе Работа с заданиями
+ * Имплементации:
+ * @see BaseGoodInfoOpenViewModel
+ * @see com.lenta.bp12.features.open_task.marked_good_info.MarkedGoodInfoOpenViewModel
+ * @see com.lenta.bp12.features.open_task.good_info.GoodInfoOpenViewModel
+ * */
 interface IBaseGoodInfoOpenViewModel {
     var database: IDatabaseRepository
     var navigator: IScreenNavigator

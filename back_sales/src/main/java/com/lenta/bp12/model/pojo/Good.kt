@@ -4,6 +4,7 @@ import com.lenta.bp12.model.ControlType
 import com.lenta.bp12.model.GoodKind
 import com.lenta.bp12.model.MarkType
 import com.lenta.bp12.request.pojo.ProducerInfo
+import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.constants.Constants
@@ -19,7 +20,7 @@ import com.lenta.shared.utilities.getDateFromString
  * @see com.lenta.bp12.model.pojo.extentions.addPart
  * и тд
  * */
-abstract class Good(
+class Good(
         var ean: String,
         val eans: List<String> = emptyList(),
         val material: String,
@@ -31,7 +32,7 @@ abstract class Good(
         val control: ControlType = ControlType.COMMON,
 
         val commonUnits: Uom,
-        val innerUnits: Uom,
+        private val innerUnits: Uom,
         val innerQuantity: Double,
 
         val producers: MutableList<ProducerInfo> = mutableListOf(),
@@ -40,7 +41,16 @@ abstract class Good(
         val parts: MutableList<Part> = mutableListOf(),
         val markType: MarkType,
         val markTypeGroup: MarkTypeGroup?,
-        val maxRetailPrice: String = ""
+        val maxRetailPrice: String = "",
+
+        val type: String,
+        val providers: MutableList<ProviderInfo> = mutableListOf(),
+
+        val planQuantity: Double = 0.0,
+        val factQuantity: Double = 0.0,
+        var isCounted: Boolean = false,
+        var isDeleted: Boolean = false,
+        val provider: ProviderInfo = ProviderInfo.getEmptyProvider()
 ) {
     fun getNameWithMaterial(delimiter: String = " "): String {
         return "${material.takeLast(6)}$delimiter$name"
@@ -86,7 +96,8 @@ abstract class Good(
     }
 
     fun isTobacco() = this.markType == MarkType.TOBACCO
-    fun isTobaccoAndFoundGoodHasDifferentMrc(other: Good) = this.isTobacco() && maxRetailPrice != other.maxRetailPrice
+    fun isTobaccoAndFoundGoodHasDifferentMrc(other: Good) =
+            this.isTobacco() && maxRetailPrice.isNotEmpty() && maxRetailPrice != other.maxRetailPrice
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -95,12 +106,14 @@ abstract class Good(
         other as Good
 
         if (material != other.material) return false
+        if (maxRetailPrice != other.maxRetailPrice) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        return material.hashCode()
+        val result = material.hashCode()
+        return result * 31 * maxRetailPrice.hashCode()
     }
 
     override fun toString(): String {

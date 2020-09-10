@@ -1,6 +1,6 @@
 package com.lenta.bp12.features.open_task.discrepancy_list
 
-import com.lenta.bp12.model.IOpenTaskManager
+import com.lenta.bp12.managers.interfaces.IOpenTaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.shared.account.ISessionInfo

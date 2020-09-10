@@ -2,12 +2,9 @@ package com.lenta.bp12.features.create_task.good_info
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.features.create_task.base_good_info.BaseGoodInfoCreateViewModel
+import com.lenta.bp12.managers.interfaces.ICreateTaskManager
 import com.lenta.bp12.model.*
-import com.lenta.bp12.model.pojo.Mark
-import com.lenta.bp12.model.pojo.MarkTypeGroup
-import com.lenta.bp12.model.pojo.Part
-import com.lenta.bp12.model.pojo.Position
-import com.lenta.bp12.model.pojo.create_task.GoodCreate
+import com.lenta.bp12.model.pojo.*
 import com.lenta.bp12.model.pojo.extentions.addMark
 import com.lenta.bp12.model.pojo.extentions.addMarks
 import com.lenta.bp12.model.pojo.extentions.addPosition
@@ -315,7 +312,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
         } ?: loadGoodInfoByMaterial(material)
     }
 
-    private fun setFoundGood(foundGood: GoodCreate) {
+    private fun setFoundGood(foundGood: Good) {
         manager.updateCurrentGood(foundGood)
 
         setScreenStatus(foundGood)
@@ -328,7 +325,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
         Logg.d { "--> found good: $foundGood" }
     }
 
-    private fun setDefaultQuantity(good: GoodCreate) {
+    private fun setDefaultQuantity(good: Good) {
         quantityField.value = if (good.kind == GoodKind.COMMON) {
             if (good.isDifferentUnits()) {
                 with(ScanCodeInfo(originalSearchNumber)) {
@@ -341,7 +338,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
         } else "0"
     }
 
-    private fun setScreenStatus(good: GoodCreate) {
+    private fun setScreenStatus(good: Good) {
         screenStatus.value = when (good.kind) {
             GoodKind.COMMON -> ScreenStatus.COMMON
             GoodKind.ALCOHOL -> ScreenStatus.ALCOHOL
@@ -411,7 +408,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
             with(result) {
                 task.value?.let { task ->
                     val taskType = task.type
-                    good.value = GoodCreate(
+                    good.value = Good(
                             ean = eanInfo?.ean.orEmpty(),
                             eans = database.getEanListByMaterialUnits(
                                     material = materialInfo?.material.orEmpty(),

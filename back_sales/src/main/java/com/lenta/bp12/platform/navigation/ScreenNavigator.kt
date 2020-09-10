@@ -612,6 +612,16 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showChooseProviderFirst() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "98",
+                    message = context.getString(R.string.choose_provider),
+                    iconRes = R.drawable.ic_warning_red_80dp
+            ))
+        }
+    }
+
     override fun showInternalError(cause: String) {
         openAlertScreen(Failure.MessageFailure("Внутренняя ошибка программы: $cause"))
     }
@@ -693,4 +703,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun showMrcNotSameInBasketAlert(yesCallback: () -> Unit)
 
     fun showNoMarkTypeInSettings()
+
+    fun showChooseProviderFirst()
 }

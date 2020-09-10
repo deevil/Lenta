@@ -21,4 +21,8 @@ data class Mark(
         CARTON,
         BOX
     }
+
+    override fun toString(): String {
+        return "Mark(number='$number', boxNumber='$boxNumber', isBadMark=$isBadMark, providerCode='$providerCode', maxRetailPrice='$maxRetailPrice', packNumber='$packNumber', basketNumber=$basketNumber)"
+    }
 }

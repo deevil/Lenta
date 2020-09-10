@@ -4,9 +4,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
 import com.lenta.bp12.features.create_task.base_good_info.BaseGoodInfoCreateViewModel
-import com.lenta.bp12.model.*
+import com.lenta.bp12.managers.interfaces.ICreateTaskManager
+import com.lenta.bp12.managers.interfaces.IMarkManager
+import com.lenta.bp12.model.MarkScreenStatus
+import com.lenta.bp12.model.MarkType
+import com.lenta.bp12.model.WorkType
+import com.lenta.bp12.model.actionByNumber
+import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.Mark
-import com.lenta.bp12.model.pojo.create_task.GoodCreate
 import com.lenta.bp12.model.pojo.extentions.addMarks
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
@@ -17,10 +22,7 @@ import com.lenta.bp12.request.ScanInfoNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.combineLatest
-import com.lenta.shared.utilities.extentions.launchUITryCatch
-import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.unsafeLazy
+import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.orIfNull
 import javax.inject.Inject
 
@@ -29,12 +31,22 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
     @Inject
     override lateinit var navigator: IScreenNavigator
 
+    /**
+     * Менеджер ответственный за хранение задания и товаров
+     * Имплементация:
+     * @see com.lenta.bp12.managers.CreateTaskManager
+     * */
     @Inject
     override lateinit var manager: ICreateTaskManager
 
     @Inject
     override lateinit var sessionInfo: ISessionInfo
 
+    /**
+     * Менеджер ответственный за обработку марок (не акцизных)
+     * Имплементация:
+     * @see com.lenta.bp12.managers.MarkManager
+     * */
     @Inject
     lateinit var markManager: IMarkManager
 
@@ -155,7 +167,6 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
                 .map {
                     it?.let {
                         val isProviderSelected = it.first.first.first.first
-                        val good = it.first.first.first.second
                         val enteredQuantity = it.first.first.second
                         val totalQuantity = it.first.second
                         val basketQuantity = it.second
@@ -205,8 +216,7 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
 
     override fun loadBoxInfo(number: String) {
         launchUITryCatch {
-            val screenStatus = markManager.loadBoxInfo(number)
-            when (screenStatus) {
+            when (markManager.loadBoxInfo(number)) {
                 MarkScreenStatus.OK -> {
                     handleOkMark()
                 }
@@ -294,12 +304,21 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
                         navigator.showMrcNotSameAlert(it)
                     }
                 }
+                MarkScreenStatus.MRC_NOT_SAME_IN_BASKET -> {
+                    handleMrcNotSameInBasket()
+                }
                 MarkScreenStatus.NOT_MARKED_GOOD -> {
                     navigator.hideProgress()
                     navigator.showIncorrectEanFormat()
                 }
                 MarkScreenStatus.OK_BUT_NEED_TO_SCAN_MARK -> {
                     Unit
+                }
+                MarkScreenStatus.NOT_SAME_GOOD -> {
+                    navigator.hideProgress()
+                    navigator.showScannedMarkBelongsToProduct(
+                            markManager.getCreatedGoodForError()?.name.orEmpty()
+                    )
                 }
                 else -> {
                     navigator.hideProgress()
@@ -309,9 +328,32 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
         }
     }
 
+    private fun handleMrcNotSameInBasket() {
+        navigator.hideProgress()
+        navigator.showMrcNotSameInBasketAlert(
+                yesCallback = ::handleYesSaveCurrentMarkToBasketAndOpenAnother
+        )
+
+    }
+
+    private fun handleYesSaveCurrentMarkToBasketAndOpenAnother() {
+        launchUITryCatch {
+
+            Logg.e { "tempMarks: ${tempMarks.value}, tempMarksFromManager: ${markManager.getTempMarks()}" }
+            saveChanges()
+
+            markManager.handleYesSaveAndOpenAnotherBox()
+
+            tempMarks.value = markManager.getTempMarks()
+        }
+    }
+
     private fun handleYesDeleteMappedMarksFromTempCallBack() {
-        markManager.handleYesDeleteMappedMarksFromTempCallBack()
-        tempMarks.value = markManager.getTempMarks()
+        launchAsyncTryCatch {
+            markManager.handleYesDeleteMappedMarksFromTempCallBack()
+            val tempMarksFromMarkManager = markManager.getTempMarks()
+            tempMarks.postValue(tempMarksFromMarkManager)
+        }
     }
 
 
@@ -326,16 +368,11 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
         }
     }
 
-    private suspend fun addMarks(changedGood: GoodCreate) {
+    private suspend fun addMarks(changedGood: Good) {
         tempMarks.value?.let { tempMarksValue ->
             changedGood.addMarks(tempMarksValue)
-            tempMarksValue.forEach { mark ->
-                manager.addGoodToBasketWithMark(
-                        good = changedGood,
-                        mark = mark,
-                        provider = getProvider()
-                )
-            }
+            Logg.e { "$changedGood" }
+            manager.addGoodToBasketWithMarks(changedGood, tempMarksValue, getProvider())
         }
     }
 
@@ -419,7 +456,7 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
         navigator.showIncorrectEanFormat()
     }
 
-    private fun handleOkMark(){
+    private fun handleOkMark() {
         tempMarks.value = markManager.getTempMarks()
         properties.value = markManager.getProperties()
         navigator.hideProgress()
@@ -445,6 +482,10 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
                 if (size != null && size > 0) {
                     isExistUnsavedData = true
                     lastScannedMarks = tempMarksValue
+                }
+
+                Logg.e {
+                    it.maxRetailPrice.toString()
                 }
             }.orIfNull {
                 Logg.e { "good null" }

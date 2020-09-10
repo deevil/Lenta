@@ -2,9 +2,11 @@ package com.lenta.bp12.features.create_task.task_content
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.features.basket.ItemWholesaleBasketUi
+import com.lenta.bp12.managers.interfaces.ICreateTaskManager
+import com.lenta.bp12.managers.interfaces.IMarkManager
 import com.lenta.bp12.model.*
 import com.lenta.bp12.model.pojo.Basket
-import com.lenta.bp12.model.pojo.create_task.GoodCreate
+import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.extentions.getDescription
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
@@ -26,10 +28,7 @@ import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.combineLatest
-import com.lenta.shared.utilities.extentions.dropZeros
-import com.lenta.shared.utilities.extentions.launchUITryCatch
-import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.orIfNull
 import javax.inject.Inject
 
@@ -65,7 +64,6 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     @Inject
     lateinit var database: IDatabaseRepository
 
-
     /**
     Переменные
      */
@@ -97,53 +95,48 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     val goods by lazy {
-        task.map {
-            it?.let { task ->
-                task.goods.mapIndexed { index, good ->
-                    ItemGoodUi(
-                            material = good.material,
-                            position = "${task.goods.size - index}",
-                            name = good.getNameWithMaterial(),
-                            quantity = "${good.getTotalQuantity().dropZeros()} ${good.commonUnits.name}",
-                            markType = good.markType
-                    )
-                }
-            }.orEmpty()
+        task.mapSkipNulls { task ->
+            task.goods.mapIndexed { index, good ->
+                ItemGoodUi(
+                        material = good.material,
+                        position = "${task.goods.size - index}",
+                        name = good.getNameWithMaterial(),
+                        quantity = "${good.getTotalQuantity().dropZeros()} ${good.commonUnits.name}",
+                        markType = good.markType,
+                        good = good
+                )
+            }
         }
     }
 
     val commonBaskets by lazy {
-        task.map {
-            it?.let { task ->
-                task.baskets.reversed().mapIndexed { index, basket ->
-                    val position = task.baskets.size - index
-                    ItemCommonBasketUi(
-                            basket = basket,
-                            position = "$position",
-                            name = resource.basket("${basket.index}"),
-                            description = basket.getDescription(task.type.isDivBySection),
-                            quantity = "${task.getCountByBasket(basket)}"
-                    )
-                }
-            }.orEmpty()
+        task.mapSkipNulls { task ->
+            task.baskets.reversed().mapIndexed { index, basket ->
+                val position = task.baskets.size - index
+                ItemCommonBasketUi(
+                        basket = basket,
+                        position = "$position",
+                        name = resource.basket("${basket.index}"),
+                        description = basket.getDescription(task.type.isDivBySection),
+                        quantity = "${task.getCountByBasket(basket)}"
+                )
+            }
         }
     }
 
     val wholesaleBaskets by lazy {
-        task.map {
-            it?.let { task ->
-                task.baskets.reversed().mapIndexed { index, basket ->
-                    val position = task.baskets.size - index
-                    ItemWholesaleBasketUi(
-                            basket = basket,
-                            position = "$position",
-                            name = resource.basket("${basket.index}"),
-                            description = basket.getDescription(task.type.isDivBySection),
-                            quantity = "${task.getCountByBasket(basket)} ${Uom.ST.name}",
-                            isPrinted = basket.isPrinted,
-                            isLocked = basket.isLocked
-                    )
-                }
+        task.mapSkipNulls { task ->
+            task.baskets.reversed().mapIndexed { index, basket ->
+                val position = task.baskets.size - index
+                ItemWholesaleBasketUi(
+                        basket = basket,
+                        position = "$position",
+                        name = resource.basket("${basket.index}"),
+                        description = basket.getDescription(task.type.isDivBySection),
+                        quantity = "${task.getCountByBasket(basket)} ${Uom.ST.name}",
+                        isPrinted = basket.isPrinted,
+                        isLocked = basket.isLocked
+                )
             }
         }
     }
@@ -257,7 +250,7 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         } ?: loadGoodInfoByMaterial(material)
     }
 
-    private fun setFoundGood(foundGood: GoodCreate) {
+    private fun setFoundGood(foundGood: Good) {
         manager.updateCurrentGood(foundGood)
         if (foundGood.markType != MarkType.UNKNOWN) {
             navigator.openMarkedGoodInfoCreateScreen()
@@ -299,9 +292,7 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         }
     }
 
-    private fun handleLoadGoodInfoResult(
-            result: GoodInfoResult
-    ) {
+    private fun handleLoadGoodInfoResult(result: GoodInfoResult) {
         launchUITryCatch {
             if (manager.isGoodCanBeAdded(result)) {
                 setGood(result)
@@ -325,7 +316,7 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                     val goodEan = eanInfo?.ean.orEmpty()
                     val markType = getMarkType()
 
-                    val good = GoodCreate(
+                    val good = Good(
                             ean = goodEan,
                             eans = database.getEanListByMaterialUnits(
                                     material = materialInfo?.material.orEmpty(),
@@ -382,6 +373,7 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         good?.let {
             manager.searchNumber = good.material
             manager.isSearchFromList = true
+            manager.updateCurrentGood(good.good)
             if (good.markType != MarkType.UNKNOWN) {
                 navigator.openMarkedGoodInfoCreateScreen()
             } else {

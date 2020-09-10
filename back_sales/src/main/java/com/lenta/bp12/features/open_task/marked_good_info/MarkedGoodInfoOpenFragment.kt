@@ -15,6 +15,8 @@ import com.lenta.bp12.databinding.LayoutMarkedGoodInfoOpenQuantityTabBinding
 import com.lenta.bp12.features.create_task.marked_good_info.GoodProperty
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.platform.extention.getAppComponent
+import com.lenta.shared.keys.KeyCode
+import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -30,7 +32,7 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 
 class MarkedGoodInfoOpenFragment : CoreFragment<FragmentMarkedGoodInfoOpenBinding, MarkedGoodInfoOpenViewModel>(),
         ViewPagerSettings, ToolbarButtonsClickListener, OnScanResultListener, OnBackPresserListener
-/*,OnKeyDownListener*/ {
+, OnKeyDownListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_marked_good_info_open
 
@@ -166,41 +168,46 @@ class MarkedGoodInfoOpenFragment : CoreFragment<FragmentMarkedGoodInfoOpenBindin
         private const val TAB_QUANTITY = 2
     }
 
-    //FOR TESTING
-//    override fun onKeyDown(keyCode: KeyCode): Boolean {
-//        return when (keyCode) {
-//            //Блок Мрц 106
-//            KeyCode.KEYCODE_0 -> {
-//                vm.onScanResult("01046002660113672100000Ce.8005021200.938000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
-//                true
-//            }
-//            //Блок Мрц 100
-//            KeyCode.KEYCODE_1 -> {
-//                vm.onScanResult("01046002660121422100000L?.8005020000.938000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
-//                true
-//            }
-//            //пачка
-//            KeyCode.KEYCODE_2 -> {
-//                vm.onScanResult("00000046203564000003B01238000")
-//                true
-//            }
-//            //Коробка обуви
-//            KeyCode.KEYCODE_3 -> {
-//                vm.onScanResult("946060680019389537")
-//                true
-//            }
-//            //Марка из этой коробки
-//            KeyCode.KEYCODE_4 -> {
-//                vm.onScanResult("010460606832937221bBjpnxLePjMmv.918000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
-//                true
-//            }
-//            //Марка не из этой коробки
-//            KeyCode.KEYCODE_5 -> {
-//                vm.onScanResult("010460606832938921q8Pk81bQ/9GPR.918000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
-//                true
-//            }
-//            else -> false
-//        }
-//    }
+    override fun onKeyDown(keyCode: KeyCode): Boolean {
+        return when (keyCode) {
+            //Сигареты 4600266012142
+            //Блок Мрц 106
+            KeyCode.KEYCODE_0 -> {
+                vm.onScanResult("01046002660121422100000Ph.8005021200.938000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
+                true
+            }
+            //Блок Мрц 100
+            KeyCode.KEYCODE_1 -> {
+                vm.onScanResult("01046002660121422100000Pi.8005020000.938000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
+                true
+            }
+            //4600266011367 Блок Мрц 100
+            KeyCode.KEYCODE_2 -> {
+                vm.onScanResult("01046002660113672100000CP.8005020000.938000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
+                true
+            }
+            //пачка
+            KeyCode.KEYCODE_3 -> {
+                vm.onScanResult("00000046203564000003B01238000")
+                true
+            }
+            //Коробка обуви
+            KeyCode.KEYCODE_4 -> {
+                vm.onScanResult("946060680019389537")
+                true
+            }
+            //Марка из этой коробки
+            KeyCode.KEYCODE_5 -> {
+                vm.onScanResult("010460606832937221bBjpnxLePjMmv.918000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
+                true
+            }
+            //Марка не из этой коробки
+            KeyCode.KEYCODE_6 -> {
+                vm.onScanResult("010460606832938921q8Pk81bQ/9GPR.918000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
+                true
+            }
+            else -> false
+        }
+    }
 
 }

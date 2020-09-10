@@ -1,11 +1,9 @@
-package com.lenta.bp12.model
+package com.lenta.bp12.managers
 
 import androidx.lifecycle.MutableLiveData
-import com.lenta.bp12.model.pojo.Basket
-import com.lenta.bp12.model.pojo.Mark
-import com.lenta.bp12.model.pojo.Part
-import com.lenta.bp12.model.pojo.Position
-import com.lenta.bp12.model.pojo.create_task.GoodCreate
+import com.lenta.bp12.managers.interfaces.ICreateTaskManager
+import com.lenta.bp12.managers.interfaces.IGeneralTaskManager
+import com.lenta.bp12.model.pojo.*
 import com.lenta.bp12.model.pojo.create_task.TaskCreate
 import com.lenta.bp12.model.pojo.extentions.*
 import com.lenta.bp12.platform.extention.isAlcohol
@@ -41,13 +39,13 @@ class CreateTaskManager @Inject constructor(
 
     override val currentTask = MutableLiveData<TaskCreate>()
 
-    override val currentGood = MutableLiveData<GoodCreate>()
+    override val currentGood = MutableLiveData<Good>()
 
     override val currentBasket = MutableLiveData<Basket>()
 
     /** Метод добавляет обычные в товары в корзину */
     override suspend fun addGoodToBasket(
-            good: GoodCreate,
+            good: Good,
             part: Part?,
             provider: ProviderInfo,
             count: Double
@@ -106,7 +104,7 @@ class CreateTaskManager @Inject constructor(
     }
 
     /** Добавляет товар в корзину один раз без цикла, и при этом добавляет в товар марку */
-    override suspend fun addGoodToBasketWithMark(good: GoodCreate, mark: Mark, provider: ProviderInfo) {
+    override suspend fun addGoodToBasketWithMark(good: Good, mark: Mark, provider: ProviderInfo) {
         currentTask.value?.let { taskValue ->
             val suitableBasket = getOrCreateSuitableBasket(taskValue, good, provider)
 
@@ -130,13 +128,14 @@ class CreateTaskManager @Inject constructor(
         }
     }
 
-    override suspend fun addGoodToBasketWithMarks(good: GoodCreate, marks: List<Mark>, provider: ProviderInfo) {
+    override suspend fun addGoodToBasketWithMarks(good: Good, marks: List<Mark>, provider: ProviderInfo) {
         currentTask.value?.let { taskValue ->
             marks.forEach { mark ->
                 val suitableBasket = getOrCreateSuitableBasket(taskValue, good, provider)
 
                 // Добавим марке номер корзины
                 mark.basketNumber = suitableBasket.index
+
                 // Продублируем марку в позиции (просто надо)
                 addEmptyPosition(good, provider, suitableBasket)
                 // Добавим товар в корзину
@@ -158,7 +157,7 @@ class CreateTaskManager @Inject constructor(
         }
     }
 
-    private fun addEmptyPosition(good: GoodCreate, provider: ProviderInfo, basket: Basket) {
+    private fun addEmptyPosition(good: Good, provider: ProviderInfo, basket: Basket) {
         val position = Position(
                 quantity = 0.0,
                 provider = provider
@@ -169,13 +168,13 @@ class CreateTaskManager @Inject constructor(
     }
 
     /** Метод ищет корзины или создает их в зависимости от того что вернет getBasket() */
-    override suspend fun getOrCreateSuitableBasket(task: TaskCreate, good: GoodCreate, provider: ProviderInfo): Basket {
+    override suspend fun getOrCreateSuitableBasket(task: TaskCreate, good: Good, provider: ProviderInfo): Basket {
         return withContext(Dispatchers.IO) {
             val basketVolume = database.getBasketVolume() ?: error(NULL_BASKET_VOLUME)
             val basketList = task.baskets
 
             //Найдем корзину в списке корзин задания
-            getBasket(provider.code.orEmpty()) //Функция возвращает либо корзину с подходящими параметрами и достаточным объемом или возвращает null
+            getBasket(provider.code.orEmpty(), good) //Функция возвращает либо корзину с подходящими параметрами и достаточным объемом или возвращает null
                     .orIfNull {
                         //Если корзина не найдена - создадим ее
                         val index = basketList.lastOrNull()?.index?.plus(1) ?: INDEX_OF_FIRST_BASKET
@@ -199,22 +198,47 @@ class CreateTaskManager @Inject constructor(
      * и проверяет подходят ли параметры, закрыта она или нет, и есть ли свободный объём
      * divByMark проверяет нужно ли деление корзины по маркам, если нужно то сравнивает марку корзины и товара
      * если нельзя то просто передает true */
-    override fun getBasket(providerCode: String): Basket? {
+//    override fun getBasket(providerCode: String): Basket? {
+//        return currentTask.value?.let { task ->
+//            currentGood.value?.let { good ->
+//                val basketsFromTask = task.baskets
+//                basketsFromTask.lastOrNull { basket ->
+//                    val divByMark = if (task.type.isDivByMark) basket.markTypeGroup == good.markTypeGroup else true
+//                    val divByMrc = if (task.type.isDivByMinimalPrice) basket.maxRetailPrice == good.maxRetailPrice else true
+//                    isLastBasketMatches(basket, good, providerCode, divByMark, divByMrc)
+//                }
+//            }
+//        }
+//    }
+
+    override fun getBasket(providerCode: String, goodToAdd: Good): Basket? {
         return currentTask.value?.let { task ->
             currentGood.value?.let { good ->
                 val basketsFromTask = task.baskets
                 basketsFromTask.lastOrNull { basket ->
                     val divByMark = if (task.type.isDivByMark) basket.markTypeGroup == good.markTypeGroup else true
-                    val divByMrc = if (task.type.isDivByMinimalPrice) basket.maxRetailPrice == good.maxRetailPrice else true
+                    val divByMrc = if (task.type.isDivByMinimalPrice) isSameMrcGroup(basket, goodToAdd) else true
                     isLastBasketMatches(basket, good, providerCode, divByMark, divByMrc)
                 }
             }
         }
     }
 
+    /** Метод проверяет группу мрц товара
+     * одинаковые товары с разным мрц в разные корзины,
+     * разные товары с одинаковым мрц в одну корзину
+     * разные товары с разными мрц в одну корзину
+     * */
+    private fun isSameMrcGroup(basket: Basket, goodToAdd: Good): Boolean {
+        val sameGood = basket.goods.keys.firstOrNull { it.material ==  goodToAdd.material }
+        return sameGood?.let{
+            it.maxRetailPrice == goodToAdd.maxRetailPrice
+        } ?: true
+    }
+
     private fun isLastBasketMatches(
             basket: Basket,
-            good: GoodCreate,
+            good: Good,
             providerCode: String,
             divByMark: Boolean,
             divByMrc: Boolean
@@ -228,7 +252,7 @@ class CreateTaskManager @Inject constructor(
                 isBasketHasEnoughVolume(basket, good)
     }
 
-    private fun isBasketHasEnoughVolume(basket: Basket, good: GoodCreate): Boolean {
+    private fun isBasketHasEnoughVolume(basket: Basket, good: Good): Boolean {
         return basket.freeVolume > good.volume
     }
 
@@ -236,7 +260,7 @@ class CreateTaskManager @Inject constructor(
         currentTask.postValue(task)
     }
 
-    override fun updateCurrentGood(good: GoodCreate?) {
+    override fun updateCurrentGood(good: Good?) {
         currentGood.postValue(good)
     }
 
@@ -248,18 +272,18 @@ class CreateTaskManager @Inject constructor(
         currentGood.value = null
     }
 
-    override fun saveGoodInTask(good: GoodCreate) {
+    override fun saveGoodInTask(good: Good) {
         currentTask.value?.let { task ->
-            task.goods.find { it.material == good.material }?.let { good ->
-                task.goods.remove(good)
-            }
-
+            task.goods.find { it.material == good.material && it.maxRetailPrice == good.maxRetailPrice }
+                    ?.let { good ->
+                        task.goods.remove(good)
+                    }
             task.goods.add(good)
             updateCurrentTask(task)
         }
     }
 
-    override fun findGoodByEan(ean: String): GoodCreate? {
+    override fun findGoodByEan(ean: String): Good? {
         return currentTask.value?.let { task ->
             task.goods.find { good ->
                 good.ean == ean || good.eans.contains(ean)
@@ -270,7 +294,20 @@ class CreateTaskManager @Inject constructor(
         }
     }
 
-    override fun findGoodByMaterial(material: String): GoodCreate? {
+    override fun findGoodByEanAndMRC(ean:String, mrc: String): Good? {
+        Logg.e { mrc }
+        return if (mrc.isEmpty()) {
+            findGoodByEan(ean)
+        } else {
+            currentTask.value?.let{ task ->
+                task.goods.find { good ->
+                    (good.ean == ean || good.eans.contains(ean)) && (good.maxRetailPrice == mrc)
+                }
+            }
+        }
+    }
+
+    override fun findGoodByMaterial(material: String): Good? {
         return currentTask.value?.goods?.find { it.material == material }
     }
 
@@ -305,7 +342,6 @@ class CreateTaskManager @Inject constructor(
         currentGood.value?.let { good ->
             good.providers.add(0, providerInfo)
             isWasAddedProvider = true
-
             updateCurrentGood(good)
         }
     }
@@ -408,32 +444,28 @@ class CreateTaskManager @Inject constructor(
         searchNumber = ""
     }
 
+    override fun removeMarksFromGoods(mappedMarks: List<Mark>) {
+        currentTask.value?.let { task ->
+            task.goods.find {
+                it.marks.isAnyAlreadyIn(mappedMarks)
+            }?.let { good ->
+                task.baskets.forEach {
+                    if (it.goods.containsKey(good)) {
+                        it.deleteGoodByMarks(good)
+                    }
+                }
+                good.marks.removeAll(mappedMarks)
+            }
+            task.removeEmptyBaskets()
+            task.removeEmptyGoods()
+
+            updateCurrentTask(task)
+        }
+    }
+
     companion object {
         private const val NULL_BASKET_VOLUME = "Объем корзины отсутствует"
         private const val INDEX_OF_FIRST_BASKET = 1
     }
 
-}
-
-
-interface ICreateTaskManager : ITaskManager {
-
-    val currentGood: MutableLiveData<GoodCreate>
-    val currentTask: MutableLiveData<TaskCreate>
-    var isWasAddedProvider: Boolean
-
-    suspend fun addGoodToBasket(good: GoodCreate, part: Part? = null, provider: ProviderInfo, count: Double)
-    suspend fun addGoodToBasketWithMark(good: GoodCreate, mark: Mark, provider: ProviderInfo)
-    suspend fun addGoodToBasketWithMarks(good: GoodCreate, marks: List<Mark>, provider: ProviderInfo)
-    suspend fun getOrCreateSuitableBasket(task: TaskCreate, good: GoodCreate, provider: ProviderInfo): Basket?
-
-    fun updateCurrentTask(task: TaskCreate?)
-    fun updateCurrentGood(good: GoodCreate?)
-
-    fun findGoodByEan(ean: String): GoodCreate?
-    fun findGoodByMaterial(material: String): GoodCreate?
-
-    fun removeGoodByMaterials(materialList: List<String>)
-    fun addProviderInCurrentGood(providerInfo: ProviderInfo)
-    fun saveGoodInTask(good: GoodCreate)
 }

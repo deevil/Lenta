@@ -8,6 +8,10 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.orIfNull
 
+/** Класс содержащий общую логику для:
+* @see com.lenta.bp12.features.open_task.marked_good_info.MarkedGoodInfoOpenViewModel
+* @see com.lenta.bp12.features.open_task.good_info.GoodInfoOpenViewModel
+ * */
 abstract class BaseGoodInfoOpenViewModel : CoreViewModel(), IBaseGoodInfoOpenViewModel {
 
     val task by unsafeLazy {
@@ -209,13 +213,20 @@ abstract class BaseGoodInfoOpenViewModel : CoreViewModel(), IBaseGoodInfoOpenVie
 
     override fun onScanResult(number: String) {
         launchUITryCatch {
-            manager.clearSearchFromListParams()
-            checkSearchNumber(number)
+            if (isProviderSelected.value == true) {
+                manager.clearSearchFromListParams()
+                checkSearchNumber(number)
+            } else {
+                navigator.showChooseProviderFirst()
+            }
         }
     }
 
     override fun getBasket(): Basket? {
-        return manager.getBasket(good.value?.provider?.code.orEmpty())
+        val good = good.value
+        return good?.let {
+            manager.getBasket(it.provider.code.orEmpty(), it)
+        }
     }
 
     override fun onClickDetails() {

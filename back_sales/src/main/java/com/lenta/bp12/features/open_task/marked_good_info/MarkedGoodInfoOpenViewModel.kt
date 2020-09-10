@@ -6,10 +6,15 @@ import androidx.lifecycle.switchMap
 import com.lenta.bp12.features.create_task.marked_good_info.GoodProperty
 import com.lenta.bp12.features.create_task.marked_good_info.GoodPropertyItem
 import com.lenta.bp12.features.open_task.base_good_info.BaseGoodInfoOpenViewModel
-import com.lenta.bp12.model.*
+import com.lenta.bp12.managers.interfaces.IMarkManager
+import com.lenta.bp12.managers.interfaces.IOpenTaskManager
+import com.lenta.bp12.model.MarkScreenStatus
+import com.lenta.bp12.model.MarkType
+import com.lenta.bp12.model.WorkType
+import com.lenta.bp12.model.actionByNumber
+import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.extentions.addMarks
-import com.lenta.bp12.model.pojo.open_task.GoodOpen
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -19,10 +24,7 @@ import com.lenta.bp12.request.ScanInfoNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.combineLatest
-import com.lenta.shared.utilities.extentions.launchUITryCatch
-import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.unsafeLazy
+import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.orIfNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -264,16 +266,30 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
                 MarkScreenStatus.NO_MARKTYPE_IN_SETTINGS -> {
                     handleNoMarkTypeInSettings()
                 }
-
+                MarkScreenStatus.NOT_SAME_GOOD -> {
+                    navigator.hideProgress()
+                    navigator.showScannedMarkBelongsToProduct(
+                            markManager.getCreatedGoodForError()?.name.orEmpty()
+                    )
+                }
             }
         }
     }
-  //TODO
+
     private fun handleMrcNotSameInBasket() {
         navigator.hideProgress()
-        navigator.showMrcNotSameInBasketAlert {  }
+        navigator.showMrcNotSameInBasketAlert(
+                yesCallback = ::handleYesSaveCurrentMarkToBasketAndOpenAnother
+        )
     }
 
+    private fun handleYesSaveCurrentMarkToBasketAndOpenAnother() {
+        launchUITryCatch {
+            saveChanges()
+            tempMarks.value = markManager.getTempMarks()
+            markManager.handleYesSaveAndOpenAnotherBox()
+        }
+    }
 
     override fun loadBoxInfo(number: String) {
         launchUITryCatch {
@@ -305,8 +321,11 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
     }
 
     private fun handleYesDeleteMappedMarksFromTempCallBack() {
-        markManager.handleYesDeleteMappedMarksFromTempCallBack()
-        tempMarks.value = markManager.getTempMarks()
+        launchAsyncTryCatch {
+            markManager.handleYesDeleteMappedMarksFromTempCallBack()
+            val tempMarksFromMarkManager = markManager.getTempMarks()
+            tempMarks.postValue(tempMarksFromMarkManager)
+        }
     }
 
     override suspend fun saveChanges() {
@@ -326,7 +345,7 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
         navigator.hideProgress()
     }
 
-    private suspend fun addMarks(changedGood: GoodOpen) {
+    private suspend fun addMarks(changedGood: Good) {
             tempMarks.value?.let { tempMarksValue ->
                 changedGood.addMarks(tempMarksValue)
                 tempMarksValue.forEach { mark ->

@@ -131,7 +131,8 @@ enum class MarkScreenStatus {
     MRC_NOT_SAME,
     MRC_NOT_SAME_IN_BASKET,
     NOT_MARKED_GOOD,
-    NO_MARKTYPE_IN_SETTINGS
+    NO_MARKTYPE_IN_SETTINGS,
+    NOT_SAME_GOOD
 }
 
 enum class WorkType {

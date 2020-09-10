@@ -28,6 +28,31 @@ fun Basket.deleteGood(good: Good) {
     }
 }
 
+fun Basket.deleteGoodByMarks(good: Good) {
+    val quantityToDel = good.marks.count { mark ->
+        this.index == mark.basketNumber
+    }.toDouble()
+
+    val oldQuantity = this.goods[good]
+    oldQuantity?.let {
+        val newQuantity = it - quantityToDel
+        if (newQuantity == 0.0) {
+            this.deleteGood(good)
+        } else {
+            minusQuantityOfGood(good, quantityToDel, newQuantity)
+        }
+    }
+}
+
+private fun Basket.minusQuantityOfGood(good: Good, quantityToDel: Double, newQuantity: Double) {
+    val volumeToReturnToBasket = quantityToDel * good.volume
+    val freeVolumePlusGoodsVolume = freeVolume + volumeToReturnToBasket
+    if (freeVolumePlusGoodsVolume <= volume) {
+        this.goods[good] = newQuantity
+        this.freeVolume += volumeToReturnToBasket
+    }
+}
+
 fun Basket.getDescription(isDivBySection: Boolean): String {
 
     return buildString {

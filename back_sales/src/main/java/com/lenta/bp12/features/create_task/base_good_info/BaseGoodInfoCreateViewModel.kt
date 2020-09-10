@@ -2,6 +2,7 @@ package com.lenta.bp12.features.create_task.base_good_info
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.model.pojo.Basket
+import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.extentions.getQuantityOfGood
 import com.lenta.bp12.platform.extention.isWholesaleType
 import com.lenta.bp12.request.pojo.ProviderInfo
@@ -9,8 +10,12 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.orIfNull
 
+/**
+ * Класс содержащий общую логику для
+ * @see com.lenta.bp12.features.create_task.good_info.GoodInfoCreateViewModel
+ * @see com.lenta.bp12.features.create_task.marked_good_info.MarkedGoodInfoCreateViewModel
+ * */
 abstract class BaseGoodInfoCreateViewModel : CoreViewModel(), IBaseGoodInfoCreateViewModel {
-
     val task by unsafeLazy {
         manager.currentTask
     }
@@ -74,9 +79,10 @@ abstract class BaseGoodInfoCreateViewModel : CoreViewModel(), IBaseGoodInfoCreat
         good.combineLatest(quantity)
                 .combineLatest(isProviderSelected)
                 .mapSkipNulls {
+                    val good = it.first.first
                     val isProviderSelected = it.second
                     if (isProviderSelected) {
-                        val index = getBasket()?.index.orIfNull { task.value?.baskets?.size?.plus(1) }
+                        val index = getBasket(good)?.index.orIfNull { task.value?.baskets?.size?.plus(1) }
                         index?.run { "$index" }.orEmpty()
                     } else ""
                 }
@@ -91,7 +97,7 @@ abstract class BaseGoodInfoCreateViewModel : CoreViewModel(), IBaseGoodInfoCreat
                     val isProviderSelected = it.second
 
                     if (isProviderSelected) {
-                        getBasket()?.run {
+                        getBasket(good)?.run {
                             getQuantityOfGood(good).sumWith(enteredQuantity)
                         }.orIfNull { enteredQuantity }
                     } else DEFAULT_QUANTITY
@@ -178,13 +184,17 @@ abstract class BaseGoodInfoCreateViewModel : CoreViewModel(), IBaseGoodInfoCreat
 
     override fun onScanResult(number: String) {
         launchUITryCatch {
-            manager.clearSearchFromListParams()
-            checkSearchNumber(number)
+            if (isProviderSelected.value == true) {
+                manager.clearSearchFromListParams()
+                checkSearchNumber(number)
+            } else {
+                navigator.showChooseProviderFirst()
+            }
         }
     }
 
-    override fun getBasket(): Basket? {
-        return manager.getBasket(ProviderInfo.getEmptyCode())
+    override fun getBasket(good: Good): Basket? {
+        return manager.getBasket(ProviderInfo.getEmptyCode(), good)
     }
 
     override fun updateData() {

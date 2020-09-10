@@ -3,13 +3,15 @@ package com.lenta.bp12.features.open_task.good_list
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.features.basket.ItemWholesaleBasketUi
 import com.lenta.bp12.features.create_task.task_content.ItemCommonBasketUi
+import com.lenta.bp12.managers.interfaces.IMarkManager
+import com.lenta.bp12.managers.interfaces.IOpenTaskManager
 import com.lenta.bp12.model.*
 import com.lenta.bp12.model.pojo.Basket
+import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.extentions.getDescription
 import com.lenta.bp12.model.pojo.extentions.getQuantityFromGoodList
 import com.lenta.bp12.model.pojo.extentions.isAnyNotLocked
 import com.lenta.bp12.model.pojo.extentions.isAnyPrinted
-import com.lenta.bp12.model.pojo.open_task.GoodOpen
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
 import com.lenta.bp12.platform.extention.getMarkType
@@ -379,7 +381,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
         with(result) {
             val markType = getMarkType()
-            val goodOpen = GoodOpen(
+            val goodOpen = Good(
                     ean = eanInfo?.ean.orEmpty(),
                     material = materialInfo?.material.orEmpty(),
                     name = materialInfo?.name.orEmpty(),
@@ -395,7 +397,8 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                     volume = materialInfo?.volume?.toDoubleOrNull() ?: 0.0,
                     markType = markType,
                     markTypeGroup = database.getMarkTypeGroupByMarkType(markType),
-                    maxRetailPrice = ""
+                    maxRetailPrice = "",
+                    type = materialInfo?.goodType.orEmpty()
             )
 
             if (goodOpen.kind == GoodKind.EXCISE) {
@@ -407,7 +410,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         }
 
 
-    private fun setFoundGood(foundGood: GoodOpen) {
+    private fun setFoundGood(foundGood: Good) {
         manager.updateCurrentGood(foundGood)
 
         with(navigator) {
