@@ -2,10 +2,9 @@ package com.lenta.bp16.features.add_attribute
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.switchMap
-import com.lenta.bp16.model.AddAttributeInfo
+import com.lenta.bp16.model.AddAttributeProdInfo
 import com.lenta.bp16.model.ProducerDataInfo
 import com.lenta.bp16.model.ZPartDataInfo
-import com.lenta.bp16.platform.Constants
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.repository.IDatabaseRepository
 import com.lenta.bp16.request.ingredients_use_case.get_data.GetProducerDataInfoUseCase
@@ -19,7 +18,6 @@ import com.lenta.shared.requests.network.ServerTime
 import com.lenta.shared.requests.network.ServerTimeRequest
 import com.lenta.shared.requests.network.ServerTimeRequestParam
 import com.lenta.shared.utilities.extentions.*
-import com.lenta.shared.utilities.getFormattedDate
 import javax.inject.Inject
 
 class AddAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
@@ -82,10 +80,12 @@ class AddAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
     /** Условие отображения производителя */
     val producerVisibleCondition by unsafeLazy {
         asyncLiveData<Boolean> {
-            val cond = producerConditions
-            val condition = cond.first
-            alertNotFoundProducerName.value = cond.second
-            emit(condition)
+            launchUITryCatch {
+                val cond = producerConditions
+                val condition = cond.first
+                alertNotFoundProducerName.value = cond.second
+                emit(condition)
+            }
         }
     }
 
@@ -126,10 +126,7 @@ class AddAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
     }
 
     private fun setDateInfo() {
-        var date = dateInfoField.value.orEmpty()
-        if (date.isNotEmpty() && date.length == DATE_LENGTH) {
-            date = getFormattedDate(date, Constants.DATE_FORMAT_dd_mm_yyyy, Constants.DATE_FORMAT_yyyyMMdd)
-        }
+        val date = dateInfoField.value.orEmpty()
         productionDate = date
     }
 
@@ -204,11 +201,11 @@ class AddAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
                 val producerSelected = producerNameList.getOrEmpty(producerIndex)
                 val prodCode = producerCodeList.getOrEmpty(producerIndex)
 
-                val result = AddAttributeInfo(
-                        prodName = producerSelected,
-                        prodTime = "",
-                        prodCode = prodCode,
-                        prodDate = productionDate
+                val result = AddAttributeProdInfo(
+                        name = producerSelected,
+                        time = "",
+                        code = prodCode,
+                        date = productionDate
                 )
                 setAddAttributeInfoUseCase(listOf(result))
                 navigator.goBack()

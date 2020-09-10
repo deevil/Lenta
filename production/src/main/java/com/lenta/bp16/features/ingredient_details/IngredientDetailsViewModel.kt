@@ -64,7 +64,7 @@ class IngredientDetailsViewModel : CoreViewModel() {
 
     private val mercuryDataInfo = MutableLiveData<List<MercuryPartDataInfo>>()
     private val zPartDataInfo = MutableLiveData<List<ZPartDataInfo>>()
-    private val addedAttribute = MutableLiveData<List<AddAttributeInfo>>()
+    private val addedAttribute = MutableLiveData<List<AddAttributeProdInfo>>()
     private val warehouseSelected = MutableLiveData<List<String>>()
 
     // Комплектация
@@ -92,71 +92,15 @@ class IngredientDetailsViewModel : CoreViewModel() {
         "${it.dropZeros()} ${resourceManager.kgSuffix()}"
     }
 
-    val producerNameList =
-            /** Если был передан производитель из AddAttributeFragment, то заполнять данными из нее*/
-            if (!addedAttribute.value.isNullOrEmpty()) {
-                addedAttribute.mapSkipNulls {
-                    val producerNameList = it.map { it.prodName }
-                    producerNameList
-                }
-            } else {
-                if (!orderIngredient.value?.isVet.isNullOrBlank()) {
-                    mercuryDataInfo.switchMap {
-                        asyncLiveData<List<String>> {
-                            val producerNameList = it.map { it.prodName.orEmpty() }.toMutableList()
-                            if (producerNameList.size > 1) {
-                                producerNameList.add(0, Constants.CHOOSE_PRODUCER)
-                            }
-                            emit(producerNameList)
-                        }
-                    }
-                } else {
-                    zPartDataInfo.switchMap {
-                        asyncLiveData<List<String>> {
-                            val producerNameList = it.map { it.prodName.orEmpty() }.toMutableList()
-                            if (producerNameList.size > 1) {
-                                producerNameList.add(0, Constants.CHOOSE_PRODUCER)
-                            }
-                            emit(producerNameList)
-                        }
-                    }
-                }
-            }
+    val producerNameField by unsafeLazy {
+        MutableLiveData<List<String>>()
+    }
+
 
     val selectedProducerPosition = MutableLiveData(0)
 
     val productionDateField by unsafeLazy {
-        /** Если была передана дата из AddAttributeFragment, то заполнять данными из нее*/
-        if (!addedAttribute.value.isNullOrEmpty()) {
-            addedAttribute.switchMap {
-                asyncLiveData<List<String>> {
-                    val productionDate = it.map { it.prodDate }
-                    emit(productionDate)
-                }
-            }
-        } else {
-            if (!orderIngredient.value?.isVet.isNullOrBlank()) {
-                mercuryDataInfo.switchMap {
-                    asyncLiveData<List<String>> {
-                        val productionDate = it.map { it.prodDate.orEmpty() }.toMutableList()
-                        if (productionDate.size > 1) {
-                            productionDate.add(0, Constants.CHOOSE_PRODUCTION_DATE)
-                        }
-                        emit(productionDate)
-                    }
-                }
-            } else {
-                zPartDataInfo.switchMap {
-                    asyncLiveData<List<String>> {
-                        val productionDate = it.map { it.prodDate.orEmpty() }.toMutableList()
-                        if (productionDate.size > 1) {
-                            productionDate.add(0, Constants.CHOOSE_PRODUCTION_DATE)
-                        }
-                        emit(productionDate)
-                    }
-                }
-            }
-        }
+        MutableLiveData<List<String>>()
     }
 
     val selectedDateProductionPosition = MutableLiveData(0)
@@ -208,7 +152,7 @@ class IngredientDetailsViewModel : CoreViewModel() {
         true //Заменить на условие
     }
 
-    val nextAndAddButtonEnabled: MutableLiveData<Boolean> = producerNameList
+    val nextAndAddButtonEnabled: MutableLiveData<Boolean> = producerNameField
             .combineLatest(productionDateField)
             .map {
                 val producerName = it?.first
@@ -258,13 +202,72 @@ class IngredientDetailsViewModel : CoreViewModel() {
 
     fun updateData() {
         launchUITryCatch {
-            mercuryDataInfo.value = mercuryPartDataInfoUseCase.invoke()
-            zPartDataInfo.value = zPartDataInfoUseCase.invoke()
-            addedAttribute.value = addAttributeInfoUseCase.invoke()
-            warehouseSelected.value = warehouseForSelectedItemUseCase.invoke()
+            mercuryDataInfo.value = mercuryPartDataInfoUseCase()
+            zPartDataInfo.value = zPartDataInfoUseCase()
+            addedAttribute.value = addAttributeInfoUseCase()
+            warehouseSelected.value = warehouseForSelectedItemUseCase()
             if (alertNotFoundProducerName.value == true) {
                 navigator.goBack()
                 navigator.showAlertProducerCodeNotFound()
+            } else {
+                checkProducerInfo()
+                checkDataInfo()
+            }
+        }
+    }
+
+    private fun checkProducerInfo() {
+        /** Если был передан производитель из AddAttributeFragment, то заполнять данными из нее*/
+        if (!addedAttribute.value.isNullOrEmpty()) {
+            addedAttribute.value?.let { addAttributeDataInfoList ->
+                val producerNameList = addAttributeDataInfoList.map { it.name }
+                producerNameField.value = producerNameList
+            }
+        } else {
+            if (!orderIngredient.value?.isVet.isNullOrBlank()) {
+                mercuryDataInfo.value?.let { mercuryDataInfoList ->
+                    val producerNameList = mercuryDataInfoList.map { it.prodName.orEmpty() }.toMutableList()
+                    if (producerNameList.size > 1) {
+                        producerNameList.add(0, Constants.CHOOSE_PRODUCER)
+                    }
+                    producerNameField.value = producerNameList
+                }
+            } else {
+                zPartDataInfo.value?.let { zpartDataInfoList ->
+                    val producerNameList = zpartDataInfoList.map { it.prodName.orEmpty() }.toMutableList()
+                    if (producerNameList.size > 1) {
+                        producerNameList.add(0, Constants.CHOOSE_PRODUCER)
+                    }
+                    producerNameField.value = producerNameList
+                }
+            }
+        }
+    }
+
+    private fun checkDataInfo() {
+        /** Если была передана дата из AddAttributeFragment, то заполнять данными из нее*/
+        if (!addedAttribute.value.isNullOrEmpty()) {
+            addedAttribute.value?.let {
+                val productionDate = it.map { it.date }
+                productionDateField.value = productionDate
+            }
+        } else {
+            if (!orderIngredient.value?.isVet.isNullOrBlank()) {
+                mercuryDataInfo.value?.let {
+                    val productionDate = it.map { it.prodDate.orEmpty() }.toMutableList()
+                    if (productionDate.size > 1) {
+                        productionDate.add(0, Constants.CHOOSE_PRODUCTION_DATE)
+                    }
+                    productionDateField.value = productionDate
+                }
+            } else {
+                zPartDataInfo.value?.let {
+                    val productionDate = it.map { it.prodDate.orEmpty() }.toMutableList()
+                    if (productionDate.size > 1) {
+                        productionDate.add(0, Constants.CHOOSE_PRODUCTION_DATE)
+                    }
+                    productionDateField.value = productionDate
+                }
             }
         }
     }
@@ -307,7 +310,7 @@ class IngredientDetailsViewModel : CoreViewModel() {
         val matnr = orderIngredient.value?.matnr.orEmpty()
         var entryId = ""
         var batchId = ""
-        var batchNew = emptyList<BatchNewDataInfo>()
+        var batchNew = emptyList<BatchNewDataInfoParam>()
 
         orderIngredient.value?.isVet?.let {
             val selectedIngredient = withContext(Dispatchers.IO) {
@@ -326,10 +329,10 @@ class IngredientDetailsViewModel : CoreViewModel() {
                     val addedAttributeInfo = addedAttribute.value?.getOrNull(0)
                     val selectedWarehouse = warehouseSelected.value?.getOrNull(0).orEmpty()
                     addedAttributeInfo?.let {
-                        batchNew = listOf(BatchNewDataInfo(
-                                prodCode = addedAttributeInfo.prodCode,
-                                prodDate = addedAttributeInfo.prodDate,
-                                prodTime = addedAttributeInfo.prodTime,
+                        batchNew = listOf(BatchNewDataInfoParam(
+                                prodCode = addedAttributeInfo.code,
+                                prodDate = addedAttributeInfo.date,
+                                prodTime = addedAttributeInfo.time,
                                 lgort = selectedWarehouse
                         ))
                     }
@@ -353,7 +356,7 @@ class IngredientDetailsViewModel : CoreViewModel() {
                                 personnelNumber = sessionInfo.personnelNumber.orEmpty(),
                                 aufnr = matnr,
                                 batchId = batchId,
-                                batchNew = batchNew,
+                                batchNewParam = batchNew,
                                 entryId = entryId
                         )
                 )

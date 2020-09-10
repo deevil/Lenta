@@ -2,7 +2,7 @@ package com.lenta.bp16.model.data_storage
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.lenta.bp16.model.AddAttributeInfo
+import com.lenta.bp16.model.AddAttributeProdInfo
 import com.lenta.bp16.model.ProducerDataInfo
 import com.lenta.bp16.model.ZPartDataInfo
 import com.lenta.bp16.model.ingredients.MercuryPartDataInfo
@@ -24,7 +24,7 @@ class IngredientDataPersistStorage @Inject constructor(
         return hyperHive.stateAPI.getParamFromDB(KEY_ZPART_DATA_INFO)?.let { json ->
             val type = object : TypeToken<List<ZPartDataInfo>>() {}.type
             gson.fromJson(json, type) as? List<ZPartDataInfo>
-        } ?: emptyList()
+        }.orEmpty()
     }
 
     override fun saveMercuryDataInfo(list: List<MercuryPartDataInfo>) {
@@ -38,7 +38,7 @@ class IngredientDataPersistStorage @Inject constructor(
         return hyperHive.stateAPI.getParamFromDB(KEY_MERCURY_DATA_INFO)?.let { json ->
             val type = object : TypeToken<List<MercuryPartDataInfo>>() {}.type
             gson.fromJson(json, type) as? List<MercuryPartDataInfo>
-        } ?: emptyList()
+        }.orEmpty()
     }
 
     override fun saveProducerDataInfo(list: List<ProducerDataInfo>) {
@@ -52,21 +52,21 @@ class IngredientDataPersistStorage @Inject constructor(
         return hyperHive.stateAPI.getParamFromDB(KEY_PRODUCER_DATA_INFO)?.let { json ->
             val type = object : TypeToken<List<ProducerDataInfo>>() {}.type
             gson.fromJson(json, type) as? List<ProducerDataInfo>
-        } ?: emptyList()
+        }.orEmpty()
     }
 
-    override fun saveAddAttributeInfo(list: List<AddAttributeInfo>) {
+    override fun saveAddAttributeInfo(list: List<AddAttributeProdInfo>) {
         hyperHive.stateAPI.saveParamToDB(
                 KEY_ADD_ATTRIBUTE_INFO,
                 gson.toJson(list)
         )
     }
 
-    override fun getAddAttributeInfo(): List<AddAttributeInfo> {
+    override fun getAddAttributeInfo(): List<AddAttributeProdInfo> {
         return hyperHive.stateAPI.getParamFromDB(KEY_ADD_ATTRIBUTE_INFO)?.let { json ->
-            val type = object : TypeToken<List<AddAttributeInfo>>() {}.type
-            gson.fromJson(json, type) as? List<AddAttributeInfo>
-        } ?: emptyList()
+            val type = object : TypeToken<List<AddAttributeProdInfo>>() {}.type
+            gson.fromJson(json, type) as? List<AddAttributeProdInfo>
+        }.orEmpty()
     }
 
     override fun saveWarehouseForItemSelected(list: List<String>) {
@@ -80,7 +80,7 @@ class IngredientDataPersistStorage @Inject constructor(
         return hyperHive.stateAPI.getParamFromDB(KEY_WAREHOUSE_FOR_ITEM_SELECTED)?.let { json ->
             val type = object : TypeToken<List<String>>() {}.type
             gson.fromJson(json, type) as? List<String>
-        } ?: emptyList()
+        }.orEmpty()
     }
 
     companion object {

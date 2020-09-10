@@ -163,7 +163,7 @@
             <com.lenta.shared.view.ClickableSpinner
                 style="@style/CellSpinnerStyle"
                 android:enabled="@{vm.disableSpinner}"
-                app:items="@{vm.producerNameList}"
+                app:items="@{vm.producerNameField}"
                 app:position="@={vm.selectedProducerPosition}"
                 tools:entries="@array/manufacturer_list" />
 

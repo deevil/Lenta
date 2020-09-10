@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class BatchNewDataInfo(
+data class BatchNewDataInfoParam(
 
         /** Код производителя */
         @SerializedName("PRODUCER")

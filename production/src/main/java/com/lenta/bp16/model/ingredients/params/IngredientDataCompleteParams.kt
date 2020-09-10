@@ -1,7 +1,7 @@
 package com.lenta.bp16.model.ingredients.params
 
 import com.google.gson.annotations.SerializedName
-import com.lenta.bp16.model.BatchNewDataInfo
+import com.lenta.bp16.model.BatchNewDataInfoParam
 
 data class IngredientDataCompleteParams(
         /** Код предприятия */
@@ -54,7 +54,7 @@ data class IngredientDataCompleteParams(
         val batchId: String,
 
         /** Таблица партионных признаков для создания новой партии */
-        val batchNew : List<BatchNewDataInfo>
+        val batchNewParam : List<BatchNewDataInfoParam>
 
 ) {
         companion object {

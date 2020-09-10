@@ -149,7 +149,7 @@
                 android:paddingEnd="@dimen/size_10dp"
                 android:textSize="@dimen/text_14sp"
                 android:inputType="number"
-                android:digits="0123456789"
+                android:digits="0123456789:"
                 app:maskPattern='@{"[00]{:}[00]"}'
                 tools:text="19:42" />
 
