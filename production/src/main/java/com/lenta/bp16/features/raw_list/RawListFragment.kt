@@ -54,12 +54,12 @@ class RawListFragment : KeyDownCoreFragment<FragmentRawListBinding, RawListViewM
 
     private fun initRvConfig() {
         binding?.let { layoutBinding ->
-            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemRawBinding>(
+            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding<ItemRawBinding>(
                     layoutId = R.layout.item_raw,
                     itemId = BR.item
             )
 
-            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+            recyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                     recyclerView = layoutBinding.rv,
                     previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
                     items = vm.raws,

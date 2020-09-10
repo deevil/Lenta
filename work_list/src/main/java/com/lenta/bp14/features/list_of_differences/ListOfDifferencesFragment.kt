@@ -68,7 +68,7 @@ class ListOfDifferencesFragment : CoreFragment<FragmentListOfDifferencesBinding,
                 }
             }
 
-            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                     layoutId = R.layout.item_simple_good_selectable,
                     itemId = BR.vm,
                     onAdapterItemBind = { binding: ItemSimpleGoodSelectableBinding, position: Int ->
@@ -79,7 +79,7 @@ class ListOfDifferencesFragment : CoreFragment<FragmentListOfDifferencesBinding,
                     }
             )
 
-            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+            recyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                     recyclerView = layoutBinding.rv,
                     items = vm.goods,
                     previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,

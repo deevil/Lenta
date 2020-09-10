@@ -46,11 +46,11 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding?.let { layoutBinding ->
-            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemTileTasksBinding>(
+            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding<ItemTileTasksBinding>(
                     layoutId = R.layout.item_tile_tasks,
                     itemId = BR.item
             )
-            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+            recyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                     recyclerView = layoutBinding.rv,
                     items = vm.tasks,
                     previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,

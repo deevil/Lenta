@@ -78,12 +78,12 @@ class BasketOpenGoodListFragment : CoreFragment<FragmentBasketOpenGoodListBindin
     private fun initBasketGoodList() {
         binding?.let { layoutBinding ->
 
-            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemBasketGoodListGoodBinding>(
+            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding<ItemBasketGoodListGoodBinding>(
                     layoutId = R.layout.item_basket_good_list_good,
                     itemId = BR.item
             )
 
-            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+            recyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                     recyclerView = layoutBinding.rv,
                     items = vm.goods,
                     previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,

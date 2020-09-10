@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import android.widget.CheckBox
 import androidx.databinding.DataBindingUtil
 import com.lenta.bp9.BR
@@ -17,8 +16,6 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.databinding.DataBindingAdapter
-import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
@@ -74,7 +71,7 @@ class ProductDocumentsReviseFragment : CoreFragment<FragmentProductDocumentsRevi
                         container,
                         false)
                 .let { layoutBinding ->
-                    layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemTileNotificationsBinding>(
+                    layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding<ItemTileNotificationsBinding>(
                             layoutId = R.layout.item_tile_notifications,
                             itemId = BR.item
                     )
@@ -92,7 +89,7 @@ class ProductDocumentsReviseFragment : CoreFragment<FragmentProductDocumentsRevi
                         container,
                         false)
                 .let { layoutBinding ->
-                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                    layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_product_documents,
                             itemId = BR.item,
                             onAdapterItemBind = { binding: ItemTileProductDocumentsBinding, position: Int ->
@@ -113,7 +110,7 @@ class ProductDocumentsReviseFragment : CoreFragment<FragmentProductDocumentsRevi
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-                    checkedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    checkedRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                             recyclerView = layoutBinding.rv,
                             previousPosInfo = checkedRecyclerViewKeyHandler?.posInfo?.value,
                             items = vm.checkedDocs,
@@ -131,7 +128,7 @@ class ProductDocumentsReviseFragment : CoreFragment<FragmentProductDocumentsRevi
                         container,
                         false)
                 .let { layoutBinding ->
-                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                    layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_product_documents,
                             itemId = BR.item,
                             onAdapterItemBind = { binding: ItemTileProductDocumentsBinding, position: Int ->
@@ -152,7 +149,7 @@ class ProductDocumentsReviseFragment : CoreFragment<FragmentProductDocumentsRevi
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-                    toCheckRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    toCheckRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                             recyclerView = layoutBinding.rv,
                             previousPosInfo = toCheckRecyclerViewKeyHandler?.posInfo?.value,
                             items = vm.docsToCheck,

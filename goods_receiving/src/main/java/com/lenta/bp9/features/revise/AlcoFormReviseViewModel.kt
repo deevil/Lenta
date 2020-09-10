@@ -30,8 +30,6 @@ class AlcoFormReviseViewModel : CoreViewModel(), PageSelectionListener {
     lateinit var matnr: String
     lateinit var batchNumber: String
 
-    val selectedPage = MutableLiveData(0)
-
     val formAB: FormABImportRevise? by lazy {
         taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getImportABForms()?.findLast { it.batchNumber == batchNumber && it.productNumber == matnr }
     }

@@ -139,7 +139,7 @@ class NonExciseSetsReceivingFragment : CoreFragment<FragmentNonExciseSetsReceivi
                                 }
                             }
 
-                            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                                     layoutId = R.layout.item_tile_non_excise_sets_components,
                                     itemId = BR.item,
                                     onAdapterItemBind = { binding: ItemTileNonExciseSetsComponentsBinding, position: Int ->
@@ -158,7 +158,7 @@ class NonExciseSetsReceivingFragment : CoreFragment<FragmentNonExciseSetsReceivi
                             layoutBinding.vm = vm
                             layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-                            componentsRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                            componentsRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                                     recyclerView = layoutBinding.rv,
                                     previousPosInfo = componentsRecyclerViewKeyHandler?.posInfo?.value,
                                     items = vm.listComponents,

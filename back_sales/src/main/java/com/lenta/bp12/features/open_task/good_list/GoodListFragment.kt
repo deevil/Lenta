@@ -90,7 +90,7 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
             layoutBinding.rv.adapter?.notifyItemChanged(position)
         }
 
-        layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+        layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                 layoutId = R.layout.item_good_list_processing,
                 itemId = BR.item,
                 onAdapterItemBind = { binding: ItemGoodListProcessingBinding, position: Int ->
@@ -111,7 +111,7 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
         layoutBinding.vm = vm
         layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-        processingRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+        processingRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                 recyclerView = layoutBinding.rv,
                 items = vm.processing,
                 previousPosInfo = processingRecyclerViewKeyHandler?.posInfo?.value,
@@ -135,7 +135,7 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
             layoutBinding.rv.adapter?.notifyItemChanged(position)
         }
 
-        layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+        layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                 layoutId = R.layout.item_good_list_processed,
                 itemId = BR.item,
                 onAdapterItemBind = { binding: ItemGoodListProcessedBinding, position: Int ->
@@ -154,7 +154,7 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
         layoutBinding.vm = vm
         layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-        processedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+        processedRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                 recyclerView = layoutBinding.rv,
                 items = vm.processed,
                 previousPosInfo = processedRecyclerViewKeyHandler?.posInfo?.value,
@@ -179,7 +179,7 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
             layoutBinding.rv.adapter?.notifyItemChanged(position)
         }
 
-        layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+        layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                 layoutId = R.layout.item_wholesale_basket,
                 itemId = BR.item,
                 onAdapterItemBind = { binding: ItemWholesaleBasketBinding, position: Int ->
@@ -198,7 +198,7 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
         layoutBinding.vm = vm
         layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-        basketRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+        basketRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                 recyclerView = layoutBinding.rv,
                 items = vm.wholesaleBaskets,
                 previousPosInfo = basketRecyclerViewKeyHandler?.posInfo?.value,
@@ -223,7 +223,7 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
             layoutBinding.rv.adapter?.notifyItemChanged(position)
         }
 
-        layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+        layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                 layoutId = R.layout.item_task_content_common_basket,
                 itemId = BR.item,
                 onAdapterItemBind = { binding: ItemTaskContentCommonBasketBinding, position ->
@@ -242,7 +242,7 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
         layoutBinding.vm = vm
         layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-        basketRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+        basketRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                 recyclerView = layoutBinding.rv,
                 items = vm.commonBaskets,
                 previousPosInfo = basketRecyclerViewKeyHandler?.posInfo?.value,

@@ -62,7 +62,7 @@ class FormedDocsFragment : CoreFragment<FragmentFormedDocsBinding, FormedDocsVie
                 }
             }
 
-            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                     layoutId = R.layout.item_tile_formed_docs,
                     itemId = BR.item,
                     onAdapterItemBind = { binding: ItemTileFormedDocsBinding, position: Int ->

@@ -49,7 +49,7 @@ class TaskBasketFragment: CoreFragment<FragmentTaskBasketBinding, TaskBasketView
                 this.recyclerView.adapter?.notifyItemChanged(itemPosition)
             }
 
-            rvConfig = initRecycleAdapterDataBinding(
+            rvConfig = oldInitRecycleAdapterDataBinding(
                     layoutId = R.layout.layout_item_simple,
                     itemId = BR.item,
                     onAdapterItemBind = { binding: LayoutItemSimpleBinding, position ->
@@ -60,7 +60,7 @@ class TaskBasketFragment: CoreFragment<FragmentTaskBasketBinding, TaskBasketView
                     }
             )
 
-            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+            recyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                     recyclerView = recyclerView,
                     items = vm.goodsItemList,
                     previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,

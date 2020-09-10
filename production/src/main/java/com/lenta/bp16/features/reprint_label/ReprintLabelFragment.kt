@@ -75,7 +75,7 @@ class ReprintLabelFragment : CoreFragment<FragmentReprintLabelBinding, ReprintLa
                 }
             }
 
-            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                     layoutId = R.layout.item_reprint_label,
                     itemId = BR.item,
                     onAdapterItemBind = { binding: ItemReprintLabelBinding, position: Int ->
@@ -85,7 +85,7 @@ class ReprintLabelFragment : CoreFragment<FragmentReprintLabelBinding, ReprintLa
                     }
             )
 
-            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+            recyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                     recyclerView = layoutBinding.rv,
                     items = vm.labels,
                     previousPosInfo = recyclerViewKeyHandler?.posInfo?.value

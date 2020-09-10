@@ -45,8 +45,6 @@ class DiscrepanciesFoundViewModel : CoreViewModel() {
     val discrepanciesByStorage: MutableLiveData<List<DiscrepancyVM>> = MutableLiveData()
     val processedGoods: MutableLiveData<List<TaskProductInfo>> = MutableLiveData()
 
-    var selectedPage = MutableLiveData(0)
-
     val byGoodsSelectionHelper = SelectionItemsHelper()
     val byStorageSelectionHelper = SelectionItemsHelper()
 

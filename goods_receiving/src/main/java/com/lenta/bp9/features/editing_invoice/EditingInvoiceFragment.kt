@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.lenta.bp9.BR
@@ -18,8 +17,6 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.databinding.DataBindingAdapter
-import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
@@ -94,7 +91,7 @@ class EditingInvoiceFragment : CoreFragment<FragmentEditingInvoiceBinding, Editi
                                 }
                             }
 
-                            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                                     layoutId = R.layout.item_tile_editing_invoice_total,
                                     itemId = BR.item,
                                     onAdapterItemBind = { binding: ItemTileEditingInvoiceTotalBinding, position: Int ->
@@ -119,7 +116,7 @@ class EditingInvoiceFragment : CoreFragment<FragmentEditingInvoiceBinding, Editi
                             layoutBinding.vm = vm
                             layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-                            totalRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                            totalRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                                     recyclerView = layoutBinding.rv,
                                     previousPosInfo = totalRecyclerViewKeyHandler?.posInfo?.value,
                                     items = vm.listTotal
@@ -142,7 +139,7 @@ class EditingInvoiceFragment : CoreFragment<FragmentEditingInvoiceBinding, Editi
                                 }
                             }
 
-                            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                                     layoutId = R.layout.item_tile_editing_invoice_del_add,
                                     itemId = BR.item,
                                     onAdapterItemBind = { binding: ItemTileEditingInvoiceDelAddBinding, position: Int ->
@@ -161,7 +158,7 @@ class EditingInvoiceFragment : CoreFragment<FragmentEditingInvoiceBinding, Editi
                             layoutBinding.vm = vm
                             layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-                            delRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                            delRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                                     recyclerView = layoutBinding.rv,
                                     previousPosInfo = delRecyclerViewKeyHandler?.posInfo?.value,
                                     items = vm.listDelItem
@@ -184,7 +181,7 @@ class EditingInvoiceFragment : CoreFragment<FragmentEditingInvoiceBinding, Editi
                                 }
                             }
 
-                            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                                     layoutId = R.layout.item_tile_editing_invoice_del_add,
                                     itemId = BR.item,
                                     onAdapterItemBind = { binding: ItemTileEditingInvoiceDelAddBinding, position: Int ->
@@ -203,7 +200,7 @@ class EditingInvoiceFragment : CoreFragment<FragmentEditingInvoiceBinding, Editi
                             layoutBinding.vm = vm
                             layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-                            addRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                            addRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                                     recyclerView = layoutBinding.rv,
                                     previousPosInfo = addRecyclerViewKeyHandler?.posInfo?.value,
                                     items = vm.listAddItem
@@ -226,7 +223,7 @@ class EditingInvoiceFragment : CoreFragment<FragmentEditingInvoiceBinding, Editi
                                 }
                             }
 
-                            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                                     layoutId = R.layout.item_tile_editing_invoice_notes,
                                     itemId = BR.item,
                                     onAdapterItemBind = { binding: ItemTileEditingInvoiceNotesBinding, position: Int ->
@@ -245,7 +242,7 @@ class EditingInvoiceFragment : CoreFragment<FragmentEditingInvoiceBinding, Editi
                             layoutBinding.vm = vm
                             layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-                            notesRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                            notesRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                                     recyclerView = layoutBinding.rv,
                                     previousPosInfo = notesRecyclerViewKeyHandler?.posInfo?.value,
                                     items = vm.listNotes

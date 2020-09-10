@@ -19,7 +19,6 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
-import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
@@ -83,6 +82,7 @@ class ProcessingUnitTaskListFragment : KeyDownCoreFragment<FragmentProcessingUni
             layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemProcessingUnitTaskUi, ItemPuTaskBinding>(
                     layoutId = R.layout.item_pu_task,
                     itemId = BR.item,
+                    tabPosition = TAB_PROCESSING,
                     recyclerView = layoutBinding.rv,
                     items = vm.processing,
                     onClickHandler = vm::onClickItemPosition
@@ -110,14 +110,7 @@ class ProcessingUnitTaskListFragment : KeyDownCoreFragment<FragmentProcessingUni
             layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemProcessingUnitTaskUi, ItemPuTaskBinding>(
                     layoutId = R.layout.item_pu_task,
                     itemId = BR.item,
-                    onAdapterItemBind = { bindItem, keyHandler, position ->
-                        keyHandler?.let {
-                            bindItem.root.isSelected = it.isSelected(position)
-                        }
-                    },
-                    onAdapterItemClicked = { keyHandler, position ->
-                        keyHandler?.onItemClicked(position)
-                    },
+                    tabPosition = TAB_PROCESSED,
                     recyclerView = layoutBinding.rv,
                     items = vm.processed,
                     onClickHandler = vm::onClickItemPosition
@@ -163,13 +156,13 @@ class ProcessingUnitTaskListFragment : KeyDownCoreFragment<FragmentProcessingUni
         vm.loadTaskList()
     }
 
-    override fun onKeyDown(keyCode: KeyCode): Boolean {
+    /*override fun onKeyDown(keyCode: KeyCode): Boolean {
         return when (vm.selectedPage.value) {
             TAB_PROCESSING -> recyclerViewKeyHandler
             TAB_PROCESSED -> processedRecyclerViewKeyHandler
             else -> null
         }?.onKeyDown(keyCode) ?: false
-    }
+    }*/
 
     /*override fun onDestroyView() {
         processedRecyclerViewKeyHandler?.onClickPositionFunc = null

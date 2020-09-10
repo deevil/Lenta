@@ -109,7 +109,7 @@ class GoodsListFragment : KeyDownCoreFragment<FragmentGoodsListBinding, GoodsLis
                 layoutBinding.rv.adapter?.notifyItemChanged(position)
             }
 
-            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemTileGoodsBinding>(
+            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding<ItemTileGoodsBinding>(
                     layoutId = R.layout.item_tile_goods,
                     itemId = BR.item,
                     onAdapterItemBind = { binding, position ->
@@ -129,7 +129,7 @@ class GoodsListFragment : KeyDownCoreFragment<FragmentGoodsListBinding, GoodsLis
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-            countedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+            countedRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                     recyclerView = layoutBinding.rv,
                     previousPosInfo = countedRecyclerViewKeyHandler?.posInfo?.value,
                     items = vm.countedGoods,
@@ -152,7 +152,7 @@ class GoodsListFragment : KeyDownCoreFragment<FragmentGoodsListBinding, GoodsLis
                 layoutBinding.rv.adapter?.notifyItemChanged(position)
             }
 
-            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemTileFilterBinding>(
+            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding<ItemTileFilterBinding>(
                     layoutId = R.layout.item_tile_filter,
                     itemId = BR.item,
                     onAdapterItemBind = { binding, position ->
@@ -172,7 +172,7 @@ class GoodsListFragment : KeyDownCoreFragment<FragmentGoodsListBinding, GoodsLis
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-            filterRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+            filterRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                     recyclerView = layoutBinding.rv,
                     previousPosInfo = filterRecyclerViewKeyHandler?.posInfo?.value,
                     items = vm.filteredGoods,

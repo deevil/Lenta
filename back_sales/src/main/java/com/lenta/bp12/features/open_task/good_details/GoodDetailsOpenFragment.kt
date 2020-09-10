@@ -74,7 +74,7 @@ class GoodDetailsOpenFragment : CoreFragment<FragmentGoodDetailsOpenBinding, Goo
                 }
             }
 
-            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                     layoutId = R.layout.item_category,
                     itemId = BR.item,
                     onAdapterItemBind = { binding: ItemCategoryBinding, position: Int ->
@@ -87,7 +87,7 @@ class GoodDetailsOpenFragment : CoreFragment<FragmentGoodDetailsOpenBinding, Goo
 
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
-            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+            recyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                     recyclerView = layoutBinding.rv,
                     items = vm.categories,
                     previousPosInfo = recyclerViewKeyHandler?.posInfo?.value

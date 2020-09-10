@@ -127,7 +127,7 @@ class MarkedGoodInfoOpenFragment : CoreFragment<FragmentMarkedGoodInfoOpenBindin
                 container,
                 false)
 
-        layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemGoodInfoPropertyBinding>(
+        layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding<ItemGoodInfoPropertyBinding>(
                 layoutId = R.layout.item_good_info_property,
                 itemId = BR.item
         )
@@ -135,7 +135,7 @@ class MarkedGoodInfoOpenFragment : CoreFragment<FragmentMarkedGoodInfoOpenBindin
         layoutBinding.vm = vm
         layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-        recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+        recyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                 recyclerView = layoutBinding.rv,
                 items = vm.propertiesItems,
                 previousPosInfo = recyclerViewKeyHandler?.posInfo?.value

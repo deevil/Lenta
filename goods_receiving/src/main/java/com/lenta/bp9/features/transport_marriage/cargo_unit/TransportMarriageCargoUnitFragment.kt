@@ -76,7 +76,7 @@ class TransportMarriageCargoUnitFragment : CoreFragment<FragmentTransportMarriag
                 }
             }
 
-            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                     layoutId = R.layout.item_tile_transport_marriage_act,
                     itemId = BR.item,
                     onAdapterItemBind = { binding: ItemTileTransportMarriageActBinding, position: Int ->

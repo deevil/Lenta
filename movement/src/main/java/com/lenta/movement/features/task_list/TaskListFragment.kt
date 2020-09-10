@@ -84,7 +84,7 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
                 container,
                 false
         ).let { layoutBinding ->
-            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                     layoutId = R.layout.layout_item_task_list,
                     itemId = BR.item,
                     onAdapterItemBind = { binding: LayoutItemTaskListBinding, position ->
@@ -100,7 +100,7 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
             layoutBinding.dataBindingViewModel = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-            taskListRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+            taskListRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                     recyclerView = layoutBinding.recyclerView,
                     items = vm.taskItemList,
                     previousPosInfo = taskListRecyclerViewKeyHandler?.posInfo?.value,

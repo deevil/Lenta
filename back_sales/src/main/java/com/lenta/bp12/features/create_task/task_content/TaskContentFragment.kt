@@ -97,7 +97,7 @@ class TaskContentFragment : CoreFragment<FragmentTaskContentBinding, TaskContent
             layoutBinding.rv.adapter?.notifyItemChanged(position)
         }
 
-        layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+        layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                 layoutId = R.layout.item_task_content_good,
                 itemId = BR.item,
                 onAdapterItemBind = { binding: ItemTaskContentGoodBinding, position: Int ->
@@ -117,7 +117,7 @@ class TaskContentFragment : CoreFragment<FragmentTaskContentBinding, TaskContent
         layoutBinding.vm = vm
         layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-        goodRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+        goodRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                 recyclerView = layoutBinding.rv,
                 items = vm.goods,
                 previousPosInfo = goodRecyclerViewKeyHandler?.posInfo?.value,
@@ -140,7 +140,7 @@ class TaskContentFragment : CoreFragment<FragmentTaskContentBinding, TaskContent
                 layoutBinding.rv.adapter?.notifyItemChanged(position)
             }
 
-            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                     layoutId = R.layout.item_task_content_common_basket,
                     itemId = BR.item,
                     onAdapterItemBind = { binding: ItemTaskContentCommonBasketBinding, position: Int ->
@@ -158,7 +158,7 @@ class TaskContentFragment : CoreFragment<FragmentTaskContentBinding, TaskContent
 
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
-            basketRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+            basketRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                     recyclerView = layoutBinding.rv,
                     items = vm.commonBaskets,
                     previousPosInfo = basketRecyclerViewKeyHandler?.posInfo?.value,
@@ -181,7 +181,7 @@ class TaskContentFragment : CoreFragment<FragmentTaskContentBinding, TaskContent
                 layoutBinding.rv.adapter?.notifyItemChanged(position)
             }
 
-            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                     layoutId = R.layout.item_wholesale_basket,
                     itemId = BR.item,
                     onAdapterItemBind = { binding: ItemWholesaleBasketBinding, position: Int ->
@@ -199,7 +199,7 @@ class TaskContentFragment : CoreFragment<FragmentTaskContentBinding, TaskContent
 
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
-            basketRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+            basketRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                     recyclerView = layoutBinding.rv,
                     items = vm.commonBaskets,
                     previousPosInfo = basketRecyclerViewKeyHandler?.posInfo?.value,

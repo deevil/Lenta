@@ -59,8 +59,6 @@ class ProcessingUnitTaskListViewModel : CoreViewModel(), PageSelectionListener, 
 
     val deviceIp = MutableLiveData("")
 
-    val selectedPage = MutableLiveData(0)
-
     val numberField = MutableLiveData("")
 
     val requestFocusToNumberField = MutableLiveData(true)

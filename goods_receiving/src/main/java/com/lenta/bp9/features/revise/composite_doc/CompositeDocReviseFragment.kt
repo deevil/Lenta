@@ -6,7 +6,6 @@ import android.widget.CheckBox
 import com.lenta.bp9.BR
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentCompositeDocReviseBinding
-import com.lenta.bp9.databinding.ItemTileGoodsDetailsBinding
 import com.lenta.bp9.databinding.ItemTileListCompositeDocReviseBinding
 import com.lenta.bp9.model.task.revise.DeliveryDocumentRevise
 import com.lenta.bp9.platform.extentions.getAppComponent
@@ -15,8 +14,6 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.databinding.DataBindingAdapter
-import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
@@ -65,7 +62,7 @@ class CompositeDocReviseFragment : CoreFragment<FragmentCompositeDocReviseBindin
 
     private fun initRvConfig() {
         binding?.let { layoutBinding ->
-            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                     layoutId = R.layout.item_tile_list_composite_doc_revise,
                     itemId = BR.item,
                     onAdapterItemBind = { binding: ItemTileListCompositeDocReviseBinding, position: Int ->

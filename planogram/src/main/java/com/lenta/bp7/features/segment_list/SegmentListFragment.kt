@@ -68,12 +68,12 @@ class SegmentListFragment : CoreFragment<FragmentSegmentListBinding, SegmentList
 
     private fun initRvConfig() {
         binding?.let { layoutBinding ->
-            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemSegmentBinding>(
+            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding<ItemSegmentBinding>(
                     layoutId = R.layout.item_segment,
                     itemId = BR.segment
             )
 
-            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+            recyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                     recyclerView = layoutBinding.rv,
                     items = vm.segments,
                     previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,

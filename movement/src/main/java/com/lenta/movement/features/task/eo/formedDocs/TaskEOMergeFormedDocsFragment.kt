@@ -56,7 +56,7 @@ class TaskEOMergeFormedDocsFragment :
 
         binding?.apply {
             val vm = this@TaskEOMergeFormedDocsFragment.vm
-            rvConfig = initRecycleAdapterDataBinding(
+            rvConfig = oldInitRecycleAdapterDataBinding(
                     layoutId = R.layout.layout_item_docs_list,
                     itemId = BR.item,
                     onAdapterItemBind = { binding : LayoutItemDocsListBinding, position ->
@@ -79,7 +79,7 @@ class TaskEOMergeFormedDocsFragment :
                     }
             )
 
-            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+            recyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                     recyclerView = recyclerView,
                     items = vm.docsItemList,
                     previousPosInfo = recyclerViewKeyHandler?.posInfo?.value

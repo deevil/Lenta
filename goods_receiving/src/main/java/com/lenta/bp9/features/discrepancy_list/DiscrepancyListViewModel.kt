@@ -68,7 +68,6 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     @Inject
     lateinit var dataBase: IDataBaseRepo
 
-    val selectedPage = MutableLiveData(0)
     val processedSelectionsHelper = SelectionItemsHelper()
     val countNotProcessed: MutableLiveData<List<GoodsDiscrepancyItem>> = MutableLiveData()
     val countProcessed: MutableLiveData<List<GoodsDiscrepancyItem>> = MutableLiveData()

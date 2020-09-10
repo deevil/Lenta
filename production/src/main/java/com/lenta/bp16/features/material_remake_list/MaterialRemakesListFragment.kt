@@ -3,12 +3,10 @@ package com.lenta.bp16.features.material_remake_list
 import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
-import androidx.lifecycle.lifecycleScope
 import com.lenta.bp16.BR
 import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentRemakesByMaterialBinding
 import com.lenta.bp16.databinding.ItemMaterialIngredientBinding
-import com.lenta.bp16.databinding.ItemOrderIngredientBinding
 import com.lenta.bp16.model.ingredients.IngredientInfo
 import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener
@@ -72,12 +70,12 @@ class MaterialRemakesListFragment : CoreFragment<FragmentRemakesByMaterialBindin
 
     private fun initRvConfig() {
         binding?.let { layoutBinding ->
-            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemMaterialIngredientBinding>(
+            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding<ItemMaterialIngredientBinding>(
                     layoutId = R.layout.item_material_ingredient,
                     itemId = BR.item
             )
 
-            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+            recyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                     recyclerView = layoutBinding.rv,
                     items = vm.materialIngredients,
                     previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,

@@ -141,7 +141,7 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
                                 }
                     }
 
-                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                    layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_goods_list_counted,
                             itemId = BR.item,
                             onAdapterItemBind = { binding: ItemTileGoodsListCountedBinding, position: Int ->
@@ -160,7 +160,7 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-                    countedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    countedRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                             recyclerView = layoutBinding.rv,
                             previousPosInfo = countedRecyclerViewKeyHandler?.posInfo?.value,
                             items = vm.listCounted,
@@ -177,7 +177,7 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
                         container,
                         false)
                 .let { layoutBinding ->
-                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                    layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_goods_list_without_barcode,
                             itemId = BR.item,
                             onAdapterItemBind = { binding: ItemTileGoodsListWithoutBarcodeBinding, position: Int ->
@@ -193,7 +193,7 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-                    withoutBarcodeRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    withoutBarcodeRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                             recyclerView = layoutBinding.rv,
                             previousPosInfo = withoutBarcodeRecyclerViewKeyHandler?.posInfo?.value,
                             items = vm.listWithoutBarcode,
@@ -218,7 +218,7 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
                                 }
                     }
 
-                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                    layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_goods_list_to_processing,
                             itemId = BR.item,
                             onAdapterItemBind = { binding: ItemTileGoodsListToProcessingBinding, position: Int ->
@@ -237,7 +237,7 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-                    toProcessingRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    toProcessingRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                             recyclerView = layoutBinding.rv,
                             previousPosInfo = toProcessingRecyclerViewKeyHandler?.posInfo?.value,
                             items = vm.listToProcessing,
@@ -263,7 +263,7 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
                                 }
                     }
 
-                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                    layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_goods_list_processed,
                             itemId = BR.item,
                             onAdapterItemBind = { binding: ItemTileGoodsListProcessedBinding, position: Int ->
@@ -282,7 +282,7 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-                    processedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    processedRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                             recyclerView = layoutBinding.rv,
                             previousPosInfo = processedRecyclerViewKeyHandler?.posInfo?.value,
                             items = vm.listProcessed,

@@ -23,9 +23,6 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
-import com.lenta.shared.utilities.databinding.DataBindingAdapter
-import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
-import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
@@ -143,7 +140,7 @@ class NonExciseSetsPGEFragment : CoreFragment<FragmentNonExciseSetsPgeBinding, N
                                 }
                             }
 
-                            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                                     layoutId = R.layout.item_tile_non_excise_sets_components,
                                     itemId = BR.item,
                                     onAdapterItemBind = { binding: ItemTileNonExciseSetsComponentsBinding, position: Int ->
@@ -160,7 +157,7 @@ class NonExciseSetsPGEFragment : CoreFragment<FragmentNonExciseSetsPgeBinding, N
                             layoutBinding.vm = vm
                             layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-                            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                            recyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                                     recyclerView = layoutBinding.rv,
                                     previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
                                     items = vm.listComponents,

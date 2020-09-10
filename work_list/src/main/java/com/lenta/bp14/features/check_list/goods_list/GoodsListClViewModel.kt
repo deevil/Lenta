@@ -48,8 +48,6 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     val selectionsHelper = SelectionItemsHelper()
 
-    val selectedPage = MutableLiveData(0)
-
     val taskName = MutableLiveData("")
 
     val numberField: MutableLiveData<String> = MutableLiveData("")

@@ -4,11 +4,16 @@ import androidx.databinding.ViewDataBinding
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 
-abstract class KeyDownCoreFragment<T, S> :
-        CoreFragment<T, S>(), OnKeyDownListener where T : ViewDataBinding, S : CoreViewModel {
+abstract class KeyDownCoreFragment<T, S> : CoreFragment<T, S>(),
+        OnKeyDownListener where T : ViewDataBinding, S : CoreViewModel {
 
     override fun onKeyDown(keyCode: KeyCode): Boolean {
-        return recyclerViewKeyHandler?.onKeyDown(keyCode) ?: false
+        val keyHandler = getCurrentKeyHandler()
+        Logg.d { "--> keyHandler = $keyHandler" }
+
+        return getCurrentKeyHandler()?.onKeyDown(keyCode) ?: false
     }
+
 }

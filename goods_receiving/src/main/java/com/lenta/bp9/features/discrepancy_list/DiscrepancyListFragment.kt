@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -19,8 +18,6 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.databinding.DataBindingAdapter
-import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
@@ -114,7 +111,7 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
                         container,
                         false)
                 .let { layoutBinding ->
-                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                    layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_discrepancy_list_not_processed,
                             itemId = BR.item,
                             onAdapterItemBind = { binding: ItemTileDiscrepancyListNotProcessedBinding, position: Int ->
@@ -130,7 +127,7 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-                    notProcessedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    notProcessedRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                             recyclerView = layoutBinding.rv,
                             previousPosInfo = notProcessedRecyclerViewKeyHandler?.posInfo?.value,
                             items = vm.countNotProcessed,
@@ -155,7 +152,7 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
                         }
                     }
 
-                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                    layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_discrepancy_list_processed,
                             itemId = BR.item,
                             onAdapterItemBind = { binding: ItemTileDiscrepancyListProcessedBinding, position: Int ->
@@ -178,7 +175,7 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
                         container,
                         false)
                 .let { layoutBinding ->
-                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                    layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_discrepancy_list_control,
                             itemId = BR.item,
                             onAdapterItemBind = { binding: ItemTileDiscrepancyListControlBinding, position: Int ->
@@ -194,7 +191,7 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-                    controlRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    controlRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                             recyclerView = layoutBinding.rv,
                             previousPosInfo = controlRecyclerViewKeyHandler?.posInfo?.value,
                             items = vm.countControl,

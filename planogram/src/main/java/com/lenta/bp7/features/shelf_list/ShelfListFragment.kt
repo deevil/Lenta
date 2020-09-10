@@ -82,7 +82,7 @@ class ShelfListFragment : CoreFragment<FragmentShelfListBinding, ShelfListViewMo
                 }
             }
 
-            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                     layoutId = R.layout.item_shelf,
                     itemId = BR.shelf,
                     onAdapterItemBind = { binding: ItemShelfBinding, position: Int ->
@@ -93,7 +93,7 @@ class ShelfListFragment : CoreFragment<FragmentShelfListBinding, ShelfListViewMo
                     }
             )
 
-            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+            recyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                     recyclerView = layoutBinding.rv,
                     items = vm.shelves,
                     previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,

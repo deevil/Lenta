@@ -11,22 +11,12 @@ import android.view.LayoutInflater
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import android.view.ViewGroup
 import android.view.View
-import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import com.lenta.bp9.BR
 import com.lenta.bp9.databinding.*
-import com.lenta.bp9.features.goods_details.GoodsDetailsFragment
-import com.lenta.bp9.features.goods_list.GoodsListViewPages
-import com.lenta.bp9.model.task.TaskMarkingGoodsProperties
 import com.lenta.bp9.model.task.TaskProductInfo
-import com.lenta.bp9.model.task.TaskType
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
-import com.lenta.shared.utilities.Logg
-import com.lenta.shared.utilities.databinding.DataBindingAdapter
-import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
-import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.state.state
 
@@ -80,7 +70,7 @@ class MarkingGoodsDetailsFragment : CoreFragment<FragmentMarkingGoodsDetailsBind
                         container,
                         false).let { layoutBinding ->
 
-                    layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemTileMarkingGoodsDetailsPropertiesBinding>(
+                    layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding<ItemTileMarkingGoodsDetailsPropertiesBinding>(
                             layoutId = R.layout.item_tile_marking_goods_details_properties,
                             itemId = BR.item
                     )
@@ -105,7 +95,7 @@ class MarkingGoodsDetailsFragment : CoreFragment<FragmentMarkingGoodsDetailsBind
                         }
                     }
 
-                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                    layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_goods_details_del,
                             itemId = BR.item,
                             onAdapterItemBind = { binding: ItemTileGoodsDetailsDelBinding, position: Int ->

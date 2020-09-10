@@ -69,12 +69,12 @@ class TechOrdersListFragment : CoreFragment<FragmentTechOrdersListBinding, TechO
 
     private fun initRvConfig() {
         binding?.let { layoutBinding ->
-            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemTechOrderBinding>(
+            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding<ItemTechOrderBinding>(
                     layoutId = R.layout.item_tech_order,
                     itemId = BR.item
             )
 
-            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+            recyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                     recyclerView = layoutBinding.rv,
                     items = vm.allTechOrdersList,
                     previousPosInfo = recyclerViewKeyHandler?.posInfo?.value

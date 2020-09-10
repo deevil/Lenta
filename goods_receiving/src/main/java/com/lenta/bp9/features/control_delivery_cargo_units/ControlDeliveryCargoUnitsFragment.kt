@@ -4,13 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
 import com.lenta.bp9.BR
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.*
-import com.lenta.bp9.features.goods_information.general.GoodsInfoFragment
-import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.keys.KeyCode
@@ -22,13 +19,10 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
-import com.lenta.shared.utilities.databinding.DataBindingAdapter
-import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
-import com.lenta.shared.utilities.state.state
 
 class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCargoUnitsBinding, ControlDeliveryCargoUnitsViewModel>(),
         ViewPagerSettings,
@@ -92,7 +86,7 @@ class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCa
                             container,
                             false)
                     .let { layoutBinding ->
-                        layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                        layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                                 layoutId = R.layout.item_tile_control_delivery_cu,
                                 itemId = BR.item,
                                 onAdapterItemBind = { binding: ItemTileControlDeliveryCuBinding, position: Int ->
@@ -108,7 +102,7 @@ class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCa
                         layoutBinding.vm = vm
                         layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-                        notProcessedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                        notProcessedRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                                 recyclerView = layoutBinding.rv,
                                 previousPosInfo = notProcessedRecyclerViewKeyHandler?.posInfo?.value,
                                 items = vm.listNotProcessed,
@@ -125,7 +119,7 @@ class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCa
                         container,
                         false)
                 .let { layoutBinding ->
-                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                    layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_control_delivery_cu,
                             itemId = BR.item,
                             onAdapterItemBind = { binding: ItemTileControlDeliveryCuBinding, position: Int ->
@@ -141,7 +135,7 @@ class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCa
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-                    processedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    processedRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                             recyclerView = layoutBinding.rv,
                             previousPosInfo = processedRecyclerViewKeyHandler?.posInfo?.value,
                             items = vm.listProcessed,
@@ -160,7 +154,7 @@ class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCa
                             container,
                             false)
                     .let { layoutBinding ->
-                        layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                        layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                                 layoutId = R.layout.item_tile_control_delivery_cu,
                                 itemId = BR.item,
                                 onAdapterItemBind = { binding: ItemTileControlDeliveryCuBinding, position: Int ->
@@ -176,7 +170,7 @@ class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCa
                         layoutBinding.vm = vm
                         layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-                        notProcessedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                        notProcessedRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                                 recyclerView = layoutBinding.rv,
                                 previousPosInfo = notProcessedRecyclerViewKeyHandler?.posInfo?.value,
                                 items = vm.listNotProcessed,
@@ -193,7 +187,7 @@ class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCa
                         container,
                         false)
                 .let { layoutBinding ->
-                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                    layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_control_delivery_cu,
                             itemId = BR.item,
                             onAdapterItemBind = { binding: ItemTileControlDeliveryCuBinding, position: Int ->
@@ -209,7 +203,7 @@ class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCa
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-                    processedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    processedRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                             recyclerView = layoutBinding.rv,
                             previousPosInfo = processedRecyclerViewKeyHandler?.posInfo?.value,
                             items = vm.listProcessed,
@@ -236,7 +230,7 @@ class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCa
                                     }
                         }
 
-                        layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                        layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                                 layoutId = R.layout.item_tile_control_delivery_shipment_cu,
                                 itemId = BR.item,
                                 onAdapterItemBind = { binding: ItemTileControlDeliveryShipmentCuBinding, position: Int ->
@@ -255,7 +249,7 @@ class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCa
                         layoutBinding.vm = vm
                         layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-                        notProcessedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                        notProcessedRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                                 recyclerView = layoutBinding.rv,
                                 previousPosInfo = notProcessedRecyclerViewKeyHandler?.posInfo?.value,
                                 items = vm.listNotProcessed,
@@ -272,7 +266,7 @@ class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCa
                         container,
                         false)
                 .let { layoutBinding ->
-                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                    layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_control_delivery_cu,
                             itemId = BR.item,
                             onAdapterItemBind = { binding: ItemTileControlDeliveryCuBinding, position: Int ->
@@ -288,7 +282,7 @@ class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCa
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-                    processedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    processedRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                             recyclerView = layoutBinding.rv,
                             previousPosInfo = processedRecyclerViewKeyHandler?.posInfo?.value,
                             items = vm.listProcessed,

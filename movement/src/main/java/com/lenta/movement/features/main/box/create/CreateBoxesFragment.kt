@@ -59,7 +59,7 @@ class CreateBoxesFragment : CoreFragment<FragmentCreateBoxesBinding, CreateBoxes
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-        vm.selectedPage.observe(this, Observer { page ->
+        vm.selectedPageType.observe(this, Observer { page ->
             bottomToolbarUiModel.cleanAll()
 
             bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
@@ -91,7 +91,7 @@ class CreateBoxesFragment : CoreFragment<FragmentCreateBoxesBinding, CreateBoxes
     }
 
     override fun onToolbarButtonClick(view: View) {
-        when (vm.selectedPage.value) {
+        when (vm.selectedPageType.value) {
             CreateBoxesPage.FILLING -> {
                 when (view.id) {
                     R.id.b_2 -> vm.onRollbackClick()

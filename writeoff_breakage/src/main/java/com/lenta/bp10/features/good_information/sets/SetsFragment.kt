@@ -128,7 +128,7 @@ class SetsFragment :
                         }
                     }
 
-                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                    layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_sets,
                             itemId = BR.item,
                             onAdapterItemBind = { binding: ItemTileSetsBinding, position: Int ->
@@ -140,7 +140,7 @@ class SetsFragment :
                     )
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-                    recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    recyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                             recyclerView = layoutBinding.rv,
                             items = vm.componentsLiveData,
                             previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,

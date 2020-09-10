@@ -95,7 +95,7 @@ class IngredientsListFragment :
                 container,
                 false).let { layoutBinding ->
 
-            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemIngredientByOrderBinding>(
+            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding<ItemIngredientByOrderBinding>(
                     layoutId = R.layout.item_ingredient_by_order,
                     itemId = BR.item,
                     onAdapterItemBind = { binding, position ->
@@ -111,7 +111,7 @@ class IngredientsListFragment :
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-            byOrderRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+            byOrderRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                     recyclerView = layoutBinding.rv,
                     items = vm.ingredientsByOrder,
                     previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
@@ -128,7 +128,7 @@ class IngredientsListFragment :
                 container,
                 false).let { layoutBinding ->
 
-            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemIngredientByMaterialBinding>(
+            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding<ItemIngredientByMaterialBinding>(
                     layoutId = R.layout.item_ingredient_by_material,
                     itemId = BR.item,
                     onAdapterItemBind = { binding, position ->
@@ -144,7 +144,7 @@ class IngredientsListFragment :
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-            byMaterialRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+            byMaterialRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                     recyclerView = layoutBinding.rv,
                     items = vm.ingredientsByMaterial,
                     previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,

@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.lenta.bp9.BR
@@ -112,7 +111,7 @@ class ExciseAlcoBoxListFragment : CoreFragment<FragmentExciseAlcoBoxListBinding,
                             }
                         }
 
-                        layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                        layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                                 layoutId = R.layout.item_tile_excis_alco_box_list_not_processed,
                                 itemId = BR.item,
                                 onAdapterItemBind = { binding: ItemTileExcisAlcoBoxListNotProcessedBinding, position: Int ->
@@ -132,7 +131,7 @@ class ExciseAlcoBoxListFragment : CoreFragment<FragmentExciseAlcoBoxListBinding,
                         layoutBinding.vm = vm
                         layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-                        notProcessedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                        notProcessedRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                                 recyclerView = layoutBinding.rv,
                                 previousPosInfo = notProcessedRecyclerViewKeyHandler?.posInfo?.value,
                                 items = vm.countNotProcessed,
@@ -156,7 +155,7 @@ class ExciseAlcoBoxListFragment : CoreFragment<FragmentExciseAlcoBoxListBinding,
                         }
                     }
 
-                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                    layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_excise_alco_box_list_processed,
                             itemId = BR.item,
                             onAdapterItemBind = { binding: ItemTileExciseAlcoBoxListProcessedBinding, position: Int ->
@@ -176,7 +175,7 @@ class ExciseAlcoBoxListFragment : CoreFragment<FragmentExciseAlcoBoxListBinding,
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-                    processedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    processedRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                             recyclerView = layoutBinding.rv,
                             previousPosInfo = processedRecyclerViewKeyHandler?.posInfo?.value,
                             items = vm.countNotProcessed,

@@ -73,12 +73,12 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
 
     private fun initRvConfig() {
         binding?.let { layoutBinding ->
-            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemGoodBinding>(
+            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding<ItemGoodBinding>(
                     layoutId = R.layout.item_good,
                     itemId = BR.good
             )
 
-            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+            recyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                     recyclerView = layoutBinding.rv,
                     items = vm.goods,
                     previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,

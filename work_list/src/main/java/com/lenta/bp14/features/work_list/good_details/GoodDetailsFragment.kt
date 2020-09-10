@@ -68,7 +68,7 @@ class GoodDetailsFragment : CoreFragment<FragmentGoodDetailsBinding, GoodDetails
                             }
                         }
 
-                        layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                        layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                                 layoutId = R.layout.item_wl_shelf_life_quantity_selectable,
                                 itemId = BR.shelfLife,
                                 onAdapterItemBind = { binding: ItemWlShelfLifeQuantitySelectableBinding, position: Int ->
@@ -97,7 +97,7 @@ class GoodDetailsFragment : CoreFragment<FragmentGoodDetailsBinding, GoodDetails
                         }
                     }
 
-                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                    layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                             layoutId = R.layout.item_wl_comment_quantity_selectable,
                             itemId = BR.comment,
                             onAdapterItemBind = { binding: ItemWlCommentQuantitySelectableBinding, position: Int ->

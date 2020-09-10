@@ -94,7 +94,7 @@ class TaskGoodsFragment : CoreFragment<FragmentTaskGoodsBinding, TaskGoodsViewMo
                         layoutBinding.processedRecyclerView.adapter?.notifyItemChanged(itemPosition)
                     }
 
-                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                    layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                             layoutId = R.layout.layout_item_simple,
                             itemId = BR.item,
                             onAdapterItemBind = { binding: LayoutItemSimpleBinding, position ->
@@ -118,7 +118,7 @@ class TaskGoodsFragment : CoreFragment<FragmentTaskGoodsBinding, TaskGoodsViewMo
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-                    processedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    processedRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                             recyclerView = layoutBinding.processedRecyclerView,
                             items = vm.processedList,
                             previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
@@ -140,7 +140,7 @@ class TaskGoodsFragment : CoreFragment<FragmentTaskGoodsBinding, TaskGoodsViewMo
                         layoutBinding.basketRecyclerView.adapter?.notifyItemChanged(itemPosition)
                     }
 
-                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                    layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                             layoutId = R.layout.layout_item_simple,
                             itemId = BR.item,
                             onAdapterItemBind = { binding: LayoutItemSimpleBinding, position ->
@@ -159,7 +159,7 @@ class TaskGoodsFragment : CoreFragment<FragmentTaskGoodsBinding, TaskGoodsViewMo
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-                    basketRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    basketRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                             recyclerView = layoutBinding.basketRecyclerView,
                             items = vm.basketItemList,
                             previousPosInfo = basketRecyclerViewKeyHandler?.posInfo?.value,

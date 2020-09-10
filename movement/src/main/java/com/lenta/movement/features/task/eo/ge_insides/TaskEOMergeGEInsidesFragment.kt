@@ -57,7 +57,7 @@ class TaskEOMergeGEInsidesFragment : CoreFragment<FragmentTaskEoMergeGeInsidesBi
 
         binding?.apply {
             val vm = this@TaskEOMergeGEInsidesFragment.vm
-            rvConfig = initRecycleAdapterDataBinding(
+            rvConfig = oldInitRecycleAdapterDataBinding(
                     layoutId = R.layout.layout_item_simple,
                     itemId = BR.item,
                     onAdapterItemBind = { binding: LayoutItemSimpleBinding, position ->
@@ -73,7 +73,7 @@ class TaskEOMergeGEInsidesFragment : CoreFragment<FragmentTaskEoMergeGeInsidesBi
                     }
             )
 
-            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+            recyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                     recyclerView = recyclerView,
                     items = this@TaskEOMergeGEInsidesFragment.vm.eoItemsList,
                     previousPosInfo = recyclerViewKeyHandler?.posInfo?.value

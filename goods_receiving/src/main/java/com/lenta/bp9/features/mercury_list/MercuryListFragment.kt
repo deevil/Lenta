@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.lenta.bp9.BR
@@ -104,7 +103,7 @@ class MercuryListFragment : CoreFragment<FragmentMercuryListBinding, MercuryList
                             }
                         }
 
-                        layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                        layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                                 layoutId = R.layout.item_tile_mercury_list,
                                 itemId = BR.item,
                                 onAdapterItemBind = { binding: ItemTileMercuryListBinding, position: Int ->
@@ -124,7 +123,7 @@ class MercuryListFragment : CoreFragment<FragmentMercuryListBinding, MercuryList
                         layoutBinding.vm = vm
                         layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-                        tiedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                        tiedRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                                 recyclerView = layoutBinding.rv,
                                 previousPosInfo = tiedRecyclerViewKeyHandler?.posInfo?.value,
                                 items = vm.listTied,
@@ -148,7 +147,7 @@ class MercuryListFragment : CoreFragment<FragmentMercuryListBinding, MercuryList
                         }
                     }
 
-                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                    layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_mercury_list,
                             itemId = BR.item,
                             onAdapterItemBind = { binding: ItemTileMercuryListBinding, position: Int ->
@@ -168,7 +167,7 @@ class MercuryListFragment : CoreFragment<FragmentMercuryListBinding, MercuryList
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-                    untiedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    untiedRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                             recyclerView = layoutBinding.rv,
                             previousPosInfo = untiedRecyclerViewKeyHandler?.posInfo?.value,
                             items = vm.listUntied,

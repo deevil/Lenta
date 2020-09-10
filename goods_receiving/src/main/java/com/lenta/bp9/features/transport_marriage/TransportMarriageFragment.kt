@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.lenta.bp9.BR
@@ -19,8 +18,6 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
-import com.lenta.shared.utilities.databinding.DataBindingAdapter
-import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
@@ -74,7 +71,7 @@ class TransportMarriageFragment : CoreFragment<FragmentTransportMarriageBinding,
                             container,
                             false)
                     .let { layoutBinding ->
-                        layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                        layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                                 layoutId = R.layout.item_tile_transport_marriage_cargo_units,
                                 itemId = BR.item,
                                 onAdapterItemBind = { binding: ItemTileTransportMarriageCargoUnitsBinding, position: Int ->
@@ -91,7 +88,7 @@ class TransportMarriageFragment : CoreFragment<FragmentTransportMarriageBinding,
                         layoutBinding.vm = vm
                         layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-                        cargoUnitsRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                        cargoUnitsRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                                 recyclerView = layoutBinding.rv,
                                 previousPosInfo = cargoUnitsRecyclerViewKeyHandler?.posInfo?.value,
                                 items = vm.listCargoUnits,
@@ -115,7 +112,7 @@ class TransportMarriageFragment : CoreFragment<FragmentTransportMarriageBinding,
                         }
                     }
 
-                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                    layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_transport_marriage_act,
                             itemId = BR.item,
                             onAdapterItemBind = { binding: ItemTileTransportMarriageActBinding, position: Int ->
@@ -135,7 +132,7 @@ class TransportMarriageFragment : CoreFragment<FragmentTransportMarriageBinding,
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-                    actRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    actRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                             recyclerView = layoutBinding.rv,
                             previousPosInfo = actRecyclerViewKeyHandler?.posInfo?.value,
                             items = vm.listAct,

@@ -43,7 +43,7 @@ class TaskEOMergeEOInsidesFragment : CoreFragment<FragmentTaskEoMergeEoInsidesBi
         super.onViewCreated(view, savedInstanceState)
 
         binding?.apply {
-            rvConfig = initRecycleAdapterDataBinding(
+            rvConfig = oldInitRecycleAdapterDataBinding(
                     layoutId = R.layout.layout_item_eo_insides_goods_list,
                     itemId = BR.item,
                     onAdapterItemBind = { binding: LayoutItemEoInsidesGoodsListBinding, position ->
@@ -61,7 +61,7 @@ class TaskEOMergeEOInsidesFragment : CoreFragment<FragmentTaskEoMergeEoInsidesBi
                     }
             )
 
-            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+            recyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                     recyclerView = recyclerView,
                     items = this@TaskEOMergeEOInsidesFragment.vm.goodsItemList,
                     previousPosInfo = recyclerViewKeyHandler?.posInfo?.value
