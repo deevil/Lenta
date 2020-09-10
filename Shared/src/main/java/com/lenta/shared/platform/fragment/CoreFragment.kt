@@ -158,10 +158,9 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
             items: LiveData<List<Item>>,
             onClickHandler: ((Int) -> Unit)? = null
     ): DataBindingRecyclerViewConfig<T> {
-        val keyHandler = getKeyHandler(tabPosition) ?: initRecyclerViewKeyHandler(
+        val keyHandler = initRecyclerViewKeyHandler(
                 tabPosition = tabPosition,
                 recyclerView = recyclerView,
-                previousPosInfo = getKeyHandler(tabPosition)?.posInfo?.value,
                 items = items,
                 onClickHandler = onClickHandler
         )
@@ -218,16 +217,17 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
             tabPosition: Int,
             recyclerView: RecyclerView,
             items: LiveData<List<Item>>,
-            previousPosInfo: PosInfo? = null,
             onClickHandler: ((Int) -> Unit)? = null
     ): RecyclerViewKeyHandler<Item> {
         val keyHandler = RecyclerViewKeyHandler(
                 rv = recyclerView,
                 items = items,
                 lifecycleOwner = viewLifecycleOwner,
-                initPosInfo = previousPosInfo,
+                initPosInfo = getKeyHandler(tabPosition)?.posInfo?.value,
                 onClickPositionFunc = onClickHandler
         )
+
+        getKeyHandler(tabPosition)?.clear()
 
         keyHandlers[tabPosition] = keyHandler
 
