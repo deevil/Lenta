@@ -2,7 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".features.create_task.good_details.GoodDetailsCreateFragment">
+    tools:context=".features.good_information.marked.MarkedInfoFragment">
 
     <data>
 
@@ -68,11 +68,7 @@
 
         <!-- Список категорий -->
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginBottom="8dp"
-            android:layout_weight="1"
+            style="@style/RecyclerWithSomethingBellowStyle"
             app:items="@{vm.propertyList}"
             app:rv_config="@{rvConfig}"
             tools:listitem="@layout/item_marked_good_property" />
