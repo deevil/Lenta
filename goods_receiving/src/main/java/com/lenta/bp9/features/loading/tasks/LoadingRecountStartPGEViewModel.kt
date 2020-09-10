@@ -74,7 +74,7 @@ class LoadingRecountStartPGEViewModel : CoreLoadingViewModel() {
     private fun handleSuccess(result: StartRecountPGERestInfo) {
         launchUITryCatch {
             repoInMemoryHolder.manufacturers.value = result.manufacturers
-            repoInMemoryHolder.markingGoodsProperties.value = result.markingGoodsProperties.map { TaskMarkingGoodsProperties.from(it) }
+            repoInMemoryHolder.markingGoodsProperties.value = result.markingGoodsProperties?.map { TaskMarkingGoodsProperties.from(it) }
             taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
             taskManager.getReceivingTask()?.updateTaskWithContents(taskContents.getTaskContentsPGEInfo(result))
             screenNavigator.openGoodsListScreen(taskType = taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
