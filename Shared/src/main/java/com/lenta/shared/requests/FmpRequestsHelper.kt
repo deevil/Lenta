@@ -68,5 +68,5 @@ class FmpRequestsHelper(val hyperHive: HyperHive,
 
 interface SapResponse {
     val errorText: String?
-    val retCode: Int
+    val retCode: Int?
 }

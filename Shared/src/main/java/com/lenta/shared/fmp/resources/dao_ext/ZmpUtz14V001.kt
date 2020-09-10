@@ -168,8 +168,10 @@ fun ZmpUtz14V001.getPerishableHh(): Int? {
     return getParams("GRZ_PERISHABLE_HH").getOrNull(0)?.toIntOrNull()
 }
 
+fun ZmpUtz14V001.getBKSBasketVolume(): Double? {
+    return getParams("BKS_PALLET_VOL_KUBM").firstOrNull()?.toDoubleOrNull()
+}
 private fun ZmpUtz14V001.getParams(paramName: String): List<String> {
     @Suppress("INACCESSIBLE_TYPE")
     return localHelper_ET_PARAMS.getWhere("PARAMNAME = \"$paramName\"").map { it.paramvalue }
-
 }

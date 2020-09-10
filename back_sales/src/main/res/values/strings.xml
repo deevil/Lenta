@@ -2,7 +2,7 @@
     <string name="app_name">Возвраты</string>
 
     // Заголовки экранов
-    <string name="task_composition">Состав задания</string>
+    <string name="task_content">Состав задания</string>
     <string name="basket_good_list">Список товаров корзины</string>
     <string name="good_details">Детали по товару</string>
     <string name="task_list">Список заданий</string>
@@ -34,6 +34,7 @@
     <string name="task">Задание</string>
     <string name="tags">Признаки</string>
     <string name="consignments">Партии</string>
+    <string name="plan">План</string>
 
     // Информационные сообщения
     <string name="unsent_data_found_on_device">На устройстве обнаружены непереданные данные. Перейти к данным?</string>
@@ -58,10 +59,33 @@
     <string name="unknown_alcocode">Неизвестный алкокод</string>
     <string name="good_is_missing_in_task">Товар отсутствует в задании</string>
     <string name="incorrect_ean_format">Неверный формат штрихкода</string>
+    <string name="cant_scan_tobacco_pack_scan_carton">Добавление отдельной пачки запрещено. Отсканируйте целый блок.</string>
+    <string name="for_good_need_scan_first_mark">Для данного товара, необходимо дополнительно отсканировать марку.</string>
+
+    <string name="close_basket">Закрыть текущую корзину для редактирования? В случае согласия система запретит добавление товаров в текущую корзину.</string>
+    <string name="some_of_chosen_baskets_not_closed">Некоторые выбранные корзины не закрыты. Закройте корзины и повторите печать</string>
+    <string name="some_baskets_not_closed_cant_save">Некоторые корзины не закрыты. Сохранение заданий невозможно</string>
+    <string name="some_baskets_already_printed">По некоторым выделенным корзинам уже производилась печать. Продолжить?</string>
+    <string name="pallet_list_printed">Паллетный лист был успешно распечатан.</string>
+    <string name="open_basket">Открыть текущую корзину для редактирования? В случае согласия система разрешит добавление товаров в текущую корзину.</string>
+
+    <string name="good_not_found_error_msg">товар не найден</string>
+    <string name="goods_not_found_error_msg">товары не найден</string>
+    <string name="basket_not_found_error_msg">корзина не найдена</string>
+    <string name="task_not_found_error_msg">задание не найдено</string>
+    <string name="no_status_mark">Статус марки не найден</string>
+
+    <string name="quantity_more_than_planned">Превышено плановое количество. Добавление невозможно.</string>
+    <string name="mark_already_scanned_delete">Отсканированная марка уже была добавлена в задание. Удалить марку?</string>
+    <string name="carton_already_scanned_delete">Отсканированный блок уже был добавлен в задание. Удалить блок?</string>
+    <string name="box_already_scanned_delete">Отсканированная коробка уже была добавлена в задание. Удалить коробку?</string>
+    <string name="scanned_wrong_mrc">Отсканированный МРЦ товара, 1%s 2%s, не соответствует МРЦ заказа.</string>
+    <string name="no_settings_for_that_markType">Не заведена настройка присвоения группы маркировки текущему типу маркировки</string>
 
     // Описание иконок
     <string name="alcohol_good">Алкогольный товар</string>
     <string name="common_good">Обычный товар</string>
+    <string name="marked_good">Маркированный товар</string>
 
     // Наименование кнопок
     <string name="create_task">Создать задание</string>
@@ -100,6 +124,12 @@
     <string name="specify_supplier_sap">Укажите SAP-код поставщика</string>
     <string name="supplier_name">Наименование поставщика:</string>
     <string name="all_suppliers">Все поставщики</string>
+    <string name="wholesale_buyer">Оптовый покупатель</string>
     <string name="picking_warehouse">Склад\nкомплектации</string>
+    <string name="mrc">МРЦ</string>
+    <string name="gtin">GTIN</string>
+    <string name="property">Свойство</string>
+    <string name="value">Значение</string>
+    <string name="rub">руб</string>
 
 </resources>

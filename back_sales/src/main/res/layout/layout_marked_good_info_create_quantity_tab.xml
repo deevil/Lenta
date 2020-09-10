@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.lenta.bp12.features.create_task.marked_good_info.MarkedGoodInfoCreateFragment">
+
+    <data>
+        <variable
+            name="vm"
+            type="com.lenta.bp12.features.create_task.marked_good_info.MarkedGoodInfoCreateViewModel" />
+        <variable
+            name="parentVm"
+            type="com.lenta.bp12.features.create_task.base_good_info.BaseGoodInfoCreateViewModel" />
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Количество -->
+            <LinearLayout style="@style/LinearRowStyle">
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="1">
+
+                    <EditText
+                        style="@style/CellEditTextStyle"
+                        android:drawableEnd="@drawable/spinner_arrow_down_disabled"
+                        android:enabled="false"
+                        android:focusable="false"
+                        android:text="@{vm.accountingType}"
+                        tools:text="Количество" />
+
+                </LinearLayout>
+
+                <View style="@style/VerticalDivider" />
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="1">
+
+                    <com.lenta.shared.view.EditTextWithSuffix
+                        style="@style/CellEditTextStyle"
+                        android:enabled="@{vm.quantityFieldEnabled}"
+                        android:text="@{vm.quantityField}"
+                        app:digitsForUom="@{vm.good.commonUnits}"
+                        app:quantityTypeIcon="@{vm.good.isDifferentUnits()}"
+                        app:suffix="@{vm.good.commonUnits.name}"
+                        tools:drawableEnd="@drawable/ic_bei_12dp"
+                        tools:text="1 шт" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View style="@style/HorizontalDivider" />
+
+            <!-- Итого -->
+            <LinearLayout style="@style/LinearRowStyle">
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="1">
+
+                    <TextView
+                        style="@style/CellTextStyle"
+                        android:text="@{vm.totalTitle}"
+                        android:textColor="@color/color_text_title_header"
+                        tools:text="Итого*" />
+
+                    <TextView
+                        style="@style/CellTextStyle"
+                        android:text="@{vm.basketTitle}"
+                        android:textColor="@color/color_text_title_header"
+                        tools:text="*По корзине" />
+
+                </LinearLayout>
+
+                <View style="@style/VerticalDivider" />
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="1">
+
+                    <TextView
+                        style="@style/CellTextStyle"
+                        android:text="@{vm.totalWithUnits}"
+                        tools:text="1 шт" />
+
+                    <TextView
+                        style="@style/CellTextStyle"
+                        android:text="@{vm.basketQuantityWithUnits}"
+                        tools:text="1 шт" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View style="@style/HorizontalDivider" />
+
+            <!-- МРЦ -->
+            <LinearLayout style="@style/LinearRowStyle"
+                android:visibility="@{vm.isMrcVisible}">
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="1">
+
+                    <TextView
+                        style="@style/CellTextStyle"
+                        android:text="@string/mrc"
+                        android:textColor="@color/color_text_title_header" />
+
+                </LinearLayout>
+
+                <View style="@style/VerticalDivider" />
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="1">
+
+                    <EditText
+                        style="@style/CellEditTextStyle"
+                        android:text="@={vm.mrc}"
+                        tools:text="150 руб"
+                        android:enabled="false"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View style="@style/HorizontalDivider" />
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+</layout>

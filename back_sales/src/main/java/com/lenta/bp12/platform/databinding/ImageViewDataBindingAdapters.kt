@@ -31,6 +31,7 @@ fun setGoodKindIcon(imageView: ImageView, goodKind: GoodKind?) {
     imageView.setImageResource(when (goodKind) {
         GoodKind.ALCOHOL -> R.drawable.ic_no_excise_alco_32dp
         GoodKind.EXCISE -> R.drawable.ic_excise_alcohol_white_32dp
+        GoodKind.MARK -> R.drawable.ic_marked_white_32dp
         else -> R.drawable.ic_kandy_white_32dp
     }.also { iconRes ->
         imageView.setInvisible(goodKind == null)

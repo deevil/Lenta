@@ -10,7 +10,7 @@ import com.mobrun.plugin.models.StatusSelectTable;
 
 public class ZmpUtz42V001 {
 
-    public static final String NAME_RESOURCE = "ZMP_UTZ_42_V001";
+    public static final String NAME_RESOURCE = "ZMP_UTZ_42_V002";
     public static final String NAME_OUT_PARAM_ET_EXCLUDE_MATNR = "ET_EXCLUDE_MATNR";
     public static final String LIFE_TIME = "1 day, 0:00:00";
 
@@ -56,7 +56,9 @@ public class ZmpUtz42V001 {
         @SerializedName("MATKL")
         public String matkl;
 
-
+        /** Флаг – акцизный алкоголь */
+        @SerializedName("IS_EXC")
+        public String isExciseAlco;
     }
 
 
