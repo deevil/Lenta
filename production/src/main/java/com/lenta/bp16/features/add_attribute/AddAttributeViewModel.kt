@@ -8,6 +8,8 @@ import com.lenta.bp16.model.ProducerDataStatus
 import com.lenta.bp16.model.ZPartDataInfo
 import com.lenta.bp16.platform.Constants
 import com.lenta.bp16.platform.navigation.IScreenNavigator
+import com.lenta.bp16.repository.DatabaseRepository
+import com.lenta.bp16.repository.IDatabaseRepository
 import com.lenta.bp16.request.ingredients_use_case.get_data.GetProducerDataInfoUseCase
 import com.lenta.bp16.request.ingredients_use_case.get_data.GetZPartDataInfoUseCase
 import com.lenta.bp16.request.ingredients_use_case.set_data.SetAddAttributeInfoUseCase
@@ -18,6 +20,7 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.network.ServerTime
 import com.lenta.shared.requests.network.ServerTimeRequest
 import com.lenta.shared.requests.network.ServerTimeRequestParam
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.getFormattedDate
 import javax.inject.Inject
@@ -32,6 +35,9 @@ class AddAttributeViewModel : CoreViewModel() {
 
     @Inject
     lateinit var sessionInfo: ISessionInfo
+
+    @Inject
+    lateinit var database: IDatabaseRepository
 
     @Inject
     lateinit var serverTimeRequest: ServerTimeRequest
@@ -84,6 +90,10 @@ class AddAttributeViewModel : CoreViewModel() {
     }
 
     val timeFieldVisibleCondition by unsafeLazy {
+
+        launchUITryCatch {
+            val timeParams = database.getPerishable()
+        }
         false
         //TODO: Реализовать логику отображения поля времени
        /* var convertedTime: Int

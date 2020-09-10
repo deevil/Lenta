@@ -76,7 +76,7 @@ class AddAttributeFragment : CoreFragment<FragmentAddAttributeBinding, AddAttrib
     }
 
     companion object {
-        private const val SCREEN_NUMBER = "16/06"
+        private const val SCREEN_NUMBER = "16/83"
         private const val KEY_MATERIAL = "KEY_MATERIAL"
         private const val KEY_NAME = "KEY_NAME"
         private const val KEY_PARENT_CODE = "KEY_PARENT_CODE"
