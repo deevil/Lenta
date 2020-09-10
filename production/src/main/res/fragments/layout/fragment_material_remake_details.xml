@@ -203,8 +203,8 @@
 
                 <ImageButton
                     android:enabled="@{vm.addPartAttributeEnable}"
-                    android:layout_width="@dimen/size_40dp"
-                    android:layout_height="@dimen/size_40dp"
+                    android:layout_width="@dimen/size_32dp"
+                    android:layout_height="@dimen/size_32dp"
                     android:layout_marginEnd="@dimen/margin_small"
                     android:onClick="@{(v) -> vm.onClickAddAttributeButton()}"
                     android:background="@drawable/bg_border_rectangle"
