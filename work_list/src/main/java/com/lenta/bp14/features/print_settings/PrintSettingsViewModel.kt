@@ -248,7 +248,7 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
                     ProductInfoParams(
                             withProductInfo = true.toSapBooleanString(),
                             withAdditionalInf = true.toSapBooleanString(),
-                            tkNumber = sessionInfo.market!!,
+                            tkNumber = sessionInfo.market.orEmpty(),
                             taskType = "ПЦН",
                             eanList = if (eanCode != null) listOf(EanParam(eanCode)) else null,
                             matNrList = if (matNr != null) listOf(MatNrParam(matNr)) else null
