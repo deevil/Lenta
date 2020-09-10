@@ -64,7 +64,6 @@ class AddAttributeFragment : CoreFragment<FragmentAddAttributeBinding, AddAttrib
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            //R.id.b_1 -> vm.onClickBack()
             R.id.b_5 -> vm.onClickComplete()
         }
     }
