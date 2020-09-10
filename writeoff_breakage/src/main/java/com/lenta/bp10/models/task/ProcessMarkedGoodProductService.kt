@@ -13,18 +13,6 @@ class ProcessMarkedGoodProductService(
 ) : IProcessProductService {
 
     override fun getTotalCount(): Double {
-        //TODO (Borisenko) оставил до выяснения такой такой реализации этого метода
-        // (Артем И., 09.04.2019) по данному продукту ИТОГО причин списания + кол-во марок
-        /*val arrTaskWriteOffReason = taskRepository.getWriteOffReasons().findWriteOffReasonsOfProduct(productInfo)
-        val arrTaskExciseStamp = taskRepository.getExciseStamps().findExciseStampsOfProduct(productInfo)
-        var totalCount = 0.0
-        for (i in arrTaskWriteOffReason.indices) {
-            totalCount = totalCount + arrTaskWriteOffReason[i].count
-
-        }
-
-        totalCount = totalCount + arrTaskExciseStamp.size*/
-
         return taskRepository.getTotalCountForProduct(productInfo)
     }
 
@@ -36,35 +24,37 @@ class ProcessMarkedGoodProductService(
         return WriteOffTask(taskDescription, taskRepository)
     }
 
-    fun add(reason: WriteOffReason, count: Double, stamp: TaskExciseStamp? = null): ProcessMarkedGoodProductService {
+    fun add(writeOffReason: WriteOffReason, count: Double, stamp: TaskExciseStamp? = null): ProcessMarkedGoodProductService {
         // добавить товар если его нету в таске товаров, в репозитории найти причину списания для данного товара, если есть, то увеличить count иначе создать новый, добавить марку
         if (stamp != null && taskRepository.getExciseStamps().isContainsStamp(stamp.code)) {
             return ProcessMarkedGoodProductService(taskDescription, taskRepository, productInfo)
         }
-        var taskWriteOfReason = TaskWriteOffReason(reason, productInfo.materialNumber, count)
+
+        var taskWriteOfReason = TaskWriteOffReason(writeOffReason, productInfo.materialNumber, count)
         if (taskRepository.getProducts().findProduct(productInfo) == null) {
             taskRepository.getProducts().addProduct(productInfo)
             taskRepository.getWriteOffReasons().addWriteOffReason(taskWriteOfReason)
         } else {
             val arrTaskWriteOffReason = taskRepository.getWriteOffReasons().findWriteOffReasonsOfProduct(productInfo)
-            var index = -1
-            for (i in arrTaskWriteOffReason.indices) {
-                if (reason == arrTaskWriteOffReason[i].writeOffReason) {
+            var lastIndex = -1
+
+            arrTaskWriteOffReason.forEachIndexed { index, reason ->
+                if(writeOffReason == reason.writeOffReason) {
                     taskRepository.getWriteOffReasons().deleteWriteOffReason(taskWriteOfReason)
-                    val newCount: Double
-                    newCount = arrTaskWriteOffReason[i].count + count
-                    taskWriteOfReason = TaskWriteOffReason(reason, productInfo.materialNumber, newCount)
+                    val newCount = arrTaskWriteOffReason[index].count + count
+                    taskWriteOfReason = TaskWriteOffReason(writeOffReason, productInfo.materialNumber, newCount)
                     taskRepository.getWriteOffReasons().addWriteOffReason(taskWriteOfReason)
-                    index = i
+
+                    lastIndex = index
                 }
             }
 
-            if (index == -1) {
+            if (lastIndex == -1) {
                 taskRepository.getWriteOffReasons().addWriteOffReason(taskWriteOfReason)
             }
-
         }
-        addStamp(reason, stamp)
+
+        addStamp(writeOffReason, stamp)
         return ProcessMarkedGoodProductService(taskDescription, taskRepository, productInfo)
     }
 
@@ -78,6 +68,5 @@ class ProcessMarkedGoodProductService(
 
         return true
     }
-
 
 }

@@ -121,13 +121,11 @@ class SearchProductDelegate @Inject constructor(
             if (checksEnabled && database.isChkOwnpr(taskTypeCode)) {
                 navigator.showProgress(permissionToWriteoffNetRequest)
 
-                launch {
-                    permissionToWriteoffNetRequest(
-                            PermissionToWriteoffPrams(
-                                    matnr = scanInfoResult!!.productInfo.materialNumber,
-                                    werks = sessionInfo.market!!)
-                    ).either(::handleFailure, ::handlePermissionsSuccess)
-                }
+                permissionToWriteoffNetRequest(
+                        PermissionToWriteoffPrams(
+                                matnr = scanInfoResult!!.productInfo.materialNumber,
+                                werks = sessionInfo.market!!)
+                ).either(::handleFailure, ::handlePermissionsSuccess)
 
                 checksEnabled = false
                 navigator.hideProgress()

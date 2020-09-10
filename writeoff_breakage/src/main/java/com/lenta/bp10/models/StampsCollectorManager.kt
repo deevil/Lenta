@@ -11,7 +11,6 @@ class StampsCollectorManager @Inject constructor() {
 
     private var componentsAlcoholStampCollector: AlcoholStampCollector? = null
 
-
     fun newStampCollector(processExciseAlcoProductService: ProcessExciseAlcoProductService) {
         setsAlcoholStampCollector = AlcoholStampCollector(
                 processExciseAlcoProductService
@@ -24,9 +23,7 @@ class StampsCollectorManager @Inject constructor() {
     fun clearAllStampsCollectors() {
         setsAlcoholStampCollector?.clear()
         componentsAlcoholStampCollector?.clear()
-
     }
-
 
     fun clearComponentsStampCollector() {
         componentsAlcoholStampCollector?.clear()
@@ -49,6 +46,6 @@ class StampsCollectorManager @Inject constructor() {
             return false
         }
         return componentsAlcoholStampCollector!!.add(materialNumber, setMaterialNumber, writeOffReason, isBadStamp)
-
     }
+
 }

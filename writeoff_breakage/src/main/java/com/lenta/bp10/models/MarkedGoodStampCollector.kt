@@ -10,6 +10,7 @@ import com.lenta.bp10.models.task.WriteOffReason
 import com.lenta.bp10.requests.network.pojo.MarkInfo
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.orIfNull
 
 class MarkedGoodStampCollector(private val processMarkedGoodProductService: ProcessMarkedGoodProductService) {
 
@@ -136,7 +137,7 @@ class MarkedGoodStampCollector(private val processMarkedGoodProductService: Proc
     }
 
     fun isNotEmpty(): Boolean {
-        return countLiveData.value ?: 0.0 > 0.0
+        return countLiveData.value.orIfNull { 0.0 } > 0.0
     }
 
     fun getCount(materialNumber: String): Double {
@@ -158,5 +159,3 @@ class MarkedGoodStampCollector(private val processMarkedGoodProductService: Proc
     }
 
 }
-
-
