@@ -21,6 +21,7 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.orIfNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -350,12 +351,16 @@ class MaterialRemakeDetailsViewModel : CoreViewModel() {
     }
 
     fun onClickAddAttributeButton() {
-        val ingredient = materialIngredient.value
-        val material = parentCode
-        val name = ingredient?.name.orEmpty()
-        val operation = ingredient?.ltxa1.orEmpty()
-        val shelfLife = ingredient?.shelfLife.orEmpty()
-        navigator.openAddAttributeScreen(material, name, operation, shelfLife)
+        val materialIngredient = materialIngredient.value
+        materialIngredient?.let {
+            val material = parentCode
+            val name = it.name.orEmpty()
+            val operation = it.ltxa1.orEmpty()
+            val shelfLife = it.shelfLife.orEmpty()
+            navigator.openAddAttributeScreen(material, name, operation, shelfLife)
+        }.orIfNull {
+            navigator.showOrderIngredientErrorScreen()
+        }
     }
 
     fun onScanResult(data: String) {

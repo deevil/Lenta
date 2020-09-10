@@ -33,6 +33,7 @@ import com.lenta.bp16.features.warehouse_selection.WarehouseSelectionFragment
 import com.lenta.bp16.model.ingredients.IngredientInfo
 import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
 import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
+import com.lenta.bp16.model.ingredients.IngredientUI
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
 import com.lenta.bp16.model.pojo.GoodParams
 import com.lenta.bp16.platform.Constants
@@ -477,6 +478,16 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showOrderIngredientErrorScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.tw_order_ingredient_error),
+                    iconRes = R.drawable.ic_warning_red_80dp,
+                    pageNumber = Constants.ALERT_FRAGMENT
+            ))
+        }
+    }
+
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -533,4 +544,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun showAlertWrongTime()
     fun showAlertShelfLifeExpired()
     fun showAlertProducerCodeNotFound()
+    fun showOrderIngredientErrorScreen()
 }

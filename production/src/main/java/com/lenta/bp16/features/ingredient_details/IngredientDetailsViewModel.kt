@@ -19,6 +19,7 @@ import com.lenta.bp16.request.ingredients_use_case.get_data.GetZPartDataInfoUseC
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.orIfNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -304,6 +305,7 @@ class IngredientDetailsViewModel : CoreViewModel() {
         }
     }
 
+
     fun onCompleteClicked() = launchUITryCatch {
         val weight = total.value ?: 0.0
 
@@ -371,10 +373,14 @@ class IngredientDetailsViewModel : CoreViewModel() {
 
     fun onClickAddAttributeButton() {
         val orderIngredient = orderIngredient.value
-        val material = orderIngredient?.getFormattedMaterial().orEmpty()
-        val name = orderIngredient?.name.orEmpty()
-        val shelfLife = orderIngredient?.shelfLife.orEmpty()
-        navigator.openAddAttributeScreen(material, name, parentCode, shelfLife)
+        orderIngredient?.let {
+            val material = it.getFormattedMaterial()
+            val name = it.name.orEmpty()
+            val shelfLife = it.shelfLife.orEmpty()
+            navigator.openAddAttributeScreen(material, name, parentCode, shelfLife)
+        }.orIfNull {
+            navigator.showOrderIngredientErrorScreen()
+        }
     }
 
     fun onClickAdd() {
