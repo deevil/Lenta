@@ -151,8 +151,8 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
             itemId: Int,
             onAdapterItemCreate: ((T) -> Unit)? = null,
             onAdapterItemBind: ((T, Int) -> Unit)? = null,
-            onAdapterItemBindKeyHandler: ((T, keyHandler: RecyclerViewKeyHandler<*>?, Int) -> Unit)? = ::onAdapterBindHandler,
-            onAdapterItemClicked: ((keyHandler: RecyclerViewKeyHandler<*>?, Int) -> Unit)? = ::onAdapterItemClickHandler,
+            onAdapterItemBindKeyHandler: ((T, Int, keyHandler: RecyclerViewKeyHandler<*>?) -> Unit)? = ::onAdapterBindHandler,
+            onAdapterItemClicked: ((Int, keyHandler: RecyclerViewKeyHandler<*>?) -> Unit)? = ::onAdapterItemClickHandler,
             tabPosition: Int,
             recyclerView: RecyclerView,
             items: LiveData<List<Item>>,
@@ -176,11 +176,11 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
 
                     override fun onBind(binding: T, position: Int) {
                         onAdapterItemBind?.invoke(binding, position)
-                        onAdapterItemBindKeyHandler?.invoke(binding, keyHandler, position)
+                        onAdapterItemBindKeyHandler?.invoke(binding, position, keyHandler)
                     }
                 },
                 onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                    onAdapterItemClicked?.invoke(keyHandler, position)
+                    onAdapterItemClicked?.invoke(position, keyHandler)
                 }
         )
     }
@@ -255,7 +255,7 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
         }
     }
 
-    protected open fun onAdapterBindHandler(bindItem: ViewBinding, keyHandler: RecyclerViewKeyHandler<*>?, position: Int) {
+    protected open fun onAdapterBindHandler(bindItem: ViewBinding, position: Int, keyHandler: RecyclerViewKeyHandler<*>?) {
         keyHandler?.let {
             bindItem.root.isSelected = it.isSelected(position)
         }
@@ -265,7 +265,7 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
         recyclerViewKeyHandler?.onItemClicked(position)
     }
 
-    protected open fun onAdapterItemClickHandler(keyHandler: RecyclerViewKeyHandler<*>? = null, position: Int) {
+    protected open fun onAdapterItemClickHandler(position: Int, keyHandler: RecyclerViewKeyHandler<*>?) {
         keyHandler?.onItemClicked(position)
     }
 
