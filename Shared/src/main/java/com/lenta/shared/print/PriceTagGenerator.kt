@@ -214,9 +214,15 @@ enum class PrintTemplate(
         val printerType: NetPrinterType,
         val templatePath: String
 ) {
-    Zebra_Red_6_6(NetPrinterType.Zebra, "print_templates/Red6x6_Zebra.zpl"),
-    Zebra_Yellow_6_6(NetPrinterType.Zebra, "print_templates/Yellow6x6_Zebra.zpl"),
-    Datamax_Red_6_6(NetPrinterType.Oneil, "print_templates/Red6x6_Datamax.trf"),
-    Datamax_Yellow_6_6(NetPrinterType.Oneil, "print_templates/Yellow6x6_Datamax.trf")
+    ZEBRA_RED_6_6(NetPrinterType.Zebra, "print_templates/Red6x6_Zebra.zpl"),
+    ZEBRA_YELLOW_6_6(NetPrinterType.Zebra, "print_templates/Yellow6x6_Zebra.zpl"),
+    ZEBRA_RED_SMALL(NetPrinterType.Zebra,"print_templates/RedSmall_Zebra.zpl"),
+    ZEBRA_YELLOW_BIG(NetPrinterType.Zebra,"print_templates/YellowBig_Zebra.zpl"),
+    ZEBRA_YELLOW_SMALL(NetPrinterType.Zebra,"print_templates/YellowSmall_Zebra.zpl"),
+    DATAMAX_RED_6_6(NetPrinterType.Oneil, "print_templates/Red6x6_Datamax.trf"),
+    DATAMAX_YELLOW_6_6(NetPrinterType.Oneil, "print_templates/Yellow6x6_Datamax.trf"),
+    DATAMAX_RED_SMALL(NetPrinterType.Oneil,"print_templates/RedSmall_Datamax.trf"),
+    DATAMAX_YELLOW_BIG(NetPrinterType.Oneil,"print_templates/YellowBig_Datamax.trf"),
+    DATAMAX_YELLOW_SMALL(NetPrinterType.Oneil,"print_templates/YellowSmall_Datamax.trf")
 }
 
