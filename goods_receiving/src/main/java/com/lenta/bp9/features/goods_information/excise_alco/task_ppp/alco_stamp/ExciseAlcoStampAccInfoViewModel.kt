@@ -3,7 +3,7 @@ package com.lenta.bp9.features.goods_information.excise_alco.task_ppp.alco_stamp
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp9.R
-import com.lenta.bp9.features.goods_list.SearchProductDelegate
+import com.lenta.bp9.features.delegates.SearchProductDelegate
 import com.lenta.bp9.model.processing.ProcessExciseAlcoStampAccService
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskBatchInfo

@@ -2,7 +2,7 @@ package com.lenta.bp9.model.task
 
 import com.lenta.shared.models.core.*
 
-//ET_TASK_POS Таблица состава задания ППП (ZSGRZ_TASK_DS_POS_EXCH)
+//ET_TASK_POS Таблица состава задания ППП
 class TaskProductInfo(materialNumber: String,
                       description: String,
                       uom: Uom,

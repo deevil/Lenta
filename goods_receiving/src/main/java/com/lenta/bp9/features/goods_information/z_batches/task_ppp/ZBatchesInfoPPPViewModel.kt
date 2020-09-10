@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
 import com.lenta.bp9.features.goods_information.base.BaseGoodsInfoImpl
-import com.lenta.bp9.features.goods_list.SearchProductDelegate
+import com.lenta.bp9.features.delegates.SearchProductDelegate
 import com.lenta.bp9.model.processing.ProcessZBatchesPPPService
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_DELIVERY_ERRORS
@@ -14,7 +14,6 @@ import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.date_time.DateTimeUtil
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.launchUITryCatch
@@ -384,7 +383,7 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfoImpl() {
         }
 
         if (!isCorrectTime(enteredTime.value) && isVisibilityEnteredTime.value == true) {
-            screenNavigator.openAlertNotCorrectDate()
+            screenNavigator.openAlertNotCorrectTime()
             return
         }
 
@@ -499,14 +498,12 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfoImpl() {
                 //блок 6.147
                 if (countWithoutParamGrsGrundNeg > 0.0) {//блок 6.147 (да)
                     //блок 6.145
-                    val shelfLifeDate = formatterERP.format(formatterRU.parse(enteredDate.value.orEmpty()))
-                    val shelfLifeTime = enteredTime.value.orEmpty().replace(":", "") + "00"
                     processZBatchesPPPService.addWithoutUnderload(
                             typeDiscrepancies = paramGrsGrundNegValue,
                             count = countWithoutParamGrsGrundNeg.toString(),
                             manufactureCode = currentManufactureCode,
-                            shelfLifeDate = shelfLifeDate,
-                            shelfLifeTime = shelfLifeTime
+                            shelfLifeDate = getShelfLifeDate(),
+                            shelfLifeTime = getShelfLifeTime()
                     )
                     //блок 6.172
                     saveCategory()
@@ -578,9 +575,7 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfoImpl() {
             val calculationTwo = productOrigQuantity - processZBatchesPPPService.getQuantityAllCategory(enteredCount)
             val calculation = if (calculationOne < calculationTwo) calculationOne else calculationTwo
             if (calculation > 0.0) {
-                val shelfLifeDate = formatterERP.format(formatterRU.parse(enteredDate.value.orEmpty()))
-                val shelfLifeTime = enteredTime.value.orEmpty().replace(":", "") + "00"
-                processZBatchesPPPService.add(calculation.toString(), "41", currentManufactureCode, shelfLifeDate, shelfLifeTime)
+                processZBatchesPPPService.add(calculation.toString(), "41", currentManufactureCode, getShelfLifeDate(), getShelfLifeTime())
             }
         }
 
@@ -607,7 +602,8 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfoImpl() {
     }
 
     private fun getShelfLifeDate(): String {
-        return if (currentTermControlCode == TERM_CONTROL_CODE_PRODUCTION_DATE) {
+        return if (currentTermControlCode == TERM_CONTROL_CODE_PRODUCTION_DATE
+                && currentQualityInfoCode == TYPE_DISCREPANCIES_QUALITY_NORM) {
             val shelfLife = Calendar.getInstance()
             shelfLife.time = formatterRU.parse(enteredDate.value)
             shelfLife.add(Calendar.DATE, generalShelfLife.value?.toInt() ?: 0)

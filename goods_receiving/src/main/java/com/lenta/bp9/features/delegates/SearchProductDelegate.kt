@@ -1,4 +1,4 @@
-package com.lenta.bp9.features.goods_list
+package com.lenta.bp9.features.delegates
 
 import android.content.Context
 import com.lenta.bp9.R

@@ -1,20 +1,15 @@
 package com.lenta.bp9.features.goods_information.mercury
 
 import android.annotation.SuppressLint
-import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
 import com.lenta.bp9.features.goods_information.base.BaseGoodsInfoImpl
-import com.lenta.bp9.features.goods_list.SearchProductDelegate
+import com.lenta.bp9.features.delegates.SearchProductDelegate
 import com.lenta.bp9.model.processing.*
 import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants
-import com.lenta.bp9.platform.navigation.IScreenNavigator
-import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.shared.models.core.Uom
-import com.lenta.shared.platform.constants.Constants.DATE_FORMAT_dd_mm_yyyy
-import com.lenta.shared.platform.constants.Constants.DATE_FORMAT_yyyy_mm_dd
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.extentions.combineLatest
@@ -25,7 +20,6 @@ import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import org.joda.time.DateTime
 import org.joda.time.Days
-import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 

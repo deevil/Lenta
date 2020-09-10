@@ -5,7 +5,7 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
-import com.lenta.bp9.features.goods_list.SearchProductDelegate
+import com.lenta.bp9.features.delegates.SearchProductDelegate
 import com.lenta.bp9.model.processing.ProcessNonExciseAlcoProductService
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskBatchInfo

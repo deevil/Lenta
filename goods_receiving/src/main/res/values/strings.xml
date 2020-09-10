@@ -352,5 +352,5 @@
     <string name="printing_by_goods">Печать по товарам</string>
     <string name="no_ip_printer_alert">IP адрес принтера не указан</string>
     <string name="save_counted_quantities_and_go_to_label_printing">Сохранить посчитанные количества в SAP ERP и перейти к печати этикеток?</string>
-
+    <string name="alert_not_correct_time">Некорректное время</string>
 </resources>

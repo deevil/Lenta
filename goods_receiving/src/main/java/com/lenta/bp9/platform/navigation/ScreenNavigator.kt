@@ -73,6 +73,10 @@ import com.lenta.bp9.model.task.revise.DeliveryDocumentRevise
 import com.lenta.bp9.model.task.revise.DeliveryProductDocumentRevise
 import com.lenta.bp9.model.task.revise.ProductDocumentType
 import com.lenta.bp9.model.task.revise.ProductVetDocumentRevise
+import com.lenta.bp9.platform.navigation.ScreenNavigatorPageNumberConstant.PAGE_NUMBER_94
+import com.lenta.bp9.platform.navigation.ScreenNavigatorPageNumberConstant.PAGE_NUMBER_95
+import com.lenta.bp9.platform.navigation.ScreenNavigatorPageNumberConstant.PAGE_NUMBER_96
+import com.lenta.bp9.platform.navigation.ScreenNavigatorPageNumberConstant.PAGE_NUMBER_97
 import com.lenta.bp9.requests.network.TaskListSearchParams
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
@@ -81,11 +85,6 @@ import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.navigation.runOrPostpone
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.progress.IProgressUseCaseInformator
-
-private const val PAGE_NUMBER_94 = "94"
-private const val PAGE_NUMBER_95 = "95"
-private const val PAGE_NUMBER_96 = "96"
-private const val PAGE_NUMBER_97 = "97"
 
 class ScreenNavigator(
         private val context: Context,
@@ -1756,9 +1755,17 @@ class ScreenNavigator(
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
                     leftButtonDecorationInfo = ButtonDecorationInfo.no,
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes,
-                    pageNumber = PAGE_NUMBER_94)
+                    pageNumber = PAGE_NUMBER_94), disableAnimations = true
             )
         }
+    }
+
+    override fun openAlertNotCorrectTime() {
+        openAlertScreen(message = context.getString(R.string.alert_not_correct_time),
+                iconRes = R.drawable.ic_info_pink_80dp,
+                textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                pageNumber = PAGE_NUMBER_96
+        )
     }
 
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
@@ -1959,4 +1966,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openPrintLabelsCountCopiesScreen(labels: List<LabelPrintingItem>? = null)
     fun showAlertNoIpPrinter()
     fun openSaveCountedQuantitiesAndGoToLabelPrintingDialog(yesCallbackFunc: () -> Unit)
+    fun openAlertNotCorrectTime()
 }
