@@ -1,6 +1,7 @@
 package com.lenta.bp9.features.loading.tasks
 
 import android.content.Context
+import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp9.R
 import com.lenta.bp9.features.reject.RejectType
@@ -172,7 +173,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
         //screenNavigator.goBack()
         launchUITryCatch {
             repoInMemoryHolder.manufacturers.value = result.manufacturers
-            repoInMemoryHolder.markingGoodsProperties.value = result.markingGoodsProperties.map { TaskMarkingGoodsProperties.from(it) }
+            repoInMemoryHolder.markingGoodsProperties.value = result.markingGoodsProperties?.map { TaskMarkingGoodsProperties.from(it) }
             //todo закомичено, т.к. на проде этот фунционал пока не реализован repoInMemoryHolder.processOrderData.value = result.processOrderData.map { TaskProcessOrderDataInfo.from(it) }
             repoInMemoryHolder.sets.value = result.setsInfo.map { TaskSetsInfo.from(hyperHive, it) }
             val taskHeader = repoInMemoryHolder.taskList.value
@@ -232,7 +233,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
         //screenNavigator.goBack()
         launchUITryCatch {
             repoInMemoryHolder.manufacturers.value = result.manufacturers
-            repoInMemoryHolder.markingGoodsProperties.value = result.markingGoodsProperties.map { TaskMarkingGoodsProperties.from(it) }
+            repoInMemoryHolder.markingGoodsProperties.value = result.markingGoodsProperties?.map { TaskMarkingGoodsProperties.from(it) }
             repoInMemoryHolder.sets.value = result.setsInfo.map { TaskSetsInfo.from(hyperHive, it) }
             val taskHeader = repoInMemoryHolder.taskList.value
                     ?.tasks
@@ -355,7 +356,8 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                     }
                 }
                 TaskStatus.Recounting -> {
-                    screenNavigator.openGoodsListScreen(task.taskHeader.taskType)
+                  screenNavigator.openGoodsListScreen(task.taskHeader.taskType)
+
                 }
                 TaskStatus.TransferringToSection -> {
                     screenNavigator.openTransferGoodsSectionScreen()

@@ -120,6 +120,7 @@
     <string name="alcohol">Алкоголь</string>
     <string name="excise_alcohol">Акцизный алкоголь</string>
     <string name="marked_product">Маркированный товар</string>
+    <string name="vrus">Вино России</string>
     <string name="self_life">Срок годности</string>
 
 </resources>
