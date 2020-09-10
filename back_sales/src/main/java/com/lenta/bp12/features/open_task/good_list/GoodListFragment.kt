@@ -88,7 +88,7 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
         layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                 layoutId = R.layout.item_good_list_processing,
                 itemId = BR.item,
-                onAdapterItemBind = { binding: ItemGoodListProcessingBinding, position: Int ->
+                onItemBind = { binding: ItemGoodListProcessingBinding, position: Int ->
                     binding.tvItemNumber.tag = position
                     if (!vm.isTaskStrict) {
                         binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
@@ -123,7 +123,7 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
         layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                 layoutId = R.layout.item_good_list_processed,
                 itemId = BR.item,
-                onAdapterItemBind = { binding: ItemGoodListProcessedBinding, position: Int ->
+                onItemBind = { binding: ItemGoodListProcessedBinding, position: Int ->
                     binding.tvItemNumber.tag = position
                     binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                     binding.selectedForDelete = vm.processedSelectionsHelper.isSelected(position)
@@ -156,7 +156,7 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
         layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                 layoutId = R.layout.item_wholesale_basket,
                 itemId = BR.item,
-                onAdapterItemBind = { binding: ItemWholesaleBasketBinding, position: Int ->
+                onItemBind = { binding: ItemWholesaleBasketBinding, position: Int ->
                     binding.tvItemNumber.tag = position
                     binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                     binding.selectedForDelete = vm.basketSelectionsHelper.isSelected(position)
@@ -190,7 +190,7 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
         layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                 layoutId = R.layout.item_task_content_common_basket,
                 itemId = BR.item,
-                onAdapterItemBind = { binding: ItemWholesaleBasketBinding, position: Int ->
+                onItemBind = { binding: ItemWholesaleBasketBinding, position: Int ->
                     binding.tvItemNumber.tag = position
                     binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                     binding.selectedForDelete = vm.basketSelectionsHelper.isSelected(position)
