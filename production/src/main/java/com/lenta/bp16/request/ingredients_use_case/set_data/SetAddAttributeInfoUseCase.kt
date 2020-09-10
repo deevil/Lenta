@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 class SetAddAttributeInfoUseCase @Inject constructor(
         private val ingredientDataPersistStorage: IIngredientDataPersistStorage
-) : IUseCase.In<AddAttributeInfo> {
+) : IUseCase.In<List<AddAttributeInfo>> {
     override suspend fun invoke(params: List<AddAttributeInfo>) {
         return withContext(Dispatchers.IO) {
             ingredientDataPersistStorage.saveAddAttributeInfo(params)

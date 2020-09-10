@@ -4,10 +4,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.switchMap
 import com.lenta.bp16.model.AddAttributeInfo
 import com.lenta.bp16.model.ProducerDataInfo
-import com.lenta.bp16.model.ProducerDataStatus
 import com.lenta.bp16.model.ZPartDataInfo
 import com.lenta.bp16.platform.Constants
 import com.lenta.bp16.platform.navigation.IScreenNavigator
+import com.lenta.bp16.repository.IDatabaseRepository
 import com.lenta.bp16.request.ingredients_use_case.get_data.GetProducerDataInfoUseCase
 import com.lenta.bp16.request.ingredients_use_case.get_data.GetZPartDataInfoUseCase
 import com.lenta.bp16.request.ingredients_use_case.set_data.SetAddAttributeInfoUseCase
@@ -20,9 +20,6 @@ import com.lenta.shared.requests.network.ServerTimeRequest
 import com.lenta.shared.requests.network.ServerTimeRequestParam
 import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.getFormattedDate
-import com.lenta.shared.utilities.orIfNull
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class AddAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
@@ -35,6 +32,9 @@ class AddAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
 
     @Inject
     lateinit var sessionInfo: ISessionInfo
+
+    @Inject
+    lateinit var database: IDatabaseRepository
 
     @Inject
     lateinit var serverTimeRequest: ServerTimeRequest
@@ -90,14 +90,17 @@ class AddAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
     }
 
     val timeFieldVisibleCondition by unsafeLazy {
-        false
-        //TODO: Реализовать логику отображения поля времени
-       /* var convertedTime: Int
-        shelfLife.value?.let {
-            val time = shelfLife.value?.toInt()
-            convertedTime = time?.div(HOURS_IN_DAY) ?: 0
+        checkTimeFieldVisibleCondition()
+    }
+
+    private fun checkTimeFieldVisibleCondition(): Boolean {
+        var visibleCondition = true
+        launchUITryCatch {
+            val timeParams = database.getPerishable()?.div(DIVIDER) ?: 0
+            val shelfLife = shelfLife.value?.toInt() ?: 0
+            visibleCondition = shelfLife < timeParams
         }
-        val timeVisibleCondition = if( convertedTime )*/
+        return visibleCondition
     }
 
     fun getServerTime() {
@@ -111,7 +114,7 @@ class AddAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
         timeMonitor.setServerTime(time = serverTime.time, date = serverTime.date)
     }
 
-    fun updateData(){
+    fun updateData() {
         launchUITryCatch {
             producerDataInfo.value = producerDataInfoUseCase()
             zPartDataInfo.value = zPartDataInfoUseCase()
@@ -130,10 +133,18 @@ class AddAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
         productionDate = date
     }
 
+    private fun setTimeInfo() {
+        var time = timeField.value.orEmpty()
+        if (time.isNotEmpty() && time.length == TIME_LENGTH) {
+            time += ":${timeMonitor.getServerDate().seconds}" //Добавление секунд
+        }
+        productionTime = time
+    }
+
     /**Проверка даты на корректность*/
     private fun checkDate(): Boolean {
         val checkDate = dateInfoField.value.orEmpty()
-        val correctDate = if (checkDate.isNotEmpty() && checkDate.length == DATE_LENGTH) {
+        return if (checkDate.isNotEmpty() && checkDate.length == DATE_LENGTH) {
             val splitCheckDate = checkDate.split(".")
             val day = splitCheckDate[0].toInt()
             val month = splitCheckDate[1].toInt()
@@ -156,32 +167,60 @@ class AddAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
         } else {
             false
         }
-        return correctDate
     }
+
+    /**Проверка времени на корректность*/
+    private fun checkTime(): Boolean {
+        val checkTime = timeField.value.orEmpty()
+        return if (checkTime.isNotEmpty() && checkTime.length == TIME_LENGTH) {
+            val splitCheckTime = checkTime.split(":")
+            val hours = splitCheckTime[0].toInt()
+            val minutes = splitCheckTime[1].toInt()
+            hours in 0..23 && minutes in 0..59
+        } else {
+            false
+        }
+    }
+
+/*    *//**Проверка на истечение срока годности*//*
+    private fun checkShelfLife(): Boolean {
+        val date = dateInfoField.value.orEmpty()
+        val time = timeField.value.orEmpty()
+
+    }*/
 
     fun onClickComplete() = launchUITryCatch {
         setDateInfo()
+        setTimeInfo()
         val dateIsCorrect = checkDate()
-        if (!dateIsCorrect) {
-            navigator.showAlertWrongDate()
-        } else {
-            val producerIndex = selectedProducerPosition.getOrDefaultWithNull()
-            val producerSelected = producerNameList.getOrEmpty(producerIndex)
-            val prodCode = producerCodeList.getOrEmpty(producerIndex)
+        val timeIsCorrect = checkTime()
+        //val shelfLifeCorrect = checkShelfLife()
+        when {
+            !dateIsCorrect -> navigator.showAlertWrongDate()
+            !timeIsCorrect -> navigator.showAlertWrongTime()
+            //!shelfLifeCorrect -> navigator.showAlertShelfLifeExpired()
+            else -> {
+                val producerIndex = selectedProducerPosition.getOrDefaultWithNull()
+                val producerSelected = producerNameList.getOrEmpty(producerIndex)
+                val prodCode = producerCodeList.getOrEmpty(producerIndex)
 
-            val result = AddAttributeInfo(
-                    prodName = producerSelected,
-                    prodTime = "",
-                    prodCode = prodCode,
-                    prodDate = productionDate
-            )
-            setAddAttributeInfoUseCase(listOf(result))
-            navigator.goBack()
+                val result = AddAttributeInfo(
+                        prodName = producerSelected,
+                        prodTime = "",
+                        prodCode = prodCode,
+                        prodDate = productionDate
+                )
+                setAddAttributeInfoUseCase(listOf(result))
+                navigator.goBack()
+            }
         }
     }
 
     companion object {
         const val DATE_LENGTH = 10
-        const val HOURS_IN_DAY = 24
+        const val TIME_LENGTH = 5
+
+        /** Значение, на которое необходимо поделить параметр GRZ_PERISHABLE_HH */
+        const val DIVIDER = 24
     }
 }

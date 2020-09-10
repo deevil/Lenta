@@ -350,10 +350,11 @@ class MaterialRemakeDetailsViewModel : CoreViewModel() {
 
     fun onClickAddAttributeButton() {
         val ingredient = materialIngredient.value
-        val material = ingredient?.ltxa1.orEmpty()
+        val material = parentCode
         val name = ingredient?.name.orEmpty()
+        val operation = ingredient?.ltxa1.orEmpty()
         val shelfLife = ingredient?.shelfLife.orEmpty()
-        navigator.openAddAttributeScreen(material, name, parentCode, shelfLife)
+        navigator.openAddAttributeScreen(material, name, operation, shelfLife)
     }
 
     fun onScanResult(data: String) {

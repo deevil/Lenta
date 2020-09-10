@@ -64,7 +64,6 @@ class AddAttributeFragment : CoreFragment<FragmentAddAttributeBinding, AddAttrib
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            //R.id.b_1 -> vm.onClickBack()
             R.id.b_5 -> vm.onClickComplete()
         }
     }
@@ -76,7 +75,7 @@ class AddAttributeFragment : CoreFragment<FragmentAddAttributeBinding, AddAttrib
     }
 
     companion object {
-        private const val SCREEN_NUMBER = "16/06"
+        private const val SCREEN_NUMBER = "16/83"
         private const val KEY_MATERIAL = "KEY_MATERIAL"
         private const val KEY_NAME = "KEY_NAME"
         private const val KEY_PARENT_CODE = "KEY_PARENT_CODE"

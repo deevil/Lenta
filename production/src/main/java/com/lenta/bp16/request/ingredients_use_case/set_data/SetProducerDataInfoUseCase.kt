@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 class SetProducerDataInfoUseCase @Inject constructor(
         private val ingredientDataPersistStorage: IIngredientDataPersistStorage
-): IUseCase.In<ProducerDataInfo> {
+): IUseCase.In<List<ProducerDataInfo>> {
     override suspend fun invoke(params: List<ProducerDataInfo>) {
         return withContext(Dispatchers.IO){
             ingredientDataPersistStorage.saveProducerDataInfo(params)
