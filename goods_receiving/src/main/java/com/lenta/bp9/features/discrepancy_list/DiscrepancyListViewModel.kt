@@ -157,11 +157,17 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                     val taskProductDiscrepancies = task.taskRepository.getProductsDiscrepancies()
                     task.getProcessedProducts()
                             .asSequence()
-                            .filter {
+                            .filter { product ->
                                 if (task.taskHeader.taskType == TaskType.RecalculationCargoUnit) {
-                                    taskProductDiscrepancies.getCountProductNotProcessedOfProductPGE(it) > 0.0
+                                    val countOrderQuantity =
+                                            task.taskRepository
+                                                    .getProducts()
+                                                    .getProcessingUnitsOfProduct(product.materialNumber)
+                                                    .map { unitInfo -> unitInfo.orderQuantity.toDouble() }
+                                                    .sumByDouble { it }
+                                    task.taskRepository.getProductsDiscrepancies().getCountProductNotProcessedOfProductPGEOfProcessingUnits(product, countOrderQuantity) > 0.0
                                 } else {
-                                    taskProductDiscrepancies.getCountProductNotProcessedOfProduct(it) > 0.0
+                                    taskProductDiscrepancies.getCountProductNotProcessedOfProduct(product) > 0.0
                                 }
                             }.sortedByDescending { sorted ->
                                 sorted.materialNumber

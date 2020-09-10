@@ -5,8 +5,8 @@ import com.google.gson.annotations.SerializedName
 data class ProducerInfo(
         /** Номер счета */
         @SerializedName("ZPROD")
-        val code: String = "",
+        val code: String? = "",
         /** Наименование поставщика */
         @SerializedName("PROD_NAME")
-        val name: String = ""
+        val name: String? = ""
 )

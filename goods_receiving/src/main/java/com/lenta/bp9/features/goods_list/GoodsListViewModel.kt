@@ -16,6 +16,7 @@ import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
@@ -23,6 +24,7 @@ import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
+import com.lenta.shared.utilities.orIfNull
 import javax.inject.Inject
 
 class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
@@ -125,7 +127,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     private fun updateListCounted() {
         val arrayCounted: ArrayList<ListCountedItem> = ArrayList()
         var index = 0
-        var addeBatchProduct = ""
+        var addBatchProduct = ""
         taskManager.getReceivingTask()?.let { task ->
             task.getProcessedProducts()
                     .filter {
@@ -148,8 +150,8 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                         }
 
                         if (isBatches.value == true && productInfo.type == ProductType.NonExciseAlcohol && !productInfo.isBoxFl && !productInfo.isMarkFl) {
-                            if (addeBatchProduct != productInfo.materialNumber) { //показываем партии без разбивки по расхождениям
-                                addeBatchProduct = productInfo.materialNumber
+                            if (addBatchProduct != productInfo.materialNumber) { //показываем партии без разбивки по расхождениям
+                                addBatchProduct = productInfo.materialNumber
                                 val batchesInfoOfProduct = task.taskRepository.getBatches().findBatchOfProduct(productInfo)
                                 batchesInfoOfProduct?.map { batch ->
                                     val batchInfo = task.taskRepository.getBatches().findBatch(
@@ -194,10 +196,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                     }
         }
 
-        listCounted.postValue(
-                arrayCounted.reversed()
-        )
-
+        listCounted.value = arrayCounted.reversed()
         countedSelectionsHelper.clearPositions()
     }
 
@@ -289,10 +288,13 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
 
     private fun updateListProcessed() {
         taskManager.getReceivingTask()?.let { task ->
-            listProcessed.postValue(
-                    task.getProcessedProducts()
+            val taskProducedProducts =  task.getProcessedProducts()
+            val productsDiscrepancies = task.taskRepository.getProductsDiscrepancies()
+            listProcessed.value =
+                    taskProducedProducts
                             .filter {
-                                task.taskRepository.getProductsDiscrepancies().getQuantityDiscrepanciesOfProduct(it) > 0
+                                val quantityOfProduct = productsDiscrepancies.getQuantityDiscrepanciesOfProduct(it)
+                                quantityOfProduct > 0
                             }.mapIndexed { index, productInfo ->
                                 val isEizUnit = productInfo.purchaseOrderUnits.code != productInfo.uom.code
                                 val uom = if (isEizUnit) {
@@ -307,7 +309,9 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                                         productInfo = productInfo,
                                         even = index % 2 == 0)
                             }
-                            .reversed())
+                            .reversed()
+        }.orIfNull {
+            Logg.e { "updateListProcessed() get receiving task is null" }
         }
 
         processedSelectionsHelper.clearPositions()
@@ -531,8 +535,14 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                     task.getProcessedProducts()
                             .mapNotNull { productInfo ->
                                 if (taskType == TaskType.RecalculationCargoUnit) {
+                                    val countOrderQuantity =
+                                            task.taskRepository
+                                                    .getProducts()
+                                                    .getProcessingUnitsOfProduct(productInfo.materialNumber)
+                                                    .map { unitInfo -> unitInfo.orderQuantity.toDouble() }
+                                                    .sumByDouble { orderQuantity -> orderQuantity }
                                     productsDiscrepancies
-                                            .getCountProductNotProcessedOfProductPGE(productInfo)
+                                            .getCountProductNotProcessedOfProductPGEOfProcessingUnits(productInfo, countOrderQuantity)
                                             .takeIf { it > 0.0 }
                                 } else {
                                     productsDiscrepancies

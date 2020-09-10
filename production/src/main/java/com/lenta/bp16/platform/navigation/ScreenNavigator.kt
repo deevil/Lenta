@@ -200,7 +200,7 @@ class ScreenNavigator @Inject constructor(
     }
 
     override fun openIngredientDetailsScreen(selectedIngredient: OrderIngredientDataInfo, parentCode: String, eanInfo: OrderByBarcodeUI) {
-        getFragmentStack()?.push(IngredientDetailsFragment.newInstance(selectedIngredient, parentCode,eanInfo))
+        getFragmentStack()?.push(IngredientDetailsFragment.newInstance(selectedIngredient, parentCode, eanInfo))
     }
 
     override fun openMaterialRemakesScreen(selectedIngredient: IngredientInfo) {
@@ -402,8 +402,9 @@ class ScreenNavigator @Inject constructor(
                     pageNumber = Constants.ALERT_FRAGMENT,
                     message = context.getString(R.string.tw_moving_successful),
                     iconRes = R.drawable.ic_info_green_80dp,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.next,
-                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallback)
+                    isVisibleLeftButton = false
             ))
         }
     }
@@ -425,8 +426,18 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.error_weight_not_set),
                     iconRes = R.drawable.ic_warning_red_80dp,
-                    pageNumber = Constants.ALERT_FRAGMENT)
-            )
+                    pageNumber = Constants.ALERT_FRAGMENT
+            ))
+        }
+    }
+
+    override fun showAlertWrongDate() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.tw_wrong_date),
+                    iconRes = R.drawable.ic_warning_red_80dp,
+                    pageNumber = Constants.ALERT_FRAGMENT
+            ))
         }
     }
 
@@ -481,4 +492,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun showAlertGoodNotFoundInCurrentShift()
     fun showAlertIngredientNotFound()
     fun showNotFoundedBarcodeForPosition()
+    fun showAlertWrongDate()
 }

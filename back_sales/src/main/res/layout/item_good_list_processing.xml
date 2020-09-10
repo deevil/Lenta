@@ -29,7 +29,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/number_name_column_1">
+                android:layout_weight="@integer/three_one_1">
 
                 <TextView
                     android:id="@+id/tv_item_number"
@@ -44,7 +44,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/number_name_column_2"
+                android:layout_weight="@integer/three_one_2"
                 android:orientation="horizontal">
 
                 <TextView
@@ -62,6 +62,19 @@
                     android:padding="5dp"
                     android:src="@drawable/ic_keyboard_arrow_right_white_16dp"
                     tools:ignore="ContentDescription" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="@integer/three_one_3">
+
+                <TextView
+                    style="@style/CellNumberStyle"
+                    android:id="@+id/tv_item_planned_quantity"
+                    android:text='@{"" + item.quantity}'
+                    app:selected="@{selectedForDelete}"
+                    tools:text="10 шт." />
 
             </LinearLayout>
 

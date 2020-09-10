@@ -32,9 +32,7 @@ class TaskSearchViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         resource.tk(sessionInfo.market.orEmpty())
     }
 
-    val requestFocusToProvider by lazy {
-        MutableLiveData(true)
-    }
+    val requestFocusToProvider = MutableLiveData(false)
 
     val provider = MutableLiveData("")
 
@@ -70,7 +68,12 @@ class TaskSearchViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
-        onClickSearch()
+        if (searchEnabled.value == true) {
+            onClickSearch()
+        } else {
+            requestFocusToProvider.value = true
+        }
+
         return true
     }
 
@@ -85,7 +88,7 @@ class TaskSearchViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 funcForMaterial = ::fillGoodNumberField,
                 funcForSapOrBar = navigator::showTwelveCharactersEntered,
                 funcForExcise = ::fillExciseNumberField,
-                funcForNotValidFormat = navigator::showIncorrectEanFormat
+                funcForNotValidBarFormat = navigator::showIncorrectEanFormat
         )
     }
 

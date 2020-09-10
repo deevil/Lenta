@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     tools:context=".features.good_info_facing.GoodInfoFacingFragment">
 
     <data>
-        <import type="android.view.View"/>
+
+        <import type="android.view.View" />
+
         <variable
             name="vm"
             type="com.lenta.bp16.features.good_info.GoodInfoViewModel" />
@@ -20,9 +22,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-
-            <LinearLayout
-                style="@style/LinearRowStyle">
+            <LinearLayout style="@style/LinearRowStyle">
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
@@ -30,12 +30,11 @@
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:text="@string/quantity"/>
+                        android:text="@string/quantity" />
 
                 </LinearLayout>
 
-                <View
-                    style="@style/VerticalDivider"/>
+                <View style="@style/VerticalDivider" />
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
@@ -43,16 +42,18 @@
 
                     <com.lenta.shared.view.EditTextWithSuffix
                         android:id="@+id/et_goods_count"
+                        style="@style/CellEditTextStyle"
+                        suffix="@{vm.suffix}"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        app:digitsForUom="@{vm.buom}"
+                        android:inputType="number"
                         android:paddingStart="@dimen/size_10dp"
                         android:paddingEnd="@dimen/size_10dp"
-                        android:textSize="@dimen/text_14sp"
-                        suffix="@{vm.suffix}"
                         android:text="@={vm.quantityField}"
+                        android:textSize="@dimen/text_14sp"
                         app:requestFocus="@{vm.requestFocusQuantityField}"
-                        style="@style/CellEditTextStyle"
-                        tools:text="10 кг"/>
+                        tools:text="10 кг" />
 
                 </LinearLayout>
 
@@ -60,37 +61,37 @@
             </LinearLayout>
 
             <View
-                android:visibility="@{vm.ZPartFlag ? View.VISIBLE : View.GONE}"
-                style="@style/HorizontalDivider"/>
+                style="@style/HorizontalDivider"
+                android:visibility="@{vm.ZPartFlag ? View.VISIBLE : View.GONE}" />
 
             <LinearLayout
-                android:visibility="@{vm.ZPartFlag ? View.VISIBLE : View.GONE}"
-                style="@style/LinearRowStyle">
+                style="@style/LinearRowStyle"
+                android:visibility="@{vm.ZPartFlag ? View.VISIBLE : View.GONE}">
 
-                    <LinearLayout
-                        style="@style/LinearCellStyle"
-                        android:layout_weight="1"
-                        android:orientation="horizontal">
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
 
-                        <com.lenta.shared.view.ClickableSpinner
-                            android:id="@+id/spin_producer"
-                            app:items="@{vm.producerNameField}"
-                            app:onPositionClicked="@{vm.selectedProducerPosition}"
-                            style="@style/CellSpinnerStyle"
-                            android:layout_height="match_parent"
-                            tools:entries="@array/manufacturer_list" />
+                    <com.lenta.shared.view.ClickableSpinner
+                        android:id="@+id/spin_producer"
+                        style="@style/CellSpinnerStyle"
+                        android:layout_height="match_parent"
+                        app:items="@{vm.producerNameField}"
+                        app:position="@={vm.selectedProducerPosition}"
+                        tools:entries="@array/manufacturer_list" />
 
                 </LinearLayout>
 
             </LinearLayout>
 
             <View
-                android:visibility="@{vm.ZPartFlag ? View.VISIBLE : View.GONE}"
-                style="@style/HorizontalDivider"/>
+                style="@style/HorizontalDivider"
+                android:visibility="@{vm.ZPartFlag ? View.VISIBLE : View.GONE}" />
 
             <LinearLayout
-                android:visibility="@{vm.ZPartFlag ? View.VISIBLE : View.GONE}"
-                style="@style/LinearRowStyle">
+                style="@style/LinearRowStyle"
+                android:visibility="@{vm.ZPartFlag ? View.VISIBLE : View.GONE}">
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
@@ -98,42 +99,41 @@
 
                     <com.lenta.shared.view.ClickableSpinner
                         android:id="@+id/spin_production_date"
-                        app:items="@{vm.dateInfo}"
-                        app:onPositionClicked="@{vm.selectedDatePosition}"
                         style="@style/CellSpinnerStyle"
                         android:layout_height="match_parent"
+                        app:items="@{vm.dateInfo}"
+                        app:position="@={vm.selectedDatePosition}"
                         tools:entries="@array/date_list" />
 
                 </LinearLayout>
 
-                <View
-                    style="@style/VerticalDivider"/>
+                <View style="@style/VerticalDivider" />
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
                     android:layout_weight="1">
 
                     <EditText
+                        style="@style/CellEditTextStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingStart="@dimen/size_10dp"
                         android:paddingEnd="@dimen/size_10dp"
-                        android:textSize="@dimen/text_14sp"
                         android:text="@={vm.dateInfoField}"
-                        app:requestFocus="@{vm.requestFocusDateInfoField}"
+                        android:textSize="@dimen/text_14sp"
+                        android:inputType="number"
+                        android:digits="0123456789 -."
                         app:maskPattern='@{"[00]{.}[00]{.}[0000]"}'
-                        style="@style/CellEditTextStyle"
-                        tools:text="21.06.2020"/>
+                        app:requestFocus="@{vm.requestFocusDateInfoField}"
+                        tools:text="21.06.2020" />
 
                 </LinearLayout>
 
             </LinearLayout>
 
-            <View
-                style="@style/HorizontalDivider"/>
+            <View style="@style/HorizontalDivider" />
 
-            <LinearLayout
-                style="@style/LinearRowStyle">
+            <LinearLayout style="@style/LinearRowStyle">
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
@@ -141,12 +141,11 @@
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:text="@string/storage_sender"/>
+                        android:text="@string/storage_sender" />
 
                 </LinearLayout>
 
-                <View
-                    style="@style/VerticalDivider"/>
+                <View style="@style/VerticalDivider" />
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
@@ -155,20 +154,18 @@
                     <com.lenta.shared.view.ClickableSpinner
                         android:id="@+id/spin_warehouse_sender"
                         style="@style/CellSpinnerStyle"
-                        app:items="@{vm.warehouseSender}"
-                        app:onPositionClicked="@{vm.selectedWarehouseSenderPosition}"
                         android:layout_height="match_parent"
+                        app:items="@{vm.warehouseSender}"
+                        app:position="@={vm.selectedWarehouseSenderPosition}"
                         tools:entries="@array/storage_list" />
 
                 </LinearLayout>
 
             </LinearLayout>
 
-            <View
-                style="@style/HorizontalDivider"/>
+            <View style="@style/HorizontalDivider" />
 
-            <LinearLayout
-                style="@style/LinearRowStyle">
+            <LinearLayout style="@style/LinearRowStyle">
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
@@ -176,12 +173,11 @@
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:text="@string/storage_receiver"/>
+                        android:text="@string/storage_receiver" />
 
                 </LinearLayout>
 
-                <View
-                    style="@style/VerticalDivider"/>
+                <View style="@style/VerticalDivider" />
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
@@ -190,9 +186,9 @@
                     <com.lenta.shared.view.ClickableSpinner
                         android:id="@+id/spin_storage_receiver"
                         style="@style/CellSpinnerStyle"
-                        app:items="@{vm.warehouseReceiver}"
-                        app:onPositionClicked="@{vm.selectedWarehouseReceiverPosition}"
                         android:layout_height="match_parent"
+                        app:items="@{vm.warehouseReceiver}"
+                        app:position="@={vm.selectedWarehouseReceiverPosition}"
                         tools:entries="@array/storage_list" />
 
                 </LinearLayout>
@@ -200,12 +196,12 @@
             </LinearLayout>
 
             <View
-                android:visibility="@{vm.proIncludeCond ? View.VISIBLE : View.GONE}"
-                style="@style/HorizontalDivider"/>
+                style="@style/HorizontalDivider"
+                android:visibility="@{vm.proIncludeCond || vm.ZPartFlag ? View.VISIBLE : View.GONE}" />
 
             <LinearLayout
-                android:visibility="@{vm.proIncludeCond ? View.VISIBLE : View.GONE}"
-                style="@style/LinearRowStyle">
+                style="@style/LinearRowStyle"
+                android:visibility="@{vm.proIncludeCond || vm.ZPartFlag ? View.VISIBLE : View.GONE}">
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
@@ -213,33 +209,33 @@
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:text="@string/container"/>
+                        android:text="@string/container" />
 
                 </LinearLayout>
 
-                <View
-                    style="@style/VerticalDivider"/>
+                <View style="@style/VerticalDivider" />
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
                     android:layout_weight="1">
 
                     <EditText
+                        style="@style/CellEditTextStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:digits="0123456789"
+                        android:inputType="number"
                         android:paddingStart="@dimen/size_10dp"
                         android:paddingEnd="@dimen/size_10dp"
-                        android:textSize="@dimen/text_14sp"
                         android:text="@={vm.containerField}"
-                        style="@style/CellEditTextStyle"
-                        tools:text="123"/>
+                        android:textSize="@dimen/text_14sp"
+                        tools:text="123" />
 
                 </LinearLayout>
 
             </LinearLayout>
 
-            <View
-                style="@style/HorizontalDivider"/>
+            <View style="@style/HorizontalDivider" />
 
         </LinearLayout>
 

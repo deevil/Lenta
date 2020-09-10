@@ -288,11 +288,7 @@ class GoodsDetailsViewModel : CoreViewModel() {
                         processExciseAlcoBoxAccPGEService.delBoxesStampsDiscrepancies(typeDiscrepancies)
                     }
 
-                    if (boxNumberForTaskPGEBoxAlco.value.isNullOrEmpty()) {
-                        taskRepository
-                                ?.getProductsDiscrepancies()
-                                ?.deleteProductDiscrepancy(materialNumber, typeDiscrepancies)
-                    } else {
+                    if (!boxNumberForTaskPGEBoxAlco.value.isNullOrEmpty()) {
                         processExciseAlcoBoxAccPGEService.delBoxStampsDiscrepancies(boxNumberForTaskPGEBoxAlco.value.orEmpty(), typeDiscrepancies)
                     }
 
@@ -309,14 +305,22 @@ class GoodsDetailsViewModel : CoreViewModel() {
                             processMercuryProductService.deleteDetails(typeDiscrepancies)
                     }
 
-                    if (isNonExciseAlcoProduct.value == true) {
+                    if (isBatchProduct.value == true) {
                         goodsDetailsItem
                                 ?.batchDiscrepancies
                                 ?.let {
                                     taskRepository
                                             ?.getBatchesDiscrepancies()
                                             ?.deleteBatchDiscrepancies(it)
+
+                                    taskRepository
+                                            ?.getProductsDiscrepancies()
+                                            ?.deleteProductDiscrepancyByBatch(materialNumber, typeDiscrepancies, it.numberDiscrepancies.toDouble())
                                 }
+                    } else {
+                        taskRepository
+                                ?.getProductsDiscrepancies()
+                                ?.deleteProductDiscrepancy(materialNumber, typeDiscrepancies)
                     }
                 }
             }

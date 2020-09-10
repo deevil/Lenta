@@ -3,7 +3,8 @@ package com.lenta.bp16.platform.databinding
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.lenta.bp16.R
-import com.lenta.bp16.model.IngredientStatus
+import com.lenta.bp16.model.IngredientStatusBlock
+import com.lenta.bp16.model.IngredientStatusWork
 import com.lenta.bp16.model.TaskStatus
 import com.lenta.shared.utilities.extentions.setVisible
 
@@ -23,17 +24,32 @@ fun setTaskStatusIcon(imageView: ImageView, taskStatus: TaskStatus) {
     }
 }
 
-@BindingAdapter("ingredientStatusIcon")
-fun setIngredientStatusIcon(imageView: ImageView, ingredientStatus: IngredientStatus) {
+@BindingAdapter("ingredientStatusBlockIcon")
+fun setIngredientStatusBlockIcon(imageView: ImageView, ingredientStatusBlock: IngredientStatusBlock) {
     imageView.apply {
-        if (ingredientStatus == IngredientStatus.COMMON) {
+        if (ingredientStatusBlock == IngredientStatusBlock.COMMON) {
             setVisible(false)
         } else {
-            setImageResource(when (ingredientStatus) {
-                IngredientStatus.LOCK -> R.drawable.ic_lock_status_gray_24dp
-                IngredientStatus.SELF_LOCK -> R.drawable.ic_self_lock_status_gray_24dp
-                IngredientStatus.IS_PLAY ->  R.drawable.ic_play_arrow_gray_24dp
-                else -> R.drawable.ic_done_white_24dp
+            setImageResource(when (ingredientStatusBlock) {
+                IngredientStatusBlock.LOCK -> R.drawable.ic_lock_status_gray_24dp
+                IngredientStatusBlock.SELF_LOCK -> R.drawable.ic_self_lock_status_gray_24dp
+                else -> 0
+            })
+            setVisible()
+        }
+    }
+}
+
+@BindingAdapter("ingredientStatusWorkIcon")
+fun setIngredientStatusWorkIcon(imageView: ImageView, ingredientStatusWork: IngredientStatusWork) {
+    imageView.apply {
+        if (ingredientStatusWork == IngredientStatusWork.COMMON) {
+            setVisible(false)
+        } else {
+            setImageResource(when (ingredientStatusWork) {
+                IngredientStatusWork.IS_PLAY ->  R.drawable.ic_play_arrow_gray_24dp
+                IngredientStatusWork.IS_DONE ->  R.drawable.ic_done_white_24dp
+                else -> 0
             })
             setVisible()
         }

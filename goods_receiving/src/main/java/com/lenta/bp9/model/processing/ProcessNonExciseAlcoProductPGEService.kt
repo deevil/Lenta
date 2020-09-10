@@ -41,7 +41,7 @@ class ProcessNonExciseAlcoProductPGEService
             getProductsDiscrepancies()?.
             changeProductDiscrepancy(TaskProductDiscrepancies(
                     materialNumber = productInfo.materialNumber,
-                    processingUnitNumber = productInfo.processingUnit,
+                    processingUnitNumber = "",
                     numberDiscrepancies = countAdd.toString(),
                     uom = productInfo.uom,
                     typeDiscrepancies = typeDiscrepancies,

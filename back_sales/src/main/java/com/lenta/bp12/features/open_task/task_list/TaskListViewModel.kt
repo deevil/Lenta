@@ -11,7 +11,6 @@ import com.lenta.bp12.request.TaskListNetRequest
 import com.lenta.bp12.request.TaskListParams
 import com.lenta.bp12.request.TaskListResult
 import com.lenta.shared.account.ISessionInfo
-import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
@@ -134,7 +133,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     init {
         launchUITryCatch {
-            onClickUpdate()
+            updateProcessingTaskList()
         }
     }
 
@@ -170,9 +169,10 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     private fun handleTaskListResult(result: TaskListResult) {
         launchUITryCatch {
-            manager.addTasks(result.tasks)
+            result.tasks?.let { manager.addTasks(it) }
         }
     }
+
 
     private fun loadSearchTaskList(value: String = "") {
         manager.searchParams?.let { params ->
@@ -195,13 +195,8 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     private fun handleTaskListResultWithParams(result: TaskListResult) {
         launchUITryCatch {
-            manager.addFoundTasks(result.tasks)
+            manager.addFoundTasks(result.tasks.orEmpty())
         }
-    }
-
-    override fun handleFailure(failure: Failure) {
-        super.handleFailure(failure)
-        navigator.openAlertScreen(failure)
     }
 
     fun onClickItemPosition(position: Int) {
@@ -215,7 +210,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                     }
                 }
                 1 -> {
-                    tasks.value?.let { tasks ->
+                    foundTasks.value?.let { tasks ->
                         tasks.find { it.number == search.value!![position].number }?.let { task ->
                             prepareToOpenTask(task)
                         }

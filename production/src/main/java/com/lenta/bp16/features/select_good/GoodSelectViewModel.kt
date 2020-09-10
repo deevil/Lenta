@@ -2,7 +2,6 @@ package com.lenta.bp16.features.select_good
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp16.model.movement.params.ProductInfoParams
-import com.lenta.bp16.model.movement.result.ProductInfoResult
 import com.lenta.bp16.model.movement.ui.ProducerUI
 import com.lenta.bp16.model.pojo.GoodParams
 import com.lenta.bp16.platform.navigation.IScreenNavigator
@@ -33,7 +32,7 @@ class GoodSelectViewModel : CoreViewModel() {
 
     val marketNumber by unsafeLazy { sessionInfo.market }
 
-    val weightValueList = listOf(VALUE_23, VALUE_24, VALUE_27, VALUE_28)
+    private val weightValueList = listOf(VALUE_23, VALUE_24, VALUE_27, VALUE_28)
 
     val enteredEanField = MutableLiveData("")
     val requestFocusEnteredEanField = MutableLiveData(true)
@@ -46,11 +45,17 @@ class GoodSelectViewModel : CoreViewModel() {
         MutableLiveData<ProducerInfo>()
     }
 
+    /**Параметры для запроса*/
+    private val eanParams: MutableList<String> = mutableListOf()
+    private val matnrParams: MutableList<String> = mutableListOf()
+
+    /**Вес по умолчанию*/
+    private var weight = DEF_WEIGHT
+
     val enabledNextButton = enteredEanField.map { !it.isNullOrBlank() }
 
-    private fun searchGood() {
-        val ean: MutableList<String> = mutableListOf()
-        var weight = DEF_WEIGHT
+    /**Поиск по EAN*/
+    private fun searchGoodByEan() {
         var barcode = enteredEanField.value.orEmpty()
         val firstCode = barcode.substring(0 until 2)
         if (weightValueList.contains(firstCode)) {
@@ -58,13 +63,32 @@ class GoodSelectViewModel : CoreViewModel() {
             val changedBarcode = barcode.replace(barcode.takeLast(6), TAKEN_ZEROS)
             barcode = changedBarcode
         }
-        ean.add(barcode)
-        val matnr: List<String> = mutableListOf()
+        clearListParams()
+        eanParams.add(barcode)
+        startRequest(eanParams, matnrParams)
+    }
+
+    /**Поиск по SAP-коду*/
+    private fun searchGoodBySapCode() {
+        /**Добиваем нулями до 18 символов*/
+        var sapcode = enteredEanField.value.orEmpty()
+        sapcode = if (sapcode.toInt() == 6) {
+            ZEROS_FOR_SAPCODE_12 + sapcode
+        } else {
+            ZEROS_FOR_SAPCODE_6 + sapcode
+        }
+        clearListParams()
+        matnrParams.add(sapcode)
+        startRequest(eanParams, matnrParams)
+    }
+
+    private fun startRequest(ean: List<String>, sapcode: List<String>) {
         launchUITryCatch {
             productInfoNetRequest(
                     ProductInfoParams(
+                            werks = sessionInfo.market.orEmpty(),
                             ean = ean.map { Ean(it) },
-                            matnr = matnr.map { Product(it) }
+                            matnr = sapcode.map { Product(it) }
                     ).also { navigator.hideProgress() }
             ).either(::handleFailure) { productInfoResult ->
                 productInfo.value = productInfoResult.product?.getOrNull(0)
@@ -78,12 +102,14 @@ class GoodSelectViewModel : CoreViewModel() {
                         name = goodInfo.productName.orEmpty(),
                         weight = weight,
                         zPart = goodInfo.isPart.orEmpty().isNotEmpty(),
+                        buom = goodInfo.buom.orEmpty(),
                         uom = goodInfo.uom.orEmpty(),
                         umrez = goodInfo.umrez.orEmpty(),
                         umren = goodInfo.umren.orEmpty(),
-                        producers = ProducerUI(
+                        producers = listOf(ProducerUI(
                                 producerCode = producerInfo.value?.prodCode.orEmpty(),
                                 producerName = producerInfo.value?.prodName.orEmpty()
+                        )
                         )
                 )
                 navigator.openGoodInfoScreen(good)
@@ -93,12 +119,29 @@ class GoodSelectViewModel : CoreViewModel() {
 
     fun onClickNext() {
         navigator.showProgressLoadingData()
-        searchGood()
+        val selectedFieldValue: Int = enteredEanField.value?.length ?: 0
+        if (selectedFieldValue in 6..12) {
+            searchGoodBySapCode()
+        } else {
+            searchGoodByEan()
+        }
     }
 
     fun onScanResult(data: String) {
+        navigator.showProgressLoadingData()
         enteredEanField.value = data
-        searchGood()
+        val selectedFieldValue: Int = enteredEanField.value?.length ?: 0
+        if (selectedFieldValue in 6..12) {
+            searchGoodBySapCode()
+        } else {
+            searchGoodByEan()
+        }
+    }
+
+    /**Очистка параметров запроса*/
+    private fun clearListParams() {
+        eanParams.clear()
+        matnrParams.clear()
     }
 
     fun onClickMenu() {
@@ -113,6 +156,9 @@ class GoodSelectViewModel : CoreViewModel() {
 
         private const val DEF_WEIGHT = 0.0
         private const val TAKEN_ZEROS = "000000"
+
+        private const val ZEROS_FOR_SAPCODE_6 = "000000000000"
+        private const val ZEROS_FOR_SAPCODE_12 = "000000"
     }
 
 }

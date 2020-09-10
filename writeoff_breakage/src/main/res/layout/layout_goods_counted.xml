@@ -48,9 +48,9 @@
                 android:inputType="number"
                 android:maxLength="20"
                 android:text="@={vm.eanCode}"
-                app:cursorToLastPos="@{true}"
                 app:onOkInSoftKeyboard="@{vm}"
                 app:requestFocus="@{vm.requestFocusToEan}"
+                app:selectAfterFocus="@{true}"
                 tools:ignore="Autofill" />
 
             <ImageButton

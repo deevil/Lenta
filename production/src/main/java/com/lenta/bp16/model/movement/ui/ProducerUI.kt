@@ -5,6 +5,6 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class ProducerUI(
-        val producerName: List<String>,
-        val producerCode: List<String>
+        val producerName: String,
+        val producerCode: String
 ) : Parcelable

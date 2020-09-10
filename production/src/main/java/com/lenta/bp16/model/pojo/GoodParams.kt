@@ -11,8 +11,9 @@ data class GoodParams(
         val weight: Double,
         val name: String,
         val zPart: Boolean,
+        val buom: String,
         val uom: String,
         val umrez: String,
         val umren: String,
-        val producers: ProducerUI
+        val producers: List<ProducerUI>
 ) : Parcelable
