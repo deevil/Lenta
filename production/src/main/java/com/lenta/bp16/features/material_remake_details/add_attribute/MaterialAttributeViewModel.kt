@@ -177,6 +177,7 @@ class MaterialAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
 
     /**Проверка времени на корректность*/
     private fun checkTime(): Boolean {
+        /**Выполнять проверку времени только при отображении таймера*/
         return if (timeFieldVisibleCondition.value == true) {
             val checkTime = timeField.value.orEmpty()
             if (checkTime.isNotEmpty() && checkTime.length == TIME_LENGTH) {
