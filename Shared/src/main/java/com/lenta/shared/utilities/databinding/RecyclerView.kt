@@ -173,7 +173,7 @@ interface Evenable {
 }
 
 class RecyclerViewKeyHandler<T>(
-        private var recyclerView: RecyclerView?,
+        private var rv: RecyclerView?,
         private var items: LiveData<List<T>>?,
         lifecycleOwner: LifecycleOwner?,
         initPosInfo: PosInfo? = null,
@@ -183,14 +183,14 @@ class RecyclerViewKeyHandler<T>(
     val posInfo = MutableLiveData(initPosInfo?.copy(isManualClick = false) ?: PosInfo(0, -1))
 
     init {
-        recyclerView?.let { rv ->
+        rv?.let { recyclerView ->
             lifecycleOwner?.let { lco ->
                 posInfo.observe(lco) { info ->
                     Logg.d { "new pos: $info" }
-                    rv.adapter?.notifyDataSetChanged()
+                    recyclerView.adapter?.notifyDataSetChanged()
 
                     if (!info.isManualClick && isCorrectPosition(info.currentPos)) {
-                        rv.post { rv.scrollToPosition(info.currentPos) }
+                        recyclerView.post { recyclerView.scrollToPosition(info.currentPos) }
                     }
                 }
 
@@ -202,7 +202,7 @@ class RecyclerViewKeyHandler<T>(
     }
 
     fun onKeyDown(keyCode: KeyCode): Boolean {
-        if (recyclerView?.isFocused == false) {
+        if (rv?.isFocused == false) {
             return false
         }
 
@@ -220,7 +220,7 @@ class RecyclerViewKeyHandler<T>(
 
                 if (isCorrectPosition(currentPos)) {
                     posInfo.value = PosInfo(currentPos = currentPos, lastPos = lastPos)
-                    recyclerView?.requestFocus()
+                    rv?.requestFocus()
                     return true
                 }
             }
@@ -246,7 +246,7 @@ class RecyclerViewKeyHandler<T>(
 
     fun selectPosition(position: Int) {
         posInfo.value = PosInfo(currentPos = position, lastPos = posInfo.value!!.currentPos, isManualClick = true)
-        recyclerView?.requestFocus()
+        rv?.requestFocus()
     }
 
     fun isSelected(pos: Int): Boolean {
@@ -266,7 +266,7 @@ class RecyclerViewKeyHandler<T>(
     }
 
     fun clear() {
-        recyclerView = null
+        rv = null
         items = null
         onClickPositionFunc = null
     }

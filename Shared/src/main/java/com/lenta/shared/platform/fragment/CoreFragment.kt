@@ -241,7 +241,7 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
             onClickHandler: ((Int) -> Unit)? = null
     ): RecyclerViewKeyHandler<Item> {
         val keyHandler = RecyclerViewKeyHandler(
-                recyclerView = recyclerView,
+                rv = recyclerView,
                 items = items,
                 lifecycleOwner = viewLifecycleOwner,
                 initPosInfo = getKeyHandler(tabPosition)?.posInfo?.value,
@@ -262,7 +262,7 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
             onClickHandler: ((Int) -> Unit)? = null
     ): RecyclerViewKeyHandler<Item> {
         return RecyclerViewKeyHandler(
-                recyclerView = recyclerView,
+                rv = recyclerView,
                 items = items,
                 lifecycleOwner = viewLifecycleOwner,
                 initPosInfo = previousPosInfo,
@@ -315,6 +315,7 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
     override fun onDestroy() {
         binding?.unbind()
         binding = null
+        keyHandlers.forEach { it.value.clear() }
         keyHandlers.clear()
         super.onDestroy()
     }
