@@ -3,7 +3,9 @@ package com.lenta.bp16.features.ingredient_details
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.switchMap
 import com.lenta.bp16.data.IScales
+import com.lenta.bp16.features.add_attribute.IZpartVisibleConditions
 import com.lenta.bp16.model.*
+import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
 import com.lenta.bp16.model.ingredients.MercuryPartDataInfo
 import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
 import com.lenta.bp16.model.ingredients.params.IngredientDataCompleteParams
@@ -25,7 +27,7 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.properties.Delegates
 
-class IngredientDetailsViewModel : CoreViewModel() {
+class IngredientDetailsViewModel : CoreViewModel(), IZpartVisibleConditions {
 
     @Inject
     lateinit var navigator: IScreenNavigator
@@ -64,7 +66,7 @@ class IngredientDetailsViewModel : CoreViewModel() {
     val eanInfo = MutableLiveData<OrderByBarcodeUI>()
 
     private val mercuryDataInfo = MutableLiveData<List<MercuryPartDataInfo>>()
-    private val zPartDataInfo = MutableLiveData<List<ZPartDataInfo>>()
+    override val zPartDataInfo = MutableLiveData<List<ZPartDataInfo>>()
     private val addedAttribute = MutableLiveData<List<AddAttributeProdInfo>>()
     private val warehouseSelected = MutableLiveData<List<String>>()
 
@@ -108,13 +110,9 @@ class IngredientDetailsViewModel : CoreViewModel() {
 
     /** Определение типа товара */
     val goodTypeIcon by unsafeLazy {
-        /*if (!orderIngredient.value?.isVet.isNullOrBlank()) { //Ветеринарный пока никак не должен определяться
-        GoodTypeIcon.IS_VET
-    } else */if (!orderIngredient.value?.isFact.isNullOrBlank()) {
-        GoodTypeIcon.FACT
-    } else {
-        GoodTypeIcon.PLAN
-    }
+        orderIngredient.mapSkipNulls {
+            getGoodTypeIcon(it)
+        }
     }
 
     /** Условие отображения ошибки, если лист производителей заполнен с пробелами */
@@ -122,30 +120,40 @@ class IngredientDetailsViewModel : CoreViewModel() {
 
     /** Условие отображения производителя */
     val producerVisibleCondition by unsafeLazy {
-        val isVet = !orderIngredient.value?.isVet.isNullOrBlank()
-        val isZPart = !orderIngredient.value?.isZpart.isNullOrBlank()
-        val condition = when {
-            isVet -> true
-            !isVet && isZPart -> checkZPartProducerVisibleCondition().first
-            else -> false
+        asyncLiveData<Boolean> {
+            launchUITryCatch {
+                orderIngredient.value?.let { orderIngredient ->
+                    val isVet = !orderIngredient.isVet.isNullOrBlank()
+                    val isZPart = !orderIngredient.isZpart.isNullOrBlank()
+                    val cond = producerConditions
+                    val condition = when {
+                        isVet -> true
+                        !isVet && isZPart -> cond.first
+                        else -> false
+                    }
+                    alertNotFoundProducerName.value = cond.second
+                    emit(condition)
+                }.orIfNull {
+                    navigator.showAlertIngredientNotFound()
+                }
+            }
         }
-        alertNotFoundProducerName.value = checkZPartProducerVisibleCondition().second
-        condition
     }
 
     /** Условие отображения даты производства */
-    val dateVisibleCondition by unsafeLazy {
-        !orderIngredient.value?.isVet.isNullOrBlank() || !orderIngredient.value?.isZpart.isNullOrBlank()
+    val dateVisibleCondition = orderIngredient.mapSkipNulls {
+        !it.isVet.isNullOrBlank() || !it.isZpart.isNullOrBlank()
     }
 
+
     /** Условие отображения кнопки для показа информации о меркурианском товаре*/
-    val vetIconInfoCondition by unsafeLazy {
-        !orderIngredient.value?.isVet.isNullOrBlank()
+    val vetIconInfoCondition = orderIngredient.mapSkipNulls {
+        !it.isVet.isNullOrBlank()
     }
 
     /** Условие активности кнопки добавления партии*/
-    val addPartAttributeEnable by unsafeLazy {
-        orderIngredient.value?.isVet.isNullOrBlank()
+    val addPartAttributeEnable = orderIngredient.mapSkipNulls {
+        it.isVet.isNullOrBlank()
     }
 
     /** Условие блокировки спиннеров производителя и даты*/
@@ -170,34 +178,11 @@ class IngredientDetailsViewModel : CoreViewModel() {
 
     val ean = MutableLiveData("")
 
-    private fun checkZPartProducerVisibleCondition(): Pair<Boolean, Boolean> {
-
-        val producerVisibleCondition = zPartDataInfo.switchMap {
-            asyncLiveData<List<String>> {
-                val zPartProducerNameList = it.map { it.prodName.orEmpty() }
-                emit(zPartProducerNameList)
-            }
-        }
-
-        val producersList = producerVisibleCondition.value.orEmpty()
-
-        var fullItemCount = 0
-        for (zPartName in producersList) {
-            if (zPartName.isNotEmpty()) {
-                fullItemCount++ //Считаем количество не пустых полей в списке
-            }
-        }
-
-        val visibleStatus = when {
-            (fullItemCount == 0) -> ProducerDataStatus.GONE
-            (fullItemCount == producersList.size) -> ProducerDataStatus.VISIBLE
-            else -> ProducerDataStatus.ALERT
-        }
-
-        return when (visibleStatus) {
-            ProducerDataStatus.GONE -> false to false
-            ProducerDataStatus.VISIBLE -> true to false
-            ProducerDataStatus.ALERT -> true to true
+    private fun getGoodTypeIcon(orderIngredientDataInfo: OrderIngredientDataInfo): GoodTypeIcon {
+        return when {
+            !orderIngredientDataInfo.isVet.isNullOrBlank() -> GoodTypeIcon.VET
+            !orderIngredientDataInfo.isFact.isNullOrBlank() -> GoodTypeIcon.FACT
+            else -> GoodTypeIcon.PLAN
         }
     }
 
