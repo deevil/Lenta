@@ -8,10 +8,7 @@ import com.lenta.bp16.data.IPrinter
 import com.lenta.bp16.data.IScales
 import com.lenta.bp16.data.Printer
 import com.lenta.bp16.data.Scales
-import com.lenta.bp16.model.IPersistLabelList
-import com.lenta.bp16.model.ITaskManager
-import com.lenta.bp16.model.PersistLabelList
-import com.lenta.bp16.model.TaskManager
+import com.lenta.bp16.model.*
 import com.lenta.bp16.model.data_storage.IIngredientDataPersistStorage
 import com.lenta.bp16.model.data_storage.IngredientDataPersistStorage
 import com.lenta.bp16.model.warehouse.IWarehousePersistStorage
@@ -63,6 +60,10 @@ class AppModule {
         @Binds
         @AppScope
         fun bindResourceManager(realisation: ResourceManager): IResourceManager
+
+        @Binds
+        @AppScope
+        fun bindAttributeManager(realisation: AttributeManager): IAttributeManager
 
         @Binds
         @AppScope
