@@ -99,7 +99,6 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
                 recyclerView = layoutBinding.rv,
                 items = vm.processing,
                 onClickHandler = vm::onClickItemPosition
-
         )
 
         layoutBinding.vm = vm

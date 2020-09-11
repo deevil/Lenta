@@ -104,50 +104,48 @@ class SetsFragment :
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
         if (position == 0) {
-            DataBindingUtil
-                    .inflate<LayoutSetsQuantityBinding>(LayoutInflater.from(container.context),
-                            R.layout.layout_sets_quantity,
-                            container,
-                            false).let {
-                        it.vm = vm
-                        it.lifecycleOwner = viewLifecycleOwner
-                        return it.root
-                    }
+            DataBindingUtil.inflate<LayoutSetsQuantityBinding>(LayoutInflater.from(container.context),
+                    R.layout.layout_sets_quantity,
+                    container,
+                    false).let {
+
+                it.vm = vm
+                it.lifecycleOwner = viewLifecycleOwner
+
+                return it.root
+            }
         }
 
-        DataBindingUtil
-                .inflate<LayoutSetsComponentsBinding>(LayoutInflater.from(container.context),
-                        R.layout.layout_sets_components,
-                        container,
-                        false).let { layoutBinding ->
+        DataBindingUtil.inflate<LayoutSetsComponentsBinding>(LayoutInflater.from(container.context),
+                R.layout.layout_sets_components,
+                container,
+                false).let { layoutBinding ->
 
-                    val onClickSelectionListener = View.OnClickListener {
-                        (it!!.tag as Int).let { position ->
-                            vm.componentsSelectionsHelper.revert(position = position)
-                            layoutBinding.rv.adapter?.notifyItemChanged(position)
-                        }
-                    }
-
-                    layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
-                            layoutId = R.layout.item_tile_sets,
-                            itemId = BR.item,
-                            onAdapterItemBind = { binding: ItemTileSetsBinding, position: Int ->
-                                binding.tvItemNumber.tag = position
-                                binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                                binding.selectedForDelete = vm.componentsSelectionsHelper.isSelected(position)
-                                onAdapterBindHandler(binding, position)
-                            }
-                    )
-                    layoutBinding.vm = vm
-                    layoutBinding.lifecycleOwner = viewLifecycleOwner
-                    oldRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
-                            recyclerView = layoutBinding.rv,
-                            items = vm.componentsLiveData,
-                            previousPosInfo = oldRecyclerViewKeyHandler?.posInfo?.value,
-                            onClickHandler = vm::onClickItemPosition
-                    )
-                    return layoutBinding.root
+            val onClickSelectionListener = View.OnClickListener {
+                (it!!.tag as Int).let { position ->
+                    vm.componentsSelectionsHelper.revert(position = position)
+                    layoutBinding.rv.adapter?.notifyItemChanged(position)
                 }
+            }
+
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                    layoutId = R.layout.item_tile_sets,
+                    itemId = BR.item,
+                    onItemBind = { binding: ItemTileSetsBinding, position: Int ->
+                        binding.tvItemNumber.tag = position
+                        binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                        binding.selectedForDelete = vm.componentsSelectionsHelper.isSelected(position)
+                    },
+                    recyclerView = layoutBinding.rv,
+                    items = vm.componentsLiveData,
+                    onClickHandler = vm::onClickItemPosition
+            )
+
+            layoutBinding.vm = vm
+            layoutBinding.lifecycleOwner = viewLifecycleOwner
+
+            return layoutBinding.root
+        }
     }
 
     override fun getTextTitle(position: Int): String = getString(if (position == 0) R.string.quantity else R.string.components)

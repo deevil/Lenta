@@ -32,9 +32,6 @@ class GoodsListFragment : KeyDownCoreFragment<FragmentGoodsListBinding, GoodsLis
         ToolbarButtonsClickListener,
         OnKeyDownListener {
 
-    private var countedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
-    private var filterRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
-
     override fun getLayoutId(): Int = R.layout.fragment_goods_list
 
     override fun getPageNumber() = generateScreenNumber()
@@ -109,32 +106,22 @@ class GoodsListFragment : KeyDownCoreFragment<FragmentGoodsListBinding, GoodsLis
                 layoutBinding.rv.adapter?.notifyItemChanged(position)
             }
 
-            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding<ItemTileGoodsBinding>(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding<GoodItem, ItemTileGoodsBinding>(
                     layoutId = R.layout.item_tile_goods,
                     itemId = BR.item,
-                    onAdapterItemBind = { binding, position ->
+                    onItemBind = { binding, position ->
                         binding.tvItemNumber.tag = position
                         binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                         binding.selectedForDelete = vm.countedSelectionsHelper.isSelected(position)
-
-                        countedRecyclerViewKeyHandler?.let {
-                            binding.root.isSelected = it.isSelected(position)
-                        }
                     },
-                    onAdapterItemClicked = { position ->
-                        countedRecyclerViewKeyHandler?.onItemClicked(position)
-                    }
+                    keyHandlerId = TAB_COUNTED,
+                    recyclerView = layoutBinding.rv,
+                    items = vm.countedGoods,
+                    onClickHandler = vm::onClickItemPosition
             )
 
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
-
-            countedRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
-                    recyclerView = layoutBinding.rv,
-                    previousPosInfo = countedRecyclerViewKeyHandler?.posInfo?.value,
-                    items = vm.countedGoods,
-                    onClickHandler = vm::onClickItemPosition
-            )
 
             return layoutBinding.root
         }
@@ -152,32 +139,22 @@ class GoodsListFragment : KeyDownCoreFragment<FragmentGoodsListBinding, GoodsLis
                 layoutBinding.rv.adapter?.notifyItemChanged(position)
             }
 
-            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding<ItemTileFilterBinding>(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding<FilterItem, ItemTileFilterBinding>(
                     layoutId = R.layout.item_tile_filter,
                     itemId = BR.item,
-                    onAdapterItemBind = { binding, position ->
+                    onItemBind = { binding, position ->
                         binding.tvItemNumber.tag = position
                         binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                         binding.selectedForDelete = vm.filteredSelectionsHelper.isSelected(position)
-
-                        filterRecyclerViewKeyHandler?.let {
-                            binding.root.isSelected = it.isSelected(position)
-                        }
                     },
-                    onAdapterItemClicked = { position ->
-                        filterRecyclerViewKeyHandler?.onItemClicked(position)
-                    }
+                    keyHandlerId = TAB_FILTER,
+                    recyclerView = layoutBinding.rv,
+                    items = vm.filteredGoods,
+                    onClickHandler = vm::onClickItemPosition
             )
 
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
-
-            filterRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
-                    recyclerView = layoutBinding.rv,
-                    previousPosInfo = filterRecyclerViewKeyHandler?.posInfo?.value,
-                    items = vm.filteredGoods,
-                    onClickHandler = vm::onClickItemPosition
-            )
 
             return layoutBinding.root
         }
