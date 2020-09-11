@@ -534,7 +534,7 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun showQuantityMoreThenPlannedScreen() {
+    override fun showQuantityMoreThanPlannedScreen() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "87",
@@ -594,10 +594,14 @@ class ScreenNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "98",
-                    message = context.getString(R.string.no_settings_for_that_markType),
+                    message = context.getString(R.string.cant_scan_excise_for_wholesale_task),
                     iconRes = R.drawable.ic_warning_red_80dp
             ))
         }
+    }
+
+    override fun showCantAddExciseGoodForWholesale() {
+        TODO("Not yet implemented")
     }
 
     override fun showInternalError(cause: String) {
@@ -607,7 +611,6 @@ class ScreenNavigator @Inject constructor(
 }
 
 interface IScreenNavigator : ICoreNavigator {
-
     fun openFirstScreen()
     fun openLoginScreen()
     fun openFastDataLoadingScreen()
@@ -643,6 +646,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun showTaskUnsentDataWillBeDeleted(taskName: String, applyCallback: () -> Unit)
     fun showScannedMarkBelongsToProduct(productName: String)
     fun showForExciseGoodNeedScanFirstMark()
+
     fun showForGoodNeedScanFirstMark()
     fun showRawGoodsRemainedInTask(yesCallback: () -> Unit)
     fun showBoxWasLastScanned(afterShowCallback: () -> Unit)
@@ -672,7 +676,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun showPalletListPrintedScreen(nextCallback: () -> Unit)
 
     fun showInternalError(cause: String)
-    fun showQuantityMoreThenPlannedScreen()
+    fun showQuantityMoreThanPlannedScreen()
 
     fun showMarkAlreadyScannedDelete(yesCallback: () -> Unit)
     fun showCartonAlreadyScannedDelete(yesCallback: () -> Unit)
@@ -680,4 +684,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun showMrcNotSameAlert(good: Good)
 
     fun showNoMarkTypeInSettings()
+
+    fun showCantAddExciseGoodForWholesale()
 }

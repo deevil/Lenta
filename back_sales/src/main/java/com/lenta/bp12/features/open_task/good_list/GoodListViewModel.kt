@@ -410,18 +410,20 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     private fun setFoundGood(foundGood: GoodOpen) {
-        manager.updateCurrentGood(foundGood)
-
-        with(navigator) {
-            if (foundGood.markType != MarkType.UNKNOWN) {
-                openMarkedGoodInfoCreateScreen()
-                showForGoodNeedScanFirstMark()
+        with(navigator){
+            if (manager.isWholesaleTaskType && foundGood.kind == GoodKind.EXCISE) {
+                showExciseAlcoholGoodInfoScreen()
             } else {
-                openGoodInfoCreateScreen()
+                manager.updateCurrentGood(foundGood)
+                if (foundGood.markType != MarkType.UNKNOWN) {
+                    openMarkedGoodInfoCreateScreen()
+                    showForGoodNeedScanFirstMark()
+                } else {
+                    openGoodInfoCreateScreen()
+                }
+                Logg.d { "--> found good: $foundGood" }
             }
         }
-
-        Logg.d { "--> found good: $foundGood" }
     }
 
     private fun checkMark(number: String) {

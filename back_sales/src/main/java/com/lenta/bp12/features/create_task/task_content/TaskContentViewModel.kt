@@ -69,7 +69,6 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     /**
     Переменные
      */
-
     private var isEanLastScanned = false
 
     private var lastSuccessSearchNumber = ""
@@ -257,14 +256,20 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     private fun setFoundGood(foundGood: GoodCreate) {
-        manager.updateCurrentGood(foundGood)
-        if (foundGood.markType != MarkType.UNKNOWN) {
-            navigator.openMarkedGoodInfoCreateScreen()
-            navigator.showForGoodNeedScanFirstMark()
-        } else {
-            navigator.openGoodInfoCreateScreen()
+        with(navigator){
+            if (manager.isWholesaleTaskType && foundGood.kind == GoodKind.EXCISE) {
+                showExciseAlcoholGoodInfoScreen()
+            } else {
+                manager.updateCurrentGood(foundGood)
+                if (foundGood.markType != MarkType.UNKNOWN) {
+                    openMarkedGoodInfoCreateScreen()
+                    showForGoodNeedScanFirstMark()
+                } else {
+                    openGoodInfoCreateScreen()
+                }
+                Logg.d { "--> found good: $foundGood" }
+            }
         }
-        Logg.d { "--> found good: $foundGood" }
     }
 
     private fun loadGoodInfoByEan(ean: String) {
