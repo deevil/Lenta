@@ -40,7 +40,7 @@ class TaskContentFragment : CoreFragment<FragmentTaskContentBinding, TaskContent
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.description.value = getString(R.string.task_content)
+        topToolbarUiModel.description.value = getString(R.string.good_list)
 
         connectLiveData(vm.title, topToolbarUiModel.title)
     }
@@ -212,7 +212,7 @@ class TaskContentFragment : CoreFragment<FragmentTaskContentBinding, TaskContent
 
     override fun getTextTitle(position: Int): String {
         return when (position) {
-            TAB_GOODS -> getString(R.string.goods)
+            TAB_GOODS -> getString(R.string.processed)
             TAB_BASKETS -> getString(R.string.baskets)
             else -> throw IllegalArgumentException("Wrong pager position!")
         }
