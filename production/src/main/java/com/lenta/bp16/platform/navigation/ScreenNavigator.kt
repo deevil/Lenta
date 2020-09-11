@@ -12,6 +12,7 @@ import com.lenta.bp16.features.good_info.GoodInfoFragment
 import com.lenta.bp16.features.good_packaging.GoodPackagingFragment
 import com.lenta.bp16.features.good_weighing.GoodWeighingFragment
 import com.lenta.bp16.features.ingredient_details.IngredientDetailsFragment
+import com.lenta.bp16.features.ingredient_details.add_attribute.IngredientAttributeFragment
 import com.lenta.bp16.features.ingredients_list.IngredientsListFragment
 import com.lenta.bp16.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp16.features.main_menu.MainMenuFragment
@@ -185,12 +186,6 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun openAddAttributeScreen(material: String, name: String, parentCode: String, shelfLife: String) {
-        runOrPostpone {
-            getFragmentStack()?.push(MaterialAttributeFragment.newInstance(material, name, parentCode, shelfLife))
-        }
-    }
-
     override fun openGoodInfoScreen(goodParams: GoodParams) {
         runOrPostpone {
             getFragmentStack()?.push(GoodInfoFragment.newInstance(goodParams))
@@ -219,6 +214,18 @@ class ScreenNavigator @Inject constructor(
 
     override fun openTechOrdersScreen(selectedMaterial: MaterialIngredientDataInfo, parentCode: String, materialIngredientKtsch: String) {
         getFragmentStack()?.push(TechOrdersListFragment.newInstance(selectedMaterial, parentCode, materialIngredientKtsch))
+    }
+
+    override fun openMaterialAttributeScreen(materialIngredient: MaterialIngredientDataInfo, parentCode: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(MaterialAttributeFragment.newInstance(materialIngredient, parentCode))
+        }
+    }
+
+    override fun openIngredientAttributeScreen(orderIngredient: OrderIngredientDataInfo, parentCode: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(IngredientAttributeFragment.newInstance(orderIngredient, parentCode))
+        }
     }
 
     // Информационные экраны
@@ -511,7 +518,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openDefectListScreen()
     fun openGoodInfoScreen(goodParams: GoodParams)
     fun openSelectGoodScreen()
-    fun openAddAttributeScreen(material: String, name: String, parentCode: String, shelfLife: String)
     fun openIngredientsListScreen()
     fun openOrderDetailsScreen(selectedIngredient: IngredientInfo, barcode: OrderByBarcodeUI)
     fun openIngredientDetailsScreen(selectedIngredient: OrderIngredientDataInfo, parentCode: String, eanInfo: OrderByBarcodeUI)
@@ -519,6 +525,8 @@ interface IScreenNavigator : ICoreNavigator {
     fun openMaterialRemakesScreen(selectedIngredient: IngredientInfo)
     fun openMaterialRemakeDetailsScreen(selectedMaterial: MaterialIngredientDataInfo, parentCode: String, parentName: String, barcode: OrderByBarcodeUI)
     fun openTechOrdersScreen(selectedMaterial: MaterialIngredientDataInfo, parentCode: String, materialIngredientKtsch: String)
+    fun openMaterialAttributeScreen(materialIngredient: MaterialIngredientDataInfo, parentCode: String)
+    fun openIngredientAttributeScreen(orderIngredient: OrderIngredientDataInfo, parentCode: String)
 
     fun showDefrostingPhaseIsCompleted(nextCallback: () -> Unit)
     fun showFixStartNextStageSuccessful(nextCallback: () -> Unit)

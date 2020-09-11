@@ -5,6 +5,8 @@ import android.view.View
 import androidx.core.os.bundleOf
 import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentMaterialAttributeBinding
+import com.lenta.bp16.features.material_remake_details.MaterialRemakeDetailsFragment
+import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
 import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -21,19 +23,9 @@ class MaterialAttributeFragment : CoreFragment<FragmentMaterialAttributeBinding,
                 ?: throw IllegalArgumentException("There is no argument value with key $KEY_PARENT_CODE")
     }
 
-    private val name: String by unsafeLazy {
-        arguments?.getString(KEY_NAME)
-                ?: throw IllegalArgumentException("There is no argument value with key $KEY_NAME")
-    }
-
-    private val material: String by unsafeLazy {
-        arguments?.getString(KEY_MATERIAL)
-                ?: throw IllegalArgumentException("There is no argument value with key $KEY_PARENT_CODE")
-    }
-
-    private val shelfLife: String by unsafeLazy {
-        arguments?.getString(KEY_SHELFLIFE)
-                ?: throw IllegalArgumentException("There is no argument value with key $KEY_SHELFLIFE")
+    private val materialIngredientDataInfo: MaterialIngredientDataInfo by unsafeLazy {
+        arguments?.getParcelable<MaterialIngredientDataInfo>(KEY_INGREDIENT)
+                ?: throw IllegalArgumentException("There is no argument value with key $KEY_INGREDIENT")
     }
 
     override fun getLayoutId(): Int = R.layout.fragment_material_attribute
@@ -43,18 +35,19 @@ class MaterialAttributeFragment : CoreFragment<FragmentMaterialAttributeBinding,
     override fun getViewModel(): MaterialAttributeViewModel {
         provideViewModel(MaterialAttributeViewModel::class.java).let {
             getAppComponent()?.inject(it)
-            it.shelfLife.value = shelfLife
+            it.materialIngredient.value = materialIngredientDataInfo
+            it.parentCode = arguments?.getString(KEY_PARENT_CODE, "").orEmpty()
             return it
         }
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.title.value = buildString {
-            append(material)
+            append(parentCode)
             append(" ")
-            append(name)
+            append(materialIngredientDataInfo.name)
         }
-        topToolbarUiModel.description.value = parentCode
+        topToolbarUiModel.description.value = materialIngredientDataInfo.ltxa1
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
@@ -76,17 +69,13 @@ class MaterialAttributeFragment : CoreFragment<FragmentMaterialAttributeBinding,
 
     companion object {
         private const val SCREEN_NUMBER = "16/83"
-        private const val KEY_MATERIAL = "KEY_MATERIAL"
-        private const val KEY_NAME = "KEY_NAME"
+        private const val KEY_INGREDIENT = "KEY_INGREDIENT"
         private const val KEY_PARENT_CODE = "KEY_PARENT_CODE"
-        private const val KEY_SHELFLIFE = "KEY_SHELFLIFE"
 
-        fun newInstance(material: String, name: String, parentCode: String, shelfLife: String) = MaterialAttributeFragment().apply {
+        fun newInstance(selectedIngredient: MaterialIngredientDataInfo, parentCode: String) = MaterialAttributeFragment().apply {
             arguments = bundleOf(
-                    KEY_MATERIAL to material,
-                    KEY_NAME to name,
-                    KEY_PARENT_CODE to parentCode,
-                    KEY_SHELFLIFE to shelfLife
+                    KEY_INGREDIENT to selectedIngredient,
+                    KEY_PARENT_CODE to parentCode
             )
         }
     }

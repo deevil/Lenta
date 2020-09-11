@@ -5,6 +5,7 @@ import androidx.lifecycle.switchMap
 import com.lenta.bp16.model.AddAttributeProdInfo
 import com.lenta.bp16.model.ProducerDataInfo
 import com.lenta.bp16.model.ZPartDataInfo
+import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
 import com.lenta.bp16.platform.base.IZpartVisibleConditions
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.repository.IDatabaseRepository
@@ -20,6 +21,7 @@ import com.lenta.shared.requests.network.ServerTimeRequest
 import com.lenta.shared.requests.network.ServerTimeRequestParam
 import com.lenta.shared.utilities.extentions.*
 import javax.inject.Inject
+import kotlin.properties.Delegates
 
 class MaterialAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
 
@@ -52,8 +54,9 @@ class MaterialAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
 
     private val producerDataInfo = MutableLiveData<List<ProducerDataInfo>>()
     override val zPartDataInfo = MutableLiveData<List<ZPartDataInfo>>()
-    val shelfLife = MutableLiveData<String>() //Срок годности
-
+    val materialIngredient = MutableLiveData<MaterialIngredientDataInfo>()
+    // значение параметра OBJ_CODE из родительского компонента заказа
+    var parentCode: String by Delegates.notNull()
     val producerNameList = producerDataInfo.switchMap {
         asyncLiveData<List<String>> {
             val producerNameList = it.map { it.prodName.orEmpty() }
@@ -98,7 +101,7 @@ class MaterialAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
         var visibleCondition = true
         launchUITryCatch {
             val timeParams = database.getPerishable()?.div(DIVIDER) ?: 0
-            val shelfLife = shelfLife.value?.toInt() ?: 0
+            val shelfLife = materialIngredient.value?.shelfLife?.toInt() ?: 0
             visibleCondition = shelfLife < timeParams
         }
         return visibleCondition

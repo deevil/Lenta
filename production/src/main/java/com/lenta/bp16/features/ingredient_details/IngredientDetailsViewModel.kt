@@ -360,10 +360,7 @@ class IngredientDetailsViewModel : CoreViewModel(), IZpartVisibleConditions {
     fun onClickAddAttributeButton() {
         val orderIngredient = orderIngredient.value
         orderIngredient?.let {
-            val material = it.getFormattedMaterial()
-            val name = it.name.orEmpty()
-            val shelfLife = it.shelfLife.orEmpty()
-            navigator.openAddAttributeScreen(material, name, parentCode, shelfLife)
+            navigator.openIngredientAttributeScreen(orderIngredient, parentCode)
         }.orIfNull {
             navigator.showOrderIngredientErrorScreen()
         }

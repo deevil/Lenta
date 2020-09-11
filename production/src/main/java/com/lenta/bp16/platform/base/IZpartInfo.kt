@@ -1,4 +1,4 @@
-package com.lenta.bp16.features.add_attribute
+package com.lenta.bp16.platform.base
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp16.model.ZPartDataInfo

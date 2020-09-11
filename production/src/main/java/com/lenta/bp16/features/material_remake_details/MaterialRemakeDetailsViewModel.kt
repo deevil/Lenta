@@ -242,7 +242,7 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
         /** Если была передана дата из AddAttributeFragment, то заполнять данными из нее*/
         if (!addedAttribute.value.isNullOrEmpty()) {
             addedAttribute.value?.let { addAttributeDataInfoList ->
-                val productionDate = addAttributeDataInfoList.mapNotNull { it.date }
+                val productionDate = addAttributeDataInfoList.map { it.date }
                 productionDateField.value = productionDate
             }
         } else {
@@ -297,10 +297,10 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
         }
     }
 
-    override fun onCleared() {
+/*    override fun onCleared() {
 
         super.onCleared()
-    }
+    }*/
 
     fun onCompleteClicked() = launchUITryCatch {
         val weight = total.value ?: 0.0
@@ -345,11 +345,7 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
     fun onClickAddAttributeButton() {
         val materialIngredient = materialIngredient.value
         materialIngredient?.let {
-            val material = parentCode
-            val name = it.name.orEmpty()
-            val operation = it.ltxa1.orEmpty()
-            val shelfLife = it.shelfLife.orEmpty()
-            navigator.openAddAttributeScreen(material, name, operation, shelfLife)
+            navigator.openMaterialAttributeScreen(materialIngredient, parentCode)
         }.orIfNull {
             navigator.showOrderIngredientErrorScreen()
         }

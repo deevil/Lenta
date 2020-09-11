@@ -113,15 +113,14 @@ class MaterialRemakeDetailsFragment : CoreFragment<FragmentMaterialRemakeDetails
         private const val KEY_PARENT_NAME = "KEY_PARENT_NAME"
         private const val KEY_EAN_INFO = "KEY_EAN_INFO"
 
-        fun newInstance(selectedIngredient: MaterialIngredientDataInfo, parentCode: String, parentName: String, barcode: OrderByBarcodeUI): MaterialRemakeDetailsFragment {
-            return MaterialRemakeDetailsFragment().apply {
-                arguments = bundleOf(
-                        KEY_INGREDIENT to selectedIngredient,
-                        KEY_PARENT_CODE to parentCode,
-                        KEY_PARENT_NAME to parentName,
-                        KEY_EAN_INFO to barcode
-                )
-            }
-        }
+        fun newInstance(selectedIngredient: MaterialIngredientDataInfo, parentCode: String, parentName: String, barcode: OrderByBarcodeUI) =
+                MaterialRemakeDetailsFragment().apply {
+                    arguments = bundleOf(
+                            KEY_INGREDIENT to selectedIngredient,
+                            KEY_PARENT_CODE to parentCode,
+                            KEY_PARENT_NAME to parentName,
+                            KEY_EAN_INFO to barcode
+                    )
+                }
     }
 }
