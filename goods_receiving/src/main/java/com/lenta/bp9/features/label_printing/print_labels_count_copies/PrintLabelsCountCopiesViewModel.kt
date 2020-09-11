@@ -122,7 +122,7 @@ class PrintLabelsCountCopiesViewModel : CoreViewModel() {
                                 shelfLife = labelItem.batchDiscrepancies?.shelfLifeDate.orEmpty(),
                                 productTime = labelItem.batchDiscrepancies?.shelfLifeDate.orEmpty(), //todo должно быть дата, которую ввел пользователь при приемке;
                                 delivery = taskManager.getReceivingTask()?.taskDescription?.deliveryNumber.orEmpty(),
-                                provider = "",
+                                provider = taskManager.getReceivingTask()?.taskDescription?.supplierName.orEmpty(),
                                 batchNumber = labelItem.batchDiscrepancies?.batchNumber.orEmpty(),
                                 manufacturer = getManufacturerName(labelItem.batchDiscrepancies?.manufactureCode.orEmpty()),
                                 weigher = sessionInfo.personnelNumber.orEmpty(),

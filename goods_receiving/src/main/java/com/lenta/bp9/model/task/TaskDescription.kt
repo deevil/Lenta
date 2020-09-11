@@ -2,7 +2,7 @@ package com.lenta.bp9.model.task
 
 import com.google.gson.annotations.SerializedName
 
-//Таблица ES_TASK Структура карточки задания
+//Таблица ES_TASK (ET_TASK) Структура карточки задания
 data class TaskDescription(val currentStatus: TaskStatus,   //Код текущего статуса (CUR_STAT)
                       val currentStatusText: String,   //Текс текущего статуса (CUR_ST_TEXT)
                       var currentStatusDate: String,   //Дата текущего статуса (CUR_ST_DATE)
@@ -48,7 +48,8 @@ data class TaskDescription(val currentStatus: TaskStatus,   //Код текущ�
                       val isBksTN: Boolean,
                       val isWO: Boolean, //Товары для автосписания
                       val isMark: Boolean, //маркированный товар
-                      val isZBatches: Boolean //маркированный товар
+                      val isZBatches: Boolean, //Z-партии
+                      val supplierName: String //Z-партии для печати этикеток
 ) {
 
     companion object {
@@ -98,7 +99,8 @@ data class TaskDescription(val currentStatus: TaskStatus,   //Код текущ�
                     isBksTN = restData.isBksTN.isNotEmpty(),
                     isWO = restData.isWO.isNotEmpty(),
                     isMark = restData.isMark.isNotEmpty(),
-                    isZBatches = restData.isZBatches == "X"
+                    isZBatches = restData.isZBatches == "X",
+                    supplierName = restData.supplierName.orEmpty()
             )
         }
     }
@@ -190,8 +192,9 @@ data class TaskDescriptionRestInfo(
         @SerializedName("IS_MARK")
         val isMark: String,
         @SerializedName("IS_ZPARTS")
-        val isZBatches: String? // Z-партии
-
+        val isZBatches: String?, // Z-партии
+        @SerializedName("NAME_LIFNR")
+        val supplierName: String? //Z-партии для печати этикеток
 ) {
 }
 
