@@ -1,6 +1,7 @@
 package com.lenta.bp12.features.open_task.discrepancy_list
 
 import com.lenta.bp12.managers.interfaces.IOpenTaskManager
+import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.shared.account.ISessionInfo
@@ -9,6 +10,7 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.mapSkipNulls
 import com.lenta.shared.utilities.orIfNull
 import javax.inject.Inject
 
@@ -47,16 +49,16 @@ class DiscrepancyListViewModel : CoreViewModel() {
     }
 
     val goods by lazy {
-        task.map { task ->
-            task?.goods?.filter { !it.isCounted }?.let { list ->
-                list.mapIndexed { index, good ->
-                    ItemGoodUi(
-                            position = "${list.size - index}",
-                            name = good.name,
-                            material = good.material,
-                            providerCode = good.provider.code.orEmpty()
-                    )
-                }
+        task.mapSkipNulls { task ->
+            val list = task.goods.filter { !it.isCounted }
+            list.mapIndexed { index, good ->
+                ItemGoodUi(
+                        position = "${list.size - index}",
+                        name = good.name,
+                        material = good.material,
+                        providerCode = good.provider.code.orEmpty(),
+                        quantity = chooseQuantity(good)
+                )
             }
         }
     }
@@ -157,11 +159,20 @@ class DiscrepancyListViewModel : CoreViewModel() {
         }
     }
 
+    private fun chooseQuantity(good: Good): String {
+        return if (good.planQuantity > 0.0) {
+            "${good.planQuantity} - ${good.getTotalQuantity()} ${good.commonUnits.name}"
+        } else {
+            "${good.getTotalQuantity()} ${good.commonUnits.name}"
+        }
+    }
+
 }
 
 data class ItemGoodUi(
         val position: String,
         val name: String,
         val material: String,
-        val providerCode: String
+        val providerCode: String,
+        val quantity: String
 )
