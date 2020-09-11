@@ -295,7 +295,6 @@ class MarkManager @Inject constructor(
             if (manager.isGoodCanBeAdded(result)) {
                 setGood(result, container, formattedMrc)
             } else {
-                manager.clearSearchFromListParams()
                 MarkScreenStatus.GOOD_CANNOT_BE_ADDED
             }
         }
@@ -320,7 +319,6 @@ class MarkManager @Inject constructor(
             container: Pair<String, Mark.Container>? = null,
             mrc: String = ""
     ): MarkScreenStatus {
-        createManager.clearSearchFromListParams()
         val taskFromManager = createManager.currentTask
         val goodFromManager = createManager.currentGood
         val good = goodFromManager.value
@@ -381,7 +379,6 @@ class MarkManager @Inject constructor(
             container: Pair<String, Mark.Container>? = null,
             mrc: String = ""
     ): MarkScreenStatus {
-        openManager.clearSearchFromListParams()
         val taskFromManager = openManager.currentTask
         val goodFromManager = openManager.currentGood
 

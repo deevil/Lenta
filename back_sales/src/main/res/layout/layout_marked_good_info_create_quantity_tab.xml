@@ -127,9 +127,9 @@
 
                 <ImageButton
                     android:id="@+id/btn_increase_quantity"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_marginEnd="8dp"
+                    android:layout_width="@dimen/size_30dp"
+                    android:layout_height="@dimen/size_30dp"
+                    android:layout_marginEnd="@dimen/size_8dp"
                     android:background="@drawable/bg_border_rectangle"
                     android:foreground="?selectableItemBackground"
                     android:onClick="@{(v) -> vm.addProvider()}"

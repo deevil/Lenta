@@ -28,19 +28,13 @@ class CreateTaskManager @Inject constructor(
         private val generalTaskManager: IGeneralTaskManager
 ) : ICreateTaskManager {
 
-    override var searchNumber = ""
-
-    override var isSearchFromList = false
-
     override var isWasAddedProvider = false
 
     override var isWholesaleTaskType: Boolean = false
     override var isBasketsNeedsToBeClosed: Boolean = false
 
     override val currentTask = MutableLiveData<TaskCreate>()
-
     override val currentGood = MutableLiveData<Good>()
-
     override val currentBasket = MutableLiveData<Basket>()
 
     /** Метод добавляет обычные в товары в корзину */
@@ -198,19 +192,6 @@ class CreateTaskManager @Inject constructor(
      * и проверяет подходят ли параметры, закрыта она или нет, и есть ли свободный объём
      * divByMark проверяет нужно ли деление корзины по маркам, если нужно то сравнивает марку корзины и товара
      * если нельзя то просто передает true */
-//    override fun getBasket(providerCode: String): Basket? {
-//        return currentTask.value?.let { task ->
-//            currentGood.value?.let { good ->
-//                val basketsFromTask = task.baskets
-//                basketsFromTask.lastOrNull { basket ->
-//                    val divByMark = if (task.type.isDivByMark) basket.markTypeGroup == good.markTypeGroup else true
-//                    val divByMrc = if (task.type.isDivByMinimalPrice) basket.maxRetailPrice == good.maxRetailPrice else true
-//                    isLastBasketMatches(basket, good, providerCode, divByMark, divByMrc)
-//                }
-//            }
-//        }
-//    }
-
     override fun getBasket(providerCode: String, goodToAdd: Good): Basket? {
         return currentTask.value?.let { task ->
             currentGood.value?.let { good ->
@@ -286,7 +267,7 @@ class CreateTaskManager @Inject constructor(
     override fun findGoodByEan(ean: String): Good? {
         return currentTask.value?.let { task ->
             task.goods.find { good ->
-                good.ean == ean || good.eans.contains(ean)
+                good.isGoodHasSameEan(ean)
             }?.also { found ->
                 found.ean = ean
                 updateCurrentTask(task)
@@ -295,17 +276,19 @@ class CreateTaskManager @Inject constructor(
     }
 
     override fun findGoodByEanAndMRC(ean:String, mrc: String): Good? {
-        Logg.e { mrc }
         return if (mrc.isEmpty()) {
             findGoodByEan(ean)
         } else {
             currentTask.value?.let{ task ->
                 task.goods.find { good ->
-                    (good.ean == ean || good.eans.contains(ean)) && (good.maxRetailPrice == mrc)
+                    good.isGoodHasSameEan(ean) && good.isGoodHasSameMaxRetailPrice(mrc)
                 }
             }
         }
     }
+
+    private fun Good.isGoodHasSameEan(otherEan: String) = this.ean == ean || this.eans.contains(ean)
+    private fun Good.isGoodHasSameMaxRetailPrice(otherMrc: String) = this.maxRetailPrice == otherMrc
 
     override fun findGoodByMaterial(material: String): Good? {
         return currentTask.value?.goods?.find { it.material == material }
@@ -439,11 +422,6 @@ class CreateTaskManager @Inject constructor(
         }
     }
 
-    override fun clearSearchFromListParams() {
-        isSearchFromList = false
-        searchNumber = ""
-    }
-
     override fun removeMarksFromGoods(mappedMarks: List<Mark>) {
         currentTask.value?.let { task ->
             task.goods.find {
@@ -454,7 +432,7 @@ class CreateTaskManager @Inject constructor(
                         it.deleteGoodByMarks(good)
                     }
                 }
-                good.marks.removeAll(mappedMarks)
+                good.removeMarks(mappedMarks)
             }
             task.removeEmptyBaskets()
             task.removeEmptyGoods()

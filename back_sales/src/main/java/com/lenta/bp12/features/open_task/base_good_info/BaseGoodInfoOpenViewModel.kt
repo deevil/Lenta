@@ -29,8 +29,8 @@ abstract class BaseGoodInfoOpenViewModel : CoreViewModel(), IBaseGoodInfoOpenVie
     }
 
     override val isWholesaleTaskType by lazy {
-        task.map {
-            it?.type?.isWholesaleType()
+        task.mapSkipNulls {
+            it.type?.isWholesaleType() == true
         }
     }
 
@@ -214,7 +214,6 @@ abstract class BaseGoodInfoOpenViewModel : CoreViewModel(), IBaseGoodInfoOpenVie
     override fun onScanResult(number: String) {
         launchUITryCatch {
             if (isProviderSelected.value == true) {
-                manager.clearSearchFromListParams()
                 checkSearchNumber(number)
             } else {
                 navigator.showChooseProviderFirst()

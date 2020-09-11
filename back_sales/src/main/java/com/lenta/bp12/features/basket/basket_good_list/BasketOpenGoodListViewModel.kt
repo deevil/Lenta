@@ -32,6 +32,8 @@ import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.unsafeLazy
 import com.lenta.shared.utilities.orIfNull
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
@@ -73,7 +75,6 @@ class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener 
     val title by lazy {
         basket.map { basket ->
             val position = basket?.index ?: 1
-
             val description = basket?.getDescription(task.value?.type?.isDivBySection ?: false)
             resource.basket("$position: $description")
         }
@@ -142,8 +143,6 @@ class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener 
         MutableLiveData(isWholesaleBasket)
     }
 
-// -----------------------------
-
     fun onScanResult(data: String) {
         checkEnteredNumber(data)
     }
@@ -173,30 +172,30 @@ class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener 
      * если нет то создает товар
      * */
     private fun getGoodByEan(ean: String) {
-        openTaskManager.findGoodByEan(ean)?.let { foundGood ->
-            setFoundGood(foundGood)
-            return
-        }
-
-        if (task.value?.isStrict == false) {
-            loadGoodInfoByEan(ean)
-        } else {
-            navigator.showGoodIsMissingInTask()
+        launchUITryCatch {
+            navigator.showProgressLoadingData()
+            val foundGood = withContext(Dispatchers.IO) { openTaskManager.findGoodByEan(ean) }
+            navigator.hideProgress()
+            foundGood?.let(::setFoundGood).orIfNull {
+                if (task.value?.isStrict == false) {
+                    loadGoodInfoByEan(ean)
+                } else {
+                    navigator.showGoodIsMissingInTask()
+                }
+            }
         }
     }
 
-    private fun loadGoodInfoByEan(ean: String) {
-        launchUITryCatch {
-            navigator.showProgressLoadingData(::handleFailure)
-            goodInfoNetRequest(GoodInfoParams(
-                    tkNumber = sessionInfo.market.orEmpty(),
-                    ean = ean,
-                    taskType = task.value?.type?.code.orEmpty()
-            )).also {
-                navigator.hideProgress()
-            }.either(::handleFailure) {
-                handleLoadGoodInfoResult(it)
-            }
+    private suspend fun loadGoodInfoByEan(ean: String) {
+        navigator.showProgressLoadingData(::handleFailure)
+        goodInfoNetRequest(GoodInfoParams(
+                tkNumber = sessionInfo.market.orEmpty(),
+                ean = ean,
+                taskType = task.value?.type?.code.orEmpty()
+        )).also {
+            navigator.hideProgress()
+        }.either(::handleFailure) {
+            handleLoadGoodInfoResult(it)
         }
     }
 
@@ -206,32 +205,31 @@ class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener 
      * если нет то создает товар
      * */
     private fun getGoodByMaterial(material: String) {
-        openTaskManager.findGoodByMaterial(material)?.let { foundGood ->
-            setFoundGood(foundGood)
-            return
-        }
-
-        if (task.value?.isStrict == false) {
-            loadGoodInfoByMaterial(material)
-        } else {
-            navigator.showGoodIsMissingInTask()
+        launchUITryCatch {
+            navigator.showProgressLoadingData()
+            val foundGood = withContext(Dispatchers.IO) { openTaskManager.findGoodByMaterial(material) }
+            navigator.hideProgress()
+            foundGood?.let(::setFoundGood).orIfNull {
+                if (task.value?.isStrict == false) {
+                    loadGoodInfoByMaterial(material)
+                } else {
+                    navigator.showGoodIsMissingInTask()
+                }
+            }
         }
     }
 
-
-    private fun loadGoodInfoByMaterial(material: String) {
-        launchUITryCatch {
-            navigator.showProgressLoadingData(::handleFailure)
-            goodInfoNetRequest(GoodInfoParams(
-                    tkNumber = sessionInfo.market.orEmpty(),
-                    material = material,
-                    taskType = task.value?.type?.code.orEmpty(),
-                    mode = ScanInfoMode.MARK.mode.toString()
-            )).also {
-                navigator.hideProgress()
-            }.either(::handleFailure) { result ->
-                handleLoadGoodInfoResult(result)
-            }
+    private suspend fun loadGoodInfoByMaterial(material: String) {
+        navigator.showProgressLoadingData(::handleFailure)
+        goodInfoNetRequest(GoodInfoParams(
+                tkNumber = sessionInfo.market.orEmpty(),
+                material = material,
+                taskType = task.value?.type?.code.orEmpty(),
+                mode = ScanInfoMode.MARK.mode.toString()
+        )).also {
+            navigator.hideProgress()
+        }.either(::handleFailure) { result ->
+            handleLoadGoodInfoResult(result)
         }
     }
 
@@ -254,7 +252,6 @@ class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener 
             with(navigator) {
                 showProgressLoadingData()
                 val screenStatus = markManager.checkMark(number, WorkType.CREATE)
-                Logg.e { screenStatus.name }
                 hideProgress()
 
                 when (screenStatus) {

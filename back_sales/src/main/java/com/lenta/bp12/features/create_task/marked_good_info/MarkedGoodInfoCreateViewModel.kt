@@ -333,7 +333,6 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
         navigator.showMrcNotSameInBasketAlert(
                 yesCallback = ::handleYesSaveCurrentMarkToBasketAndOpenAnother
         )
-
     }
 
     private fun handleYesSaveCurrentMarkToBasketAndOpenAnother() {
@@ -383,7 +382,6 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
     override fun onBackPressed() {
         if (isExistUnsavedData) {
             navigator.showUnsavedDataWillBeLost {
-                manager.clearSearchFromListParams()
                 navigator.goBack()
             }
         } else {

@@ -365,7 +365,6 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
     override fun onBackPressed() {
         if (isExistUnsavedData) {
             navigator.showUnsavedDataWillBeLost {
-                manager.clearSearchFromListParams()
                 navigator.goBack()
             }
         } else {

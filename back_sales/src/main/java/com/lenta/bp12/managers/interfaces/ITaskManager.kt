@@ -17,8 +17,6 @@ import com.lenta.bp12.request.pojo.good_info.GoodInfoResult
  * */
 
 interface ITaskManager{
-    var searchNumber: String
-    var isSearchFromList: Boolean
     var isWholesaleTaskType: Boolean
     var isBasketsNeedsToBeClosed: Boolean
 
@@ -43,8 +41,6 @@ interface ITaskManager{
     fun removeBaskets(basketList: MutableList<Basket>)
 
     fun prepareSendTaskDataParams(deviceIp: String, tkNumber: String, userNumber: String)
-
-    fun clearSearchFromListParams()
 
     fun removeMarksFromGoods(mappedMarks: List<Mark>)
 }
