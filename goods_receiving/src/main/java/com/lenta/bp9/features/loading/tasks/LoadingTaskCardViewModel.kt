@@ -1,6 +1,7 @@
 package com.lenta.bp9.features.loading.tasks
 
 import android.content.Context
+import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp9.R
 import com.lenta.bp9.features.reject.RejectType
@@ -359,7 +360,8 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                     }
                 }
                 TaskStatus.Recounting -> {
-                    screenNavigator.openGoodsListScreen(task.taskHeader.taskType)
+                  screenNavigator.openGoodsListScreen(task.taskHeader.taskType)
+
                 }
                 TaskStatus.TransferringToSection -> {
                     screenNavigator.openTransferGoodsSectionScreen()

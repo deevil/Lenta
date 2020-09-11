@@ -109,6 +109,10 @@ public class ZfmpUtz48V001 {
         public String isVet;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @SerializedName("IS_VRUS")
+        public String isRusWine;
+
+        //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
         @SerializedName("IS_HF")
         public String isHf;
 
