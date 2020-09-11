@@ -1,6 +1,7 @@
 package com.lenta.bp16.features.material_remake_details
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.switchMap
 import com.lenta.bp16.data.IScales
 import com.lenta.bp16.features.add_attribute.IZpartVisibleConditions
 import com.lenta.bp16.model.*
@@ -20,6 +21,7 @@ import com.lenta.bp16.request.ingredients_use_case.get_data.GetZPartDataInfoUseC
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.orIfNull
 import kotlinx.coroutines.Dispatchers
@@ -102,22 +104,18 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
 
     /** Условие отображения производителя */
     val producerVisibleCondition by unsafeLazy {
-        asyncLiveData<Boolean> {
-            launchUITryCatch {
-                materialIngredient.value?.let { materialIngredient ->
-                    val isVet = !materialIngredient.isVet.isNullOrBlank()
-                    val isZPart = !materialIngredient.isZpart.isNullOrBlank()
-                    val cond = producerConditions
-                    val condition = when {
-                        isVet -> true
-                        !isVet && isZPart -> cond.first
-                        else -> false
-                    }
-                    alertNotFoundProducerName.value = cond.second
-                    emit(condition)
-                }.orIfNull {
-                    navigator.showAlertIngredientNotFound()
+        materialIngredient.switchMap { ingredient ->
+            asyncLiveData<Boolean> {
+                val isVet = !ingredient.isVet.isNullOrBlank()
+                val isZPart = !ingredient.isZpart.isNullOrBlank()
+                val cond = producerConditions
+                val condition = when {
+                    isVet -> true
+                    !isVet && isZPart -> cond.first
+                    else -> false
                 }
+                alertNotFoundProducerName.postValue(cond.second)
+                emit(condition)
             }
         }
     }
@@ -245,7 +243,7 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
         /** Если была передана дата из AddAttributeFragment, то заполнять данными из нее*/
         if (!addedAttribute.value.isNullOrEmpty()) {
             addedAttribute.value?.let { addAttributeDataInfoList ->
-                val productionDate = addAttributeDataInfoList.map { it.date }
+                val productionDate = addAttributeDataInfoList.mapNotNull { it.date }
                 productionDateField.value = productionDate
             }
         } else {
@@ -298,6 +296,11 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
                 ))
             }
         }
+    }
+
+    override fun onCleared() {
+
+        super.onCleared()
     }
 
     fun onCompleteClicked() = launchUITryCatch {

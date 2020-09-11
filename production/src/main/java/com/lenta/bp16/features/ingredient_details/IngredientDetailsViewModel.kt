@@ -120,22 +120,18 @@ class IngredientDetailsViewModel : CoreViewModel(), IZpartVisibleConditions {
 
     /** Условие отображения производителя */
     val producerVisibleCondition by unsafeLazy {
-        asyncLiveData<Boolean> {
-            launchUITryCatch {
-                orderIngredient.value?.let { orderIngredient ->
-                    val isVet = !orderIngredient.isVet.isNullOrBlank()
-                    val isZPart = !orderIngredient.isZpart.isNullOrBlank()
-                    val cond = producerConditions
-                    val condition = when {
-                        isVet -> true
-                        !isVet && isZPart -> cond.first
-                        else -> false
-                    }
-                    alertNotFoundProducerName.value = cond.second
-                    emit(condition)
-                }.orIfNull {
-                    navigator.showAlertIngredientNotFound()
+        orderIngredient.switchMap { ingredient ->
+            asyncLiveData<Boolean> {
+                val isVet = !ingredient.isVet.isNullOrBlank()
+                val isZPart = !ingredient.isZpart.isNullOrBlank()
+                val cond = producerConditions
+                val condition = when {
+                    isVet -> true
+                    !isVet && isZPart -> cond.first
+                    else -> false
                 }
+                alertNotFoundProducerName.postValue(cond.second)
+                emit(condition)
             }
         }
     }
