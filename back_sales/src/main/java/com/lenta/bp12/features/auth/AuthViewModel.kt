@@ -80,10 +80,10 @@ class AuthViewModel : CoreAuthViewModel() {
     }
 
     override fun handleFailure(failure: Failure) {
-        super.handleFailure(failure)
         sessionInfo.isAuthSkipped.value = false
         progress.value = false
-//        navigator.openAlertScreen(failure, pageNumber = "97")
+        navigator.openAlertScreen(failure, pageNumber = "97")
+        Logg.e { "handleFailure: $failure" }
     }
 
     override fun onClickAuxiliaryMenu() {
@@ -111,13 +111,6 @@ class AuthViewModel : CoreAuthViewModel() {
                 if (login.value == "USER200" && getPassword().isEmpty()) {
                     password.value = "987654321"
                 }
-
-//                if (login.value.isNullOrEmpty()) {
-//                    login.value = "MAKAROV"
-//                }
-//                if (login.value == "MAKAROV" && getPassword().isEmpty()) {
-//                    password.value = "1q2w3e4r"
-//                }
             }
         }
     }

@@ -83,8 +83,6 @@ class DiscrepancyListViewModel : CoreViewModel() {
         task.value?.let { task ->
             goods.value?.get(position)?.material?.let { material ->
                 task.goods.find { it.material == material }?.let {
-                    manager.searchNumber = material
-                    manager.isSearchFromList = true
                     navigator.openGoodInfoOpenScreen()
                 }
             }

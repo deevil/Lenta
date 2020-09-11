@@ -39,8 +39,8 @@ class Good(
         val positions: MutableList<Position> = mutableListOf(),
         val marks: MutableList<Mark> = mutableListOf(),
         val parts: MutableList<Part> = mutableListOf(),
-        val markType: MarkType,
-        val markTypeGroup: MarkTypeGroup?,
+        val markType: MarkType = MarkType.UNKNOWN,
+        val markTypeGroup: MarkTypeGroup? = null,
         val maxRetailPrice: String = "",
 
         val type: String,

@@ -10,10 +10,6 @@ fun List<Mark>.isAnyAlreadyIn(inputMarks: List<Mark>): Boolean {
             tempMark.number == it.number
         }
     }
-
-//    val map = this.associateBy { it.number }
-//    val result = inputMarks.find { map.containsKey(it.number) }
-//    return result != null
 }
 
 fun List<MarkInfo>.mapToMarkList(foundGood: Good): List<Mark> {

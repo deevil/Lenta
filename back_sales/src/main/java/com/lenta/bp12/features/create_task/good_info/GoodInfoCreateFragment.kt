@@ -80,9 +80,9 @@ class GoodInfoCreateFragment : CoreFragment<FragmentGoodInfoCreateBinding, GoodI
 //    //Для тестов
 //    override fun onKeyDown(keyCode: KeyCode): Boolean {
 //        return when (keyCode) {
-//            //Блок Мрц 106
+//            //ШК товара 335533
 //            KeyCode.KEYCODE_0 -> {
-//                vm.onScanResult("147300249826851018001FZSIZAB5I6KZKWEQKPKZJHW6MYKVGAETXLPV7M5AIF7OXTQFIM347EWQGXAK65QGJFKTR7EQDHJQTJFSW5DNWTBU3BRLKVM7D6YZMYRBV6IOQY5ZXLPKLBHUZPBTRFTLQ") // Марка
+//                vm.onScanResult("4606068253837") // Марка
 //                true
 //            }
 //            //Блок Мрц 100

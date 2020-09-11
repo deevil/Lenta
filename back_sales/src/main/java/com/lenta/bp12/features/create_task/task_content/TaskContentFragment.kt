@@ -9,8 +9,6 @@ import com.lenta.bp12.BR
 import com.lenta.bp12.R
 import com.lenta.bp12.databinding.*
 import com.lenta.bp12.platform.extention.getAppComponent
-import com.lenta.shared.keys.KeyCode
-import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -43,7 +41,6 @@ class TaskContentFragment : CoreFragment<FragmentTaskContentBinding, TaskContent
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.description.value = getString(R.string.task_content)
-
         connectLiveData(vm.title, topToolbarUiModel.title)
     }
 
@@ -239,6 +236,7 @@ class TaskContentFragment : CoreFragment<FragmentTaskContentBinding, TaskContent
         private const val TAB_BASKETS = 1
     }
 
+//// FOR TESTING: press digit to scan barcode
 //    override fun onKeyDown(keyCode: KeyCode): Boolean {
 //        when (keyCode) {
 //            KeyCode.KEYCODE_0 -> { // Блок
@@ -259,6 +257,10 @@ class TaskContentFragment : CoreFragment<FragmentTaskContentBinding, TaskContent
 //            }
 //            KeyCode.KEYCODE_4 -> { // Коробка 082682
 //                vm.onScanResult("03000042907513119000404111")
+//                return true
+//            }
+//            KeyCode.KEYCODE_5 -> { // ШК товара 335533
+//                vm.onScanResult("4606068253837")
 //                return true
 //            }
 //        }

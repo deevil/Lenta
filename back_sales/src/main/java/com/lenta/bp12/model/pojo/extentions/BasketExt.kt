@@ -94,5 +94,12 @@ fun Basket?.getPosition(): Int {
     return this?.index ?: 0
 }
 
+/**
+ * Показывает есть ли хоть одна не закрытая корзина
+ * */
 fun List<Basket>.isAnyNotLocked() = this.any { it.isLocked.not() }
+
+/**
+ * Показывает есть ли хоть одна распечатанная корзина
+ * */
 fun List<Basket>.isAnyPrinted() = this.any { it.isPrinted }

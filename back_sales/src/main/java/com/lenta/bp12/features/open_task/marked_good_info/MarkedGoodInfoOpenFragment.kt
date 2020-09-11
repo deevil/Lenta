@@ -165,7 +165,7 @@ class MarkedGoodInfoOpenFragment : CoreFragment<FragmentMarkedGoodInfoOpenBindin
         private const val TAB_PROPERTIES_PAGE = 1
         private const val TAB_QUANTITY = 2
     }
-
+// FOR TESTING: press digit to scan barcode
 //    override fun onKeyDown(keyCode: KeyCode): Boolean {
 //        return when (keyCode) {
 //            //Сигареты 4600266012142

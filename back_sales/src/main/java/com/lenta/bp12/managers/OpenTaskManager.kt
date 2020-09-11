@@ -35,10 +35,6 @@ class OpenTaskManager @Inject constructor(
         private val generalTaskManager: IGeneralTaskManager
 ) : IOpenTaskManager {
 
-    override var searchNumber = ""
-
-    override var isSearchFromList = false
-
     override var isNeedLoadTaskListByParams: Boolean = false
 
     override var isWholesaleTaskType: Boolean = false
@@ -641,11 +637,6 @@ class OpenTaskManager @Inject constructor(
 
             updateCurrentTask(task)
         }
-    }
-
-    override fun clearSearchFromListParams() {
-        isSearchFromList = false
-        searchNumber = ""
     }
 
     override fun removeMarksFromGoods(mappedMarks: List<Mark>) {

@@ -33,8 +33,15 @@ import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.orIfNull
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+/** Работа с заданиями
+ * ViewModel ответственный за экран показывающий список товаров и корзин
+ * Симетричный класс в Создании заданий:
+ * @see com.lenta.bp12.features.create_task.task_content.TaskContent
+ * */
 class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
 
     @Inject
@@ -302,30 +309,30 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
      * если нет то создает товар
      * */
     private fun getGoodByEan(ean: String) {
-        manager.findGoodByEan(ean)?.let { foundGood ->
-            setFoundGood(foundGood)
-            return
-        }
-
-        if (task.value?.isStrict == false) {
-            loadGoodInfoByEan(ean)
-        } else {
-            navigator.showGoodIsMissingInTask()
+        launchUITryCatch {
+            navigator.showProgressLoadingData()
+            val foundGood = withContext(Dispatchers.IO) { manager.findGoodByEan(ean) }
+            navigator.hideProgress()
+            foundGood?.let(::setFoundGood).orIfNull {
+                if (task.value?.isStrict == false) {
+                    loadGoodInfoByEan(ean)
+                } else {
+                    navigator.showGoodIsMissingInTask()
+                }
+            }
         }
     }
 
-    private fun loadGoodInfoByEan(ean: String) {
-        launchUITryCatch {
-            navigator.showProgressLoadingData(::handleFailure)
-            goodInfoNetRequest(GoodInfoParams(
-                    tkNumber = sessionInfo.market.orEmpty(),
-                    ean = ean,
-                    taskType = task.value?.type?.code.orEmpty()
-            )).also {
-                navigator.hideProgress()
-            }.either(::handleFailure) {
-                handleLoadGoodInfoResult(it)
-            }
+    private suspend fun loadGoodInfoByEan(ean: String) {
+        navigator.showProgressLoadingData(::handleFailure)
+        goodInfoNetRequest(GoodInfoParams(
+                tkNumber = sessionInfo.market.orEmpty(),
+                ean = ean,
+                taskType = task.value?.type?.code.orEmpty()
+        )).also {
+            navigator.hideProgress()
+        }.either(::handleFailure) {
+            handleLoadGoodInfoResult(it)
         }
     }
 
@@ -335,31 +342,31 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
      * если нет то создает товар
      * */
     private fun getGoodByMaterial(material: String) {
-        manager.findGoodByMaterial(material)?.let { foundGood ->
-            setFoundGood(foundGood)
-            return
-        }
-
-        if (task.value?.isStrict == false) {
-            loadGoodInfoByMaterial(material)
-        } else {
-            navigator.showGoodIsMissingInTask()
+        launchUITryCatch {
+            navigator.showProgressLoadingData()
+            val foundGood = withContext(Dispatchers.IO) { manager.findGoodByMaterial(material) }
+            navigator.hideProgress()
+            foundGood?.let(::setFoundGood).orIfNull {
+                if (task.value?.isStrict == false) {
+                    loadGoodInfoByMaterial(material)
+                } else {
+                    navigator.showGoodIsMissingInTask()
+                }
+            }
         }
     }
 
-    private fun loadGoodInfoByMaterial(material: String) {
-        launchUITryCatch {
-            navigator.showProgressLoadingData(::handleFailure)
-            goodInfoNetRequest(GoodInfoParams(
-                    tkNumber = sessionInfo.market.orEmpty(),
-                    material = material,
-                    taskType = task.value?.type?.code.orEmpty(),
-                    mode = ScanInfoMode.MARK.mode.toString()
-            )).also {
-                navigator.hideProgress()
-            }.either(::handleFailure) { result ->
-                handleLoadGoodInfoResult(result)
-            }
+    private suspend fun loadGoodInfoByMaterial(material: String) {
+        navigator.showProgressLoadingData(::handleFailure)
+        goodInfoNetRequest(GoodInfoParams(
+                tkNumber = sessionInfo.market.orEmpty(),
+                material = material,
+                taskType = task.value?.type?.code.orEmpty(),
+                mode = ScanInfoMode.MARK.mode.toString()
+        )).also {
+            navigator.hideProgress()
+        }.either(::handleFailure) { result ->
+            handleLoadGoodInfoResult(result)
         }
     }
 
@@ -405,9 +412,9 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                 navigator.showForExciseGoodNeedScanFirstMark()
             }
 
-                setFoundGood(goodOpen)
-            }
+            setFoundGood(goodOpen)
         }
+    }
 
 
     private fun setFoundGood(foundGood: Good) {
@@ -449,8 +456,9 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     private fun openGoodByMaterial(material: String) {
-        task.value?.let { task ->
-            task.goods.find { it.material == material }?.let { good ->
+        launchUITryCatch {
+            val foundGood = withContext(Dispatchers.IO) { manager.findGoodByMaterial(material) }
+            foundGood?.let { good ->
                 manager.currentGood.value = good
                 if (good.markType != MarkType.UNKNOWN) {
                     navigator.openMarkedGoodInfoOpenScreen()
@@ -458,9 +466,6 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                     navigator.openGoodInfoOpenScreen()
                 }
             }
-        }.orIfNull {
-            Logg.e { "task null" }
-            navigator.showInternalError(resource.taskNotFoundErrorMsg)
         }
     }
 
@@ -504,20 +509,24 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
             if (task.isExistUncountedGood()) {
                 navigator.openDiscrepancyListScreen()
             } else {
-                navigator.showMakeTaskCountedAndClose {
-                    manager.finishCurrentTask()
-                    manager.prepareSendTaskDataParams(
-                            deviceIp = deviceInfo.getDeviceIp(),
-                            tkNumber = sessionInfo.market.orEmpty(),
-                            userNumber = sessionInfo.personnelNumber.orEmpty()
-                    )
-
-                    navigator.openSaveDataScreen()
-                }
+                showMakeTaskCountedAndClose()
             }
         }.orIfNull {
             Logg.e { "task null" }
             navigator.showInternalError(resource.taskNotFoundErrorMsg)
+        }
+    }
+
+    private fun showMakeTaskCountedAndClose() {
+        navigator.showMakeTaskCountedAndClose {
+            manager.finishCurrentTask()
+            manager.prepareSendTaskDataParams(
+                    deviceIp = deviceInfo.getDeviceIp(),
+                    tkNumber = sessionInfo.market.orEmpty(),
+                    userNumber = sessionInfo.personnelNumber.orEmpty()
+            )
+
+            navigator.openSaveDataScreen()
         }
     }
 

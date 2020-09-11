@@ -30,6 +30,8 @@ import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.unsafeLazy
 import com.lenta.shared.utilities.orIfNull
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class BasketCreateGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
@@ -165,9 +167,12 @@ class BasketCreateGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
     }
 
     private fun getGoodByMaterial(material: String) {
-        manager.findGoodByMaterial(material)?.let { foundGood ->
-            setFoundGood(foundGood)
-        } ?: loadGoodInfoByMaterial(material)
+        launchUITryCatch {
+            navigator.showProgressLoadingData()
+            val foundGood = withContext(Dispatchers.IO) { manager.findGoodByMaterial(material) }
+            navigator.hideProgress()
+            foundGood?.let(::setFoundGood).orIfNull { loadGoodInfoByMaterial(material) }
+        }
     }
 
     /**
@@ -176,9 +181,12 @@ class BasketCreateGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
      * если нет то создает товар
      * */
     private fun getGoodByEan(ean: String) {
-        manager.findGoodByEan(ean)?.let { foundGood ->
-            setFoundGood(foundGood)
-        } ?: loadGoodInfoByEan(ean)
+        launchUITryCatch {
+            navigator.showProgressLoadingData()
+            val foundGood = withContext(Dispatchers.IO) { manager.findGoodByEan(ean) }
+            navigator.hideProgress()
+            foundGood?.let(::setFoundGood).orIfNull { loadGoodInfoByEan(ean) }
+        }
     }
 
     private fun setFoundGood(foundGood: Good) {
@@ -192,57 +200,44 @@ class BasketCreateGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
         Logg.d { "--> found good: $foundGood" }
     }
 
-    private fun loadGoodInfoByEan(ean: String) {
-        launchUITryCatch {
-            navigator.showProgressLoadingData(::handleFailure)
-            goodInfoNetRequest(GoodInfoParams(
-                    tkNumber = sessionInfo.market.orEmpty(),
-                    ean = ean,
-                    taskType = task.value?.type?.code.orEmpty()
-            )).also {
-                navigator.hideProgress()
-            }.either(::handleFailure) {
-                handleLoadGoodInfoResult(it)
-            }
+    private suspend fun loadGoodInfoByEan(ean: String) {
+        navigator.showProgressLoadingData(::handleFailure)
+        goodInfoNetRequest(GoodInfoParams(
+                tkNumber = sessionInfo.market.orEmpty(),
+                ean = ean,
+                taskType = task.value?.type?.code.orEmpty()
+        )).also {
+            navigator.hideProgress()
+        }.either(::handleFailure) {
+            handleLoadGoodInfoResult(it)
         }
     }
 
-    private fun loadGoodInfoByMaterial(material: String) {
-        launchUITryCatch {
-            navigator.showProgressLoadingData(::handleFailure)
-            goodInfoNetRequest(GoodInfoParams(
-                    tkNumber = sessionInfo.market.orEmpty(),
-                    material = material,
-                    taskType = task.value?.type?.code.orEmpty()
-            )).also {
-                navigator.hideProgress()
-            }.either(::handleFailure) { result ->
-                handleLoadGoodInfoResult(
-                        result = result)
-            }
+    private suspend fun loadGoodInfoByMaterial(material: String) {
+        navigator.showProgressLoadingData(::handleFailure)
+        goodInfoNetRequest(GoodInfoParams(
+                tkNumber = sessionInfo.market.orEmpty(),
+                material = material,
+                taskType = task.value?.type?.code.orEmpty()
+        )).also {
+            navigator.hideProgress()
+        }.either(::handleFailure) { result ->
+            handleLoadGoodInfoResult(
+                    result = result)
         }
     }
 
     private fun checkMark(number: String) {
         launchUITryCatch {
-            navigator.showProgressLoadingData()
-            val screenStatus = markManager.checkMark(number, WorkType.CREATE)
-            Logg.e { screenStatus.name }
-            when (screenStatus) {
-                MarkScreenStatus.OK -> {
-                    navigator.hideProgress()
-                    navigator.openMarkedGoodInfoCreateScreen()
-                }
-                MarkScreenStatus.NO_MARKTYPE_IN_SETTINGS -> {
-                    navigator.hideProgress()
-                    navigator.showNoMarkTypeInSettings()
-                }
-                MarkScreenStatus.INCORRECT_EAN_FORMAT -> {
-                    navigator.hideProgress()
-                    navigator.showIncorrectEanFormat()
-                }
-                else -> {
-                    navigator.hideProgress()
+            with(navigator){
+                showProgressLoadingData()
+                val screenStatus = markManager.checkMark(number, WorkType.CREATE)
+                hideProgress()
+                when (screenStatus) {
+                    MarkScreenStatus.OK -> openMarkedGoodInfoCreateScreen()
+                    MarkScreenStatus.NO_MARKTYPE_IN_SETTINGS -> showNoMarkTypeInSettings()
+                    MarkScreenStatus.INCORRECT_EAN_FORMAT -> showIncorrectEanFormat()
+                    else -> Unit
                 }
             }
         }
@@ -253,7 +248,6 @@ class BasketCreateGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
             if (manager.isGoodCanBeAdded(result)) {
                 setGood(result)
             } else {
-                manager.clearSearchFromListParams()
                 navigator.showGoodCannotBeAdded()
             }
         }
@@ -289,8 +283,8 @@ class BasketCreateGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
                             innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
                             innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull()
                                     ?: 1.0,
-                            providers = providers?.toMutableList().takeIf { taskType.isDivByProvider }.orEmpty().toMutableList(),
-                            producers = producers?.toMutableList().orEmpty().toMutableList(),
+                            providers = providers?.takeIf { taskType.isDivByProvider }.orEmpty().toMutableList(),
+                            producers = producers.orEmpty().toMutableList(),
                             volume = materialInfo?.volume?.toDoubleOrNull() ?: 0.0,
                             markType = markType,
                             markTypeGroup = database.getMarkTypeGroupByMarkType(markType)
@@ -366,11 +360,11 @@ class BasketCreateGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
                 manager.updateCurrentBasket(basket)
                 manager.updateCurrentTask(task)
             }.orIfNull {
-                Logg.e { "basket null"}
+                Logg.e { "basket null" }
                 navigator.showInternalError(resource.basketNotFoundErrorMsg)
             }
         }.orIfNull {
-            Logg.e { "task null"}
+            Logg.e { "task null" }
             navigator.showInternalError(resource.taskNotFoundErrorMsg)
         }
     }
