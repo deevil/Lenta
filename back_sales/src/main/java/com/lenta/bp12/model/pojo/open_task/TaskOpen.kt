@@ -30,10 +30,10 @@ data class TaskOpen(
 
         val isStrict: Boolean,
         var isFinished: Boolean
-): Taskable {
+) : Taskable {
 
     fun getProviderCodeWithName(): String {
-        with(provider){
+        with(provider) {
             return if (code.orEmpty().isNotEmpty() || name.orEmpty().isNotEmpty()) {
                 "${code.orEmpty().dropWhile { it == '0' }} $name"
             } else ""
@@ -46,6 +46,12 @@ data class TaskOpen(
 
     fun isExistUncountedGood(): Boolean {
         return goods.any { !it.isCounted && !it.isDeleted }
+    }
+
+    fun isQuantityOfGoodsIsActual(): Boolean {
+        return goods.any {
+            it.isQuantityActual()
+        }
     }
 
     fun getFormattedName(withFullName: Boolean = false): String {

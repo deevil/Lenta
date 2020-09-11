@@ -113,12 +113,14 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
         launchUITryCatch {
             navigator.showProgressLoadingData(::handleFailure)
 
-            taskContentNetRequest(TaskContentParams(
-                    deviceIp = deviceInfo.getDeviceIp(),
-                    taskNumber = task.value?.number.orEmpty(),
-                    mode = 1,
-                    userNumber = appSettings.lastPersonnelNumber.orEmpty()
-            )).also {
+            taskContentNetRequest(
+                    TaskContentParams(
+                            deviceIp = deviceInfo.getDeviceIp(),
+                            taskNumber = task.value?.number.orEmpty(),
+                            mode = GET_GOOD_LIST_MODE,
+                            userNumber = appSettings.lastPersonnelNumber.orEmpty()
+                    )
+            ).also {
                 navigator.hideProgress()
             }.either(::handleFailure, ::handleTaskContentResult)
         }
@@ -193,6 +195,11 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
             manager.clearStartTaskInfo()
             navigator.goBack()
         }
+    }
+
+    companion object {
+        /** Режим работы: 1 - получение состава задания, 2 - получение состава задания с переблокировкой */
+        private const val GET_GOOD_LIST_MODE = 1
     }
 
 }

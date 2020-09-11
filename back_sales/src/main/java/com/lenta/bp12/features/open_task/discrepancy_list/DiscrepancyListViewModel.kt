@@ -9,6 +9,7 @@ import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
+import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.mapSkipNulls
 import com.lenta.shared.utilities.orIfNull
@@ -31,7 +32,6 @@ class DiscrepancyListViewModel : CoreViewModel() {
     @Inject
     lateinit var resource: IResourceManager
 
-
     /**
     Переменные
      */
@@ -50,7 +50,7 @@ class DiscrepancyListViewModel : CoreViewModel() {
 
     val goods by lazy {
         task.mapSkipNulls { task ->
-            val list = task.goods.filter { !it.isCounted }
+            val list = task.goods.filter { !it.isQuantityActual() }
             list.mapIndexed { index, good ->
                 ItemGoodUi(
                         position = "${list.size - index}",
@@ -159,9 +159,10 @@ class DiscrepancyListViewModel : CoreViewModel() {
 
     private fun chooseQuantity(good: Good): String {
         return if (good.planQuantity > 0.0) {
-            "${good.planQuantity} - ${good.getTotalQuantity()} ${good.commonUnits.name}"
+            val difference = good.planQuantity - good.getTotalQuantity()
+            "?${difference.dropZeros()} ${good.commonUnits.name}"
         } else {
-            "${good.getTotalQuantity()} ${good.commonUnits.name}"
+            "?${good.commonUnits.name}"
         }
     }
 

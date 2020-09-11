@@ -506,7 +506,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     fun onClickSave() {
         task.value?.let { task ->
-            if (task.isExistUncountedGood()) {
+            if (!task.isQuantityOfGoodsIsActual()) {
                 navigator.openDiscrepancyListScreen()
             } else {
                 showMakeTaskCountedAndClose()

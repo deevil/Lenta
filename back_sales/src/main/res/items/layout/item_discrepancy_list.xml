@@ -17,7 +17,9 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_selectable"
+        >
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/vertical_guideline_1"
@@ -77,7 +79,7 @@
             android:id="@+id/iv_arrow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="5dp"
+            android:padding="@dimen/size_6dp"
             android:src="@drawable/ic_keyboard_arrow_right_white_16dp"
             app:layout_constraintBottom_toTopOf="@+id/div_hor_bottom"
             app:layout_constraintStart_toEndOf="@id/tv_product"
@@ -116,7 +118,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/vertical_guideline_2"
             app:layout_constraintTop_toTopOf="parent" />
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -68,15 +68,15 @@ class Good(
         return getPositionQuantity() + getMarkQuantity() + getPartQuantity()
     }
 
-    private fun getPositionQuantity(): Double {
+    fun getPositionQuantity(): Double {
         return positions.map { it.quantity }.sumList()
     }
 
-    private fun getMarkQuantity(): Double {
+    fun getMarkQuantity(): Double {
         return marks.size.toDouble()
     }
 
-    private fun getPartQuantity(): Double {
+    fun getPartQuantity(): Double {
         return parts.map { it.quantity }.sumList()
     }
 
@@ -98,6 +98,14 @@ class Good(
     fun isTobacco() = this.markType == MarkType.TOBACCO
     fun isTobaccoAndFoundGoodHasDifferentMrc(other: Good) =
             this.isTobacco() && maxRetailPrice.isNotEmpty() && maxRetailPrice != other.maxRetailPrice
+
+    fun isQuantityActual(): Boolean {
+        return if (this.planQuantity > 0.0) {
+            this.planQuantity == this.getTotalQuantity()
+        } else {
+            this.getTotalQuantity() > 0.0
+        }
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
