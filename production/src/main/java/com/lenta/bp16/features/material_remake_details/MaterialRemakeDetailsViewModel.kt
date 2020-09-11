@@ -43,6 +43,9 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
     lateinit var scales: IScales
 
     @Inject
+    lateinit var attributeManager: IAttributeManager
+
+    @Inject
     lateinit var completePackMaterialNetRequest: CompleteIngredientByMaterialNetRequest
 
     @Inject

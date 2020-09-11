@@ -2,7 +2,9 @@ package com.lenta.bp16.features.material_remake_details.add_attribute
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.switchMap
+import com.lenta.bp16.features.ingredient_details.add_attribute.IngredientAttributeViewModel
 import com.lenta.bp16.model.AddAttributeProdInfo
+import com.lenta.bp16.model.IAttributeManager
 import com.lenta.bp16.model.ProducerDataInfo
 import com.lenta.bp16.model.ZPartDataInfo
 import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
@@ -38,6 +40,9 @@ class MaterialAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
     lateinit var database: IDatabaseRepository
 
     @Inject
+    lateinit var attributeManager: IAttributeManager
+
+    @Inject
     lateinit var serverTimeRequest: ServerTimeRequest
 
     @Inject
@@ -55,6 +60,7 @@ class MaterialAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
     private val producerDataInfo = MutableLiveData<List<ProducerDataInfo>>()
     override val zPartDataInfo = MutableLiveData<List<ZPartDataInfo>>()
     val materialIngredient = MutableLiveData<MaterialIngredientDataInfo>()
+
     // значение параметра OBJ_CODE из родительского компонента заказа
     var parentCode: String by Delegates.notNull()
     val producerNameList = producerDataInfo.switchMap {
@@ -84,26 +90,25 @@ class MaterialAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
     /** Условие отображения производителя */
     val producerVisibleCondition by unsafeLazy {
         asyncLiveData<Boolean> {
-            launchUITryCatch {
-                val cond = producerConditions
-                val condition = cond.first
-                alertNotFoundProducerName.value = cond.second
-                emit(condition)
-            }
+            val cond = producerConditions
+            val condition = cond.first
+            alertNotFoundProducerName.postValue(cond.second)
+            emit(condition)
         }
     }
 
     val timeFieldVisibleCondition by unsafeLazy {
-        checkTimeFieldVisibleCondition()
+        asyncLiveData<Boolean> {
+            val condition = checkTimeFieldVisibleCondition()
+            emit(condition)
+        }
     }
 
-    private fun checkTimeFieldVisibleCondition(): Boolean {
+    private suspend fun checkTimeFieldVisibleCondition(): Boolean {
         var visibleCondition = true
-        launchUITryCatch {
-            val timeParams = database.getPerishable()?.div(DIVIDER) ?: 0
-            val shelfLife = materialIngredient.value?.shelfLife?.toInt() ?: 0
-            visibleCondition = shelfLife < timeParams
-        }
+        val timeParams = database.getPerishable()?.div(DIVIDER) ?: 0
+        val shelfLife = materialIngredient.value?.shelfLife?.toInt() ?: 0
+        visibleCondition = shelfLife < timeParams
         return visibleCondition
     }
 
@@ -172,18 +177,23 @@ class MaterialAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
 
     /**Проверка времени на корректность*/
     private fun checkTime(): Boolean {
-        val checkTime = timeField.value.orEmpty()
-        return if (checkTime.isNotEmpty() && checkTime.length == TIME_LENGTH) {
-            val splitCheckTime = checkTime.split(":")
-            val hours = splitCheckTime[0].toInt()
-            val minutes = splitCheckTime[1].toInt()
-            hours in 0..23 && minutes in 0..59
+        return if (timeFieldVisibleCondition.value == true) {
+            val checkTime = timeField.value.orEmpty()
+            if (checkTime.isNotEmpty() && checkTime.length == TIME_LENGTH) {
+                val splitCheckTime = checkTime.split(":")
+                val hours = splitCheckTime[0].toInt()
+                val minutes = splitCheckTime[1].toInt()
+                hours in 0..23 && minutes in 0..59
+            } else {
+                false
+            }
         } else {
-            false
+            true
         }
     }
 
-/*    *//**Проверка на истечение срока годности*//*
+/*    */
+    /**Проверка на истечение срока годности*//*
     private fun checkShelfLife(): Boolean {
         val date = dateInfoField.value.orEmpty()
         val time = timeField.value.orEmpty()
