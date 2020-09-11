@@ -57,15 +57,12 @@ class ExternalSupplyListFragment : KeyDownCoreFragment<FragmentExternalSupplyLis
 
     private fun initRvConfig() {
         binding?.let { layoutBinding ->
-            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding<ItemExternalSupplyBinding>(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemExternalSupplyUi, ItemExternalSupplyBinding>(
                     layoutId = R.layout.item_external_supply,
-                    itemId = BR.item
-            )
-
-            oldRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
+                    itemId = BR.item,
+                    keyHandlerId = 0,
                     recyclerView = layoutBinding.rv,
                     items = vm.goods,
-                    previousPosInfo = oldRecyclerViewKeyHandler?.posInfo?.value,
                     onClickHandler = vm::onClickItemPosition
             )
         }

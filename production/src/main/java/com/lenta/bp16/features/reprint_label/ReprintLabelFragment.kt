@@ -75,20 +75,16 @@ class ReprintLabelFragment : CoreFragment<FragmentReprintLabelBinding, ReprintLa
                 }
             }
 
-            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                     layoutId = R.layout.item_reprint_label,
                     itemId = BR.item,
-                    onAdapterItemBind = { binding: ItemReprintLabelBinding, position: Int ->
+                    onItemBind = { binding: ItemReprintLabelBinding, position: Int ->
                         binding.tvItemNumber.tag = position
                         binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                         binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
-                    }
-            )
-
-            oldRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
+                    },
                     recyclerView = layoutBinding.rv,
-                    items = vm.labels,
-                    previousPosInfo = oldRecyclerViewKeyHandler?.posInfo?.value
+                    items = vm.labels
             )
         }
     }

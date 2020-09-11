@@ -95,7 +95,7 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
                     }
                     binding.selectedForDelete = vm.processingSelectionsHelper.isSelected(position)
                 },
-                tabPosition = TAB_PROCESSING,
+                keyHandlerId = TAB_PROCESSING,
                 recyclerView = layoutBinding.rv,
                 items = vm.processing,
                 onClickHandler = vm::onClickItemPosition
@@ -128,7 +128,7 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
                     binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                     binding.selectedForDelete = vm.processedSelectionsHelper.isSelected(position)
                 },
-                tabPosition = TAB_PROCESSED,
+                keyHandlerId = TAB_PROCESSED,
                 recyclerView = layoutBinding.rv,
                 items = vm.processed,
                 onClickHandler = vm::onClickItemPosition
@@ -161,7 +161,7 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
                     binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                     binding.selectedForDelete = vm.basketSelectionsHelper.isSelected(position)
                 },
-                tabPosition = TAB_BASKET,
+                keyHandlerId = TAB_BASKET,
                 recyclerView = layoutBinding.rv,
                 items = vm.wholesaleBaskets,
                 onClickHandler = vm::onClickItemPosition
@@ -195,7 +195,7 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
                     binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                     binding.selectedForDelete = vm.basketSelectionsHelper.isSelected(position)
                 },
-                tabPosition = TAB_BASKET,
+                keyHandlerId = TAB_BASKET,
                 recyclerView = layoutBinding.rv,
                 items = vm.commonBaskets,
                 onClickHandler = vm::onClickItemPosition

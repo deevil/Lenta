@@ -8,6 +8,7 @@ import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentRemakesByMaterialBinding
 import com.lenta.bp16.databinding.ItemMaterialIngredientBinding
 import com.lenta.bp16.model.ingredients.IngredientInfo
+import com.lenta.bp16.model.ingredients.ui.ItemMaterialIngredientUi
 import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -70,15 +71,11 @@ class MaterialRemakesListFragment : CoreFragment<FragmentRemakesByMaterialBindin
 
     private fun initRvConfig() {
         binding?.let { layoutBinding ->
-            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding<ItemMaterialIngredientBinding>(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemMaterialIngredientUi, ItemMaterialIngredientBinding>(
                     layoutId = R.layout.item_material_ingredient,
-                    itemId = BR.item
-            )
-
-            oldRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
+                    itemId = BR.item,
                     recyclerView = layoutBinding.rv,
                     items = vm.materialIngredients,
-                    previousPosInfo = oldRecyclerViewKeyHandler?.posInfo?.value,
                     onClickHandler = vm::onClickItemPosition
             )
         }

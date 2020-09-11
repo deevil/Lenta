@@ -12,7 +12,6 @@ import com.lenta.bp16.databinding.ItemPuTaskBinding
 import com.lenta.bp16.databinding.LayoutPuTaskListProcessedBinding
 import com.lenta.bp16.databinding.LayoutPuTaskListProcessingBinding
 import com.lenta.bp16.platform.extention.getAppComponent
-import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.platform.fragment.KeyDownCoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -79,7 +78,7 @@ class ProcessingUnitTaskListFragment : KeyDownCoreFragment<FragmentProcessingUni
             layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemProcessingUnitTaskUi, ItemPuTaskBinding>(
                     layoutId = R.layout.item_pu_task,
                     itemId = BR.item,
-                    tabPosition = TAB_PROCESSING,
+                    keyHandlerId = TAB_PROCESSING,
                     recyclerView = layoutBinding.rv,
                     items = vm.processing,
                     onClickHandler = vm::onClickItemPosition
@@ -101,7 +100,7 @@ class ProcessingUnitTaskListFragment : KeyDownCoreFragment<FragmentProcessingUni
             layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemProcessingUnitTaskUi, ItemPuTaskBinding>(
                     layoutId = R.layout.item_pu_task,
                     itemId = BR.item,
-                    tabPosition = TAB_PROCESSED,
+                    keyHandlerId = TAB_PROCESSED,
                     recyclerView = layoutBinding.rv,
                     items = vm.processed,
                     onClickHandler = vm::onClickItemPosition

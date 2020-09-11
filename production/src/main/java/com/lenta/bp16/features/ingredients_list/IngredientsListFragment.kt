@@ -8,6 +8,7 @@ import androidx.databinding.DataBindingUtil
 import com.lenta.bp16.BR
 import com.lenta.bp16.R
 import com.lenta.bp16.databinding.*
+import com.lenta.bp16.model.ingredients.ui.ItemIngredientUi
 import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -22,9 +23,6 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 class IngredientsListFragment :
         CoreFragment<FragmentIgredientsListBinding, IngredientsListViewModel>(),
         ToolbarButtonsClickListener, ViewPagerSettings, OnScanResultListener {
-
-    private var byOrderRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
-    private var byMaterialRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int {
         return R.layout.fragment_igredients_list
@@ -95,28 +93,17 @@ class IngredientsListFragment :
                 container,
                 false).let { layoutBinding ->
 
-            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding<ItemIngredientByOrderBinding>(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemIngredientUi, ItemIngredientByOrderBinding>(
                     layoutId = R.layout.item_ingredient_by_order,
                     itemId = BR.item,
-                    onAdapterItemBind = { binding, position ->
-                        byOrderRecyclerViewKeyHandler?.let {
-                            binding.root.isSelected = it.isSelected(position)
-                        }
-                    },
-                    onAdapterItemClicked = { position ->
-                        byOrderRecyclerViewKeyHandler?.onItemClicked(position)
-                    }
+                    keyHandlerId = TAB_BY_ORDER,
+                    recyclerView = layoutBinding.rv,
+                    items = vm.ingredientsByOrder,
+                    onClickHandler = vm::onClickItemPosition
             )
 
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
-
-            byOrderRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
-                    recyclerView = layoutBinding.rv,
-                    items = vm.ingredientsByOrder,
-                    previousPosInfo = oldRecyclerViewKeyHandler?.posInfo?.value,
-                    onClickHandler = vm::onClickItemPosition
-            )
 
             return layoutBinding.root
         }
@@ -128,28 +115,17 @@ class IngredientsListFragment :
                 container,
                 false).let { layoutBinding ->
 
-            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding<ItemIngredientByMaterialBinding>(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemIngredientUi, ItemIngredientByMaterialBinding>(
                     layoutId = R.layout.item_ingredient_by_material,
                     itemId = BR.item,
-                    onAdapterItemBind = { binding, position ->
-                        byMaterialRecyclerViewKeyHandler?.let {
-                            binding.root.isSelected = it.isSelected(position)
-                        }
-                    },
-                    onAdapterItemClicked = { position ->
-                        byMaterialRecyclerViewKeyHandler?.onItemClicked(position)
-                    }
+                    keyHandlerId = TAB_BY_MATERIALS,
+                    recyclerView = layoutBinding.rv,
+                    items = vm.ingredientsByMaterial,
+                    onClickHandler = vm::onClickItemPosition
             )
 
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
-
-            byMaterialRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
-                    recyclerView = layoutBinding.rv,
-                    items = vm.ingredientsByMaterial,
-                    previousPosInfo = oldRecyclerViewKeyHandler?.posInfo?.value,
-                    onClickHandler = vm::onClickItemPosition
-            )
 
             return layoutBinding.root
         }
