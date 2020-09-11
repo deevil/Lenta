@@ -290,41 +290,47 @@ class IngredientDetailsViewModel : CoreViewModel(), IZpartVisibleConditions {
         }
     }
 
-
-    fun onCompleteClicked() = launchUITryCatch {
-        val weight = total.value ?: 0.0
-
-        val matnr = orderIngredient.value?.matnr.orEmpty()
-        var entryId = ""
-        var batchId = ""
-        var batchNew = emptyList<BatchNewDataInfoParam>()
-
-        orderIngredient.value?.isVet?.let {
+    private suspend fun getEntryId(matnr: String): String {
+        return orderIngredient.value?.isVet?.run {
             val selectedIngredient = withContext(Dispatchers.IO) {
                 mercuryDataInfo.value?.filter { it.matnr == matnr }
             }
-            entryId = selectedIngredient?.getOrNull(0)?.entryId.orEmpty()
-        }
+            selectedIngredient?.getOrNull(0)?.entryId.orEmpty()
+        }.orEmpty()
+    }
 
-        zPartDataInfo.value?.let {
-            withContext(Dispatchers.IO) {
-                val zPartInfo = zPartDataInfo.value?.filter { it.matnr == matnr }?.let {
-                    batchId = it.getOrNull(0)?.batchId.orEmpty()
-                }
-                /** Если не удалось определить партию*/
-                if (zPartInfo == null) {
-                    val addedAttributeInfo = addedAttribute.value?.getOrNull(0)
-                    val selectedWarehouse = warehouseSelected.value?.getOrNull(0).orEmpty()
-                    addedAttributeInfo?.let {
-                        batchNew = listOf(BatchNewDataInfoParam(
-                                prodCode = addedAttributeInfo.code,
-                                prodDate = addedAttributeInfo.date,
-                                prodTime = addedAttributeInfo.time,
-                                lgort = selectedWarehouse
-                        ))
-                    }
-                }
+    private suspend fun getZPartInfo(matnr: String): ZPartDataInfo? {
+        return withContext(Dispatchers.IO) {
+            zPartDataInfo.value?.filter { it.matnr == matnr }?.getOrNull(0)
+        }
+    }
+
+    private suspend fun setBatchNewInfo(): List<BatchNewDataInfoParam>? {
+        return withContext(Dispatchers.IO) {
+            /** Если не удалось определить партию*/
+            val addedAttributeInfo = addedAttribute.value?.getOrNull(0)
+            val selectedWarehouse = warehouseSelected.value?.getOrNull(0).orEmpty()
+            addedAttributeInfo?.let {
+                listOf(BatchNewDataInfoParam(
+                        prodCode = addedAttributeInfo.code,
+                        prodDate = addedAttributeInfo.date,
+                        prodTime = addedAttributeInfo.time,
+                        lgort = selectedWarehouse
+                ))
             }
+        }
+    }
+
+    fun onCompleteClicked() = launchUITryCatch {
+        val weight = total.value ?: 0.0
+        val matnr = orderIngredient.value?.matnr.orEmpty()
+        val entryId = getEntryId(matnr)
+        val zPartInfo = getZPartInfo(matnr)
+        val batchId = zPartInfo?.batchId.orEmpty()
+        val batchNew = if (zPartInfo == null) {
+            setBatchNewInfo()
+        } else {
+            emptyList()
         }
 
         if (weight == 0.0) {
@@ -343,7 +349,7 @@ class IngredientDetailsViewModel : CoreViewModel(), IZpartVisibleConditions {
                                 personnelNumber = sessionInfo.personnelNumber.orEmpty(),
                                 aufnr = matnr,
                                 batchId = batchId,
-                                batchNewParam = batchNew,
+                                batchNewParam = batchNew.orEmpty(),
                                 entryId = entryId
                         )
                 )

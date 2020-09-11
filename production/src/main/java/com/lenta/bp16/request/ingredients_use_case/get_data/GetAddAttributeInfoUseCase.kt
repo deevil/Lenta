@@ -12,8 +12,7 @@ class GetAddAttributeInfoUseCase @Inject constructor(
 ) : IUseCase.Out<List<AddAttributeProdInfo>> {
     override suspend fun invoke(): List<AddAttributeProdInfo> {
         return withContext(Dispatchers.IO) {
-            val kek = ingredientDataPersistStorage.getAddAttributeInfo()
-            kek
+            ingredientDataPersistStorage.getAddAttributeInfo()
         }
     }
 }
