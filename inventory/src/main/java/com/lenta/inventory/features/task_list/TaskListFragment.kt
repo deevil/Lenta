@@ -7,9 +7,7 @@ import com.lenta.inventory.R
 import com.lenta.inventory.databinding.FragmentTaskListBinding
 import com.lenta.inventory.databinding.ItemTileTasksBinding
 import com.lenta.inventory.platform.extentions.getAppComponent
-import com.lenta.shared.keys.KeyCode
-import com.lenta.shared.keys.OnKeyDownListener
-import com.lenta.shared.platform.fragment.CoreFragment
+import com.lenta.shared.platform.fragment.KeyDownCoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
@@ -19,7 +17,8 @@ import com.lenta.shared.utilities.extentions.generateScreenNumber
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel>(), ToolbarButtonsClickListener, OnKeyDownListener {
+class TaskListFragment : KeyDownCoreFragment<FragmentTaskListBinding, TaskListViewModel>(),
+        ToolbarButtonsClickListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_task_list
 
@@ -46,14 +45,11 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding?.let { layoutBinding ->
-            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding<ItemTileTasksBinding>(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding<TaskItemVm, ItemTileTasksBinding>(
                     layoutId = R.layout.item_tile_tasks,
-                    itemId = BR.item
-            )
-            oldRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
+                    itemId = BR.item,
                     recyclerView = layoutBinding.rv,
                     items = vm.tasks,
-                    previousPosInfo = oldRecyclerViewKeyHandler?.posInfo?.value,
                     onClickHandler = vm::onClickItemPosition
             )
         }
@@ -69,10 +65,6 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
             R.id.b_1 -> vm.onClickMenu()
             R.id.b_5 -> vm.onClickUpdate()
         }
-    }
-
-    override fun onKeyDown(keyCode: KeyCode): Boolean {
-        return oldRecyclerViewKeyHandler?.onKeyDown(keyCode) ?: false
     }
 
 }
