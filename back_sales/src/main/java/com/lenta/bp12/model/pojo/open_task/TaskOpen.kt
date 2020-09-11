@@ -44,13 +44,9 @@ data class TaskOpen(
         return goods.any { it.isCounted || it.isDeleted }
     }
 
-    fun isExistUncountedGood(): Boolean {
-        return goods.any { !it.isCounted && !it.isDeleted }
-    }
-
-    fun isQuantityOfGoodsIsActual(): Boolean {
+    fun isQuantityOfNotDeletedGoodsNotActual(): Boolean {
         return goods.any {
-            it.isQuantityActual()
+            it.isNotDeletedAndQuantityNotActual()
         }
     }
 

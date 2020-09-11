@@ -506,8 +506,9 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     fun onClickSave() {
         task.value?.let { task ->
-            if (!task.isQuantityOfGoodsIsActual()) {
-                navigator.openDiscrepancyListScreen()
+            //Если есть не удаленные товары в задании и их плановое количество больше фактического
+            if (task.isQuantityOfNotDeletedGoodsNotActual()) {
+                navigator.openDiscrepancyListScreen() // откроем лист расхождений
             } else {
                 showMakeTaskCountedAndClose()
             }

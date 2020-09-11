@@ -50,7 +50,7 @@ class DiscrepancyListViewModel : CoreViewModel() {
 
     val goods by lazy {
         task.mapSkipNulls { task ->
-            val list = task.goods.filter { !it.isQuantityActual() }
+            val list = task.goods.filter { it.isNotDeletedAndQuantityNotActual() }
             list.mapIndexed { index, good ->
                 ItemGoodUi(
                         position = "${list.size - index}",
