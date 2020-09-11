@@ -77,16 +77,11 @@ class BasketCreateGoodListFragment : CoreFragment<FragmentBasketCreateGoodListBi
 
     private fun initBasketGoodList() {
         binding?.let { layoutBinding ->
-
-            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding<ItemBasketGoodListGoodBinding>(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemGoodUi, ItemBasketGoodListGoodBinding>(
                     layoutId = R.layout.item_basket_good_list_good,
-                    itemId = BR.item
-            )
-
-            oldRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
+                    itemId = BR.item,
                     recyclerView = layoutBinding.rv,
                     items = vm.goods,
-                    previousPosInfo = oldRecyclerViewKeyHandler?.posInfo?.value,
                     onClickHandler = vm::onClickItemPosition
             )
         }

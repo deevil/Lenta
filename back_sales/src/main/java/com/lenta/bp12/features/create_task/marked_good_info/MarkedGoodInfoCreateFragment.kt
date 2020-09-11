@@ -130,19 +130,17 @@ class MarkedGoodInfoCreateFragment : CoreFragment<FragmentMarkedGoodInfoCreateBi
                 container,
                 false)
 
-        layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding<ItemGoodInfoPropertyBinding>(
+        // todo Здесь точно нужен KeyHandler?
+        layoutBinding.rvConfig = initRecycleAdapterDataBinding<GoodPropertyItem, ItemGoodInfoPropertyBinding>(
                 layoutId = R.layout.item_good_info_property,
-                itemId = BR.item
+                itemId = BR.item,
+                recyclerView = layoutBinding.rv,
+                items = vm.propertiesItems
         )
 
         layoutBinding.vm = vm
         layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-        oldRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
-                recyclerView = layoutBinding.rv,
-                items = vm.propertiesItems,
-                previousPosInfo = oldRecyclerViewKeyHandler?.posInfo?.value
-        )
         return layoutBinding.root
     }
 
