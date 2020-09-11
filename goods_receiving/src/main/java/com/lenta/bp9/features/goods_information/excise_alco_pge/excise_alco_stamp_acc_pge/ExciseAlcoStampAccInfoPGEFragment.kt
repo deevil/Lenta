@@ -6,6 +6,8 @@ import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentExciseAlcoStampAccInfoBinding
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.extentions.getAppComponent
+import com.lenta.shared.keys.KeyCode
+import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -76,11 +78,13 @@ class ExciseAlcoStampAccInfoPGEFragment : CoreFragment<FragmentExciseAlcoStampAc
     }
 
     override fun onFragmentResult(arguments: Bundle) {
-        if (arguments.getInt("manufacturerSelectedPosition")!=0 && arguments.getString("bottlingDate")!=null) {
+        if (arguments.getInt("manufacturerSelectedPosition") != 0 && arguments.getString("bottlingDate") != null) {
             super.onFragmentResult(arguments)
             vm.onBatchSignsResult(arguments.getInt("manufacturerSelectedPosition"), arguments.getString("bottlingDate"))
-        } else vm.onClickDetails()
+        }else
+            vm.onBatchSignsResultW()
     }
+
 
     override fun onBackPressed(): Boolean {
         vm.onBackPressed()

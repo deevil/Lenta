@@ -118,5 +118,4 @@ class GoodsDetailsFragment : CoreFragment<FragmentGoodsDetailsBinding, GoodsDeta
             }
         }
     }
-
 }

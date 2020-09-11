@@ -325,7 +325,7 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
                                     //выводим данные о производителе и дате розлива
                                     updateDateScreenManufacturerDateOfPour()
                                 } else {
-                                    val realBoxNumber = processExciseAlcoBoxAccService.searchBox(boxNumber = exciseStampInfo.value!!.boxNumber)?.boxNumber.orEmpty()
+                                    val realBoxNumber = processExciseAlcoBoxAccService.searchBox(boxNumber = exciseStampInfo.value?.boxNumber.orEmpty())?.boxNumber.orEmpty()
                                     screenNavigator.openDiscrepancyScannedMarkCurrentBoxDialog( //Отсканированная марка числится в коробке XXXXX...XXXXX. Пометить текущую коробку XXXXX...XXXXX в коробку XXXXX...XXXXX как <GRZ_CR_GRUNDCAT>
                                             yesCallbackFunc = {
                                                 processExciseAlcoBoxAccService.addDiscrepancyScannedMarkCurrentBox(

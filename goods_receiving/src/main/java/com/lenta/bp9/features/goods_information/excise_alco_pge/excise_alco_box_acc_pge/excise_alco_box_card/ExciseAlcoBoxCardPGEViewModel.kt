@@ -497,14 +497,14 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
                             if (scannedExciseStamp.materialNumber != productInfo.value!!.materialNumber) {
                                 //Отсканированная марка принадлежит товару <SAP-код> <Название>"
                                 screenNavigator.openAlertScannedStampBelongsAnotherProductScreen(
-                                        materialNumber = scannedExciseStamp.materialNumber,
+                                        materialNumber = scannedExciseStamp.materialNumber.orEmpty(),
                                         materialName = zfmpUtz48V001.getProductInfoByMaterial(scannedExciseStamp.materialNumber)?.name.orEmpty()
                                 )
                             } else {
                                 if (scannedExciseStamp.boxNumber == (boxInfo.value?.boxNumber.orEmpty())) {
                                     addExciseStampDiscrepancy(scannedExciseStamp)
                                 } else {//https://trello.com/c/E4b0z0q5
-                                    val realBoxNumber = processExciseAlcoBoxAccPGEService.searchBox(boxNumber = scannedExciseStamp.boxNumber)?.boxNumber.orEmpty()
+                                    val realBoxNumber = processExciseAlcoBoxAccPGEService.searchBox(boxNumber = scannedExciseStamp.boxNumber.orEmpty())?.boxNumber
                                     screenNavigator.openDiscrepancyScannedMarkCurrentBoxPGEDialog( //Отсканированная(ый) марка/блок числится в другой коробке. Необходимо отсканировать все марки/блоки в текущей коробке и коробке № XXXXXXX
                                             nextCallbackFunc = {
                                                 //https://trello.com/c/E4b0z0q5 2.1. Сохранять отсканированную марку коробке, в которой она числится как "Норма";
@@ -521,7 +521,7 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
                                                 isEizUnit.value = false
                                                 screenNavigator.openAlertAmountNormWillBeReduced()
                                             },
-                                            realBoxNumber = "${realBoxNumber.substring(0, 4)}...${realBoxNumber.substring(realBoxNumber.length - 10)}"
+                                            realBoxNumber = "${realBoxNumber?.substring(0, 4)}...${realBoxNumber?.substring(realBoxNumber.length - 10)}"
                                     )
                                 }
                             }

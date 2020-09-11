@@ -77,11 +77,12 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
     val exciseStampInfo: MutableLiveData<TaskExciseStampInfo> = MutableLiveData()
 
     val tvBottlingDate: MutableLiveData<String> by lazy {
-        if (productInfo.value!!.isRus) {
+        if (productInfo.value?.isRus == true && !(productInfo.value?.origQuantity.isNullOrEmpty())) {
+            MutableLiveData(context.getString(R.string.batch_with_bottling_date, productInfo.value?.origQuantity))
+        } else if (productInfo.value?.isRus == true && productInfo.value?.origQuantity.isNullOrEmpty()) {
             MutableLiveData(context.getString(R.string.bottling_date))
-        } else {
+        } else
             MutableLiveData(context.getString(R.string.date_of_entry))
-        }
     }
 
     private val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
@@ -185,14 +186,16 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
     val checkStampListVisibility: MutableLiveData<Boolean> = MutableLiveData()
 
     val tvListStampVal: MutableLiveData<String> = countValue.combineLatest(countExciseStampsScanned).map {
-        if ((it?.first ?: 0.0) <= 0.0) {
-            checkStampListVisibility.value = false
-            context.getString(R.string.not_required)
-        } else {
-            checkStampListVisibility.value = true
-            "${it?.second} из ${it?.first.toStringFormatted()}"
-        }
+
+            if ((it?.first ?: 0.0) <= 0.0) {
+                checkStampListVisibility.value = false
+                context.getString(R.string.not_required)
+            } else {
+                checkStampListVisibility.value = true
+                "${it?.second} из ${(acceptTotalCount.value!!.plus(refusalTotalCount.value!!) + productInfo.value!!.orderQuantity.toDouble()).toStringFormatted()}"
+            }
     }
+
 
     val checkBoxStampList: MutableLiveData<Boolean> = checkStampListVisibility.map {
         (countValue.value ?: 0.0) > 0.0 && (countExciseStampsScanned.value ?: 0) >= (countValue.value ?: 0.0)
@@ -351,7 +354,7 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
                     } else {
                         if (exciseStampInfo.value!!.materialNumber != productInfo.value!!.materialNumber) {
                             //Отсканированная марка принадлежит товару <SAP-код> <Название>"
-                            screenNavigator.openAlertScannedStampBelongsAnotherProductScreen(exciseStampInfo.value!!.materialNumber, zfmpUtz48V001.getProductInfoByMaterial(exciseStampInfo.value!!.materialNumber)?.name
+                            screenNavigator.openAlertScannedStampBelongsAnotherProductScreen(exciseStampInfo.value?.materialNumber.orEmpty(), zfmpUtz48V001.getProductInfoByMaterial(exciseStampInfo.value!!.materialNumber)?.name
                                     ?: "")
                         } else {
                             addExciseStampDiscrepancy()
@@ -365,7 +368,7 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
 
     private fun addExciseStampDiscrepancy() {
         processExciseAlcoStampAccPGEService.addExciseStampDiscrepancy(
-                exciseStamp = exciseStampInfo.value!!,
+                exciseStamp = exciseStampInfo.value,
                 typeDiscrepancies = if (isExciseStampSurplus.value == true) "2" else qualityInfo.value!![spinQualitySelectedPosition.value!!].code, //(Марка-излишек) карточка об этом условии if (isExciseStampSurplus.value == true) "2"
                 isScan = true
         )
@@ -377,7 +380,7 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
             }?.name ?: ""
             spinManufacturers.value = listOf(manufacturerName)
 
-            val dateOfPour = exciseStampInfo.value!!.bottlingDate
+            val dateOfPour = exciseStampInfo.value?.bottlingDate.orEmpty()
             if (dateOfPour.isNotEmpty()) {
                 spinBottlingDate.value = listOf(formatterRU.format(formatterEN.parse(dateOfPour)))
             }
@@ -485,9 +488,9 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
         return addNewCount
     }
 
-    fun onBatchSignsResult(_manufacturerSelectedPosition: Int, _bottlingDate: String) {
-        val manufacturerCode = repoInMemoryHolder.manufacturers.value?.get(_manufacturerSelectedPosition)?.code
-        val bottlingDate = "${_bottlingDate.substring(6, 10)}-${_bottlingDate.substring(3, 5)}-${_bottlingDate.substring(0, 2)}"
+    fun onBatchSignsResult(_manufacturerSelectedPosition: Int?, _bottlingDate: String?) {
+        val manufacturerCode = _manufacturerSelectedPosition?.let { repoInMemoryHolder.manufacturers.value?.get(it)?.code }
+        val bottlingDate = "${_bottlingDate?.substring(6, 10)}-${_bottlingDate?.substring(3, 5)}-${_bottlingDate?.substring(0, 2)}"
         exciseStampInfo.value = TaskExciseStampInfo(
                 materialNumber = productInfo.value!!.materialNumber,
                 code = scannedStampCode.value ?: "",
@@ -501,6 +504,14 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
         addExciseStampDiscrepancy()
     }
 
+    fun onBatchSignsResultW() {
+        setSurplusSearchMode()
+        val dateOfPour = taskManager.getReceivingTask()?.taskRepository?.getBatches()?.getBatches()?.findLast {
+            it.batchNumber == exciseStampInfo.value?.batchNumber.orEmpty()
+        }?.bottlingDate.orEmpty()
+        if (!dateOfPour.isEmpty())
+        spinBottlingDate.value = listOf(formatterRU.format(formatterEN.parse(dateOfPour)))
+    }
 
     fun onBackPressed() {
         if (processExciseAlcoStampAccPGEService.modifications()) {
