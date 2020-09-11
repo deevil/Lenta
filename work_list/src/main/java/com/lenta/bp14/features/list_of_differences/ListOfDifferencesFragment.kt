@@ -68,21 +68,17 @@ class ListOfDifferencesFragment : CoreFragment<FragmentListOfDifferencesBinding,
                 }
             }
 
-            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                     layoutId = R.layout.item_simple_good_selectable,
                     itemId = BR.vm,
-                    onAdapterItemBind = { binding: ItemSimpleGoodSelectableBinding, position: Int ->
+                    onItemBind = { binding: ItemSimpleGoodSelectableBinding, position: Int ->
                         binding.tvItemNumber.tag = position
                         binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                         binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
                         onAdapterBindHandler(binding, position)
-                    }
-            )
-
-            oldRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
+                    },
                     recyclerView = layoutBinding.rv,
                     items = vm.goods,
-                    previousPosInfo = oldRecyclerViewKeyHandler?.posInfo?.value,
                     onClickHandler = vm::onClickItemPosition
             )
         }

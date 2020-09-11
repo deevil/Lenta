@@ -53,64 +53,83 @@ class GoodDetailsFragment : CoreFragment<FragmentGoodDetailsBinding, GoodDetails
         }
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding?.viewPagerSettings = this
+    }
+
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
-        if (position == 0) {
-            DataBindingUtil
-                    .inflate<LayoutGoodDetailsShelfLifeBinding>(LayoutInflater.from(container.context),
-                            R.layout.layout_good_details_shelf_life,
-                            container,
-                            false).let { layoutBinding ->
-
-                        val onClickSelectionListener = View.OnClickListener {
-                            (it!!.tag as Int).let { position ->
-                                vm.shelfLifeSelectionsHelper.revert(position = position)
-                                layoutBinding.rv.adapter?.notifyItemChanged(position)
-                            }
-                        }
-
-                        layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
-                                layoutId = R.layout.item_wl_shelf_life_quantity_selectable,
-                                itemId = BR.shelfLife,
-                                onAdapterItemBind = { binding: ItemWlShelfLifeQuantitySelectableBinding, position: Int ->
-                                    binding.tvItemNumber.tag = position
-                                    binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                                    binding.selectedForDelete = vm.shelfLifeSelectionsHelper.isSelected(position)
-                                }
-                        )
-
-                        layoutBinding.vm = vm
-                        layoutBinding.lifecycleOwner = viewLifecycleOwner
-                        return layoutBinding.root
-                    }
+        return when (position) {
+            TAB_SHELFLIFE -> initGoodDetailsShelfLife(container)
+            TAB_COMMENTS -> initGoodDetailsComments(container)
+            else -> View(context)
         }
+    }
 
-        DataBindingUtil
-                .inflate<LayoutGoodDetailsCommentsBinding>(LayoutInflater.from(container.context),
-                        R.layout.layout_good_details_comments,
-                        container,
-                        false).let { layoutBinding ->
+    private fun initGoodDetailsShelfLife(container: ViewGroup): View {
+        DataBindingUtil.inflate<LayoutGoodDetailsShelfLifeBinding>(LayoutInflater.from(container.context),
+                R.layout.layout_good_details_shelf_life,
+                container,
+                false).let { layoutBinding ->
 
-                    val onClickSelectionListener = View.OnClickListener {
-                        (it!!.tag as Int).let { position ->
-                            vm.commentSelectionsHelper.revert(position = position)
-                            layoutBinding.rv.adapter?.notifyItemChanged(position)
-                        }
-                    }
-
-                    layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
-                            layoutId = R.layout.item_wl_comment_quantity_selectable,
-                            itemId = BR.comment,
-                            onAdapterItemBind = { binding: ItemWlCommentQuantitySelectableBinding, position: Int ->
-                                binding.tvItemNumber.tag = position
-                                binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                                binding.selectedForDelete = vm.commentSelectionsHelper.isSelected(position)
-                            }
-                    )
-
-                    layoutBinding.vm = vm
-                    layoutBinding.lifecycleOwner = viewLifecycleOwner
-                    return layoutBinding.root
+            val onClickSelectionListener = View.OnClickListener {
+                (it!!.tag as Int).let { position ->
+                    vm.shelfLifeSelectionsHelper.revert(position = position)
+                    layoutBinding.rv.adapter?.notifyItemChanged(position)
                 }
+            }
+
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                    layoutId = R.layout.item_wl_shelf_life_quantity_selectable,
+                    itemId = BR.shelfLife,
+                    onItemBind = { binding: ItemWlShelfLifeQuantitySelectableBinding, position: Int ->
+                        binding.tvItemNumber.tag = position
+                        binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                        binding.selectedForDelete = vm.shelfLifeSelectionsHelper.isSelected(position)
+                    },
+                    keyHandlerId = TAB_SHELFLIFE,
+                    recyclerView = layoutBinding.rv,
+                    items = vm.shelfLives
+            )
+
+            layoutBinding.vm = vm
+            layoutBinding.lifecycleOwner = viewLifecycleOwner
+
+            return layoutBinding.root
+        }
+    }
+
+    private fun initGoodDetailsComments(container: ViewGroup): View {
+        DataBindingUtil.inflate<LayoutGoodDetailsCommentsBinding>(LayoutInflater.from(container.context),
+                R.layout.layout_good_details_comments,
+                container,
+                false).let { layoutBinding ->
+
+            val onClickSelectionListener = View.OnClickListener {
+                (it!!.tag as Int).let { position ->
+                    vm.commentSelectionsHelper.revert(position = position)
+                    layoutBinding.rv.adapter?.notifyItemChanged(position)
+                }
+            }
+
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                    layoutId = R.layout.item_wl_comment_quantity_selectable,
+                    itemId = BR.comment,
+                    onItemBind = { binding: ItemWlCommentQuantitySelectableBinding, position: Int ->
+                        binding.tvItemNumber.tag = position
+                        binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                        binding.selectedForDelete = vm.commentSelectionsHelper.isSelected(position)
+                    },
+                    keyHandlerId = TAB_COMMENTS,
+                    recyclerView = layoutBinding.rv,
+                    items = vm.comments
+            )
+
+            layoutBinding.vm = vm
+            layoutBinding.lifecycleOwner = viewLifecycleOwner
+
+            return layoutBinding.root
+        }
     }
 
     override fun getTextTitle(position: Int): String {
@@ -122,11 +141,6 @@ class GoodDetailsFragment : CoreFragment<FragmentGoodDetailsBinding, GoodDetails
     }
 
     override fun countTab() = TABS
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        binding?.viewPagerSettings = this
-    }
 
     companion object {
         const val SCREEN_NUMBER = "13"
