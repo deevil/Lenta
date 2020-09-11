@@ -1,5 +1,6 @@
 package com.lenta.bp9.model.repositories
 
+import com.lenta.bp9.model.task.PartySignsOfZBatches
 import com.lenta.bp9.model.task.TaskBatchInfo
 import com.lenta.bp9.model.task.TaskZBatchInfo
 import com.lenta.bp9.model.task.TaskZBatchesDiscrepancies
@@ -9,7 +10,7 @@ interface ITaskZBatchesDiscrepanciesRepository {
     fun findZBatchDiscrepancies(discrepancies: TaskZBatchesDiscrepancies): List<TaskZBatchesDiscrepancies>
     fun findZBatchDiscrepanciesOfProduct(materialNumber: String): List<TaskZBatchesDiscrepancies>
     fun addZBatchDiscrepancies(discrepancies: TaskZBatchesDiscrepancies): Boolean
-    fun updateZBatchesDiscrepancy(newBatchesDiscrepancies: List<TaskZBatchesDiscrepancies>)
+    fun updateZBatchesDiscrepancy(newZBatchesDiscrepancies: List<TaskZBatchesDiscrepancies>)
     fun changeZBatchDiscrepancy(discrepancy: TaskZBatchesDiscrepancies): Boolean
     fun deleteZBatchDiscrepancies(discrepancies: TaskZBatchesDiscrepancies): Boolean
     fun deleteZBatchesDiscrepanciesForProduct(materialNumber: String): Boolean
@@ -17,5 +18,10 @@ interface ITaskZBatchesDiscrepanciesRepository {
     fun deleteZBatchesDiscrepanciesForProductAndDiscrepancies(materialNumber: String, typeDiscrepancies: String): Boolean
     fun getCountAcceptOfZBatch(discrepancies: TaskZBatchesDiscrepancies): Double
     fun getCountAcceptOfZBatchPGE(discrepancies: TaskZBatchesDiscrepancies): Double
+    fun findPartySignOfZBatch(zBatchesDiscrepancies: TaskZBatchesDiscrepancies): PartySignsOfZBatches?
+    fun findPartySignsOfProduct(materialNumber: String): List<PartySignsOfZBatches>
+    fun addPartySignOfZBatches(partySign: PartySignsOfZBatches): Boolean
+    fun changePartySign(partySign: PartySignsOfZBatches): Boolean
+    fun deletePartySignOfZBatches(partySign: PartySignsOfZBatches): Boolean
     fun clear()
 }

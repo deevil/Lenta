@@ -1,9 +1,6 @@
 package com.lenta.bp9.model.processing
 
-import com.lenta.bp9.model.task.IReceivingTaskManager
-import com.lenta.bp9.model.task.TaskProductDiscrepancies
-import com.lenta.bp9.model.task.TaskProductInfo
-import com.lenta.bp9.model.task.TaskZBatchesDiscrepancies
+import com.lenta.bp9.model.task.*
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
 import com.lenta.shared.di.AppScope
 import javax.inject.Inject
@@ -119,7 +116,7 @@ class ProcessZBatchesPPPService
                 )
     }
 
-    fun addWithoutUnderload(typeDiscrepancies: String, count: String, manufactureCode: String, shelfLifeDate: String, shelfLifeTime: String) {
+    fun addWithoutUnderload(typeDiscrepancies: String, count: String, manufactureCode: String, shelfLifeDate: String, shelfLifeTime: String, partySignsType: PartySignsTypeOfZBatches) {
         val productDiscrepancy =
                 taskRepository
                         ?.getProductsDiscrepancies()
@@ -131,7 +128,7 @@ class ProcessZBatchesPPPService
                     ?.getProductsDiscrepancies()
                     ?.changeProductDiscrepancy(productDiscrepancy.copy(numberDiscrepancies = count))
         } else {
-            add(count, typeDiscrepancies, manufactureCode, shelfLifeDate, shelfLifeTime)
+            add(count, typeDiscrepancies, manufactureCode, shelfLifeDate, shelfLifeTime, partySignsType)
         }
     }
 
@@ -145,11 +142,12 @@ class ProcessZBatchesPPPService
         return productInfo.origQuantity.toDouble() < totalCount
     }
 
-    fun add(count: String, typeDiscrepancies: String, manufactureCode: String, shelfLifeDate: String, shelfLifeTime: String) {
+    fun add(count: String, typeDiscrepancies: String, manufactureCode: String, shelfLifeDate: String, shelfLifeTime: String, partySignsType: PartySignsTypeOfZBatches) {
         changeProductDiscrepancy(count, typeDiscrepancies)
 
         if (typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM) {
             changeZBatchDiscrepancy(count, typeDiscrepancies, manufactureCode, shelfLifeDate, shelfLifeTime)
+            changePartySign(typeDiscrepancies, manufactureCode, shelfLifeDate, shelfLifeTime, partySignsType)
         }
     }
 
@@ -169,7 +167,7 @@ class ProcessZBatchesPPPService
                                 materialNumber = productInfo.materialNumber,
                                 processingUnitNumber = productInfo.processingUnit,
                                 numberDiscrepancies = countAdd.toString(),
-                                uom = productInfo.uom,
+                                uom = productInfo.purchaseOrderUnits,
                                 typeDiscrepancies = typeDiscrepancies,
                                 isNotEdit = false,
                                 isNew = false,
@@ -203,7 +201,7 @@ class ProcessZBatchesPPPService
                                 materialNumber = productInfo.materialNumber,
                                 batchNumber = "",
                                 numberDiscrepancies = countAdd.toString(),
-                                uom = productInfo.uom,
+                                uom = productInfo.purchaseOrderUnits,
                                 typeDiscrepancies = typeDiscrepancies,
                                 isNew = false,
                                 manufactureCode = manufactureCode,
@@ -214,6 +212,39 @@ class ProcessZBatchesPPPService
         taskRepository
                 ?.getZBatchesDiscrepancies()
                 ?.changeZBatchDiscrepancy(foundDiscrepancy)
+    }
+
+    private fun changePartySign(typeDiscrepancies: String, manufactureCode: String, shelfLifeDate: String, shelfLifeTime: String, partySignsType: PartySignsTypeOfZBatches) {
+
+        var foundDiscrepancy =
+                taskRepository
+                        ?.getZBatchesDiscrepancies()
+                        ?.findPartySignsOfProduct(productInfo.materialNumber)
+                        ?.findLast {
+                            it.typeDiscrepancies == typeDiscrepancies
+                                    && it.manufactureCode == manufactureCode
+                                    && it.manufactureCode == manufactureCode
+                                    && it.shelfLifeDate == shelfLifeDate
+                                    && it.shelfLifeTime == shelfLifeTime
+                        }
+
+        foundDiscrepancy =
+                foundDiscrepancy
+                        ?.copy(partySign = partySignsType)
+                        ?: PartySignsOfZBatches(
+                                processingUnit = "",
+                                materialNumber = productInfo.materialNumber,
+                                batchNumber = "",
+                                typeDiscrepancies = typeDiscrepancies,
+                                manufactureCode = manufactureCode,
+                                shelfLifeDate = shelfLifeDate,
+                                shelfLifeTime = shelfLifeTime,
+                                partySign = partySignsType
+                        )
+
+        taskRepository
+                ?.getZBatchesDiscrepancies()
+                ?.changePartySign(foundDiscrepancy)
     }
 
 }

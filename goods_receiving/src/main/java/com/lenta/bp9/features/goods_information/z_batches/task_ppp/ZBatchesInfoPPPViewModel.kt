@@ -7,6 +7,7 @@ import com.lenta.bp9.R
 import com.lenta.bp9.features.goods_information.base.BaseGoodsInfo
 import com.lenta.bp9.features.delegates.SearchProductDelegate
 import com.lenta.bp9.model.processing.ProcessZBatchesPPPService
+import com.lenta.bp9.model.task.PartySignsTypeOfZBatches
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_DELIVERY_ERRORS
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
@@ -52,7 +53,7 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
     val count: MutableLiveData<String> = MutableLiveData("0")
     val isDiscrepancy: MutableLiveData<Boolean> = MutableLiveData(false)
 
-    val currentTermControlCode: String
+    private val currentTermControlCode: String
         get() {
             val position = spinEnteredDateSelectedPosition.value ?: -1
             return position
@@ -273,7 +274,8 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
     private fun isCorrectDate(checkDate: String?): Boolean {
         return try {
             val date = formatterRU.parse(checkDate)
-            !(checkDate != formatterRU.format(date) || date > currentDate.value)
+            !(checkDate != formatterRU.format(date)
+                    || (date > currentDate.value && currentTermControlCode == TERM_CONTROL_CODE_PRODUCTION_DATE))
         } catch (e: Exception) {
             false
         }
@@ -287,7 +289,8 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
             val currentTime = SimpleDateFormat(Constants.TIME_FORMAT_HHmm).parse(currentTimeStr)
             val enteredTime = SimpleDateFormat(Constants.TIME_FORMAT_HHmm).parse(checkTime)
             val enteredTimeStr = SimpleDateFormat(Constants.TIME_FORMAT_HHmm).format(enteredTime)
-            !(checkTime != enteredTimeStr || enteredTime > currentTime)
+            !(checkTime != enteredTimeStr
+                    || (enteredTime > currentTime && currentTermControlCode == TERM_CONTROL_CODE_PRODUCTION_DATE))
         } catch (e: Exception) {
             false
         }
@@ -504,7 +507,8 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
                             count = countWithoutParamGrsGrundNeg.toString(),
                             manufactureCode = currentManufactureCode,
                             shelfLifeDate = getShelfLifeDate(),
-                            shelfLifeTime = getShelfLifeTime()
+                            shelfLifeTime = getShelfLifeTime(),
+                            partySignsType = getPartySignsType()
                     )
                     //блок 6.172
                     saveCategory()
@@ -576,7 +580,14 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
             val calculationTwo = productOrigQuantity - (processZBatchesPPPService.getQuantityAllCategory() + enteredCount)
             val calculation = if (calculationOne < calculationTwo) calculationOne else calculationTwo
             if (calculation > 0.0) {
-                processZBatchesPPPService.add(calculation.toString(), TYPE_DISCREPANCIES_REASON_REJECTION_NOT_ORDER, currentManufactureCode, getShelfLifeDate(), getShelfLifeTime())
+                processZBatchesPPPService.add(
+                        count = calculation.toString(),
+                        typeDiscrepancies = TYPE_DISCREPANCIES_REASON_REJECTION_NOT_ORDER,
+                        manufactureCode = currentManufactureCode,
+                        shelfLifeDate = getShelfLifeDate(),
+                        shelfLifeTime = getShelfLifeTime(),
+                        partySignsType = getPartySignsType()
+                )
             }
         }
 
@@ -594,7 +605,14 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
 
     //ППП блок 6.172
     private fun saveCategory() {
-        processZBatchesPPPService.add(count.value.orEmpty(), currentTypeDiscrepanciesCode, currentManufactureCode, getShelfLifeDate(), getShelfLifeTime())
+        processZBatchesPPPService.add(
+                count = count.value.orEmpty(),
+                typeDiscrepancies = currentTypeDiscrepanciesCode,
+                manufactureCode = currentManufactureCode,
+                shelfLifeDate = getShelfLifeDate(),
+                shelfLifeTime = getShelfLifeTime(),
+                partySignsType = getPartySignsType()
+        )
 
         //ППП блок 6.176
         clickBtnApply()
@@ -623,6 +641,14 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
         }
     }
 
+    private fun getPartySignsType(): PartySignsTypeOfZBatches {
+        return when(currentTermControlCode) {
+            TERM_CONTROL_CODE_SHELF_LIFE -> PartySignsTypeOfZBatches.ShelfLife
+            TERM_CONTROL_CODE_PRODUCTION_DATE -> PartySignsTypeOfZBatches.ProductionDate
+            else -> PartySignsTypeOfZBatches.None
+        }
+    }
+
     //ППП блок 6.176 и ПГЕ блок 7.188
     private fun clickBtnApply() {
         addGoods.value = true
@@ -634,6 +660,7 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
     }
 
     companion object {
+        private const val TERM_CONTROL_CODE_SHELF_LIFE = "001"
         private const val TERM_CONTROL_CODE_PRODUCTION_DATE = "002"
     }
 }

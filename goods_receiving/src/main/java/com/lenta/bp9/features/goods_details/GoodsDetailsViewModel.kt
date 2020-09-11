@@ -239,39 +239,17 @@ class GoodsDetailsViewModel : CoreViewModel() {
     private fun updatingInfoZBatches() {
         val itemsZBatchesDiscrepancies: ArrayList<GoodsDetailsCategoriesItem> = ArrayList()
         var quantityItem = 0
-        taskManager
-                .getReceivingTask()
-                ?.taskRepository
+        taskRepository
                 ?.getZBatchesDiscrepancies()
                 ?.findZBatchDiscrepanciesOfProduct(productInfo.value?.materialNumber.orEmpty())
                 ?.mapIndexed { index, discrepancy ->
-                    val shelfLifeDate =
-                            discrepancy
-                                    .shelfLifeDate
-                                    .takeIf { it.isNotEmpty() }
-                                    ?.let { formatterRU.format(formatterERP.parse(it)) }
-                                    .orEmpty()
-
                     itemsZBatchesDiscrepancies.add(
-                            GoodsDetailsCategoriesItem(
-                                    number = index + 1,
-                                    name = reasonRejectionInfo.value?.firstOrNull { it.code == discrepancy.typeDiscrepancies }?.name.orEmpty(),
-                                    nameBatch = "ДП-$shelfLifeDate // ${getManufacturerNameZBatch(discrepancy.manufactureCode)}",
-                                    visibilityNameBatch = true,
-                                    quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${uom.value?.name.orEmpty()}",
-                                    isNormDiscrepancies = isNormDiscrepancies(discrepancy.typeDiscrepancies),
-                                    typeDiscrepancies = discrepancy.typeDiscrepancies,
-                                    materialNumber = discrepancy.materialNumber,
-                                    batchDiscrepancies = null,
-                                    even = index % 2 == 0
-                            )
+                            getItemsZBatchesDiscrepanciesOfBatch(index, discrepancy)
                     )
                     quantityItem += quantityItem
                 }
 
-        taskManager
-                .getReceivingTask()
-                ?.taskRepository
+        taskRepository
                 ?.getProductsDiscrepancies()
                 ?.findProductDiscrepanciesOfProduct(productInfo.value?.materialNumber.orEmpty())
                 ?.asSequence()
@@ -295,6 +273,36 @@ class GoodsDetailsViewModel : CoreViewModel() {
                 ?.toList()
 
         goodsDetails.value = itemsZBatchesDiscrepancies.reversed()
+    }
+
+    private fun getItemsZBatchesDiscrepanciesOfBatch(index: Int, discrepancy: TaskZBatchesDiscrepancies): GoodsDetailsCategoriesItem {
+        val shelfLifeDate =
+                discrepancy
+                        .shelfLifeDate
+                        .takeIf { it.isNotEmpty() }
+                        ?.let { formatterRU.format(formatterERP.parse(it)) }
+                        .orEmpty()
+
+        val partySign =
+                taskRepository
+                        ?.getZBatchesDiscrepancies()
+                        ?.findPartySignOfZBatch(discrepancy)
+                        ?.partySign
+                        ?.partySignsTypeString
+                        .orEmpty()
+
+        return GoodsDetailsCategoriesItem(
+                number = index + 1,
+                name = reasonRejectionInfo.value?.firstOrNull { it.code == discrepancy.typeDiscrepancies }?.name.orEmpty(),
+                nameBatch = "$partySign-$shelfLifeDate // ${getManufacturerNameZBatch(discrepancy.manufactureCode)}",
+                visibilityNameBatch = true,
+                quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${uom.value?.name.orEmpty()}",
+                isNormDiscrepancies = isNormDiscrepancies(discrepancy.typeDiscrepancies),
+                typeDiscrepancies = discrepancy.typeDiscrepancies,
+                materialNumber = discrepancy.materialNumber,
+                batchDiscrepancies = null,
+                even = index % 2 == 0
+        )
     }
 
     private fun updatingInfoOtherProducts() {

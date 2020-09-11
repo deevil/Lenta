@@ -57,7 +57,7 @@ abstract class BaseGoodsInfo : BaseFeatures(),
     override val spinProductionDateSelectedPosition: MutableLiveData<Int> = MutableLiveData(DEFAULT_SPINNER_POSITION)
 
     override val spinManufacturers: MutableLiveData<List<String>> = MutableLiveData()
-    override val spinManufacturersSelectedPosition: MutableLiveData<Int> = MutableLiveData(-DEFAULT_SPINNER_POSITION)
+    override val spinManufacturersSelectedPosition: MutableLiveData<Int> = MutableLiveData(DEFAULT_SPINNER_POSITION)
 
     override val isDefect: MutableLiveData<Boolean> = spinQualitySelectedPosition.map {
         if (taskType != TaskType.RecalculationCargoUnit) {

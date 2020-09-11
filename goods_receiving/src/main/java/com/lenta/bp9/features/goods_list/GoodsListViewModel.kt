@@ -205,12 +205,20 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                                                     ?.let { formatterRU.format(formatterERP.parse(it)) }
                                                     .orEmpty()
 
+                                    val partySign =
+                                            task.taskRepository
+                                                    .getZBatchesDiscrepancies()
+                                                    .findPartySignOfZBatch(zBatch)
+                                                    ?.partySign
+                                                    ?.partySignsTypeString
+                                                    .orEmpty()
+
                                     arrayCounted.add(
                                             ListCountedItem(
                                                     number = index + 1,
                                                     name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
                                                     nameMaxLines = 1,
-                                                    nameBatch = "ДП-$shelfLifeDate // ${getManufacturerNameZBatch(zBatch.manufactureCode)}",
+                                                    nameBatch = "$partySign-$shelfLifeDate // ${getManufacturerNameZBatch(zBatch.manufactureCode)}",
                                                     visibilityNameBatch = true,
                                                     countAcceptWithUom = getAcceptTotalCountWithUomZBatch(zBatch, uom),
                                                     countRefusalWithUom = "",

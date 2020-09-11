@@ -1,10 +1,7 @@
 package com.lenta.bp9.model.memory
 
 import com.lenta.bp9.model.repositories.ITaskZBatchesDiscrepanciesRepository
-import com.lenta.bp9.model.task.TaskBatchInfo
-import com.lenta.bp9.model.task.TaskBatchesDiscrepancies
-import com.lenta.bp9.model.task.TaskZBatchInfo
-import com.lenta.bp9.model.task.TaskZBatchesDiscrepancies
+import com.lenta.bp9.model.task.*
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS
@@ -13,6 +10,8 @@ import com.lenta.shared.utilities.extentions.removeItemFromListWithPredicate
 class MemoryTaskZBatchesDiscrepanciesRepository : ITaskZBatchesDiscrepanciesRepository {
 
     private val zBatchesDiscrepancies: ArrayList<TaskZBatchesDiscrepancies> = ArrayList()
+    private val partySignsOfZBatches: ArrayList<PartySignsOfZBatches> = ArrayList()
+
 
     override fun getZBatchesDiscrepancies(): List<TaskZBatchesDiscrepancies> {
         return zBatchesDiscrepancies
@@ -22,6 +21,8 @@ class MemoryTaskZBatchesDiscrepanciesRepository : ITaskZBatchesDiscrepanciesRepo
         val foundDiscrepancies = ArrayList<TaskZBatchesDiscrepancies>()
         for (i in zBatchesDiscrepancies.indices) {
             if (discrepancies.materialNumber == zBatchesDiscrepancies[i].materialNumber
+                    && discrepancies.batchNumber == zBatchesDiscrepancies[i].batchNumber
+                    && discrepancies.processingUnit == zBatchesDiscrepancies[i].processingUnit
                     && discrepancies.manufactureCode == zBatchesDiscrepancies[i].manufactureCode
                     && discrepancies.shelfLifeDate == zBatchesDiscrepancies[i].shelfLifeDate
                     && discrepancies.shelfLifeTime == zBatchesDiscrepancies[i].shelfLifeTime) {
@@ -45,6 +46,8 @@ class MemoryTaskZBatchesDiscrepanciesRepository : ITaskZBatchesDiscrepanciesRepo
         var index = -1
         for (i in zBatchesDiscrepancies.indices) {
             if (discrepancies.materialNumber == zBatchesDiscrepancies[i].materialNumber
+                    && discrepancies.batchNumber == zBatchesDiscrepancies[i].batchNumber
+                    && discrepancies.processingUnit == zBatchesDiscrepancies[i].processingUnit
                     && discrepancies.manufactureCode == zBatchesDiscrepancies[i].manufactureCode
                     && discrepancies.shelfLifeDate == zBatchesDiscrepancies[i].shelfLifeDate
                     && discrepancies.shelfLifeTime == zBatchesDiscrepancies[i].shelfLifeTime) {
@@ -74,6 +77,8 @@ class MemoryTaskZBatchesDiscrepanciesRepository : ITaskZBatchesDiscrepanciesRepo
     override fun deleteZBatchDiscrepancies(discrepancies: TaskZBatchesDiscrepancies): Boolean {
         return zBatchesDiscrepancies.removeItemFromListWithPredicate {
             it.materialNumber ==discrepancies.materialNumber
+                    && it.batchNumber == discrepancies.batchNumber
+                    && it.processingUnit == discrepancies.processingUnit
                     && it.manufactureCode == discrepancies.manufactureCode
                     && it.shelfLifeDate == discrepancies.shelfLifeDate
                     && it.shelfLifeTime == discrepancies.shelfLifeTime
@@ -123,7 +128,65 @@ class MemoryTaskZBatchesDiscrepanciesRepository : ITaskZBatchesDiscrepanciesRepo
         return countAccept
     }
 
+    override fun findPartySignOfZBatch(zBatchesDiscrepancies: TaskZBatchesDiscrepancies): PartySignsOfZBatches? {
+        return partySignsOfZBatches.findLast {
+            it.materialNumber == zBatchesDiscrepancies.materialNumber
+                    && it.batchNumber == zBatchesDiscrepancies.batchNumber
+                    && it.processingUnit == zBatchesDiscrepancies.processingUnit
+                    && it.manufactureCode == zBatchesDiscrepancies.manufactureCode
+                    && it.shelfLifeDate == zBatchesDiscrepancies.shelfLifeDate
+                    && it.shelfLifeTime == zBatchesDiscrepancies.shelfLifeTime
+        }
+    }
+
+    override fun findPartySignsOfProduct(materialNumber: String): List<PartySignsOfZBatches> {
+        val foundPartySigns = ArrayList<PartySignsOfZBatches>()
+        for (i in partySignsOfZBatches.indices) {
+            if (materialNumber == partySignsOfZBatches[i].materialNumber) {
+                foundPartySigns.add(partySignsOfZBatches[i])
+            }
+        }
+        return foundPartySigns
+    }
+
+    override fun addPartySignOfZBatches(partySign: PartySignsOfZBatches): Boolean {
+        var index = -1
+        for (i in partySignsOfZBatches.indices) {
+            if (partySign.materialNumber == partySignsOfZBatches[i].materialNumber
+                    && partySign.batchNumber == partySignsOfZBatches[i].batchNumber
+                    && partySign.processingUnit == partySignsOfZBatches[i].processingUnit
+                    && partySign.manufactureCode == partySignsOfZBatches[i].manufactureCode
+                    && partySign.shelfLifeDate == partySignsOfZBatches[i].shelfLifeDate
+                    && partySign.shelfLifeTime == partySignsOfZBatches[i].shelfLifeTime) {
+                index = i
+            }
+        }
+
+        if (index == -1) {
+            partySignsOfZBatches.add(partySign)
+            return true
+        }
+        return false
+    }
+
+    override fun changePartySign(partySign: PartySignsOfZBatches): Boolean {
+        deletePartySignOfZBatches(partySign)
+        return addPartySignOfZBatches(partySign)
+    }
+
+    override fun deletePartySignOfZBatches(partySign: PartySignsOfZBatches): Boolean {
+        return partySignsOfZBatches.removeItemFromListWithPredicate {
+            it.materialNumber ==partySign.materialNumber
+                    && it.batchNumber == partySign.batchNumber
+                    && it.processingUnit == partySign.processingUnit
+                    && it.manufactureCode == partySign.manufactureCode
+                    && it.shelfLifeDate == partySign.shelfLifeDate
+                    && it.shelfLifeTime == partySign.shelfLifeTime
+        }
+    }
+
     override fun clear() {
         zBatchesDiscrepancies.clear()
+        partySignsOfZBatches.clear()
     }
 }

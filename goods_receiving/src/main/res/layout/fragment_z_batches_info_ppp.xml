@@ -261,6 +261,7 @@
                     android:layout_weight="40"
                     android:nextFocusDown="@+id/et_entered_time"
                     android:hint="@string/format_date"
+                    android:digits="0123456789"
                     android:inputType="date"
                     android:text="@={vm.enteredDate}" />
 
@@ -272,6 +273,7 @@
                     android:layout_weight="60"
                     android:visibility="@{vm.isVisibilityEnteredTime}"
                     android:hint="@string/format_time"
+                    android:digits="0123456789"
                     android:inputType="time"
                     android:text="@={vm.enteredTime}" />
 

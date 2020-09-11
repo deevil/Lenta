@@ -73,7 +73,6 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     val countProcessed: MutableLiveData<List<GoodsDiscrepancyItem>> = MutableLiveData()
     val countControl: MutableLiveData<List<GoodsDiscrepancyItem>> = MutableLiveData()
 
-    private val receivingTask by lazy { taskManager.getReceivingTask() }
     private val taskType by lazy {
         taskManager
                 .getReceivingTask()
@@ -116,7 +115,9 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     val visibilityBatchesButton: MutableLiveData<Boolean> by lazy {
-        MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.isAlco == true && !(taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentPP || taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentRC)) //для заданий ОПП и ОРЦ не показываем кнопку Партия, уточнил у Артема
+        val taskDescription = taskManager.getReceivingTask()?.taskDescription
+        MutableLiveData(taskDescription?.isAlco == true //Z-партии на этом экране не учитываются
+                && !(taskType == TaskType.ShipmentPP || taskType == TaskType.ShipmentRC)) //для заданий ОПП и ОРЦ не показываем кнопку Партия, уточнил у Артема
     }
 
     init {
