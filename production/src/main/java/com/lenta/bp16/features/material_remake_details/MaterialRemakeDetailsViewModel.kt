@@ -3,7 +3,6 @@ package com.lenta.bp16.features.material_remake_details
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.switchMap
 import com.lenta.bp16.data.IScales
-import com.lenta.bp16.features.add_attribute.IZpartVisibleConditions
 import com.lenta.bp16.model.*
 import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
 import com.lenta.bp16.model.ingredients.MercuryPartDataInfo
@@ -11,6 +10,7 @@ import com.lenta.bp16.model.ingredients.params.IngredientDataCompleteParams
 import com.lenta.bp16.model.ingredients.OrderByBarcode
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
 import com.lenta.bp16.platform.Constants
+import com.lenta.bp16.platform.base.IZpartVisibleConditions
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.platform.resource.IResourceManager
 import com.lenta.bp16.request.CompleteIngredientByMaterialNetRequest
@@ -21,7 +21,6 @@ import com.lenta.bp16.request.ingredients_use_case.get_data.GetZPartDataInfoUseC
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.orIfNull
 import kotlinx.coroutines.Dispatchers

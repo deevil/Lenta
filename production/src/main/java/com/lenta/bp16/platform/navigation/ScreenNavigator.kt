@@ -2,7 +2,7 @@ package com.lenta.bp16.platform.navigation
 
 import android.content.Context
 import com.lenta.bp16.R
-import com.lenta.bp16.features.add_attribute.AddAttributeFragment
+import com.lenta.bp16.features.material_remake_details.add_attribute.MaterialAttributeFragment
 import com.lenta.bp16.features.auth.AuthFragment
 import com.lenta.bp16.features.defect_info.DefectInfoFragment
 import com.lenta.bp16.features.defect_list.DefectListFragment
@@ -33,7 +33,6 @@ import com.lenta.bp16.features.warehouse_selection.WarehouseSelectionFragment
 import com.lenta.bp16.model.ingredients.IngredientInfo
 import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
 import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
-import com.lenta.bp16.model.ingredients.IngredientUI
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
 import com.lenta.bp16.model.pojo.GoodParams
 import com.lenta.bp16.platform.Constants
@@ -188,7 +187,7 @@ class ScreenNavigator @Inject constructor(
 
     override fun openAddAttributeScreen(material: String, name: String, parentCode: String, shelfLife: String) {
         runOrPostpone {
-            getFragmentStack()?.push(AddAttributeFragment.newInstance(material, name, parentCode, shelfLife))
+            getFragmentStack()?.push(MaterialAttributeFragment.newInstance(material, name, parentCode, shelfLife))
         }
     }
 

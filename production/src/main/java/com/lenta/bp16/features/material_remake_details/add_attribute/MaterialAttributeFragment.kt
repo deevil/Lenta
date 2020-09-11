@@ -1,10 +1,10 @@
-package com.lenta.bp16.features.add_attribute
+package com.lenta.bp16.features.material_remake_details.add_attribute
 
 import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
 import com.lenta.bp16.R
-import com.lenta.bp16.databinding.FragmentAddAttributeBinding
+import com.lenta.bp16.databinding.FragmentMaterialAttributeBinding
 import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -14,7 +14,7 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.extentions.unsafeLazy
 
-class AddAttributeFragment : CoreFragment<FragmentAddAttributeBinding, AddAttributeViewModel>(), ToolbarButtonsClickListener {
+class MaterialAttributeFragment : CoreFragment<FragmentMaterialAttributeBinding, MaterialAttributeViewModel>(), ToolbarButtonsClickListener {
 
     private val parentCode: String by unsafeLazy {
         arguments?.getString(KEY_PARENT_CODE)
@@ -36,12 +36,12 @@ class AddAttributeFragment : CoreFragment<FragmentAddAttributeBinding, AddAttrib
                 ?: throw IllegalArgumentException("There is no argument value with key $KEY_SHELFLIFE")
     }
 
-    override fun getLayoutId(): Int = R.layout.fragment_add_attribute
+    override fun getLayoutId(): Int = R.layout.fragment_material_attribute
 
     override fun getPageNumber(): String = SCREEN_NUMBER
 
-    override fun getViewModel(): AddAttributeViewModel {
-        provideViewModel(AddAttributeViewModel::class.java).let {
+    override fun getViewModel(): MaterialAttributeViewModel {
+        provideViewModel(MaterialAttributeViewModel::class.java).let {
             getAppComponent()?.inject(it)
             it.shelfLife.value = shelfLife
             return it
@@ -81,7 +81,7 @@ class AddAttributeFragment : CoreFragment<FragmentAddAttributeBinding, AddAttrib
         private const val KEY_PARENT_CODE = "KEY_PARENT_CODE"
         private const val KEY_SHELFLIFE = "KEY_SHELFLIFE"
 
-        fun newInstance(material: String, name: String, parentCode: String, shelfLife: String) = AddAttributeFragment().apply {
+        fun newInstance(material: String, name: String, parentCode: String, shelfLife: String) = MaterialAttributeFragment().apply {
             arguments = bundleOf(
                     KEY_MATERIAL to material,
                     KEY_NAME to name,

@@ -8,7 +8,7 @@
 
         <variable
             name="vm"
-            type="com.lenta.bp16.features.add_attribute.AddAttributeViewModel" />
+            type="com.lenta.bp16.features.material_remake_details.add_attribute.MaterialAttributeViewModel" />
     </data>
 
 <androidx.constraintlayout.widget.ConstraintLayout

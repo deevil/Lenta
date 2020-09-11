@@ -92,8 +92,8 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
     }
 
     fun loadIngredients() {
-        navigator.showProgressLoadingData()
         launchUITryCatch {
+            navigator.showProgressLoadingData()
             getIngredientsRequest(
                     GetIngredientsParams(
                             tkMarket = sessionInfo.market.orEmpty(),

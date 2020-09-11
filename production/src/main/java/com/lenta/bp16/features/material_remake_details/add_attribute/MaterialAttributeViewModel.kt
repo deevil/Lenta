@@ -1,10 +1,11 @@
-package com.lenta.bp16.features.add_attribute
+package com.lenta.bp16.features.material_remake_details.add_attribute
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.switchMap
 import com.lenta.bp16.model.AddAttributeProdInfo
 import com.lenta.bp16.model.ProducerDataInfo
 import com.lenta.bp16.model.ZPartDataInfo
+import com.lenta.bp16.platform.base.IZpartVisibleConditions
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.repository.IDatabaseRepository
 import com.lenta.bp16.request.ingredients_use_case.get_data.GetProducerDataInfoUseCase
@@ -20,7 +21,7 @@ import com.lenta.shared.requests.network.ServerTimeRequestParam
 import com.lenta.shared.utilities.extentions.*
 import javax.inject.Inject
 
-class AddAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
+class MaterialAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
 
     @Inject
     lateinit var navigator: IScreenNavigator

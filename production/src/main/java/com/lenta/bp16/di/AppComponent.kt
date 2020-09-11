@@ -3,7 +3,7 @@ package com.lenta.bp16.di
 import com.lenta.bp16.ExceptionHandler
 import com.lenta.bp16.data.IPrinter
 import com.lenta.bp16.data.IScales
-import com.lenta.bp16.features.add_attribute.AddAttributeViewModel
+import com.lenta.bp16.features.material_remake_details.add_attribute.MaterialAttributeViewModel
 import com.lenta.bp16.features.auth.AuthViewModel
 import com.lenta.bp16.features.defect_info.DefectInfoViewModel
 import com.lenta.bp16.features.defect_list.DefectListViewModel
@@ -14,6 +14,7 @@ import com.lenta.bp16.features.good_packaging.GoodPackagingViewModel
 import com.lenta.bp16.features.good_weighing.GoodWeighingViewModel
 import com.lenta.bp16.features.ingredients_list.IngredientsListViewModel
 import com.lenta.bp16.features.ingredient_details.IngredientDetailsViewModel
+import com.lenta.bp16.features.ingredient_details.add_attribute.IngredientAttributeViewModel
 import com.lenta.bp16.features.loading.fast.FastLoadingViewModel
 import com.lenta.bp16.features.main_menu.MainMenuViewModel
 import com.lenta.bp16.features.material_remake_details.MaterialRemakeDetailsViewModel
@@ -88,5 +89,6 @@ interface AppComponent : CoreComponent, FromParentToCoreProvider {
     fun inject(it: MaterialRemakesListViewModel)
     fun inject(it: MaterialRemakeDetailsViewModel)
     fun inject(it: TechOrdersListViewModel)
-    fun inject(it: AddAttributeViewModel)
+    fun inject(it: MaterialAttributeViewModel)
+    fun inject(it: IngredientAttributeViewModel)
 }

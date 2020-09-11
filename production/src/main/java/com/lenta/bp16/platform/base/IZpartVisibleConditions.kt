@@ -1,4 +1,4 @@
-package com.lenta.bp16.features.add_attribute
+package com.lenta.bp16.platform.base
 
 import com.lenta.bp16.model.ProducerDataStatus
 import com.lenta.shared.utilities.orIfNull
