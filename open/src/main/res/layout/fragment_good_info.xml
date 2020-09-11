@@ -24,9 +24,7 @@
             <LinearLayout
                 style="@style/LinearRowStyle">
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <TextView
                         style="@style/CellTextStyle"
@@ -37,9 +35,7 @@
                 <View
                     style="@style/VerticalDivider"/>
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <com.lenta.shared.view.EditTextWithSuffix
                         android:id="@+id/et_goods_count"
@@ -66,9 +62,7 @@
             <LinearLayout
                 style="@style/LinearRowStyle">
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <TextView
                         style="@style/CellTextStyle"
@@ -79,9 +73,7 @@
                 <View
                     style="@style/VerticalDivider"/>
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <EditText
                         android:id="@+id/et_part_number"

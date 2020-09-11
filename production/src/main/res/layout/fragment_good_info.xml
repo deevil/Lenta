@@ -24,9 +24,7 @@
 
             <LinearLayout style="@style/LinearRowStyle">
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <TextView
                         style="@style/CellTextStyle"
@@ -36,9 +34,7 @@
 
                 <View style="@style/VerticalDivider" />
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <com.lenta.shared.view.EditTextWithSuffix
                         android:id="@+id/et_goods_count"
@@ -93,9 +89,7 @@
                 style="@style/LinearRowStyle"
                 android:visibility="@{vm.ZPartFlag ? View.VISIBLE : View.GONE}">
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <com.lenta.shared.view.ClickableSpinner
                         android:id="@+id/spin_production_date"
@@ -109,9 +103,7 @@
 
                 <View style="@style/VerticalDivider" />
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <EditText
                         style="@style/CellEditTextStyle"
@@ -135,9 +127,7 @@
 
             <LinearLayout style="@style/LinearRowStyle">
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <TextView
                         style="@style/CellTextStyle"
@@ -147,9 +137,7 @@
 
                 <View style="@style/VerticalDivider" />
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <com.lenta.shared.view.ClickableSpinner
                         android:id="@+id/spin_warehouse_sender"
@@ -167,9 +155,7 @@
 
             <LinearLayout style="@style/LinearRowStyle">
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <TextView
                         style="@style/CellTextStyle"
@@ -179,9 +165,7 @@
 
                 <View style="@style/VerticalDivider" />
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <com.lenta.shared.view.ClickableSpinner
                         android:id="@+id/spin_storage_receiver"
@@ -203,9 +187,7 @@
                 style="@style/LinearRowStyle"
                 android:visibility="@{vm.proIncludeCond || vm.ZPartFlag ? View.VISIBLE : View.GONE}">
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <TextView
                         style="@style/CellTextStyle"
@@ -215,9 +197,7 @@
 
                 <View style="@style/VerticalDivider" />
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <EditText
                         style="@style/CellEditTextStyle"

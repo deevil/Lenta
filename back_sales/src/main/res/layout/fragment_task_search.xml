@@ -20,9 +20,7 @@
         <!-- Поставщик -->
         <LinearLayout style="@style/LinearRowStyle">
 
-            <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="1">
+            <LinearLayout style="@style/LinearCellStyle">
 
                 <TextView
                     style="@style/CellTextStyle"
@@ -50,9 +48,7 @@
         <!-- Товар -->
         <LinearLayout style="@style/LinearRowStyle">
 
-            <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="1">
+            <LinearLayout style="@style/LinearCellStyle">
 
                 <TextView
                     style="@style/CellTextStyle"
@@ -78,9 +74,7 @@
         <!-- Марка -->
         <LinearLayout style="@style/LinearRowStyle">
 
-            <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="1">
+            <LinearLayout style="@style/LinearCellStyle">
 
                 <TextView
                     style="@style/CellTextStyle"
@@ -104,9 +98,7 @@
         <!-- Секция -->
         <LinearLayout style="@style/LinearRowStyle">
 
-            <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="1">
+            <LinearLayout style="@style/LinearCellStyle">
 
                 <TextView
                     style="@style/CellTextStyle"

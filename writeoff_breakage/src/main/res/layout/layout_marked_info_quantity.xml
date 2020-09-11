@@ -20,9 +20,7 @@
         <!-- Текущее количество -->
         <LinearLayout style="@style/LinearRowStyle">
 
-            <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="1">
+            <LinearLayout style="@style/LinearCellStyle">
 
                 <TextView
                     style="@style/CellTextStyle"
@@ -32,9 +30,7 @@
 
             <View style="@style/VerticalDivider" />
 
-            <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="1">
+            <LinearLayout style="@style/LinearCellStyle">
 
                 <com.lenta.shared.view.EditTextWithSuffix
                     style="@style/CellEditTextStyle"
@@ -55,9 +51,7 @@
         <!-- Количество итого -->
         <LinearLayout style="@style/LinearRowStyle">
 
-            <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="1">
+            <LinearLayout style="@style/LinearCellStyle">
 
                 <TextView
                     style="@style/CellTextStyle"
@@ -67,9 +61,7 @@
 
             <View style="@style/VerticalDivider" />
 
-            <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="1">
+            <LinearLayout style="@style/LinearCellStyle">
 
                 <TextView
                     style="@style/CellTextStyle"
