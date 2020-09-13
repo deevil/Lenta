@@ -184,7 +184,7 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
         )
     }
 
-    protected open fun <Item : Any, T : ViewDataBinding> initRecycleAdapterDataBinding(
+    protected open fun <T : ViewDataBinding> initRecycleAdapterDataBinding(
             @LayoutRes layoutId: Int,
             itemId: Int,
             onItemCreate: ((T) -> Unit)? = null,

@@ -125,7 +125,7 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
         return if (vm.taskType == TaskType.ShipmentPP || vm.taskType == TaskType.ShipmentRC) {
-            when(position) {
+            when (position) {
                 0 -> prepareStatusView(container)
                 1 -> prepareShipmentView(container)
                 2 -> prepareDetailsView(container)
@@ -133,7 +133,7 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
                 else -> View(context)
             }
         } else {
-            when(position) {
+            when (position) {
                 0 -> prepareStatusView(container)
                 1 -> prepareDeliveryView(container)
                 2 -> prepareNotificationsView(container)
@@ -229,10 +229,9 @@ class TaskCardFragment : CoreFragment<FragmentTaskCardBinding, TaskCardViewModel
                         false)
                 .let { layoutBinding ->
 
-                    layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemTileNotificationsBinding>(
                             layoutId = R.layout.item_tile_notifications,
-                            itemId = BR.item,
-                            onAdapterItemBind = { binding: ItemTileNotificationsBinding, position: Int -> }
+                            itemId = BR.item
                     )
 
                     layoutBinding.vm = vm

@@ -7,9 +7,7 @@ import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentTransportMarriageCargoUnitBinding
 import com.lenta.bp9.databinding.ItemTileTransportMarriageActBinding
 import com.lenta.bp9.platform.extentions.getAppComponent
-import com.lenta.shared.keys.KeyCode
-import com.lenta.shared.keys.OnKeyDownListener
-import com.lenta.shared.platform.fragment.CoreFragment
+import com.lenta.shared.platform.fragment.KeyDownCoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
@@ -20,9 +18,8 @@ import com.lenta.shared.utilities.extentions.getFragmentResultCode
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
 
-class TransportMarriageCargoUnitFragment : CoreFragment<FragmentTransportMarriageCargoUnitBinding, TransportMarriageCargoUnitViewModel>(),
+class TransportMarriageCargoUnitFragment : KeyDownCoreFragment<FragmentTransportMarriageCargoUnitBinding, TransportMarriageCargoUnitViewModel>(),
         ToolbarButtonsClickListener,
-        OnKeyDownListener,
         OnScanResultListener {
 
     private var cargoUnitNumber by state<String?>(null)
@@ -32,7 +29,7 @@ class TransportMarriageCargoUnitFragment : CoreFragment<FragmentTransportMarriag
     override fun getPageNumber(): String = "09/30"
 
     override fun getViewModel(): TransportMarriageCargoUnitViewModel {
-        provideViewModel(TransportMarriageCargoUnitViewModel::class.java).let {vm ->
+        provideViewModel(TransportMarriageCargoUnitViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)
             vm.cargoUnitNumber.value = this.cargoUnitNumber
             return vm
@@ -76,10 +73,10 @@ class TransportMarriageCargoUnitFragment : CoreFragment<FragmentTransportMarriag
                 }
             }
 
-            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                     layoutId = R.layout.item_tile_transport_marriage_act,
                     itemId = BR.item,
-                    onAdapterItemBind = { binding: ItemTileTransportMarriageActBinding, position: Int ->
+                    onItemBind = { binding: ItemTileTransportMarriageActBinding, position: Int ->
                         binding.tvItemNumber.tag = position
                         binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                         binding.selectedForDelete = vm.actSelectionsHelper.isSelected(position)
@@ -95,20 +92,6 @@ class TransportMarriageCargoUnitFragment : CoreFragment<FragmentTransportMarriag
     override fun onResume() {
         super.onResume()
         vm.onResume()
-    }
-
-    override fun onKeyDown(keyCode: KeyCode): Boolean {
-        oldRecyclerViewKeyHandler?.let {
-            if (!it.onKeyDown(keyCode)) {
-                keyCode.digit?.let { digit ->
-                    vm.onDigitPressed(digit)
-                    return true
-                }
-                return false
-            }
-            return true
-        }
-        return false
     }
 
     override fun onFragmentResult(arguments: Bundle) {

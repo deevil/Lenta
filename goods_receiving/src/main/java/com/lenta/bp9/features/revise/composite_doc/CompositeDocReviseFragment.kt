@@ -62,10 +62,10 @@ class CompositeDocReviseFragment : CoreFragment<FragmentCompositeDocReviseBindin
 
     private fun initRvConfig() {
         binding?.let { layoutBinding ->
-            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                     layoutId = R.layout.item_tile_list_composite_doc_revise,
                     itemId = BR.item,
-                    onAdapterItemBind = { binding: ItemTileListCompositeDocReviseBinding, position: Int ->
+                    onItemBind = { binding: ItemTileListCompositeDocReviseBinding, position: Int ->
                         binding.cbChecked.setOnClickListener { view ->
                             val cb = view as? CheckBox
                             cb?.let { vm.checkedChanged(position, it.isChecked) }

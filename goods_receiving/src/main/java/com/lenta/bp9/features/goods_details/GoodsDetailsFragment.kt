@@ -64,7 +64,7 @@ class GoodsDetailsFragment : CoreFragment<FragmentGoodsDetailsBinding, GoodsDeta
     private fun initRvConfig() {
         binding
                 ?.let { layoutBinding ->
-                    layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding<ItemTileGoodsDetailsBinding>(
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemTileGoodsDetailsBinding>(
                             layoutId = R.layout.item_tile_goods_details,
                             itemId = BR.item
                     )
@@ -84,10 +84,10 @@ class GoodsDetailsFragment : CoreFragment<FragmentGoodsDetailsBinding, GoodsDeta
                 }
             }
 
-            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                     layoutId = R.layout.item_tile_goods_details_del,
                     itemId = BR.item,
-                    onAdapterItemBind = { binding: ItemTileGoodsDetailsDelBinding, position: Int ->
+                    onItemBind = { binding: ItemTileGoodsDetailsDelBinding, position: Int ->
                         binding.tvItemNumber.tag = position
                         binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                         binding.selectedForDelete = vm.categoriesSelectionsHelper.isSelected(position)

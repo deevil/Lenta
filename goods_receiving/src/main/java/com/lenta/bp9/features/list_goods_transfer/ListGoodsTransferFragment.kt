@@ -35,7 +35,7 @@ class ListGoodsTransferFragment : CoreFragment<FragmentListGoodsTransferBinding,
     override fun getPageNumber(): String = "09/73"
 
     override fun getViewModel(): ListGoodsTransferViewModel {
-        provideViewModel(ListGoodsTransferViewModel::class.java).let {vm ->
+        provideViewModel(ListGoodsTransferViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)
             vm.sectionInfo.value = sectionInfo
             return vm
@@ -65,7 +65,7 @@ class ListGoodsTransferFragment : CoreFragment<FragmentListGoodsTransferBinding,
 
     private fun initRvConfig() {
         binding?.let { layoutBinding ->
-            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding<ItemTileListGoodsTransferBinding>(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemTileListGoodsTransferBinding>(
                     layoutId = R.layout.item_tile_list_goods_transfer,
                     itemId = BR.item
             )

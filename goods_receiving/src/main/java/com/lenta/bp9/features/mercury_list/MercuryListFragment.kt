@@ -8,7 +8,10 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.lenta.bp9.BR
 import com.lenta.bp9.R
-import com.lenta.bp9.databinding.*
+import com.lenta.bp9.databinding.FragmentMercuryListBinding
+import com.lenta.bp9.databinding.ItemTileMercuryListBinding
+import com.lenta.bp9.databinding.LayoutMercuryListTiedBinding
+import com.lenta.bp9.databinding.LayoutMercuryListUntiedBinding
 import com.lenta.bp9.model.task.revise.DeliveryProductDocumentRevise
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener
@@ -17,7 +20,8 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.databinding.*
+import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.extentions.toStringFormatted
@@ -29,26 +33,14 @@ class MercuryListFragment : CoreFragment<FragmentMercuryListBinding, MercuryList
         ToolbarButtonsClickListener,
         OnBackPresserListener {
 
-    companion object {
-        fun create(productDoc: DeliveryProductDocumentRevise): MercuryListFragment {
-            MercuryListFragment().let {
-                it.productDoc = productDoc
-                return it
-            }
-        }
-    }
-
     private var productDoc by state<DeliveryProductDocumentRevise?>(null)
-
-    private var tiedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
-    private var untiedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_mercury_list
 
-    override fun getPageNumber(): String = "09/100"
+    override fun getPageNumber(): String = SCREEN_NUMBER
 
     override fun getViewModel(): MercuryListViewModel {
-        provideViewModel(MercuryListViewModel::class.java).let {vm ->
+        provideViewModel(MercuryListViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)
             vm.productDoc.value = this.productDoc
             return vm
@@ -66,10 +58,12 @@ class MercuryListFragment : CoreFragment<FragmentMercuryListBinding, MercuryList
         viewLifecycleOwner.apply {
             vm.selectedPage.observe(this, Observer {
                 if (it == 0) {
-                    bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.untie, enabled = vm.untiedEnabled.value ?: false)
+                    bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.untie, enabled = vm.untiedEnabled.value
+                            ?: false)
                     connectLiveData(vm.untiedEnabled, bottomToolbarUiModel.uiModelButton2.enabled)
                 } else {
-                    bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.tied, enabled = vm.tiedEnabled.value ?: false)
+                    bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.tied, enabled = vm.tiedEnabled.value
+                            ?: false)
                     connectLiveData(vm.tiedEnabled, bottomToolbarUiModel.uiModelButton2.enabled)
                 }
             })
@@ -89,7 +83,7 @@ class MercuryListFragment : CoreFragment<FragmentMercuryListBinding, MercuryList
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
-        if (position == 0) {
+        if (position == TAB_TIED) {
             DataBindingUtil
                     .inflate<LayoutMercuryListTiedBinding>(LayoutInflater.from(container.context),
                             R.layout.layout_mercury_list_tied,
@@ -103,32 +97,22 @@ class MercuryListFragment : CoreFragment<FragmentMercuryListBinding, MercuryList
                             }
                         }
 
-                        layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
+                        layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                                 layoutId = R.layout.item_tile_mercury_list,
                                 itemId = BR.item,
-                                onAdapterItemBind = { binding: ItemTileMercuryListBinding, position: Int ->
+                                onItemBind = { binding: ItemTileMercuryListBinding, position: Int ->
                                     binding.tvItemNumber.tag = position
                                     binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                                     binding.selectedForDelete = vm.tiedSelectionsHelper.isSelected(position)
-                                    tiedRecyclerViewKeyHandler
-                                            ?.let {
-                                                binding.root.isSelected = it.isSelected(position)
-                                            }
                                 },
-                                onAdapterItemClicked = {position ->
-                                    tiedRecyclerViewKeyHandler?.onItemClicked(position)
-                                }
+                                keyHandlerId = TAB_TIED,
+                                recyclerView = layoutBinding.rv,
+                                items = vm.listTied,
+                                onClickHandler = vm::onClickItemPosition
                         )
 
                         layoutBinding.vm = vm
                         layoutBinding.lifecycleOwner = viewLifecycleOwner
-
-                        tiedRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
-                                recyclerView = layoutBinding.rv,
-                                previousPosInfo = tiedRecyclerViewKeyHandler?.posInfo?.value,
-                                items = vm.listTied,
-                                onClickHandler = vm::onClickItemPosition
-                        )
 
                         return layoutBinding.root
                     }
@@ -147,41 +131,31 @@ class MercuryListFragment : CoreFragment<FragmentMercuryListBinding, MercuryList
                         }
                     }
 
-                    layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_mercury_list,
                             itemId = BR.item,
-                            onAdapterItemBind = { binding: ItemTileMercuryListBinding, position: Int ->
+                            onItemBind = { binding: ItemTileMercuryListBinding, position: Int ->
                                 binding.tvItemNumber.tag = position
                                 binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                                 binding.selectedForDelete = vm.untiedSelectionsHelper.isSelected(position)
-                                untiedRecyclerViewKeyHandler
-                                        ?.let {
-                                            binding.root.isSelected = it.isSelected(position)
-                                        }
                             },
-                            onAdapterItemClicked = {position ->
-                                untiedRecyclerViewKeyHandler?.onItemClicked(position)
-                            }
+                            keyHandlerId = TAB_UNTIED,
+                            recyclerView = layoutBinding.rv,
+                            items = vm.listUntied,
+                            onClickHandler = vm::onClickItemPosition
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-                    untiedRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
-                            recyclerView = layoutBinding.rv,
-                            previousPosInfo = untiedRecyclerViewKeyHandler?.posInfo?.value,
-                            items = vm.listUntied,
-                            onClickHandler = vm::onClickItemPosition
-                    )
-
                     return layoutBinding.root
                 }
     }
 
-    override fun getTextTitle(position: Int): String = getString(if (position == 0) R.string.tied else R.string.untied)
+    override fun getTextTitle(position: Int): String = getString(if (position == TAB_TIED) R.string.tied else R.string.untied)
 
     override fun countTab(): Int {
-        return 2
+        return TABS
     }
 
     override fun onPageSelected(position: Int) {
@@ -196,6 +170,21 @@ class MercuryListFragment : CoreFragment<FragmentMercuryListBinding, MercuryList
     override fun onBackPressed(): Boolean {
         vm.onBackPressed()
         return false
+    }
+
+    companion object {
+        fun create(productDoc: DeliveryProductDocumentRevise): MercuryListFragment {
+            MercuryListFragment().let {
+                it.productDoc = productDoc
+                return it
+            }
+        }
+
+        const val SCREEN_NUMBER = "09/100"
+
+        private const val TABS = 2
+        private const val TAB_TIED = 0
+        private const val TAB_UNTIED = 1
     }
 
 }

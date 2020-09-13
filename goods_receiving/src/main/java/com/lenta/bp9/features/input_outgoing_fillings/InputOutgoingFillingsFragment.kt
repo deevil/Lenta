@@ -43,7 +43,7 @@ class InputOutgoingFillingsFragment : CoreFragment<FragmentInputOutgoingFillings
 
     private fun initRvConfig() {
         binding?.let { layoutBinding ->
-            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding<ItemTileInputOutgoingFillingsBinding>(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemTileInputOutgoingFillingsBinding>(
                     layoutId = R.layout.item_tile_input_outgoing_fillings,
                     itemId = BR.item
             )

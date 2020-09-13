@@ -111,7 +111,7 @@ class InvoiceReviseFragment : CoreFragment<FragmentInvoiceReviseBinding, Invoice
                         container,
                         false).let { layoutBinding ->
 
-                    layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding<ItemTileNotesBinding>(
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemTileNotesBinding>(
                             layoutId = R.layout.item_tile_notes,
                             itemId = BR.item
                     )

@@ -74,13 +74,12 @@ class TransferGoodsSectionFragment : CoreFragment<FragmentTransferGoodsSectionBi
                         }
                     }
 
-                    layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_transfer_goods_section,
                             itemId = BR.item,
-                            onAdapterItemBind = { binding: ItemTileTransferGoodsSectionBinding, position: Int ->
+                            onItemBind = { binding: ItemTileTransferGoodsSectionBinding, position: Int ->
                                 binding.tvCondition.tag = position
                                 binding.tvCondition.setOnClickListener(onClickConditionTitle)
-                                onAdapterBindHandler(binding, position)
                             }
                     )
 

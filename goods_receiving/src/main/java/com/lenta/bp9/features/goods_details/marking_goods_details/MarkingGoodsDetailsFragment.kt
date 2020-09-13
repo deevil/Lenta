@@ -1,23 +1,23 @@
 package com.lenta.bp9.features.goods_details.marking_goods_details
 
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
+import com.lenta.bp9.BR
 import com.lenta.bp9.R
+import com.lenta.bp9.databinding.*
+import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
-import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.extentions.provideViewModel
-import android.os.Bundle
-import android.view.LayoutInflater
-import com.lenta.shared.utilities.databinding.ViewPagerSettings
-import android.view.ViewGroup
-import android.view.View
-import androidx.databinding.DataBindingUtil
-import com.lenta.bp9.BR
-import com.lenta.bp9.databinding.*
-import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
+import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
+import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
 
 class MarkingGoodsDetailsFragment : CoreFragment<FragmentMarkingGoodsDetailsBinding, MarkingGoodsDetailsViewModel>(),
@@ -70,7 +70,7 @@ class MarkingGoodsDetailsFragment : CoreFragment<FragmentMarkingGoodsDetailsBind
                         container,
                         false).let { layoutBinding ->
 
-                    layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding<ItemTileMarkingGoodsDetailsPropertiesBinding>(
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemTileMarkingGoodsDetailsPropertiesBinding>(
                             layoutId = R.layout.item_tile_marking_goods_details_properties,
                             itemId = BR.item
                     )
@@ -95,10 +95,10 @@ class MarkingGoodsDetailsFragment : CoreFragment<FragmentMarkingGoodsDetailsBind
                         }
                     }
 
-                    layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_goods_details_del,
                             itemId = BR.item,
-                            onAdapterItemBind = { binding: ItemTileGoodsDetailsDelBinding, position: Int ->
+                            onItemBind = { binding: ItemTileGoodsDetailsDelBinding, position: Int ->
                                 binding.tvItemNumber.tag = position
                                 binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                                 binding.selectedForDelete = vm.categoriesSelectionsHelper.isSelected(position)

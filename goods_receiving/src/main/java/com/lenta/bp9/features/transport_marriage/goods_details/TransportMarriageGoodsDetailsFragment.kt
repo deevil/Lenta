@@ -56,7 +56,7 @@ class TransportMarriageGoodsDetailsFragment : CoreFragment<FragmentTransportMarr
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding?.let { layoutBinding ->
-            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding<ItemTileGoodsDetailsBinding>(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemTileGoodsDetailsBinding>(
                     layoutId = R.layout.item_tile_goods_details,
                     itemId = BR.item
             )

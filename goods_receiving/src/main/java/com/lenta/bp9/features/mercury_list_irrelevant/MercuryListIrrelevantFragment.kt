@@ -62,7 +62,7 @@ class MercuryListIrrelevantFragment : CoreFragment<FragmentMercuryListIrrelevant
 
     private fun initRvConfig() {
         binding?.let { layoutBinding ->
-            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding<ItemTileMercuryListIrrelevantBinding>(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemTileMercuryListIrrelevantBinding>(
                     layoutId = R.layout.item_tile_mercury_list_irrelevant,
                     itemId = BR.item
             )

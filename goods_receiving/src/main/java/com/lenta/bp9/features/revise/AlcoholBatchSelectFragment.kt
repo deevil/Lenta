@@ -48,26 +48,16 @@ class AlcoholBatchSelectFragment : CoreFragment<FragmentAlcoholBatchSelectBindin
 
     private fun initRvConfig() {
         binding?.let { layoutBinding ->
-            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding<BatchVM, ItemTileAlcoholBatchBinding>(
                     layoutId = R.layout.item_tile_alcohol_batch,
                     itemId = BR.item,
-                    onAdapterItemBind = { binding: ItemTileAlcoholBatchBinding, position: Int ->
-                        onAdapterBindHandler(binding, position)
-                    },
-                    onAdapterItemClicked = {position ->
-                        oldRecyclerViewKeyHandler?.onItemClicked(position)
-                    }
+                    recyclerView = layoutBinding.rv,
+                    items = vm.batches,
+                    onClickHandler = vm::onClickItemPosition
             )
 
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
-
-            oldRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
-                    recyclerView = layoutBinding.rv,
-                    items = vm.batches,
-                    previousPosInfo = oldRecyclerViewKeyHandler?.posInfo?.value,
-                    onClickHandler = vm::onClickItemPosition
-            )
         }
     }
 

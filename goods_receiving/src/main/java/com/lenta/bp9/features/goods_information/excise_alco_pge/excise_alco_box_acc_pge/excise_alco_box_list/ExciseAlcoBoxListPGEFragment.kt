@@ -11,31 +11,26 @@ import com.lenta.bp9.R
 import com.lenta.bp9.databinding.*
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.extentions.getAppComponent
-import com.lenta.shared.keys.KeyCode
-import com.lenta.shared.keys.OnKeyDownListener
-import com.lenta.shared.platform.fragment.CoreFragment
+import com.lenta.shared.platform.fragment.KeyDownCoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
-import com.lenta.shared.utilities.databinding.*
+import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
 
-class ExciseAlcoBoxListPGEFragment : CoreFragment<FragmentExciseAlcoBoxListPgeBinding, ExciseAlcoBoxListPGEViewModel>(),
+class ExciseAlcoBoxListPGEFragment : KeyDownCoreFragment<FragmentExciseAlcoBoxListPgeBinding, ExciseAlcoBoxListPGEViewModel>(),
         ViewPagerSettings,
         PageSelectionListener,
         ToolbarButtonsClickListener,
-        OnScanResultListener,
-        OnKeyDownListener {
+        OnScanResultListener {
 
     private var productInfo by state<TaskProductInfo?>(null)
     private var selectQualityCode by state<String?>(null)
-
-    private var notProcessedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
-    private var processedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_excise_alco_box_list_pge
 
@@ -93,32 +88,22 @@ class ExciseAlcoBoxListPGEFragment : CoreFragment<FragmentExciseAlcoBoxListPgeBi
                             }
                         }
 
-                        layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
+                        layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                                 layoutId = R.layout.item_tile_excis_alco_box_list_not_processed,
                                 itemId = BR.item,
-                                onAdapterItemBind = { binding: ItemTileExcisAlcoBoxListNotProcessedBinding, position: Int ->
+                                onItemBind = { binding: ItemTileExcisAlcoBoxListNotProcessedBinding, position: Int ->
                                     binding.tvItemNumber.tag = position
                                     binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                                     binding.selectedItem = if (vm.isSelectAll.value == true) true else vm.notProcessedSelectionsHelper.isSelected(position)
-                                    notProcessedRecyclerViewKeyHandler
-                                            ?.let {
-                                                binding.root.isSelected = it.isSelected(position)
-                                            }
                                 },
-                                onAdapterItemClicked = {position ->
-                                    notProcessedRecyclerViewKeyHandler?.onItemClicked(position)
-                                }
+                                keyHandlerId = SELECTED_PAGE_UNTREATED_BOXES,
+                                recyclerView = layoutBinding.rv,
+                                items = vm.countNotProcessed,
+                                onClickHandler = vm::onClickItemPosition
                         )
 
                         layoutBinding.vm = vm
                         layoutBinding.lifecycleOwner = viewLifecycleOwner
-
-                        notProcessedRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
-                                recyclerView = layoutBinding.rv,
-                                previousPosInfo = notProcessedRecyclerViewKeyHandler?.posInfo?.value,
-                                items = vm.countNotProcessed,
-                                onClickHandler = vm::onClickItemPosition
-                        )
 
                         return layoutBinding.root
                     }
@@ -137,32 +122,22 @@ class ExciseAlcoBoxListPGEFragment : CoreFragment<FragmentExciseAlcoBoxListPgeBi
                         }
                     }
 
-                    layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_excise_alco_box_list_processed,
                             itemId = BR.item,
-                            onAdapterItemBind = { binding: ItemTileExciseAlcoBoxListProcessedBinding, position: Int ->
+                            onItemBind = { binding: ItemTileExciseAlcoBoxListProcessedBinding, position: Int ->
                                 binding.tvItemNumber.tag = position
                                 binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                                 binding.selectedForDelete = vm.processedSelectionsHelper.isSelected(position)
-                                processedRecyclerViewKeyHandler
-                                        ?.let {
-                                            binding.root.isSelected = it.isSelected(position)
-                                        }
                             },
-                            onAdapterItemClicked = {position ->
-                                processedRecyclerViewKeyHandler?.onItemClicked(position)
-                            }
+                            keyHandlerId = SELECTED_PAGE_PROCESSED_BOXES,
+                            recyclerView = layoutBinding.rv,
+                            items = vm.countNotProcessed,
+                            onClickHandler = vm::onClickItemPosition
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-
-                    processedRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
-                            recyclerView = layoutBinding.rv,
-                            previousPosInfo = processedRecyclerViewKeyHandler?.posInfo?.value,
-                            items = vm.countNotProcessed,
-                            onClickHandler = vm::onClickItemPosition
-                    )
 
                     return layoutBinding.root
                 }
@@ -198,24 +173,6 @@ class ExciseAlcoBoxListPGEFragment : CoreFragment<FragmentExciseAlcoBoxListPgeBi
     override fun onResume() {
         super.onResume()
         vm.onResume()
-    }
-
-    override fun onKeyDown(keyCode: KeyCode): Boolean {
-        when (vm.selectedPage.value) {
-            SELECTED_PAGE_UNTREATED_BOXES -> notProcessedRecyclerViewKeyHandler
-            SELECTED_PAGE_PROCESSED_BOXES -> processedRecyclerViewKeyHandler
-            else -> null
-        }?.let {
-            if (!it.onKeyDown(keyCode)) {
-                keyCode.digit?.let { digit ->
-                    vm.onDigitPressed(digit)
-                    return true
-                }
-                return false
-            }
-            return true
-        }
-        return false
     }
 
     companion object {
