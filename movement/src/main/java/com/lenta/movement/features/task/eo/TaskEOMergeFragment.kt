@@ -164,39 +164,22 @@ class TaskEOMergeFragment : CoreFragment<FragmentTaskEoMergeBinding, TaskEOMerge
                             this.geRecyclerView.adapter?.notifyItemChanged(itemPosition)
                         }
 
-                        rvConfig = DataBindingRecyclerViewConfig(
+                        rvConfig = initRecycleAdapterDataBinding(
                                 layoutId = R.layout.layout_item_simple,
                                 itemId = BR.item,
-                                realisation = object : DataBindingAdapter<LayoutItemSimpleBinding> {
-                                    override fun onCreate(binding: LayoutItemSimpleBinding) {
-                                        // do nothing
-                                    }
-
-                                    override fun onBind(binding: LayoutItemSimpleBinding, position: Int) {
-                                        binding.tvCounter.tag = position
-                                        binding.tvCounter.setOnClickListener(onClickSelectionListener)
-                                        binding.selectedForDelete = vm.geSelectionHelper.isSelected(position)
-                                        oldRecyclerViewKeyHandler?.let {
-                                            binding.root.isSelected = it.isSelected(position)
-                                        }
-                                    }
+                                onItemBind = { binding: LayoutItemSimpleBinding, position: Int ->
+                                    binding.tvCounter.tag = position
+                                    binding.tvCounter.setOnClickListener(onClickSelectionListener)
+                                    binding.selectedForDelete = vm.geSelectionHelper.isSelected(position)
                                 },
-                                onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                                    vm.onClickGEListItem(position)
-                                }
+                                keyHandlerId = position,
+                                recyclerView = geRecyclerView,
+                                items = vm.geItemList,
+                                onClickHandler = vm::onClickGEListItem
                         )
 
                         dataBindingViewModel = vm
                         lifecycleOwner = viewLifecycleOwner
-
-                        lifecycleOwner?.let { lifecycleOwner ->
-                            geListRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                                    geRecyclerView,
-                                    vm.geItemList,
-                                    lifecycleOwner,
-                                    geListRecyclerViewKeyHandler?.posInfo?.value
-                            )
-                        }
                     }
 
                 }.root

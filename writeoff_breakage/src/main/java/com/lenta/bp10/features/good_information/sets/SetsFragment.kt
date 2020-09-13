@@ -13,7 +13,6 @@ import com.lenta.bp10.databinding.ItemTileSetsBinding
 import com.lenta.bp10.databinding.LayoutSetsComponentsBinding
 import com.lenta.bp10.databinding.LayoutSetsQuantityBinding
 import com.lenta.bp10.platform.extentions.getAppComponent
-import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.KeyDownCoreFragment
@@ -27,8 +26,7 @@ import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.state.state
 
-class SetsFragment :
-        KeyDownCoreFragment<FragmentSetsBinding, SetsViewModel>(),
+class SetsFragment : KeyDownCoreFragment<FragmentSetsBinding, SetsViewModel>(),
         ViewPagerSettings,
         PageSelectionListener,
         ToolbarButtonsClickListener,
@@ -174,16 +172,7 @@ class SetsFragment :
         vm.onResult(arguments.getFragmentResultCode())
     }
 
-    override fun onKeyDown(keyCode: KeyCode): Boolean {
-        if (vm.selectedPage.value == KEY_DOWN_SELECTED_PAGE) {
-            return oldRecyclerViewKeyHandler?.onKeyDown(keyCode) ?: false
-        }
-        return false
-    }
-
     companion object {
-        private const val KEY_DOWN_SELECTED_PAGE = 1
-
         fun newInstance(productInfo: ProductInfo, quantity: Double): SetsFragment {
             SetsFragment().let {
                 it.productInfo = productInfo

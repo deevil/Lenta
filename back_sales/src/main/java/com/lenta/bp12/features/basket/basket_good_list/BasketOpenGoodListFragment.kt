@@ -77,22 +77,18 @@ class BasketOpenGoodListFragment : CoreFragment<FragmentBasketOpenGoodListBindin
 
     private fun initBasketGoodList() {
         binding?.let { layoutBinding ->
-            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemGoodUi, ItemBasketGoodListGoodBinding>(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                     layoutId = R.layout.item_basket_good_list_good,
                     itemId = BR.item,
+                    onItemBind = { binding: ItemBasketGoodListGoodBinding, position: Int ->
+                        binding.tvItemNumber.tag = position
+                        binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                        binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
+                    },
                     recyclerView = layoutBinding.rv,
                     items = vm.goods,
                     onClickHandler = vm::onClickItemPosition
             )
-        }
-    }
-
-    override fun onAdapterBindHandler(bindItem: ViewBinding, position: Int) {
-        (bindItem as ItemBasketGoodListGoodBinding).apply {
-            tvItemNumber.tag = position
-            tvItemNumber.setOnClickListener(onClickSelectionListener)
-            selectedForDelete = vm.selectionsHelper.isSelected(position)
-            super.onAdapterBindHandler(bindItem, position)
         }
     }
 

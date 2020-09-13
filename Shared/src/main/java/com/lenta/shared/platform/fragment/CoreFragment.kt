@@ -46,8 +46,6 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
     private var timeForAllowHandleEnter = Long.MAX_VALUE
     private var mCount = 0
 
-    protected open var oldRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
-
     private val keyHandlers = mutableMapOf<Int, RecyclerViewKeyHandler<*>>()
 
     val coreComponent: CoreComponent by lazy {
@@ -209,31 +207,6 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
         return keyHandlers.getOrDefault(key, null)
     }
 
-    protected open fun <T : ViewDataBinding> oldInitRecycleAdapterDataBinding(
-            @LayoutRes layoutId: Int,
-            itemId: Int,
-            onAdapterItemCreate: ((T) -> Unit)? = null,
-            onAdapterItemBind: ((T, Int) -> Unit)? = ::onAdapterBindHandler,
-            onAdapterItemClicked: ((Int) -> Unit)? = ::onAdapterItemClickHandler
-    ): DataBindingRecyclerViewConfig<T> {
-        return DataBindingRecyclerViewConfig(
-                layoutId = layoutId,
-                itemId = itemId,
-                realisation = object : DataBindingAdapter<T> {
-                    override fun onCreate(binding: T) {
-                        onAdapterItemCreate?.invoke(binding)
-                    }
-
-                    override fun onBind(binding: T, position: Int) {
-                        onAdapterItemBind?.invoke(binding, position)
-                    }
-                },
-                onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                    onAdapterItemClicked?.invoke(position)
-                }
-        )
-    }
-
     protected open fun <Item : Any> initRecyclerViewKeyHandler(
             tabPosition: Int,
             recyclerView: RecyclerView,
@@ -255,39 +228,14 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
         return keyHandler
     }
 
-    protected open fun <Item : Any> oldInitRecyclerViewKeyHandler(
-            recyclerView: RecyclerView,
-            items: LiveData<List<Item>>,
-            previousPosInfo: PosInfo? = null,
-            onClickHandler: ((Int) -> Unit)? = null
-    ): RecyclerViewKeyHandler<Item> {
-        return RecyclerViewKeyHandler(
-                rv = recyclerView,
-                items = items,
-                lifecycleOwner = viewLifecycleOwner,
-                initPosInfo = previousPosInfo,
-                onClickPositionFunc = onClickHandler
-        )
-    }
-
     protected open fun onItemBindKeyHandlerHandler(bindItem: ViewBinding, position: Int, keyHandler: RecyclerViewKeyHandler<*>?) {
         keyHandler?.let {
             bindItem.root.isSelected = it.isSelected(position)
         }
     }
 
-    protected open fun onAdapterBindHandler(bindItem: ViewBinding, position: Int) {
-        oldRecyclerViewKeyHandler?.let {
-            bindItem.root.isSelected = it.isSelected(position)
-        }
-    }
-
     protected open fun onItemClickHandler(position: Int, keyHandler: RecyclerViewKeyHandler<*>?) {
         keyHandler?.onItemClicked(position)
-    }
-
-    protected open fun onAdapterItemClickHandler(position: Int) {
-        oldRecyclerViewKeyHandler?.onItemClicked(position)
     }
 
     protected fun getCurrentKeyHandler(): RecyclerViewKeyHandler<*>? {
@@ -306,11 +254,6 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
     abstract fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel)
 
     abstract fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel)
-
-    override fun onDestroyView() {
-        oldRecyclerViewKeyHandler?.onClickPositionFunc = null
-        super.onDestroyView()
-    }
 
     override fun onDestroy() {
         binding?.unbind()

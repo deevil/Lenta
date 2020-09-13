@@ -75,7 +75,6 @@ class ListOfDifferencesFragment : CoreFragment<FragmentListOfDifferencesBinding,
                         binding.tvItemNumber.tag = position
                         binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                         binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
-                        onAdapterBindHandler(binding, position)
                     },
                     recyclerView = layoutBinding.rv,
                     items = vm.goods,

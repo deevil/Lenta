@@ -73,15 +73,6 @@ class ExternalSupplyListFragment : KeyDownCoreFragment<FragmentExternalSupplyLis
         return false
     }
 
-    override fun onKeyDown(keyCode: KeyCode): Boolean {
-        return oldRecyclerViewKeyHandler?.onKeyDown(keyCode) ?: false
-    }
-
-    override fun onDestroyView() {
-        oldRecyclerViewKeyHandler?.onClickPositionFunc = null
-        super.onDestroyView()
-    }
-
     companion object {
         const val SCREEN_NUMBER = "62"
     }
