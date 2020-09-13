@@ -161,7 +161,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
         val isEnabled = it?.first ?: false
         val position = it?.second ?: DEFAULT_POSITION
 
-        isEnabled && position > DEFAULT_POSITION || !isEnabled && position == 0
+        (isEnabled && position > DEFAULT_POSITION) || (!isEnabled && position == 0)
     }
 
     /**

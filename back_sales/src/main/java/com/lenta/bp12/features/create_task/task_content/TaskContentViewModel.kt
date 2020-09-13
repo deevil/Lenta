@@ -138,18 +138,21 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     val wholesaleBaskets by lazy {
-        task.mapSkipNulls { task ->
-            task.baskets.reversed().mapIndexed { index, basket ->
-                val position = task.baskets.size - index
-                ItemWholesaleBasketUi(
-                        basket = basket,
-                        position = "$position",
-                        name = resource.basket("${basket.index}"),
-                        description = basket.getDescription(task.type.isDivBySection),
-                        quantity = "${task.getCountByBasket(basket)} ${Uom.ST.name}",
-                        isPrinted = basket.isPrinted,
-                        isLocked = basket.isLocked
-                )
+        task.switchMap { task ->
+            asyncLiveData<List<ItemWholesaleBasketUi>> {
+                val list = task.baskets.reversed().mapIndexed { index, basket ->
+                    val position = task.baskets.size - index
+                    ItemWholesaleBasketUi(
+                            basket = basket,
+                            position = "$position",
+                            name = resource.basket("${basket.index}"),
+                            description = basket.getDescription(task.type.isDivBySection),
+                            quantity = "${task.getCountByBasket(basket)} ${Uom.ST.name}",
+                            isPrinted = basket.isPrinted,
+                            isLocked = basket.isLocked
+                    )
+                }
+                emit(list)
             }
         }
     }
@@ -300,8 +303,7 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
         )).also {
             navigator.hideProgress()
         }.either(::handleFailure) { result ->
-            handleLoadGoodInfoResult(
-                    result = result)
+            handleLoadGoodInfoResult(result)
         }
     }
 
