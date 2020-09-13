@@ -88,8 +88,10 @@ fun ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST.getGoodKind(): GoodKind {
 fun GoodInfoResult.getControlType(): ControlType {
     val isVet = this.materialInfo?.isVet.isSapTrue()
     val isAlcohol = this.materialInfo?.isAlcohol.isSapTrue()
+    val isMark = this.getMarkType() != MarkType.UNKNOWN
 
     return when {
+        isMark -> ControlType.MARK
         !isAlcohol && !isVet -> ControlType.COMMON
         isAlcohol && !isVet -> ControlType.ALCOHOL
         else -> ControlType.UNKNOWN
