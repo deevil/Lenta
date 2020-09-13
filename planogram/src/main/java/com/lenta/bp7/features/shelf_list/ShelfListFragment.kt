@@ -9,14 +9,14 @@ import com.lenta.bp7.databinding.FragmentShelfListBinding
 import com.lenta.bp7.databinding.ItemShelfBinding
 import com.lenta.bp7.platform.extentions.getAppComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener
-import com.lenta.shared.platform.fragment.CoreFragment
+import com.lenta.shared.platform.fragment.KeyDownCoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.*
 
-class ShelfListFragment : CoreFragment<FragmentShelfListBinding, ShelfListViewModel>(),
+class ShelfListFragment : KeyDownCoreFragment<FragmentShelfListBinding, ShelfListViewModel>(),
         ToolbarButtonsClickListener, OnBackPresserListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_shelf_list
@@ -82,21 +82,16 @@ class ShelfListFragment : CoreFragment<FragmentShelfListBinding, ShelfListViewMo
                 }
             }
 
-            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                     layoutId = R.layout.item_shelf,
                     itemId = BR.shelf,
-                    onAdapterItemBind = { binding: ItemShelfBinding, position: Int ->
+                    onItemBind = { binding: ItemShelfBinding, position: Int ->
                         binding.tvItemNumber.tag = position
                         binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                         binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
-                        onAdapterBindHandler(binding, position)
-                    }
-            )
-
-            oldRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
+                    },
                     recyclerView = layoutBinding.rv,
                     items = vm.shelves,
-                    previousPosInfo = oldRecyclerViewKeyHandler?.posInfo?.value,
                     onClickHandler = vm::onClickItemPosition
             )
         }
@@ -106,4 +101,5 @@ class ShelfListFragment : CoreFragment<FragmentShelfListBinding, ShelfListViewMo
         vm.onClickBack()
         return false
     }
+
 }

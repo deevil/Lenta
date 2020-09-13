@@ -5,18 +5,19 @@ import android.view.View
 import androidx.lifecycle.Observer
 import com.lenta.bp7.BR
 import com.lenta.bp7.R
+import com.lenta.bp7.data.model.Segment
 import com.lenta.bp7.databinding.FragmentSegmentListBinding
 import com.lenta.bp7.databinding.ItemSegmentBinding
 import com.lenta.bp7.platform.extentions.getAppComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener
-import com.lenta.shared.platform.fragment.CoreFragment
+import com.lenta.shared.platform.fragment.KeyDownCoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.*
 
-class SegmentListFragment : CoreFragment<FragmentSegmentListBinding, SegmentListViewModel>(),
+class SegmentListFragment : KeyDownCoreFragment<FragmentSegmentListBinding, SegmentListViewModel>(),
         ToolbarButtonsClickListener, OnBackPresserListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_segment_list
@@ -68,15 +69,11 @@ class SegmentListFragment : CoreFragment<FragmentSegmentListBinding, SegmentList
 
     private fun initRvConfig() {
         binding?.let { layoutBinding ->
-            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding<ItemSegmentBinding>(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding<Segment, ItemSegmentBinding>(
                     layoutId = R.layout.item_segment,
-                    itemId = BR.segment
-            )
-
-            oldRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
+                    itemId = BR.segment,
                     recyclerView = layoutBinding.rv,
                     items = vm.segments,
-                    previousPosInfo = oldRecyclerViewKeyHandler?.posInfo?.value,
                     onClickHandler = vm::onClickItemPosition
             )
         }

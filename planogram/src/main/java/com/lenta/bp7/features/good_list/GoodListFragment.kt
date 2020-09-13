@@ -5,11 +5,12 @@ import android.view.View
 import androidx.lifecycle.Observer
 import com.lenta.bp7.BR
 import com.lenta.bp7.R
+import com.lenta.bp7.data.model.Good
 import com.lenta.bp7.databinding.FragmentGoodListBinding
 import com.lenta.bp7.databinding.ItemGoodBinding
 import com.lenta.bp7.platform.extentions.getAppComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener
-import com.lenta.shared.platform.fragment.CoreFragment
+import com.lenta.shared.platform.fragment.KeyDownCoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
@@ -19,7 +20,7 @@ import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel>(),
+class GoodListFragment : KeyDownCoreFragment<FragmentGoodListBinding, GoodListViewModel>(),
         ToolbarButtonsClickListener, OnBackPresserListener, OnScanResultListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_good_list
@@ -73,15 +74,11 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
 
     private fun initRvConfig() {
         binding?.let { layoutBinding ->
-            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding<ItemGoodBinding>(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding<Good, ItemGoodBinding>(
                     layoutId = R.layout.item_good,
-                    itemId = BR.good
-            )
-
-            oldRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
+                    itemId = BR.good,
                     recyclerView = layoutBinding.rv,
                     items = vm.goods,
-                    previousPosInfo = oldRecyclerViewKeyHandler?.posInfo?.value,
                     onClickHandler = vm::onClickItemPosition
             )
         }
@@ -99,4 +96,5 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
     companion object {
         private const val PAGE_NUMBER = "12"
     }
+
 }
