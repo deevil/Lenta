@@ -56,33 +56,19 @@ class TaskEOMergeFormedDocsFragment :
 
         binding?.apply {
             val vm = this@TaskEOMergeFormedDocsFragment.vm
-            rvConfig = oldInitRecycleAdapterDataBinding(
+            rvConfig = initRecycleAdapterDataBinding(
                     layoutId = R.layout.layout_item_docs_list,
                     itemId = BR.item,
-                    onAdapterItemBind = { binding : LayoutItemDocsListBinding, position ->
+                    onItemBind = { binding: LayoutItemDocsListBinding, position ->
                         binding.counterText.tag = position
                         binding.counterText.setOnClickListener(onClickSelectionListener)
                         vm.docsItemList.value?.let { list ->
                             binding.item = list[position]
                         }
                         binding.selectedToPrint = vm.docsSelectionHelper.isSelected(position)
-                        oldRecyclerViewKeyHandler?.let { handler ->
-                            binding.root.isSelected = handler.isSelected(position)
-                        }
                     },
-                    onAdapterItemClicked = { position ->
-                        oldRecyclerViewKeyHandler?.let { handler ->
-                            if (!handler.isSelected(position)) {
-                                handler.selectPosition(position)
-                            }
-                        }
-                    }
-            )
-
-            oldRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                     recyclerView = recyclerView,
-                    items = vm.docsItemList,
-                    previousPosInfo = oldRecyclerViewKeyHandler?.posInfo?.value
+                    items = vm.docsItemList
             )
         }
     }

@@ -8,10 +8,8 @@ import com.lenta.movement.databinding.FragmentTaskEoMergeGeInsidesBinding
 import com.lenta.movement.databinding.LayoutItemSimpleBinding
 import com.lenta.movement.models.CargoUnit
 import com.lenta.movement.platform.extensions.getAppComponent
-import com.lenta.shared.keys.KeyCode
-import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.activity.OnBackPresserListener
-import com.lenta.shared.platform.fragment.CoreFragment
+import com.lenta.shared.platform.fragment.KeyDownCoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
@@ -22,13 +20,12 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
 
 /** Список вложенных ЕО (при нажатии на элемент в списке ГЕ на экране Объединение ЕО (TaskEOMergeFragment)*/
-class TaskEOMergeGEInsidesFragment : CoreFragment<FragmentTaskEoMergeGeInsidesBinding, TaskEOMergeGEInsidesViewModel>(),
+class TaskEOMergeGEInsidesFragment : KeyDownCoreFragment<FragmentTaskEoMergeGeInsidesBinding, TaskEOMergeGEInsidesViewModel>(),
         ToolbarButtonsClickListener,
         OnBackPresserListener,
-        OnScanResultListener,
-        OnKeyDownListener {
+        OnScanResultListener {
 
-    private var ge : CargoUnit? by state(null)
+    private var ge: CargoUnit? by state(null)
 
     override fun getLayoutId() = R.layout.fragment_task_eo_merge_ge_insides
 
@@ -57,26 +54,17 @@ class TaskEOMergeGEInsidesFragment : CoreFragment<FragmentTaskEoMergeGeInsidesBi
 
         binding?.apply {
             val vm = this@TaskEOMergeGEInsidesFragment.vm
-            rvConfig = oldInitRecycleAdapterDataBinding(
+            rvConfig = initRecycleAdapterDataBinding(
                     layoutId = R.layout.layout_item_simple,
                     itemId = BR.item,
-                    onAdapterItemBind = { binding: LayoutItemSimpleBinding, position ->
+                    onItemBind = { binding: LayoutItemSimpleBinding, position ->
                         binding.tvCounter.tag = position
                         binding.tvCounter.setOnClickListener(onClickSelectionListener)
                         binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
-                        onAdapterBindHandler(
-                                bindItem = binding,
-                                position = position)
                     },
-                    onAdapterItemClicked = { position ->
-                        vm.onEoItemClickListener(position)
-                    }
-            )
-
-            oldRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
                     recyclerView = recyclerView,
                     items = this@TaskEOMergeGEInsidesFragment.vm.eoItemsList,
-                    previousPosInfo = oldRecyclerViewKeyHandler?.posInfo?.value
+                    onClickHandler = vm::onEoItemClickListener
             )
         }
     }
@@ -117,29 +105,15 @@ class TaskEOMergeGEInsidesFragment : CoreFragment<FragmentTaskEoMergeGeInsidesBi
         vm.onScanResult(data)
     }
 
-    override fun onKeyDown(keyCode: KeyCode): Boolean {
-        oldRecyclerViewKeyHandler?.let {
-            if (it.onKeyDown(keyCode)) {
-                keyCode.digit?.let { digit ->
-                    vm.onDigitPressed(digit)
-                    return true
-                }
-                return false
-            }
-            return true
-        }
-        return false
-    }
-
-
     companion object {
         private const val PAGE_NUMBER = "13/20"
 
-        fun newInstance(inputGe : CargoUnit): TaskEOMergeGEInsidesFragment {
+        fun newInstance(inputGe: CargoUnit): TaskEOMergeGEInsidesFragment {
             return TaskEOMergeGEInsidesFragment().apply {
-               ge = inputGe
+                ge = inputGe
             }
         }
     }
+
 }
 

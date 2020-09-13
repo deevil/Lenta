@@ -10,6 +10,7 @@ import com.lenta.movement.R
 import com.lenta.movement.databinding.FragmentTaskListBinding
 import com.lenta.movement.databinding.LayoutItemTaskListBinding
 import com.lenta.movement.databinding.LayoutTaskListToProcessTabBinding
+import com.lenta.movement.models.TaskListItem
 import com.lenta.movement.platform.extensions.getAppComponent
 import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.keys.OnKeyDownListener
@@ -84,28 +85,18 @@ class TaskListFragment : CoreFragment<FragmentTaskListBinding, TaskListViewModel
                 container,
                 false
         ).let { layoutBinding ->
-            layoutBinding.rvConfig = oldInitRecycleAdapterDataBinding(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding<TaskListItem, LayoutItemTaskListBinding>(
                     layoutId = R.layout.layout_item_task_list,
                     itemId = BR.item,
-                    onAdapterItemBind = { binding: LayoutItemTaskListBinding, position ->
-                        taskListRecyclerViewKeyHandler?.let {
-                            binding.root.isSelected = it.isSelected(position)
-                        }
-                    },
-                    onAdapterItemClicked = { position ->
-                        taskListRecyclerViewKeyHandler?.onItemClicked(position)
-                    }
+                    keyHandlerId = TaskListPage.TO_PROCESS.ordinal,
+                    recyclerView = layoutBinding.recyclerView,
+                    items = vm.taskItemList,
+                    onClickHandler = vm::onClickTaskListItem
             )
 
             layoutBinding.dataBindingViewModel = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-            taskListRecyclerViewKeyHandler = oldInitRecyclerViewKeyHandler(
-                    recyclerView = layoutBinding.recyclerView,
-                    items = vm.taskItemList,
-                    previousPosInfo = taskListRecyclerViewKeyHandler?.posInfo?.value,
-                    onClickHandler = vm::onClickTaskListItem
-            )
             layoutBinding.root
         }
     }
