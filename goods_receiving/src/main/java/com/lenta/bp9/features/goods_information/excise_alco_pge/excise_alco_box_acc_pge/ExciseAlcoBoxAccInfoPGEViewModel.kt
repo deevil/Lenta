@@ -27,7 +27,6 @@ import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import com.mobrun.plugin.api.HyperHive
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ExciseAlcoBoxAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListener {

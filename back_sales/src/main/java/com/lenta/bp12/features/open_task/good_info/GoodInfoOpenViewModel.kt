@@ -547,8 +547,8 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
 
     private suspend fun handleUnknownMark(number: String, result: ScanInfoResult) {
         when (number.length) {
-            Constants.MARK_150 -> navigator.openAlertScreen(result.statusDescription)
-            Constants.MARK_68 -> {
+            Constants.EXCISE_MARK_150 -> navigator.openAlertScreen(result.statusDescription)
+            Constants.EXCISE_MARK_68 -> {
                 val alcoCodeInfoList = database.getAlcoCodeInfoList(number.extractAlcoCode())
 
                 if (alcoCodeInfoList.isEmpty()) {
@@ -572,12 +572,12 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
         quantityField.value = DEFAULT_QUANTITY_STRING_FOR_EAN
 
         when (originalSearchNumber.length) {
-            Constants.MARK_150 -> {
+            Constants.EXCISE_MARK_150 -> {
                 screenStatus.value = ScreenStatus.MARK_150
                 updateProducers(result.producers.toMutableList())
                 date.value = result.producedDate
             }
-            Constants.MARK_68 -> {
+            Constants.EXCISE_MARK_68 -> {
                 screenStatus.value = ScreenStatus.MARK_68
             }
         }

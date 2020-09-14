@@ -3,6 +3,8 @@ package com.lenta.shared.fmp.resources.dao_ext
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.ProductType
+import com.lenta.shared.models.core.getMatrixType
+import com.lenta.shared.models.core.getProductType
 import com.lenta.shared.requests.combined.scan_info.pojo.ProductInfo
 
 fun ZfmpUtz48V001.getProductInfo(material: String): List<ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST> {
@@ -30,9 +32,10 @@ fun ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST.toMaterialInfo(): ProductInfo {
 }
 
 fun ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST.getMatrixType(): MatrixType {
-    return com.lenta.shared.models.core.getMatrixType(matrType)
+    return getMatrixType(matrType)
 }
 
 fun ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST.getProductType(): ProductType {
-    return com.lenta.shared.models.core.getProductType(isAlco.isNotEmpty(), isExc.isNotEmpty())
+    val isMarkedGood = markType.isNotEmpty() || isMark.isNotEmpty()
+    return getProductType(isAlco.isNotEmpty(), isExc.isNotEmpty(), isMarkedGood)
 }

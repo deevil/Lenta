@@ -28,10 +28,7 @@
         <!-- Список элементов -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginBottom="8dp"
-            android:layout_weight="1"
+            style="@style/RecyclerWithSomethingBellowStyle"
             app:items="@{vm.filteredGoods}"
             app:rv_config="@{rvConfig}"
             tools:listitem="@layout/item_tile_goods" />

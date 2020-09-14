@@ -1,11 +1,11 @@
 package com.lenta.bp10.models.task
 
-import com.lenta.bp10.fmp.resources.send_report.ExciseStamp
-import com.lenta.bp10.fmp.resources.send_report.MaterialNumber
-import com.lenta.bp10.fmp.resources.send_report.WriteOffReport
 import com.lenta.bp10.models.repositories.ITaskRepository
 import com.lenta.bp10.requests.network.PrintProduct
 import com.lenta.bp10.requests.network.PrintTask
+import com.lenta.bp10.requests.network.SendWriteOffDataParams
+import com.lenta.bp10.requests.network.pojo.ExciseStamp
+import com.lenta.bp10.requests.network.pojo.MaterialNumber
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.models.core.ProductType
 
@@ -41,6 +41,12 @@ class WriteOffTask(val taskDescription: TaskDescription, internal val taskReposi
             ProcessExciseAlcoProductService(taskDescription, taskRepository, product)
         } else null
 
+    }
+
+    fun processMarkedGoodProduct(product: ProductInfo): ProcessMarkedGoodProductService? {
+        return if (product.type == ProductType.Marked) {
+            ProcessMarkedGoodProductService(taskDescription, taskRepository, product)
+        } else null
     }
 
     fun getProcessedProducts(): List<ProductInfo> {
@@ -118,9 +124,9 @@ private fun WriteOffTask.getProductsPrint(): List<PrintProduct> {
 }
 
 
-fun WriteOffTask.getReport(): WriteOffReport {
+fun WriteOffTask.getReport(): SendWriteOffDataParams {
     with(taskDescription) {
-        return WriteOffReport(
+        return SendWriteOffDataParams(
                 perNo = perNo,
                 printer = printer,
                 taskName = taskName,
@@ -141,6 +147,7 @@ fun WriteOffTask.getStamps(): List<ExciseStamp> {
                 stamp = it.code,
                 matnrOsn = it.setMaterialNumber,
                 writeOffCause = it.writeOffReason,
+                packNumber = it.packNumber,
                 reg = if (it.isBadStamp) "X" else ""
         )
     }

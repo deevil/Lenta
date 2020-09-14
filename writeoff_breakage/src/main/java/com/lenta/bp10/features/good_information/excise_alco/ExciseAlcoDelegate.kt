@@ -10,41 +10,45 @@ import com.lenta.bp10.requests.network.ExciseStampRestInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.ProductInfo
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.coroutines.CoroutineContext
 import kotlin.reflect.KFunction1
 
 class ExciseAlcoDelegate @Inject constructor(
         private val screenNavigator: IScreenNavigator,
         private val productInfoDbRequest: ProductInfoDbRequest,
         private val exciseStampNetRequest: ExciseStampNetRequest
-) {
+) : CoroutineScope {
 
+    private val job = SupervisorJob()
 
-    private lateinit var viewModelScope: () -> CoroutineScope
+    override val coroutineContext: CoroutineContext = Dispatchers.Main + job
+
     private lateinit var tkNumber: String
+
     private lateinit var materialNumber: String
+
     private lateinit var handleNewStamp: KFunction1<Boolean, Unit>
 
-    fun init(viewModelScope: () -> CoroutineScope,
-             handleNewStamp: KFunction1<Boolean, Unit>,
+    fun init(handleNewStamp: KFunction1<Boolean, Unit>,
              materialNumber: String,
              tkNumber: String) {
-        this.viewModelScope = viewModelScope
+
         this.handleNewStamp = handleNewStamp
         this.tkNumber = tkNumber
         this.materialNumber = materialNumber
     }
 
-
     fun searchExciseStamp(code: String) {
-
         if (!(code.length == 68 || code.length == 150)) {
             screenNavigator.openAlertNotValidFormatStamp()
             return
         }
 
-        viewModelScope().launch {
+        launch {
             screenNavigator.showProgress(exciseStampNetRequest)
 
             exciseStampNetRequest(ExciseStampParams(
@@ -79,25 +83,21 @@ class ExciseAlcoDelegate @Inject constructor(
                 screenNavigator.openStampAnotherMarketAlert(requestCodeAddBadStamp)
             }
             1 -> {
-                viewModelScope().launch {
+                launch {
                     screenNavigator.showProgress(productInfoDbRequest)
                     productInfoDbRequest(ProductInfoRequestParams(number = exciseStampRestInfo.matNr))
                             .either(::handleFailure, ::openAlertForAnotherProductStamp)
+
                     screenNavigator.hideProgress()
-
                 }
-
             }
             else -> screenNavigator.openInfoScreen(serverDescription)
         }
-
     }
 
     private fun handleFailure(failure: Failure) {
         screenNavigator.openAlertScreen(failure)
-
     }
-
 
     private fun openAlertForAnotherProductStamp(productInfo: ProductInfo) {
         screenNavigator.openAnotherProductStampAlert(productName = productInfo.description)
