@@ -2,12 +2,8 @@ package com.lenta.bp16.features.material_remake_details.add_attribute
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.switchMap
-import com.lenta.bp16.features.ingredient_details.add_attribute.IngredientAttributeViewModel
 import com.lenta.bp16.model.AddAttributeProdInfo
 import com.lenta.bp16.model.IAttributeManager
-import com.lenta.bp16.model.ProducerDataInfo
-import com.lenta.bp16.model.ZPartDataInfo
-import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
 import com.lenta.bp16.model.ingredients.ui.MaterialIngredientDataInfoUI
 import com.lenta.bp16.model.ingredients.ui.ProducerDataInfoUI
 import com.lenta.bp16.model.ingredients.ui.ZPartDataInfoUI

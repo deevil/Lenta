@@ -4,9 +4,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.switchMap
 import com.lenta.bp16.model.AddAttributeProdInfo
 import com.lenta.bp16.model.IAttributeManager
-import com.lenta.bp16.model.ProducerDataInfo
-import com.lenta.bp16.model.ZPartDataInfo
-import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
 import com.lenta.bp16.model.ingredients.ui.OrderIngredientDataInfoUI
 import com.lenta.bp16.model.ingredients.ui.ProducerDataInfoUI
 import com.lenta.bp16.model.ingredients.ui.ZPartDataInfoUI
