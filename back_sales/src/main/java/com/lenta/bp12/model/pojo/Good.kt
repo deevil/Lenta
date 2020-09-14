@@ -10,7 +10,7 @@ import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.sumList
 
 /**
- * Родительский класс для всех товаров, Basket хранит именно его
+ * Товар
  * Методы для взаимодействия со списками находятся в файле GoodExt:
  * @see com.lenta.bp12.model.pojo.extentions.addPosition
  * @see com.lenta.bp12.model.pojo.extentions.addPart

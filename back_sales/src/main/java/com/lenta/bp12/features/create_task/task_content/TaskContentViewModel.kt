@@ -205,6 +205,7 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 funcForMark = ::checkMark,
                 funcForNotValidBarFormat = navigator::showIncorrectEanFormat
         )
+        numberField.value = ""
     }
 
     private fun checkMark(number: String) {

@@ -38,6 +38,15 @@ enum class ControlType(val code: String, val description: String) {
                 else -> UNKNOWN
             }
         }
+
+        fun ControlType.codeInRus(): String {
+            return when (this) {
+                COMMON -> "О"
+                ALCOHOL -> "А"
+                MARK -> "М"
+                else -> ""
+            }
+        }
     }
 }
 

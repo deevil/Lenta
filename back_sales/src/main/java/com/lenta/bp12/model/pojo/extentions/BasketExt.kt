@@ -1,5 +1,6 @@
 package com.lenta.bp12.model.pojo.extentions
 
+import com.lenta.bp12.model.ControlType.Companion.codeInRus
 import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.shared.utilities.Logg
@@ -37,11 +38,16 @@ fun Basket.getDescription(isDivBySection: Boolean): String {
         val goodTypeBlock = if (goodType.isNullOrEmpty()) "" else "$goodType/"
         append(goodTypeBlock)
 
-        append("${control?.code}")
+        append("${control?.codeInRus()}")
 
         val providerBlock = if (provider?.code.isNullOrEmpty()) "" else "/ПП-${provider?.code}"
 
         append(providerBlock)
+
+        val abbreviation = markTypeGroup?.abbreviation
+        val markTypeGroupBlock = if (abbreviation.isNullOrEmpty()) "" else "/$abbreviation"
+
+        append(markTypeGroupBlock)
     }
 }
 
