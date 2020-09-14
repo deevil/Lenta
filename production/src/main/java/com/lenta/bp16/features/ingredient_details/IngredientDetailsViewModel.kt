@@ -104,7 +104,6 @@ class IngredientDetailsViewModel : CoreViewModel(), IZpartVisibleConditions {
         MutableLiveData<List<String>>()
     }
 
-
     val selectedProducerPosition = MutableLiveData(0)
 
     val productionDateField by unsafeLazy {
@@ -205,13 +204,16 @@ class IngredientDetailsViewModel : CoreViewModel(), IZpartVisibleConditions {
 
     private fun checkProducerInfo() {
         /** Если был передан производитель из AddAttributeFragment, то заполнять данными из нее*/
-        if (!addedAttribute.value.isNullOrEmpty()) {
-            addedAttribute.value?.let { addAttributeDataInfoList ->
-                val producerNameList = addAttributeDataInfoList.map { it.name }
-                producerNameField.value = producerNameList
+        val addedAttributeIsNotEmpty = !addedAttribute.value.isNullOrEmpty()
+        val orderIngredientIsVet = !orderIngredient.value?.isVet.isNullOrBlank()
+        when {
+            addedAttributeIsNotEmpty -> {
+                addedAttribute.value?.let { addAttributeDataInfoList ->
+                    val producerNameList = addAttributeDataInfoList.map { it.name }
+                    producerNameField.value = producerNameList
+                }
             }
-        } else {
-            if (!orderIngredient.value?.isVet.isNullOrBlank()) {
+            orderIngredientIsVet -> {
                 mercuryDataInfo.value?.let { mercuryDataInfoList ->
                     val producerNameList = mercuryDataInfoList.map { it.prodName }.toMutableList()
                     if (producerNameList.size > 1) {
@@ -219,7 +221,8 @@ class IngredientDetailsViewModel : CoreViewModel(), IZpartVisibleConditions {
                     }
                     producerNameField.value = producerNameList
                 }
-            } else {
+            }
+            else -> {
                 zPartDataInfo.value?.let { zpartDataInfoList ->
                     val producerNameList = zpartDataInfoList.map { it.prodName }.toMutableList()
                     if (producerNameList.size > 1) {
@@ -233,23 +236,27 @@ class IngredientDetailsViewModel : CoreViewModel(), IZpartVisibleConditions {
 
     private fun checkDataInfo() {
         /** Если была передана дата из AddAttributeFragment, то заполнять данными из нее*/
-        if (!addedAttribute.value.isNullOrEmpty()) {
-            addedAttribute.value?.let {
-                val productionDate = it.map { it.date }
-                productionDateField.value = productionDate
+        val addedAttributeIsNotEmpty = !addedAttribute.value.isNullOrEmpty()
+        val orderIngredientIsVet = !orderIngredient.value?.isVet.isNullOrBlank()
+        when {
+            addedAttributeIsNotEmpty -> {
+                addedAttribute.value?.let { addAttributeDataInfoList ->
+                    val productionDate = addAttributeDataInfoList.map { it.date }
+                    productionDateField.value = productionDate
+                }
             }
-        } else {
-            if (!orderIngredient.value?.isVet.isNullOrBlank()) {
-                mercuryDataInfo.value?.let {
-                    val productionDate = it.map { it.prodDate }.toMutableList()
+            orderIngredientIsVet -> {
+                mercuryDataInfo.value?.let { mercuryDataInfoList ->
+                    val productionDate = mercuryDataInfoList.map { it.prodDate }.toMutableList()
                     if (productionDate.size > 1) {
                         productionDate.add(0, Constants.CHOOSE_PRODUCTION_DATE)
                     }
                     productionDateField.value = productionDate
                 }
-            } else {
-                zPartDataInfo.value?.let {
-                    val productionDate = it.map { it.prodDate }.toMutableList()
+            }
+            else -> {
+                zPartDataInfo.value?.let { zpartDataInfoList ->
+                    val productionDate = zpartDataInfoList.map { it.prodDate }.toMutableList()
                     if (productionDate.size > 1) {
                         productionDate.add(0, Constants.CHOOSE_PRODUCTION_DATE)
                     }

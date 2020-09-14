@@ -217,23 +217,27 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
 
     private fun checkProducerInfo() {
         /** Если был передан производитель из AddAttributeFragment, то заполнять данными из нее*/
-        if (!addedAttribute.value.isNullOrEmpty()) {
-            addedAttribute.value?.let {
-                val producerNameList = it.map { it.name }
-                producerNameField.value = producerNameList
+        val addedAttributeIsNotEmpty = !addedAttribute.value.isNullOrEmpty()
+        val orderIngredientIsVet = !materialIngredient.value?.isVet.isNullOrBlank()
+        when {
+            addedAttributeIsNotEmpty -> {
+                addedAttribute.value?.let { addAttributeDataInfoList ->
+                    val producerNameList = addAttributeDataInfoList.map { it.name }
+                    producerNameField.value = producerNameList
+                }
             }
-        } else {
-            if (!materialIngredient.value?.isVet.isNullOrBlank()) {
-                mercuryDataInfo.value?.let {
-                    val producerNameList = it.map { it.prodName }.toMutableList()
+            orderIngredientIsVet -> {
+                mercuryDataInfo.value?.let { mercuryDataInfoList ->
+                    val producerNameList = mercuryDataInfoList.map { it.prodName }.toMutableList()
                     if (producerNameList.size > 1) {
                         producerNameList.add(0, Constants.CHOOSE_PRODUCER)
                     }
                     producerNameField.value = producerNameList
                 }
-            } else {
-                zPartDataInfo.value?.let {
-                    val producerNameList = it.map { it.prodName }.toMutableList()
+            }
+            else -> {
+                zPartDataInfo.value?.let { zpartDataInfoList ->
+                    val producerNameList = zpartDataInfoList.map { it.prodName }.toMutableList()
                     if (producerNameList.size > 1) {
                         producerNameList.add(0, Constants.CHOOSE_PRODUCER)
                     }
@@ -245,13 +249,16 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
 
     private fun checkDataInfo() {
         /** Если была передана дата из AddAttributeFragment, то заполнять данными из нее*/
-        if (!addedAttribute.value.isNullOrEmpty()) {
-            addedAttribute.value?.let { addAttributeDataInfoList ->
-                val productionDate = addAttributeDataInfoList.map { it.date }
-                productionDateField.value = productionDate
+        val addedAttributeIsNotEmpty = !addedAttribute.value.isNullOrEmpty()
+        val orderIngredientIsVet = !materialIngredient.value?.isVet.isNullOrBlank()
+        when {
+            addedAttributeIsNotEmpty -> {
+                addedAttribute.value?.let { addAttributeDataInfoList ->
+                    val productionDate = addAttributeDataInfoList.map { it.date }
+                    productionDateField.value = productionDate
+                }
             }
-        } else {
-            if (!materialIngredient.value?.isVet.isNullOrBlank()) {
+            orderIngredientIsVet -> {
                 mercuryDataInfo.value?.let { mercuryDataInfoList ->
                     val productionDate = mercuryDataInfoList.map { it.prodDate }.toMutableList()
                     if (productionDate.size > 1) {
@@ -259,7 +266,8 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
                     }
                     productionDateField.value = productionDate
                 }
-            } else {
+            }
+            else -> {
                 zPartDataInfo.value?.let { zpartDataInfoList ->
                     val productionDate = zpartDataInfoList.map { it.prodDate }.toMutableList()
                     if (productionDate.size > 1) {
