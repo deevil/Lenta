@@ -77,12 +77,8 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@string/storage"
-                    android:textColor="@color/color_text_title_header" />
-
-                <TextView
-                    style="@style/CellTextStyle"
-                    android:text="@string/from"
+                    android:text="@string/picking_warehouse"
+                    android:singleLine="false"
                     android:textColor="@color/color_text_title_header" />
 
             </LinearLayout>
@@ -116,6 +112,7 @@
                     android:layout_height="match_parent"
                     app:items="@{vm.returnReasonList}"
                     app:position="@={vm.returnReasonPosition}"
+                    android:visibility="@={!vm.isWholeSaleTask}"
                     tools:entries="@array/test_list" />
 
             </LinearLayout>

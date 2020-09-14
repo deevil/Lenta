@@ -12,10 +12,13 @@ import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.unsafeLazy
+import com.lenta.shared.utilities.orIfNull
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -36,7 +39,6 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
 
     @Inject
     lateinit var resource: IResourceManager
-
 
     /**
     Переменные
@@ -124,6 +126,10 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
         attributes?.contains("N") == true
     }
 
+    val isWholeSaleTask by unsafeLazy {
+        selectedType.value?.isWholesaleType()
+    }
+
     /**
     Кнопки нижнего тулбара
      */
@@ -157,9 +163,14 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
         launchUITryCatch {
             types.value?.let { types ->
                 taskTypePosition.value?.let { position ->
-                    storage.value = database.getStorageList(types[position].code)
-                    reasons.value = database.getReturnReasonList(types[position].code)
-                    taskAttributes.value = database.getTaskAttributes(types[position].code)
+                    types.getOrNull(position)?.let {
+                        storage.value = database.getStorageList(it.code)
+                        taskAttributes.value = database.getTaskAttributes(it.code)
+
+                        if (isWholeSaleTask == false) {
+                            reasons.value = database.getReturnReasonList(it.code)
+                        }
+                    }
                 }
             }
         }
@@ -170,17 +181,29 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
      */
 
     fun onClickNext() {
-        val task = TaskCreate(
-                name = taskName.value.orEmpty(),
-                type = types.value!![taskTypePosition.value!!],
-                storage = storage.value!![storagePosition.value!!],
-                reason = reasons.value!![returnReasonPosition.value!!]
-        )
+        taskTypePosition.value?.let { taskTypePositionValue ->
+            storagePosition.value?.let { storagePositionValue ->
+                val reason = returnReasonPosition.value?.takeIf{ isWholeSaleTask == false }?.let{ returnReasonPositionValue ->
+                    reasons.value?.getOrNull(returnReasonPositionValue)
+                }
+                val task = TaskCreate(
+                        name = taskName.value.orEmpty(),
+                        type = types.value?.getOrNull(taskTypePositionValue)
+                                ?: TaskType.empty(),
+                        storage = storage.value?.getOrNull(storagePositionValue).orEmpty(),
+                        reason = reason
+                )
+                manager.updateCurrentTask(task)
+                manager.isWholesaleTaskType = (isWholeSaleTask == true)
 
-        manager.updateCurrentTask(task)
-        manager.isWholesaleTaskType = task.type.isWholesaleType()
+                navigator.openTaskCompositionScreen()
 
-        navigator.openTaskCompositionScreen()
+            }.orIfNull { "storagePosition null" }
+        }.orIfNull {
+            Logg.e { "taskTypePosition null" }
+        }
+
+
     }
 
 }
