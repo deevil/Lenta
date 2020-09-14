@@ -75,6 +75,8 @@
             app:maxLengthForScanProtect="@{6}"
             android:text="@={vm.count}"
             app:digitsForUom="@{vm.productInfo.uom}"
+            app:cursorToLastPos="@{false}"
+            app:requestFocus="@{vm.requestFocusToCount}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/div_vert1"
             app:layout_constraintTop_toTopOf="@+id/div_vert1"

@@ -29,9 +29,9 @@ import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import com.mobrun.plugin.api.HyperHive
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import javax.inject.Inject
+
 
 class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListener {
 
@@ -88,8 +88,8 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
     val isGradeControl: MutableLiveData<Boolean> = MutableLiveData(false)
     val enteredProcessingUnitNumber: MutableLiveData<String> = MutableLiveData("")
     private val scannedStampCode: MutableLiveData<String> = MutableLiveData("")
-
     val count: MutableLiveData<String> = MutableLiveData("0")
+    val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData(false)
     private val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
     private val countExciseStampsScanned: MutableLiveData<Int> = MutableLiveData(0)
     private val isExciseStampSurplus: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -245,7 +245,6 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
                         screenNavigator.goBackAndShowAlertWrongProductType()
                         return@launchUITryCatch
                     }
-
             searchProductDelegate.init(viewModelScope = this@ExciseAlcoStampAccInfoPGEViewModel::viewModelScope,
                     scanResultHandler = this@ExciseAlcoStampAccInfoPGEViewModel::handleProductSearchResult)
 
@@ -264,6 +263,7 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
             count.value = count.value //почему-то без этой строки не выводится в tvBoxControlVal Не требуется, если включить дебаггер, то все отрабатывается, а без дебаггера пришлось дописать эту строчку
         }
     }
+
 
     private fun handleProductSearchResult(@Suppress("UNUSED_PARAMETER") scanInfoResult: ScanInfoResult?): Boolean {
         screenNavigator.goBack()
