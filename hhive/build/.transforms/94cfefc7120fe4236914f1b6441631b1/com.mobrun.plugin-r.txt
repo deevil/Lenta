@@ -1,0 +1,2 @@
+com.mobrun.plugin
+string app_name

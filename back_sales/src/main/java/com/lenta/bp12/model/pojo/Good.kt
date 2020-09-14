@@ -99,6 +99,16 @@ class Good(
     fun isTobaccoAndFoundGoodHasDifferentMrc(other: Good) =
             this.isTobacco() && maxRetailPrice.isNotEmpty() && maxRetailPrice != other.maxRetailPrice
 
+    private fun isQuantityActual(): Boolean {
+        return if (this.planQuantity > 0.0) {
+            this.planQuantity == this.getTotalQuantity()
+        } else {
+            this.getTotalQuantity() > 0.0
+        }
+    }
+
+    fun isNotDeletedAndQuantityNotActual() = !this.isDeleted && !isQuantityActual()
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

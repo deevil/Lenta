@@ -87,4 +87,5 @@ fun Good.deletePositionsFromTask(goodFromBasket: Good, basketToGetQuantity: Bask
     }
 }
 
+
 fun Good.removeMarks(other: List<Mark>) = this.marks.removeAll(other)
