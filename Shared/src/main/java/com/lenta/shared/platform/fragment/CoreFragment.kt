@@ -204,7 +204,11 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
     }
 
     private fun getKeyHandler(key: Int): RecyclerViewKeyHandler<*>? {
-        return keyHandlers.getOrDefault(key, null)
+        return try {
+            keyHandlers[key]
+        } catch (e: Exception) {
+            null
+        }
     }
 
     protected open fun <Item : Any> initRecyclerViewKeyHandler(
