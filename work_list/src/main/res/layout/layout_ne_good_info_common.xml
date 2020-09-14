@@ -26,9 +26,7 @@
             <LinearLayout
                 style="@style/LinearRowStyle">
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <TextView
                         style="@style/CellTextStyle"
@@ -39,9 +37,7 @@
                 <View
                     style="@style/VerticalDivider" />
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <com.lenta.shared.view.EditTextWithSuffix
                         style="@style/CellEditTextStyle"
@@ -65,9 +61,7 @@
             <LinearLayout
                 style="@style/LinearRowStyle">
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <TextView
                         style="@style/CellTextStyle"
@@ -78,9 +72,7 @@
                 <View
                     style="@style/VerticalDivider" />
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <TextView
                         style="@style/CellTextStyle"
@@ -99,9 +91,7 @@
             <LinearLayout
                 style="@style/LinearRowStyle">
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <TextView
                         style="@style/CellTextStyle"
@@ -112,9 +102,7 @@
                 <View
                     style="@style/VerticalDivider" />
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <TextView
                         android:id="@+id/tv_removed_good"
@@ -134,9 +122,7 @@
             <LinearLayout
                 style="@style/LinearRowStyle">
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <TextView
                         style="@style/CellTextStyle"
@@ -147,9 +133,7 @@
                 <View
                     style="@style/VerticalDivider" />
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <TextView
                         android:id="@+id/tv_price_with_dk"

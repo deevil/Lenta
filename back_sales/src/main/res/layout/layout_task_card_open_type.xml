@@ -19,9 +19,7 @@
         <!-- Тип задания -->
         <LinearLayout style="@style/LinearRowStyle">
 
-            <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="1">
+            <LinearLayout style="@style/LinearCellStyle">
 
                 <EditText
                     style="@style/CellEditTextStyle"
@@ -39,9 +37,7 @@
         <!-- Наименование задания -->
         <LinearLayout style="@style/LinearRowStyle">
 
-            <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="1">
+            <LinearLayout style="@style/LinearCellStyle">
 
                 <EditText
                     style="@style/CellEditTextStyle"
@@ -58,9 +54,7 @@
         <!-- Причина для возврата -->
         <LinearLayout style="@style/LinearRowStyle">
 
-            <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="1">
+            <LinearLayout style="@style/LinearCellStyle">
 
                 <TextView
                     style="@style/CellTextStyle"
@@ -77,9 +71,7 @@
         <!-- Склад -->
         <LinearLayout style="@style/LinearRowStyle">
 
-            <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="1">
+            <LinearLayout style="@style/LinearCellStyle">
 
                 <TextView
                     style="@style/CellTextStyle"
@@ -91,9 +83,7 @@
 
             <View style="@style/VerticalDivider" />
 
-            <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="1">
+            <LinearLayout style="@style/LinearCellStyle">
 
                 <EditText
                     style="@style/CellEditTextStyle"
@@ -111,9 +101,7 @@
         <!-- Поставщик -->
         <LinearLayout style="@style/LinearRowStyle">
 
-            <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="1">
+            <LinearLayout style="@style/LinearCellStyle">
 
                 <EditText
                     style="@style/CellEditTextStyle"

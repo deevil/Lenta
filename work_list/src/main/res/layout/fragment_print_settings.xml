@@ -26,9 +26,7 @@
             <!-- Количество копий -->
             <LinearLayout style="@style/LinearRowStyle">
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <TextView
                         style="@style/CellTextStyle"
@@ -83,9 +81,7 @@
             <!-- Тип принтера -->
             <LinearLayout style="@style/LinearRowStyle">
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <TextView
                         style="@style/CellTextStyle"
@@ -115,9 +111,7 @@
             <!-- Тип ценника -->
             <LinearLayout style="@style/LinearRowStyle">
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <TextView
                         style="@style/CellTextStyle"
@@ -155,9 +149,7 @@
 
                 <LinearLayout style="@style/LinearRowStyle">
 
-                    <LinearLayout
-                        style="@style/LinearCellStyle"
-                        android:layout_weight="1">
+                    <LinearLayout style="@style/LinearCellStyle">
 
                         <TextView
                             style="@style/CellTextStyle"

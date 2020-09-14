@@ -24,9 +24,7 @@
             <!-- Количество -->
             <LinearLayout style="@style/LinearRowStyle">
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <TextView
                         style="@style/CellTextStyle"
@@ -41,9 +39,7 @@
 
                 <View style="@style/VerticalDivider" />
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <com.lenta.shared.view.EditTextWithSuffix
                         style="@style/CellEditTextStyle"
@@ -65,9 +61,7 @@
             <!-- Комментарий -->
             <LinearLayout style="@style/LinearRowStyle">
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <TextView
                         style="@style/CellTextStyle"
@@ -77,9 +71,7 @@
 
                 <View style="@style/VerticalDivider" />
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <com.lenta.shared.view.ClickableSpinner
                         android:id="@+id/spin_select_comment"
@@ -102,9 +94,7 @@
                 style="@style/LinearRowStyle"
                 android:visibility="@{vm.good.notMarkedGood}">
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <com.lenta.shared.view.ClickableSpinner
                         style="@style/CellSpinnerStyle"
@@ -117,9 +107,7 @@
 
                 <View style="@style/VerticalDivider" />
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -212,9 +200,7 @@
                 style="@style/LinearRowStyle"
                 android:visibility="@{!vm.good.notMarkedGood}">
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <TextView
                         style="@style/CellTextStyle"
@@ -224,9 +210,7 @@
 
                 <View style="@style/VerticalDivider" />
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <TextView
                         style="@style/CellTextStyle"
@@ -245,9 +229,7 @@
             <!-- Оставшийся срок годности -->
             <LinearLayout style="@style/LinearRowStyle">
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <TextView
                         style="@style/CellTextStyle"
@@ -261,9 +243,7 @@
 
                 <View style="@style/VerticalDivider" />
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <TextView
                         style="@style/CellTextStyle"
@@ -285,9 +265,7 @@
             <!-- Штрихкод -->
             <LinearLayout style="@style/LinearRowStyle">
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <TextView
                         style="@style/CellTextStyle"
@@ -301,9 +279,7 @@
 
                 <View style="@style/VerticalDivider" />
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <TextView
                         android:id="@+id/tv_barcode_number_units"

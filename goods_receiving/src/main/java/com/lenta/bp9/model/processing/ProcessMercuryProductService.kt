@@ -7,9 +7,7 @@ import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.shared.di.AppScope
-import com.lenta.shared.models.core.Uom
 import com.lenta.shared.utilities.extentions.removeItemFromListWithPredicate
-import com.lenta.shared.utilities.extentions.toStringFormatted
 import javax.inject.Inject
 
 const val PROCESSING_MERCURY_UNKNOWN = 0
