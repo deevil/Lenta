@@ -110,8 +110,8 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
     val producerVisibleCondition by unsafeLazy {
         materialIngredient.switchMap { ingredient ->
             asyncLiveData<Boolean> {
-                val isVet = !ingredient.isVet.isNullOrBlank()
-                val isZPart = !ingredient.isZpart.isNullOrBlank()
+                val isVet = ingredient.isVet.isSapTrue()
+                val isZPart = ingredient.isZpart.isSapTrue()
                 val cond = producerConditions
                 val condition = when {
                     isVet -> true
@@ -126,17 +126,17 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
 
     /** Условие отображения даты производства */
     val dateVisibleCondition = materialIngredient.mapSkipNulls {
-        !it.isVet.isNullOrBlank() || !it.isZpart.isNullOrBlank()
+        it.isVet.isSapTrue() || it.isZpart.isSapTrue()
     }
 
     /** Условие отображения кнопки для показа информации о меркурианском товаре*/
     val vetIconInfoCondition = materialIngredient.mapSkipNulls {
-        !it.isVet.isNullOrBlank()
+        it.isVet.isSapTrue()
     }
 
     /** Условие активности кнопки добавления партии*/
     val addPartAttributeEnable = materialIngredient.mapSkipNulls {
-        it.isVet.isNullOrBlank()
+        !it.isVet.isSapTrue()
     }
 
     /** Условие блокировки спиннеров производителя и даты*/
@@ -302,10 +302,6 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
         }
     }
 
-/*    override fun onCleared() {
-
-        super.onCleared()
-    }*/
 
     fun onCompleteClicked() = launchUITryCatch {
         val weight = total.value ?: 0.0

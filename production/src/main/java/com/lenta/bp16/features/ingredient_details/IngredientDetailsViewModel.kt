@@ -127,8 +127,8 @@ class IngredientDetailsViewModel : CoreViewModel(), IZpartVisibleConditions {
     val producerVisibleCondition by unsafeLazy {
         orderIngredient.switchMap { ingredient ->
             asyncLiveData<Boolean> {
-                val isVet = !ingredient.isVet.isNullOrBlank()
-                val isZPart = !ingredient.isZpart.isNullOrBlank()
+                val isVet = ingredient.isVet.isSapTrue()
+                val isZPart = ingredient.isZpart.isSapTrue()
                 val cond = producerConditions
                 val condition = when {
                     isVet -> true
@@ -143,18 +143,18 @@ class IngredientDetailsViewModel : CoreViewModel(), IZpartVisibleConditions {
 
     /** Условие отображения даты производства */
     val dateVisibleCondition = orderIngredient.mapSkipNulls {
-        !it.isVet.isNullOrBlank() || !it.isZpart.isNullOrBlank()
+        it.isVet.isSapTrue() || it.isZpart.isSapTrue()
     }
 
 
     /** Условие отображения кнопки для показа информации о меркурианском товаре*/
     val vetIconInfoCondition = orderIngredient.mapSkipNulls {
-        !it.isVet.isNullOrBlank()
+        it.isVet.isSapTrue()
     }
 
     /** Условие активности кнопки добавления партии*/
     val addPartAttributeEnable = orderIngredient.mapSkipNulls {
-        it.isVet.isNullOrBlank()
+        !it.isVet.isSapTrue()
     }
 
     /** Условие блокировки спиннеров производителя и даты*/
