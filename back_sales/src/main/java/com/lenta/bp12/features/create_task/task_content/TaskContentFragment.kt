@@ -81,9 +81,10 @@ class TaskContentFragment : CoreFragment<FragmentTaskContentBinding, TaskContent
                 false)
 
         val onClickSelectionListener = View.OnClickListener {
-            val position = (it?.tag as Int)
-            vm.goodSelectionsHelper.revert(position = position)
-            layoutBinding.rv.adapter?.notifyItemChanged(position)
+            (it.tag as? Int)?.let{ position ->
+                vm.goodSelectionsHelper.revert(position = position)
+                layoutBinding.rv.adapter?.notifyItemChanged(position)
+            }
         }
 
         layoutBinding.rvConfig = initRecycleAdapterDataBinding(
@@ -114,9 +115,10 @@ class TaskContentFragment : CoreFragment<FragmentTaskContentBinding, TaskContent
                 false).let { layoutBinding ->
 
             val onClickSelectionListener = View.OnClickListener {
-                val position = (it?.tag as Int)
-                vm.basketSelectionsHelper.revert(position = position)
-                layoutBinding.rv.adapter?.notifyItemChanged(position)
+                (it.tag as? Int)?.let{ position ->
+                    vm.basketSelectionsHelper.revert(position = position)
+                    layoutBinding.rv.adapter?.notifyItemChanged(position)
+                }
             }
 
             layoutBinding.rvConfig = initRecycleAdapterDataBinding(
@@ -147,9 +149,10 @@ class TaskContentFragment : CoreFragment<FragmentTaskContentBinding, TaskContent
                 false).let { layoutBinding ->
 
             val onClickSelectionListener = View.OnClickListener {
-                val position = (it?.tag as Int)
-                vm.basketSelectionsHelper.revert(position = position)
-                layoutBinding.rv.adapter?.notifyItemChanged(position)
+                (it.tag as? Int)?.let{ position ->
+                    vm.basketSelectionsHelper.revert(position = position)
+                    layoutBinding.rv.adapter?.notifyItemChanged(position)
+                }
             }
 
             layoutBinding.rvConfig = initRecycleAdapterDataBinding(
