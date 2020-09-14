@@ -42,7 +42,7 @@ class MarkedGoodStampCollector(private val processMarkedGoodProductService: Proc
     fun addMarks(marks: List<MarkInfo>, material: String, writeOffReason: String) {
         clearLastAddedList()
 
-        marks.forEach { mark ->
+        marks.mapTo(stamps) {mark ->
             val boxNumber = mark.boxNumber.orEmpty()
             val markNumber = mark.markNumber.orEmpty()
 
@@ -58,8 +58,8 @@ class MarkedGoodStampCollector(private val processMarkedGoodProductService: Proc
                 boxes.add(boxNumber)
             }
 
-            stamps.add(stamp)
             addMarkToLastAddedList(stamp)
+            stamp
         }
 
         onDataChanged()
