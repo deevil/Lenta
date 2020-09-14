@@ -2,10 +2,7 @@ package com.lenta.bp12.model.pojo.open_task
 
 import com.lenta.bp12.model.ControlType
 import com.lenta.bp12.model.Taskable
-import com.lenta.bp12.model.pojo.Basket
-import com.lenta.bp12.model.pojo.Block
-import com.lenta.bp12.model.pojo.ReturnReason
-import com.lenta.bp12.model.pojo.TaskType
+import com.lenta.bp12.model.pojo.*
 import com.lenta.bp12.model.pojo.extentions.*
 import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.bp12.request.pojo.taskContentNetRequest.Mrc
@@ -27,7 +24,7 @@ data class TaskOpen(
         var goodGroup: String,
 
         val numberOfGoods: Int,
-        val goods: MutableList<GoodOpen> = mutableListOf(),
+        val goods: MutableList<Good> = mutableListOf(),
         override val baskets: MutableList<Basket> = mutableListOf(),
         val mrcList: MutableList<Mrc> = mutableListOf(),
 
@@ -104,5 +101,5 @@ data class TaskOpen(
         baskets.removeAll(baskets.filter { it.getGoodList().isEmpty() })
     }
 
-
+    fun isMrcNotInTaskMrcList(formattedMrc: String) = this.mrcList.none { it.maxRetailPrice == formattedMrc }
 }

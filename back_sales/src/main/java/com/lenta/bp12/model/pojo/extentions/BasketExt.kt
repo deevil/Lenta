@@ -28,6 +28,31 @@ fun Basket.deleteGood(good: Good) {
     }
 }
 
+fun Basket.deleteGoodByMarks(good: Good) {
+    val quantityToDel = good.marks.count { mark ->
+        this.index == mark.basketNumber
+    }.toDouble()
+
+    val oldQuantity = this.goods[good]
+    oldQuantity?.let {
+        val newQuantity = it - quantityToDel
+        if (newQuantity == 0.0) {
+            this.deleteGood(good)
+        } else {
+            minusQuantityOfGood(good, quantityToDel, newQuantity)
+        }
+    }
+}
+
+private fun Basket.minusQuantityOfGood(good: Good, quantityToDel: Double, newQuantity: Double) {
+    val volumeToReturnToBasket = quantityToDel * good.volume
+    val freeVolumePlusGoodsVolume = freeVolume + volumeToReturnToBasket
+    if (freeVolumePlusGoodsVolume <= volume) {
+        this.goods[good] = newQuantity
+        this.freeVolume += volumeToReturnToBasket
+    }
+}
+
 fun Basket.getDescription(isDivBySection: Boolean): String {
 
     return buildString {
@@ -42,18 +67,22 @@ fun Basket.getDescription(isDivBySection: Boolean): String {
         val providerBlock = if (provider?.code.isNullOrEmpty()) "" else "/ПП-${provider?.code}"
 
         append(providerBlock)
+
+        val markTypeGroupAbr = markTypeGroup?.let { "/${it.abbreviation}" }.orEmpty()
+
+        append(markTypeGroupAbr)
     }
 }
 
-fun Basket.getGoodList() : List<Good> {
+fun Basket.getGoodList(): List<Good> {
     return goods.keys.toList()
 }
 
-fun Basket.getSize() : Int {
+fun Basket.getSize(): Int {
     return getGoodList().size
 }
 
-fun Basket.getQuantityFromGoodList() : Int {
+fun Basket.getQuantityFromGoodList(): Int {
     return getGoodList().size
 }
 
@@ -65,5 +94,12 @@ fun Basket?.getPosition(): Int {
     return this?.index ?: 0
 }
 
+/**
+ * Показывает есть ли хоть одна не закрытая корзина
+ * */
 fun List<Basket>.isAnyNotLocked() = this.any { it.isLocked.not() }
+
+/**
+ * Показывает есть ли хоть одна распечатанная корзина
+ * */
 fun List<Basket>.isAnyPrinted() = this.any { it.isPrinted }

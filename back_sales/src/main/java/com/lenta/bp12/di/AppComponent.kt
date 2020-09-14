@@ -26,8 +26,9 @@ import com.lenta.bp12.features.save_data.SaveDataViewModel
 import com.lenta.bp12.features.select_market.SelectMarketViewModel
 import com.lenta.bp12.main.MainActivity
 import com.lenta.bp12.main.MainViewModel
-import com.lenta.bp12.model.ICreateTaskManager
-import com.lenta.bp12.model.IOpenTaskManager
+import com.lenta.bp12.managers.interfaces.ICreateTaskManager
+import com.lenta.bp12.managers.interfaces.IMarkManager
+import com.lenta.bp12.managers.interfaces.IOpenTaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -44,6 +45,7 @@ interface AppComponent : CoreComponent {
     fun getResourceManager(): IResourceManager
     fun getCreateTaskManager(): ICreateTaskManager
     fun getOpenTaskManager(): IOpenTaskManager
+    fun getMarkManager(): IMarkManager
 
     fun inject(mainActivity: MainActivity)
     fun inject(mainViewModel: MainViewModel)

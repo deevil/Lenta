@@ -1,12 +1,13 @@
 package com.lenta.bp12.features.basket.basket_properties
 
-import com.lenta.bp12.model.ICreateTaskManager
+import com.lenta.bp12.managers.interfaces.ICreateTaskManager
 import com.lenta.bp12.model.pojo.extentions.getDescription
 import com.lenta.bp12.model.pojo.extentions.getPosition
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.mapSkipNulls
 import com.lenta.shared.utilities.extentions.unsafeLazy
 import javax.inject.Inject
 
@@ -44,7 +45,8 @@ class BasketPropertiesViewModel : CoreViewModel() {
                     section = basket?.section.orEmpty(),
                     goodType = basket?.goodType.orEmpty(),
                     gisControl = basket?.control?.description.orEmpty(),
-                    provider = "${basket?.provider?.code} ${basket?.provider?.name}"
+                    provider = "${basket?.provider?.code} ${basket?.provider?.name}",
+                    markType = basket?.markTypeGroup?.name.orEmpty()
             )
         }
     }
@@ -67,11 +69,18 @@ class BasketPropertiesViewModel : CoreViewModel() {
         }
     }
 
+    val isMarkTypeVisible by unsafeLazy {
+        basket.mapSkipNulls {
+            it.markTypeGroup != null
+        }
+    }
+
 }
 
 data class BasketPropertiesUi(
         val section: String,
         val goodType: String,
         val gisControl: String,
-        val provider: String
+        val provider: String,
+        val markType: String
 )

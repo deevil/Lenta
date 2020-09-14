@@ -1,5 +1,6 @@
-package com.lenta.bp12.model
+package com.lenta.bp12.managers
 
+import com.lenta.bp12.managers.interfaces.IGeneralTaskManager
 import com.lenta.bp12.request.SendTaskDataParams
 import com.lenta.shared.platform.time.ITimeMonitor
 import javax.inject.Inject
@@ -17,13 +18,5 @@ class GeneralTaskManager @Inject constructor(
     override fun getSendTaskDataParams(): SendTaskDataParams {
         return sendTaskDataParams
     }
-
-}
-
-
-interface IGeneralTaskManager {
-
-    fun setSendTaskDataParams(params: SendTaskDataParams)
-    fun getSendTaskDataParams(): SendTaskDataParams
 
 }
