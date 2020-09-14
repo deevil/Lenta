@@ -244,7 +244,7 @@ class GoodsDetailsViewModel : CoreViewModel() {
 
     private fun updatingInfoZBatches() {
         val itemsZBatchesDiscrepancies: ArrayList<GoodsDetailsCategoriesItem> = ArrayList()
-        var quantityItem = 0
+        var quantityItem = 1
         taskRepository
                 ?.getZBatchesDiscrepancies()
                 ?.findZBatchDiscrepanciesOfProduct(productInfo.value?.materialNumber.orEmpty())
@@ -252,7 +252,7 @@ class GoodsDetailsViewModel : CoreViewModel() {
                     itemsZBatchesDiscrepancies.add(
                             getItemsZBatchesDiscrepanciesOfBatch(index, discrepancy)
                     )
-                    quantityItem += quantityItem
+                    quantityItem += index
                 }
 
         taskRepository
@@ -405,7 +405,7 @@ class GoodsDetailsViewModel : CoreViewModel() {
                                                 ?.deleteProductDiscrepancyByBatch(materialNumber, typeDiscrepancies, it.numberDiscrepancies.toDouble())
                                     }
                         }
-                        isZBatch.value == true -> {
+                        isZBatch.value == true && typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM -> {
                             goodsDetailsItem
                                     ?.zBatchDiscrepancies
                                     ?.let {
