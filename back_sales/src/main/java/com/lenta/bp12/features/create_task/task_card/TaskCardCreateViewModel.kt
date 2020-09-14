@@ -46,8 +46,6 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
         resource.tk(sessionInfo.market.orEmpty())
     }
 
-    val selectedPage = MutableLiveData(0)
-
     val taskName by lazy {
         selectedType.map { type ->
             type?.takeIf { !it.isWholesaleType() }?.run {

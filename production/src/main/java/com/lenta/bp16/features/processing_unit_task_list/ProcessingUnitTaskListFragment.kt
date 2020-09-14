@@ -12,14 +12,12 @@ import com.lenta.bp16.databinding.ItemPuTaskBinding
 import com.lenta.bp16.databinding.LayoutPuTaskListProcessedBinding
 import com.lenta.bp16.databinding.LayoutPuTaskListProcessingBinding
 import com.lenta.bp16.platform.extention.getAppComponent
-import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.platform.fragment.KeyDownCoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
-import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
@@ -28,8 +26,6 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 
 class ProcessingUnitTaskListFragment : KeyDownCoreFragment<FragmentProcessingUnitTaskListBinding, ProcessingUnitTaskListViewModel>(),
         ViewPagerSettings, ToolbarButtonsClickListener, OnScanResultListener {
-
-    private var processedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_processing_unit_task_list
 
@@ -79,20 +75,18 @@ class ProcessingUnitTaskListFragment : KeyDownCoreFragment<FragmentProcessingUni
                 container,
                 false
         ).let { layoutBinding ->
-
-            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemPuTaskBinding>(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemProcessingUnitTaskUi, ItemPuTaskBinding>(
                     layoutId = R.layout.item_pu_task,
-                    itemId = BR.item
+                    itemId = BR.item,
+                    keyHandlerId = TAB_PROCESSING,
+                    recyclerView = layoutBinding.rv,
+                    items = vm.processing,
+                    onClickHandler = vm::onClickItemPosition
             )
 
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
-                    recyclerView = layoutBinding.rv,
-                    items = vm.processing,
-                    onClickHandler = vm::onClickItemPosition
-            )
             return layoutBinding.root
         }
     }
@@ -103,29 +97,17 @@ class ProcessingUnitTaskListFragment : KeyDownCoreFragment<FragmentProcessingUni
                 container,
                 false
         ).let { layoutBinding ->
-
-            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemPuTaskBinding>(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemProcessingUnitTaskUi, ItemPuTaskBinding>(
                     layoutId = R.layout.item_pu_task,
                     itemId = BR.item,
-                    onAdapterItemBind = { bindItem, position ->
-                        processedRecyclerViewKeyHandler?.let {
-                            bindItem.root.isSelected = it.isSelected(position)
-                        }
-                    },
-                    onAdapterItemClicked = { position ->
-                        processedRecyclerViewKeyHandler?.onItemClicked(position)
-                    }
+                    keyHandlerId = TAB_PROCESSED,
+                    recyclerView = layoutBinding.rv,
+                    items = vm.processed,
+                    onClickHandler = vm::onClickItemPosition
             )
 
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
-
-            processedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
-                    recyclerView = layoutBinding.rv,
-                    previousPosInfo = processedRecyclerViewKeyHandler?.posInfo?.value,
-                    items = vm.processed,
-                    onClickHandler = vm::onClickItemPosition
-            )
 
             return layoutBinding.root
         }
@@ -155,19 +137,6 @@ class ProcessingUnitTaskListFragment : KeyDownCoreFragment<FragmentProcessingUni
     override fun onResume() {
         super.onResume()
         vm.loadTaskList()
-    }
-
-    override fun onKeyDown(keyCode: KeyCode): Boolean {
-        return when (vm.selectedPage.value) {
-            TAB_PROCESSING -> recyclerViewKeyHandler
-            TAB_PROCESSED -> processedRecyclerViewKeyHandler
-            else -> null
-        }?.onKeyDown(keyCode) ?: false
-    }
-
-    override fun onDestroyView() {
-        processedRecyclerViewKeyHandler?.onClickPositionFunc = null
-        super.onDestroyView()
     }
 
     companion object {

@@ -51,8 +51,6 @@ class GoodDetailsCreateViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
-    val selectedPage = MutableLiveData(0)
-
     val baskets by lazy {
         task.combineLatest(good).map {
             it?.let {

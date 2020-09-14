@@ -67,7 +67,6 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
     @Inject
     override lateinit var resource: IResourceManager
 
-    val selectedPage = MutableLiveData(DEFAULT_PAGE)
 
     /**
     Переменные

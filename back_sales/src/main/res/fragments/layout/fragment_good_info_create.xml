@@ -24,9 +24,7 @@
             <!-- Количество -->
             <LinearLayout style="@style/LinearRowStyle">
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <EditText
                         style="@style/CellEditTextStyle"
@@ -40,9 +38,7 @@
 
                 <View style="@style/VerticalDivider" />
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <com.lenta.shared.view.EditTextWithSuffix
                         style="@style/CellEditTextStyle"
@@ -63,9 +59,7 @@
             <!-- Итого -->
             <LinearLayout style="@style/LinearRowStyle">
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <TextView
                         style="@style/CellTextStyle"
@@ -83,9 +77,7 @@
 
                 <View style="@style/VerticalDivider" />
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <TextView
                         style="@style/CellTextStyle"
@@ -150,9 +142,7 @@
                 <!-- Производитель -->
                 <LinearLayout style="@style/LinearRowStyle">
 
-                    <LinearLayout
-                        style="@style/LinearCellStyle"
-                        android:layout_weight="1">
+                    <LinearLayout style="@style/LinearCellStyle">
 
                         <com.lenta.shared.view.ClickableSpinner
                             android:id="@+id/spin_importer"
@@ -172,9 +162,7 @@
                 <!-- Дата партии -->
                 <LinearLayout style="@style/LinearRowStyle">
 
-                    <LinearLayout
-                        style="@style/LinearCellStyle"
-                        android:layout_weight="1">
+                    <LinearLayout style="@style/LinearCellStyle">
 
                         <TextView
                             style="@style/CellTextStyle"
@@ -190,9 +178,7 @@
 
                     <View style="@style/VerticalDivider" />
 
-                    <LinearLayout
-                        style="@style/LinearCellStyle"
-                        android:layout_weight="1">
+                    <LinearLayout style="@style/LinearCellStyle">
 
                         <EditText
                             android:id="@+id/bottlingDate"
@@ -220,11 +206,7 @@
             <LinearLayout style="@style/BottomIconContainerStyle">
 
                 <TextView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:background="@drawable/bg_white_circle"
-                    android:gravity="center"
-                    android:textSize="12sp"
+                    style="@style/BottomCircleIconStyle"
                     app:matrixType="@{vm.good.matrix}"
                     tools:text="A" />
 
@@ -233,11 +215,7 @@
             <LinearLayout style="@style/BottomIconContainerStyle">
 
                 <TextView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:background="@drawable/bg_white_circle"
-                    android:gravity="center"
-                    android:textSize="@dimen/text_12sp"
+                    style="@style/BottomCircleIconStyle"
                     app:section="@{vm.good.section}"
                     android:visibility="@{!vm.good.section.isEmpty()}"
                     tools:text="02" />

@@ -73,7 +73,6 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
     @Inject
     override lateinit var resource: IResourceManager
 
-    val selectedPage = MutableLiveData(0)
 
     /**
     Переменные

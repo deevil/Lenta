@@ -2,13 +2,14 @@ package com.lenta.bp10.models
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.lenta.bp10.models.memory.containsStamp
+import com.lenta.bp10.models.memory.isContainsStamp
 import com.lenta.bp10.models.task.ProcessExciseAlcoProductService
 import com.lenta.bp10.models.task.TaskExciseStamp
 import com.lenta.bp10.models.task.WriteOffReason
 import com.lenta.shared.utilities.extentions.map
 
-class StampCollector(private val processExciseAlcoProductService: ProcessExciseAlcoProductService) {
+class AlcoholStampCollector(private val processExciseAlcoProductService: ProcessExciseAlcoProductService) {
+
     private val countLiveData: MutableLiveData<Double> = MutableLiveData()
     private val stamps = mutableListOf<TaskExciseStamp>()
     private var preparedStampCode: String = ""
@@ -28,8 +29,8 @@ class StampCollector(private val processExciseAlcoProductService: ProcessExciseA
         }
 
         val stamp = TaskExciseStamp(
-                materialNumber = materialNumber,
-                code = preparedStampCode,
+                material = materialNumber,
+                markNumber = preparedStampCode,
                 setMaterialNumber = setMaterialNumber,
                 writeOffReason = writeOffReason,
                 isBadStamp = isBadStamp
@@ -73,7 +74,7 @@ class StampCollector(private val processExciseAlcoProductService: ProcessExciseA
 
     fun containsStamp(code: String): Boolean {
         return stamps.firstOrNull { it.code == code } != null ||
-                processExciseAlcoProductService.taskRepository.getExciseStamps().containsStamp(code)
+                processExciseAlcoProductService.taskRepository.getExciseStamps().isContainsStamp(code)
     }
 
 
@@ -106,10 +107,10 @@ class StampCollector(private val processExciseAlcoProductService: ProcessExciseA
         onDataChanged()
     }
 
-    fun moveStampsFrom(anotherStampCollector: StampCollector?) {
-        anotherStampCollector?.stamps?.let {
-            stamps.addAll(anotherStampCollector.stamps)
-            anotherStampCollector.clear()
+    fun moveStampsFrom(anotherAlcoholStampCollector: AlcoholStampCollector?) {
+        anotherAlcoholStampCollector?.stamps?.let {
+            stamps.addAll(anotherAlcoholStampCollector.stamps)
+            anotherAlcoholStampCollector.clear()
         }
 
     }

@@ -81,8 +81,6 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     val processedSelectionsHelper = SelectionItemsHelper()
 
-    val selectedPage = MutableLiveData(PROCESSING_PAGE_INDEX)
-
     val basketSelectionsHelper = SelectionItemsHelper()
 
 
@@ -347,12 +345,16 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
             val foundGood = withContext(Dispatchers.IO) { manager.findGoodByMaterial(material) }
             navigator.hideProgress()
             foundGood?.let(::setFoundGood).orIfNull {
-                if (task.value?.isStrict == false) {
-                    loadGoodInfoByMaterial(material)
-                } else {
-                    navigator.showGoodIsMissingInTask()
-                }
+                actionWhenGoodNotFound(material)
             }
+        }
+    }
+
+    private suspend fun actionWhenGoodNotFound(material: String) {
+        if (task.value?.isStrict == false) {
+            loadGoodInfoByMaterial(material)
+        } else {
+            navigator.showGoodIsMissingInTask()
         }
     }
 

@@ -161,7 +161,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
         val isEnabled = it?.first ?: false
         val position = it?.second ?: DEFAULT_POSITION
 
-        isEnabled && position > DEFAULT_POSITION || !isEnabled && position == 0
+        (isEnabled && position > DEFAULT_POSITION) || (!isEnabled && position == 0)
     }
 
     /**
@@ -507,8 +507,8 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
 
     private suspend fun handleUnknownMark(number: String, result: ScanInfoResult) {
         when (number.length) {
-            Constants.MARK_150 -> navigator.openAlertScreen(result.statusDescription)
-            Constants.MARK_68 -> {
+            Constants.EXCISE_MARK_150 -> navigator.openAlertScreen(result.statusDescription)
+            Constants.EXCISE_MARK_68 -> {
                 val alcoCodeInfoList = database.getAlcoCodeInfoList(number.extractAlcoCode())
 
                 if (alcoCodeInfoList.isEmpty()) {
@@ -532,12 +532,12 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
         quantityField.value = "1"
 
         when (originalSearchNumber.length) {
-            Constants.MARK_150 -> {
+            Constants.EXCISE_MARK_150 -> {
                 screenStatus.value = ScreenStatus.MARK_150
                 updateProducers(result.producers.toMutableList())
                 date.value = getFormattedDate(result.producedDate, Constants.DATE_FORMAT_yyyy_mm_dd, Constants.DATE_FORMAT_dd_mm_yyyy)
             }
-            Constants.MARK_68 -> {
+            Constants.EXCISE_MARK_68 -> {
                 screenStatus.value = ScreenStatus.MARK_68
             }
         }

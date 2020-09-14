@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.lenta.movement.BR
@@ -25,7 +24,8 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListe
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.Logg
-import com.lenta.shared.utilities.databinding.*
+import com.lenta.shared.utilities.databinding.ViewPagerSettings
+import com.lenta.shared.utilities.databinding.setupRecyclerView
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
@@ -59,7 +59,7 @@ class CreateBoxesFragment : CoreFragment<FragmentCreateBoxesBinding, CreateBoxes
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
-        vm.selectedPage.observe(this, Observer { page ->
+        vm.selectedPageType.observe(this, Observer { page ->
             bottomToolbarUiModel.cleanAll()
 
             bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
@@ -91,7 +91,7 @@ class CreateBoxesFragment : CoreFragment<FragmentCreateBoxesBinding, CreateBoxes
     }
 
     override fun onToolbarButtonClick(view: View) {
-        when (vm.selectedPage.value) {
+        when (vm.selectedPageType.value) {
             CreateBoxesPage.FILLING -> {
                 when (view.id) {
                     R.id.b_2 -> vm.onRollbackClick()
@@ -149,40 +149,20 @@ class CreateBoxesFragment : CoreFragment<FragmentCreateBoxesBinding, CreateBoxes
                     }
 
                     layoutBinding.vm = vm
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+                    layoutBinding.lifecycleOwner = viewLifecycleOwner
+
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.layout_item_box_list,
                             itemId = BR.item,
-                            realisation = object : DataBindingAdapter<LayoutItemBoxListBinding> {
-                                override fun onCreate(binding: LayoutItemBoxListBinding) = Unit
-
-                                override fun onBind(binding: LayoutItemBoxListBinding, position: Int) {
-                                    binding.counterText.tag = position
-                                    binding.counterText.setOnClickListener(onClickSelectionListener)
-                                    binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
-                                    recyclerViewKeyHandler?.let {
-                                        binding.root.isSelected = it.isSelected(position)
-                                    }
-                                }
+                            onItemBind = { binding: LayoutItemBoxListBinding, position: Int ->
+                                binding.counterText.tag = position
+                                binding.counterText.setOnClickListener(onClickSelectionListener)
+                                binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
                             },
-                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                                recyclerViewKeyHandler?.let {
-                                    if (it.isSelected(position)) {
-                                        //vm.onClickItemPosition(position)
-                                    } else {
-                                        it.selectPosition(position)
-                                    }
-                                }
-                            }
+                            keyHandlerId = position,
+                            recyclerView = layoutBinding.recyclerView,
+                            items = vm.boxList
                     )
-
-                    binding?.lifecycleOwner?.let { lifecycleOwner ->
-                        recyclerViewKeyHandler = RecyclerViewKeyHandler(
-                                layoutBinding.recyclerView,
-                                vm.boxList,
-                                lifecycleOwner,
-                                recyclerViewKeyHandler?.posInfo?.value
-                        )
-                    }
                 }.root
             }
         }

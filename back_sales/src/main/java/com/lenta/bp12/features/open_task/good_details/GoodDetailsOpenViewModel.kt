@@ -31,8 +31,6 @@ class GoodDetailsOpenViewModel : CoreViewModel(), PageSelectionListener {
 
     val selectionsHelper = SelectionItemsHelper()
 
-    val selectedPage = MutableLiveData(0)
-
     val task by lazy {
         manager.currentTask
     }

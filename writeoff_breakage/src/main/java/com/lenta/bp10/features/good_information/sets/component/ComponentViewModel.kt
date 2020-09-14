@@ -59,7 +59,6 @@ class ComponentViewModel : BaseProductInfoViewModel() {
     init {
         launchUITryCatch {
             exciseAlcoDelegate.init(
-                    viewModelScope = this@ComponentViewModel::viewModelScope,
                     handleNewStamp = this@ComponentViewModel::handleNewStamp,
                     tkNumber = getTaskDescription().tkNumber,
                     materialNumber = productInfo.value!!.materialNumber

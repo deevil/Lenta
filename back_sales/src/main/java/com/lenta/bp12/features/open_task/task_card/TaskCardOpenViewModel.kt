@@ -60,8 +60,6 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
         manager.currentTask
     }
 
-    val selectedPage = MutableLiveData(0)
-
     val ui by lazy {
         task.map {
             it?.let { task ->
