@@ -2,8 +2,9 @@ package com.lenta.bp16.model.ingredients
 
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
-import com.lenta.shared.models.core.toUom
-import com.lenta.shared.utilities.extentions.dropZeros
+import com.lenta.bp16.model.ingredients.ui.OrderIngredientDataInfoUI
+import com.lenta.bp16.platform.converter.IConvertable
+import com.lenta.shared.utilities.orIfNull
 import kotlinx.android.parcel.Parcelize
 
 /**
@@ -65,29 +66,19 @@ data class OrderIngredientDataInfo(
         @SerializedName("MHDHB")
         val shelfLife: String?
 
-) : Parcelable {
+) : Parcelable, IConvertable<OrderIngredientDataInfoUI?> {
 
-    fun getSuffix(): String {
-        return buom?.toUom()?.name.orEmpty()
-    }
-
-    fun getPlanCount(): String {
-        return buildString {
-            append(plan_qnt.dropZeros())
-            append(" ")
-            append(getSuffix())
-        }
-    }
-
-    fun getDoneCount(): String {
-        return buildString {
-            append(done_qnt.dropZeros())
-            append(" ")
-            append(getSuffix())
-        }
-    }
-
-    fun getFormattedMaterial(): String {
-        return matnr?.takeLast(6).orEmpty()
+    override fun convert(): OrderIngredientDataInfoUI? {
+        return OrderIngredientDataInfoUI(
+                matnr = matnr.orEmpty(),
+                name = name.orEmpty(),
+                buom = buom.orEmpty(),
+                plan_qnt = plan_qnt.orIfNull { 0.0 },
+                done_qnt = done_qnt.orIfNull { 0.0 },
+                isZpart = isZpart.orEmpty(),
+                isVet = isVet.orEmpty(),
+                isFact = isFact.orEmpty(),
+                shelfLife = shelfLife.orEmpty()
+        )
     }
 }

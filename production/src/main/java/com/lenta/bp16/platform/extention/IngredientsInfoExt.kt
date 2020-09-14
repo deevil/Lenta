@@ -2,33 +2,33 @@ package com.lenta.bp16.platform.extention
 
 import com.lenta.bp16.model.IngredientStatusBlock
 import com.lenta.bp16.model.IngredientStatusWork
-import com.lenta.bp16.model.ingredients.IngredientInfo
+import com.lenta.bp16.model.ingredients.ui.IngredientInfoUI
 
-fun IngredientInfo.isBlockedByMyself(): Boolean = blockType == IngredientInfo.BLOCK_BY_MYSELF
-fun IngredientInfo.isBlockedByAnother(): Boolean = blockType == IngredientInfo.BLOCK_BY_OTHER
+fun IngredientInfoUI.isBlockedByMyself(): Boolean = blockType == IngredientInfoUI.BLOCK_BY_MYSELF
+fun IngredientInfoUI.isBlockedByAnother(): Boolean = blockType == IngredientInfoUI.BLOCK_BY_OTHER
 
-fun IngredientInfo.isBlocked(): Boolean {
+fun IngredientInfoUI.isBlocked(): Boolean {
         return isBlockedByMyself() || isBlockedByAnother()
 }
 
-fun IngredientInfo.getModeType(): String {
+fun IngredientInfoUI.getModeType(): String {
     return if (isByOrder) {
-        if (isBlocked()) IngredientInfo.MODE_ORDER_RE_BLOCK_DATA else IngredientInfo.MODE_ORDER_BLOCK_DATA
+        if (isBlocked()) IngredientInfoUI.MODE_ORDER_RE_BLOCK_DATA else IngredientInfoUI.MODE_ORDER_BLOCK_DATA
     } else {
-        if (isBlocked()) IngredientInfo.MODE_MATERIAL_RE_BLOCK_DATA else IngredientInfo.MODE_MATERIAL_BLOCK_DATA
+        if (isBlocked()) IngredientInfoUI.MODE_MATERIAL_RE_BLOCK_DATA else IngredientInfoUI.MODE_MATERIAL_BLOCK_DATA
     }
 
 }
 
-fun IngredientInfo.getIngredientStatusBlock(): IngredientStatusBlock {
+fun IngredientInfoUI.getIngredientStatusBlock(): IngredientStatusBlock {
     return when (blockType) {
-        IngredientInfo.BLOCK_BY_MYSELF -> IngredientStatusBlock.SELF_LOCK
-        IngredientInfo.BLOCK_BY_OTHER -> IngredientStatusBlock.LOCK
+        IngredientInfoUI.BLOCK_BY_MYSELF -> IngredientStatusBlock.SELF_LOCK
+        IngredientInfoUI.BLOCK_BY_OTHER -> IngredientStatusBlock.LOCK
         else -> IngredientStatusBlock.COMMON
     }
 }
 
-fun IngredientInfo.getIngredientStatusWork(): IngredientStatusWork {
+fun IngredientInfoUI.getIngredientStatusWork(): IngredientStatusWork {
     return when {
         isPlay == true -> IngredientStatusWork.IS_PLAY
         isDone == true -> IngredientStatusWork.IS_DONE

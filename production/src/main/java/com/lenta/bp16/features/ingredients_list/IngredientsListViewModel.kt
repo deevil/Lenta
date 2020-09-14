@@ -9,6 +9,8 @@ import com.lenta.bp16.model.ingredients.GoodByOrder
 import com.lenta.bp16.model.ingredients.IngredientInfo
 import com.lenta.bp16.model.ingredients.params.GetIngredientsParams
 import com.lenta.bp16.model.ingredients.params.WarehouseParam
+import com.lenta.bp16.model.ingredients.ui.GoodByOrderUI
+import com.lenta.bp16.model.ingredients.ui.IngredientInfoUI
 import com.lenta.bp16.model.ingredients.ui.ItemIngredientUi
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI.Companion.EAN_NOM
@@ -61,8 +63,8 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
     private var selectedEan = ""
 
     /**Общий список заказов и материалов*/
-    private val allIngredientsInfo: MutableLiveData<List<IngredientInfo>> by unsafeLazy {
-        MutableLiveData<List<IngredientInfo>>()
+    private val allIngredientsInfo: MutableLiveData<List<IngredientInfoUI>> by unsafeLazy {
+        MutableLiveData<List<IngredientInfoUI>>()
     }
 
     /**Список ШК*/
@@ -71,14 +73,14 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
     }
 
     /**Список технических заказов*/
-    private val goodsByOrderList: MutableLiveData<List<GoodByOrder>> by unsafeLazy {
-        MutableLiveData<List<GoodByOrder>>()
+    private val goodsByOrderList: MutableLiveData<List<GoodByOrderUI>> by unsafeLazy {
+        MutableLiveData<List<GoodByOrderUI>>()
     }
 
     val ingredientsByOrder by unsafeLazy {
         allIngredientsInfo.switchMap {
             asyncLiveData<List<ItemIngredientUi>> {
-                emit(filterIngredientsBy(it, IngredientInfo.TYPE_ORDER))
+                emit(filterIngredientsBy(it, IngredientInfoUI.TYPE_ORDER))
             }
         }
     }
@@ -86,7 +88,7 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
     val ingredientsByMaterial by unsafeLazy {
         allIngredientsInfo.switchMap {
             asyncLiveData<List<ItemIngredientUi>> {
-                emit(filterIngredientsBy(it, IngredientInfo.TYPE_MATERIAL))
+                emit(filterIngredientsBy(it, IngredientInfoUI.TYPE_MATERIAL))
             }
         }
     }
@@ -110,17 +112,17 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
         }
     }
 
-    private fun filterIngredientsBy(ingredientsList: List<IngredientInfo>, type: String): List<ItemIngredientUi> {
+    private fun filterIngredientsBy(ingredientsList: List<IngredientInfoUI>, type: String): List<ItemIngredientUi> {
         return ingredientsList.asSequence()
                 .filter { it.objType == type }
                 .mapIndexedNotNull { index, ingredientInfo ->
-                    ingredientInfo.code?.run {
+                    ingredientInfo.code.run {
                         val position = (index + 1).toString()
                         ItemIngredientUi(
                                 code = ingredientInfo.code,
                                 position = position,
-                                text1 = ingredientInfo.text1.orEmpty(),
-                                text2 = ingredientInfo.text2.orEmpty(),
+                                text1 = ingredientInfo.text1,
+                                text2 = ingredientInfo.text2,
                                 ingredientStatusBlock = ingredientInfo.getIngredientStatusBlock(),
                                 ingredientStatusWork = ingredientInfo.getIngredientStatusWork()
                         )

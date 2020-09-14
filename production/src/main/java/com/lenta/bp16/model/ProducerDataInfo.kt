@@ -2,6 +2,8 @@ package com.lenta.bp16.model
 
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import com.lenta.bp16.model.ingredients.ui.ProducerDataInfoUI
+import com.lenta.bp16.platform.converter.IConvertable
 import kotlinx.android.parcel.Parcelize
 
 /**
@@ -26,4 +28,13 @@ data class ProducerDataInfo(
         @SerializedName("PROD_NAME")
         val prodName: String?
 
-) : Parcelable
+) : Parcelable, IConvertable<ProducerDataInfoUI?> {
+    override fun convert(): ProducerDataInfoUI? {
+        return ProducerDataInfoUI(
+                mantr = mantr.orEmpty(),
+                prodCode = prodCode.orEmpty(),
+                ean = ean.orEmpty(),
+                prodName = prodName.orEmpty()
+        )
+    }
+}

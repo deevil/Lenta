@@ -31,10 +31,10 @@ import com.lenta.bp16.features.select_market.SelectMarketFragment
 import com.lenta.bp16.features.select_personnel_number.SelectPersonnelNumberFragment
 import com.lenta.bp16.features.tech_orders_list.TechOrdersListFragment
 import com.lenta.bp16.features.warehouse_selection.WarehouseSelectionFragment
-import com.lenta.bp16.model.ingredients.IngredientInfo
-import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
-import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
+import com.lenta.bp16.model.ingredients.ui.IngredientInfoUI
+import com.lenta.bp16.model.ingredients.ui.MaterialIngredientDataInfoUI
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
+import com.lenta.bp16.model.ingredients.ui.OrderIngredientDataInfoUI
 import com.lenta.bp16.model.pojo.GoodParams
 import com.lenta.bp16.platform.Constants
 import com.lenta.shared.account.IAuthenticator
@@ -192,37 +192,37 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun openOrderDetailsScreen(selectedIngredient: IngredientInfo, barcode: OrderByBarcodeUI) {
+    override fun openOrderDetailsScreen(selectedIngredient: IngredientInfoUI, barcode: OrderByBarcodeUI) {
         getFragmentStack()?.push(OrderDetailsFragment.newInstance(selectedIngredient, barcode))
     }
 
-    override fun openOrderIngredientsListScreen(weight: String, selectedIngredient: IngredientInfo) {
+    override fun openOrderIngredientsListScreen(weight: String, selectedIngredient: IngredientInfoUI) {
         getFragmentStack()?.push(OrderIngredientsListFragment.newInstance(weight, selectedIngredient))
     }
 
-    override fun openIngredientDetailsScreen(selectedIngredient: OrderIngredientDataInfo, parentCode: String, eanInfo: OrderByBarcodeUI) {
+    override fun openIngredientDetailsScreen(selectedIngredient: OrderIngredientDataInfoUI, parentCode: String, eanInfo: OrderByBarcodeUI) {
         getFragmentStack()?.push(IngredientDetailsFragment.newInstance(selectedIngredient, parentCode, eanInfo))
     }
 
-    override fun openMaterialRemakesScreen(selectedIngredient: IngredientInfo) {
+    override fun openMaterialRemakesScreen(selectedIngredient: IngredientInfoUI) {
         getFragmentStack()?.push(MaterialRemakesListFragment.newInstance(selectedIngredient))
     }
 
-    override fun openMaterialRemakeDetailsScreen(selectedMaterial: MaterialIngredientDataInfo, parentCode: String, parentName: String, barcode: OrderByBarcodeUI) {
+    override fun openMaterialRemakeDetailsScreen(selectedMaterial: MaterialIngredientDataInfoUI, parentCode: String, parentName: String, barcode: OrderByBarcodeUI) {
         getFragmentStack()?.push(MaterialRemakeDetailsFragment.newInstance(selectedMaterial, parentCode, parentName, barcode))
     }
 
-    override fun openTechOrdersScreen(selectedMaterial: MaterialIngredientDataInfo, parentCode: String, materialIngredientKtsch: String) {
+    override fun openTechOrdersScreen(selectedMaterial: MaterialIngredientDataInfoUI, parentCode: String, materialIngredientKtsch: String) {
         getFragmentStack()?.push(TechOrdersListFragment.newInstance(selectedMaterial, parentCode, materialIngredientKtsch))
     }
 
-    override fun openMaterialAttributeScreen(materialIngredient: MaterialIngredientDataInfo, parentCode: String) {
+    override fun openMaterialAttributeScreen(materialIngredient: MaterialIngredientDataInfoUI, parentCode: String) {
         runOrPostpone {
             getFragmentStack()?.push(MaterialAttributeFragment.newInstance(materialIngredient, parentCode))
         }
     }
 
-    override fun openIngredientAttributeScreen(orderIngredient: OrderIngredientDataInfo, parentCode: String) {
+    override fun openIngredientAttributeScreen(orderIngredient: OrderIngredientDataInfoUI, parentCode: String) {
         runOrPostpone {
             getFragmentStack()?.push(IngredientAttributeFragment.newInstance(orderIngredient, parentCode))
         }
@@ -519,14 +519,14 @@ interface IScreenNavigator : ICoreNavigator {
     fun openGoodInfoScreen(goodParams: GoodParams)
     fun openSelectGoodScreen()
     fun openIngredientsListScreen()
-    fun openOrderDetailsScreen(selectedIngredient: IngredientInfo, barcode: OrderByBarcodeUI)
-    fun openIngredientDetailsScreen(selectedIngredient: OrderIngredientDataInfo, parentCode: String, eanInfo: OrderByBarcodeUI)
-    fun openOrderIngredientsListScreen(weight: String, selectedIngredient: IngredientInfo)
-    fun openMaterialRemakesScreen(selectedIngredient: IngredientInfo)
-    fun openMaterialRemakeDetailsScreen(selectedMaterial: MaterialIngredientDataInfo, parentCode: String, parentName: String, barcode: OrderByBarcodeUI)
-    fun openTechOrdersScreen(selectedMaterial: MaterialIngredientDataInfo, parentCode: String, materialIngredientKtsch: String)
-    fun openMaterialAttributeScreen(materialIngredient: MaterialIngredientDataInfo, parentCode: String)
-    fun openIngredientAttributeScreen(orderIngredient: OrderIngredientDataInfo, parentCode: String)
+    fun openOrderDetailsScreen(selectedIngredient: IngredientInfoUI, barcode: OrderByBarcodeUI)
+    fun openIngredientDetailsScreen(selectedIngredient: OrderIngredientDataInfoUI, parentCode: String, eanInfo: OrderByBarcodeUI)
+    fun openOrderIngredientsListScreen(weight: String, selectedIngredient: IngredientInfoUI)
+    fun openMaterialRemakesScreen(selectedIngredient: IngredientInfoUI)
+    fun openMaterialRemakeDetailsScreen(selectedMaterial: MaterialIngredientDataInfoUI, parentCode: String, parentName: String, barcode: OrderByBarcodeUI)
+    fun openTechOrdersScreen(selectedMaterial: MaterialIngredientDataInfoUI, parentCode: String, materialIngredientKtsch: String)
+    fun openMaterialAttributeScreen(materialIngredient: MaterialIngredientDataInfoUI, parentCode: String)
+    fun openIngredientAttributeScreen(orderIngredient: OrderIngredientDataInfoUI, parentCode: String)
 
     fun showDefrostingPhaseIsCompleted(nextCallback: () -> Unit)
     fun showFixStartNextStageSuccessful(nextCallback: () -> Unit)

@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.lenta.bp16.R
 import com.lenta.bp16.model.ingredients.IngredientInfo
 import com.lenta.bp16.model.ingredients.OrderByBarcode
+import com.lenta.bp16.model.ingredients.ui.IngredientInfoUI
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.request.ingredients_use_case.set_data.SetWarehouseForSelectedItemUseCase
@@ -36,7 +37,7 @@ class OrderDetailsViewModel : CoreViewModel() {
 
     // выбранный ингредиент
     val ingredient by unsafeLazy {
-        MutableLiveData<IngredientInfo>()
+        MutableLiveData<IngredientInfoUI>()
     }
 
     //Список параметров EAN для ингредиента

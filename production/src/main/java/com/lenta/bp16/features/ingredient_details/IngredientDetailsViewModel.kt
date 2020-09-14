@@ -7,7 +7,10 @@ import com.lenta.bp16.model.*
 import com.lenta.bp16.model.ingredients.MercuryPartDataInfo
 import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
 import com.lenta.bp16.model.ingredients.params.IngredientDataCompleteParams
+import com.lenta.bp16.model.ingredients.ui.MercuryPartDataInfoUI
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
+import com.lenta.bp16.model.ingredients.ui.OrderIngredientDataInfoUI
+import com.lenta.bp16.model.ingredients.ui.ZPartDataInfoUI
 import com.lenta.bp16.platform.Constants
 import com.lenta.bp16.platform.base.IZpartVisibleConditions
 import com.lenta.bp16.platform.navigation.IScreenNavigator
@@ -62,13 +65,13 @@ class IngredientDetailsViewModel : CoreViewModel(), IZpartVisibleConditions {
     var parentCode: String by Delegates.notNull()
 
     // выбранный ингредиент
-    val orderIngredient = MutableLiveData<OrderIngredientDataInfo>()
+    val orderIngredient = MutableLiveData<OrderIngredientDataInfoUI>()
 
     //Список параметров EAN для ингредиента
     val eanInfo = MutableLiveData<OrderByBarcodeUI>()
 
-    private val mercuryDataInfo = MutableLiveData<List<MercuryPartDataInfo>>()
-    override val zPartDataInfo = MutableLiveData<List<ZPartDataInfo>>()
+    private val mercuryDataInfo = MutableLiveData<List<MercuryPartDataInfoUI>>()
+    override val zPartDataInfo = MutableLiveData<List<ZPartDataInfoUI>>()
     private val addedAttribute = MutableLiveData<List<AddAttributeProdInfo>>()
     private val warehouseSelected = MutableLiveData<List<String>>()
 
@@ -176,10 +179,10 @@ class IngredientDetailsViewModel : CoreViewModel(), IZpartVisibleConditions {
 
     val ean = MutableLiveData("")
 
-    private fun getGoodTypeIcon(orderIngredientDataInfo: OrderIngredientDataInfo): GoodTypeIcon {
+    private fun getGoodTypeIcon(orderIngredientDataInfo: OrderIngredientDataInfoUI): GoodTypeIcon {
         return when {
-            !orderIngredientDataInfo.isVet.isNullOrBlank() -> GoodTypeIcon.VET
-            !orderIngredientDataInfo.isFact.isNullOrBlank() -> GoodTypeIcon.FACT
+            orderIngredientDataInfo.isVet.isSapTrue() -> GoodTypeIcon.VET
+            orderIngredientDataInfo.isFact.isSapTrue() -> GoodTypeIcon.FACT
             else -> GoodTypeIcon.PLAN
         }
     }
@@ -210,7 +213,7 @@ class IngredientDetailsViewModel : CoreViewModel(), IZpartVisibleConditions {
         } else {
             if (!orderIngredient.value?.isVet.isNullOrBlank()) {
                 mercuryDataInfo.value?.let { mercuryDataInfoList ->
-                    val producerNameList = mercuryDataInfoList.map { it.prodName.orEmpty() }.toMutableList()
+                    val producerNameList = mercuryDataInfoList.map { it.prodName }.toMutableList()
                     if (producerNameList.size > 1) {
                         producerNameList.add(0, Constants.CHOOSE_PRODUCER)
                     }
@@ -218,7 +221,7 @@ class IngredientDetailsViewModel : CoreViewModel(), IZpartVisibleConditions {
                 }
             } else {
                 zPartDataInfo.value?.let { zpartDataInfoList ->
-                    val producerNameList = zpartDataInfoList.map { it.prodName.orEmpty() }.toMutableList()
+                    val producerNameList = zpartDataInfoList.map { it.prodName }.toMutableList()
                     if (producerNameList.size > 1) {
                         producerNameList.add(0, Constants.CHOOSE_PRODUCER)
                     }
@@ -238,7 +241,7 @@ class IngredientDetailsViewModel : CoreViewModel(), IZpartVisibleConditions {
         } else {
             if (!orderIngredient.value?.isVet.isNullOrBlank()) {
                 mercuryDataInfo.value?.let {
-                    val productionDate = it.map { it.prodDate.orEmpty() }.toMutableList()
+                    val productionDate = it.map { it.prodDate }.toMutableList()
                     if (productionDate.size > 1) {
                         productionDate.add(0, Constants.CHOOSE_PRODUCTION_DATE)
                     }
@@ -246,7 +249,7 @@ class IngredientDetailsViewModel : CoreViewModel(), IZpartVisibleConditions {
                 }
             } else {
                 zPartDataInfo.value?.let {
-                    val productionDate = it.map { it.prodDate.orEmpty() }.toMutableList()
+                    val productionDate = it.map { it.prodDate }.toMutableList()
                     if (productionDate.size > 1) {
                         productionDate.add(0, Constants.CHOOSE_PRODUCTION_DATE)
                     }
@@ -297,7 +300,7 @@ class IngredientDetailsViewModel : CoreViewModel(), IZpartVisibleConditions {
         }.orEmpty()
     }
 
-    private suspend fun getZPartInfo(matnr: String): ZPartDataInfo? {
+    private suspend fun getZPartInfo(matnr: String): ZPartDataInfoUI? {
         return withContext(Dispatchers.IO) {
             zPartDataInfo.value?.filter { it.matnr == matnr }?.getOrNull(0)
         }

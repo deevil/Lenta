@@ -2,6 +2,8 @@ package com.lenta.bp16.model.ingredients
 
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import com.lenta.bp16.model.ingredients.ui.MaterialIngredientDataInfoUI
+import com.lenta.bp16.platform.converter.IConvertable
 import kotlinx.android.parcel.Parcelize
 
 /**
@@ -68,4 +70,19 @@ data class MaterialIngredientDataInfo(
          * */
         @SerializedName("MHDHB")
         val shelfLife: String?
-) : Parcelable
+) : Parcelable, IConvertable<MaterialIngredientDataInfoUI?> {
+    override fun convert(): MaterialIngredientDataInfoUI? {
+        return MaterialIngredientDataInfoUI(
+                ktsch = ktsch.orEmpty(),
+                lgort = lgort.orEmpty(),
+                ltxa1 = ltxa1.orEmpty(),
+                name = name.orEmpty(),
+                plan_qnt = plan_qnt.orEmpty(),
+                done_qnt = done_qnt.orEmpty(),
+                isZpart = isZpart.orEmpty(),
+                isVet = isVet.orEmpty(),
+                isFact = isFact.orEmpty(),
+                shelfLife = shelfLife.orEmpty()
+        )
+    }
+}

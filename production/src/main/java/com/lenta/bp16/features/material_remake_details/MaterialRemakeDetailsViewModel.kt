@@ -5,10 +5,12 @@ import androidx.lifecycle.switchMap
 import com.lenta.bp16.data.IScales
 import com.lenta.bp16.model.*
 import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
-import com.lenta.bp16.model.ingredients.MercuryPartDataInfo
-import com.lenta.bp16.model.ingredients.params.IngredientDataCompleteParams
 import com.lenta.bp16.model.ingredients.OrderByBarcode
+import com.lenta.bp16.model.ingredients.params.IngredientDataCompleteParams
+import com.lenta.bp16.model.ingredients.ui.MaterialIngredientDataInfoUI
+import com.lenta.bp16.model.ingredients.ui.MercuryPartDataInfoUI
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
+import com.lenta.bp16.model.ingredients.ui.ZPartDataInfoUI
 import com.lenta.bp16.platform.Constants
 import com.lenta.bp16.platform.base.IZpartVisibleConditions
 import com.lenta.bp16.platform.navigation.IScreenNavigator
@@ -64,7 +66,7 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
     var parentCode: String by Delegates.notNull()
 
     // выбранный ингредиент
-    val materialIngredient = MutableLiveData<MaterialIngredientDataInfo>()
+    val materialIngredient = MutableLiveData<MaterialIngredientDataInfoUI>()
 
     //Список параметров EAN для ингредиента
     val eanInfo = MutableLiveData<OrderByBarcodeUI>()
@@ -77,8 +79,8 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
         resourceManager.kgSuffix()
     }
 
-    private val mercuryDataInfo = MutableLiveData<List<MercuryPartDataInfo>>()
-    override val zPartDataInfo = MutableLiveData<List<ZPartDataInfo>>()
+    private val mercuryDataInfo = MutableLiveData<List<MercuryPartDataInfoUI>>()
+    override val zPartDataInfo = MutableLiveData<List<ZPartDataInfoUI>>()
     private val addedAttribute = MutableLiveData<List<AddAttributeProdInfo>>()
     private val warehouseSelected = MutableLiveData<List<String>>()
 
@@ -189,10 +191,10 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
         }
     }
 
-    private fun getGoodTypeIcon(materialIngredientDataInfo: MaterialIngredientDataInfo): GoodTypeIcon {
+    private fun getGoodTypeIcon(materialIngredientDataInfo: MaterialIngredientDataInfoUI): GoodTypeIcon {
         return when {
-            !materialIngredientDataInfo.isVet.isNullOrBlank() -> GoodTypeIcon.VET
-            !materialIngredientDataInfo.isFact.isNullOrBlank() -> GoodTypeIcon.FACT
+            materialIngredientDataInfo.isVet.isSapTrue() -> GoodTypeIcon.VET
+            materialIngredientDataInfo.isFact.isSapTrue() -> GoodTypeIcon.FACT
             else -> GoodTypeIcon.PLAN
         }
     }
@@ -223,7 +225,7 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
         } else {
             if (!materialIngredient.value?.isVet.isNullOrBlank()) {
                 mercuryDataInfo.value?.let {
-                    val producerNameList = it.map { it.prodName.orEmpty() }.toMutableList()
+                    val producerNameList = it.map { it.prodName }.toMutableList()
                     if (producerNameList.size > 1) {
                         producerNameList.add(0, Constants.CHOOSE_PRODUCER)
                     }
@@ -231,7 +233,7 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
                 }
             } else {
                 zPartDataInfo.value?.let {
-                    val producerNameList = it.map { it.prodName.orEmpty() }.toMutableList()
+                    val producerNameList = it.map { it.prodName }.toMutableList()
                     if (producerNameList.size > 1) {
                         producerNameList.add(0, Constants.CHOOSE_PRODUCER)
                     }
@@ -251,7 +253,7 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
         } else {
             if (!materialIngredient.value?.isVet.isNullOrBlank()) {
                 mercuryDataInfo.value?.let { mercuryDataInfoList ->
-                    val productionDate = mercuryDataInfoList.map { it.prodDate.orEmpty() }.toMutableList()
+                    val productionDate = mercuryDataInfoList.map { it.prodDate }.toMutableList()
                     if (productionDate.size > 1) {
                         productionDate.add(0, Constants.CHOOSE_PRODUCTION_DATE)
                     }
@@ -259,7 +261,7 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
                 }
             } else {
                 zPartDataInfo.value?.let { zpartDataInfoList ->
-                    val productionDate = zpartDataInfoList.map { it.prodDate.orEmpty() }.toMutableList()
+                    val productionDate = zpartDataInfoList.map { it.prodDate }.toMutableList()
                     if (productionDate.size > 1) {
                         productionDate.add(0, Constants.CHOOSE_PRODUCTION_DATE)
                     }
@@ -278,7 +280,7 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
         }.orEmpty()
     }
 
-    private suspend fun getZPartInfo(matnr: String): ZPartDataInfo? {
+    private suspend fun getZPartInfo(matnr: String): ZPartDataInfoUI? {
         return withContext(Dispatchers.IO) {
             zPartDataInfo.value?.filter { it.matnr == matnr }?.getOrNull(0)
         }

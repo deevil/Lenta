@@ -45,12 +45,12 @@ data class IngredientsDataListResult(
 
     override fun convert(): IngredientsDataListResultUI {
         return IngredientsDataListResultUI(
-                ordersIngredientsDataInfoList = ordersIngredientsDataInfoList.orEmpty(),
-                materialsIngredientsDataInfoList = materialsIngredientsDataInfoList.orEmpty(),
-                techOrdersDataInfoList = techOrdersDataInfoList.orEmpty(),
-                mercuryPartDataInfoList = mercuryPartDataInfoList.orEmpty(),
-                producerDataInfoList = producerDataInfoList.orEmpty(),
-                zPartDataInfoList = zPartDataInfoList.orEmpty(),
+                ordersIngredientsDataInfoList = ordersIngredientsDataInfoList.orEmpty().mapNotNull { it.convert() },
+                materialsIngredientsDataInfoList = materialsIngredientsDataInfoList.orEmpty().mapNotNull { it.convert() },
+                techOrdersDataInfoList = techOrdersDataInfoList.orEmpty().mapNotNull { it.convert() },
+                mercuryPartDataInfoList = mercuryPartDataInfoList.orEmpty().mapNotNull { it.convert() },
+                producerDataInfoList = producerDataInfoList.orEmpty().mapNotNull { it.convert() },
+                zPartDataInfoList = zPartDataInfoList.orEmpty().mapNotNull { it.convert() },
                 orderByBarcode = orderByBarcode.orEmpty().mapNotNull { it.convert() },
                 retCodes = retCodes.orEmpty()
         )

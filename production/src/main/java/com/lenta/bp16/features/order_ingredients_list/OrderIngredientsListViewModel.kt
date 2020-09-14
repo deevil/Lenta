@@ -11,8 +11,7 @@ import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
 import com.lenta.bp16.model.ingredients.params.GetIngredientDataParams
 import com.lenta.bp16.model.ingredients.params.UnblockIngredientsParams
 import com.lenta.bp16.model.ingredients.params.WarehouseParam
-import com.lenta.bp16.model.ingredients.ui.ItemOrderIngredientUi
-import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
+import com.lenta.bp16.model.ingredients.ui.*
 import com.lenta.bp16.model.warehouse.IWarehousePersistStorage
 import com.lenta.bp16.platform.extention.getFieldWithSuffix
 import com.lenta.bp16.platform.extention.getItemName
@@ -67,27 +66,27 @@ class OrderIngredientsListViewModel : CoreViewModel() {
 
     // выбранный ингредиент
     val ingredient by unsafeLazy {
-        MutableLiveData<IngredientInfo>()
+        MutableLiveData<IngredientInfoUI>()
     }
 
-    private val allOrderIngredients: MutableLiveData<List<OrderIngredientDataInfo>> by unsafeLazy {
-        MutableLiveData<List<OrderIngredientDataInfo>>()
+    private val allOrderIngredients: MutableLiveData<List<OrderIngredientDataInfoUI>> by unsafeLazy {
+        MutableLiveData<List<OrderIngredientDataInfoUI>>()
     }
 
     private val allEanIngredients: MutableLiveData<List<OrderByBarcodeUI>> by unsafeLazy {
         MutableLiveData<List<OrderByBarcodeUI>>()
     }
 
-    private val allProducersList: MutableLiveData<List<ProducerDataInfo>> by unsafeLazy {
-        MutableLiveData<List<ProducerDataInfo>>()
+    private val allProducersList: MutableLiveData<List<ProducerDataInfoUI>> by unsafeLazy {
+        MutableLiveData<List<ProducerDataInfoUI>>()
     }
 
-    private val allMercuryPartDataInfoList: MutableLiveData<List<MercuryPartDataInfo>> by unsafeLazy {
-        MutableLiveData<List<MercuryPartDataInfo>>()
+    private val allMercuryPartDataInfoList: MutableLiveData<List<MercuryPartDataInfoUI>> by unsafeLazy {
+        MutableLiveData<List<MercuryPartDataInfoUI>>()
     }
 
-    private val zPartDataInfoList: MutableLiveData<List<ZPartDataInfo>> by unsafeLazy {
-        MutableLiveData<List<ZPartDataInfo>>()
+    private val zPartDataInfoList: MutableLiveData<List<ZPartDataInfoUI>> by unsafeLazy {
+        MutableLiveData<List<ZPartDataInfoUI>>()
     }
 
     fun loadOrderIngredientsList() = launchUITryCatch {
@@ -172,7 +171,7 @@ class OrderIngredientsListViewModel : CoreViewModel() {
         ingredient.value?.let { selectedIngredient ->
             allOrderIngredients.value?.getOrNull(position)?.let { orderDataInfo ->
                 allEanIngredients.value?.getOrNull(position)?.let { barcode ->
-                    navigator.openIngredientDetailsScreen(orderDataInfo, selectedIngredient.text3.orEmpty(), barcode)
+                    navigator.openIngredientDetailsScreen(orderDataInfo, selectedIngredient.text3, barcode)
                 } ?: navigator.showNotFoundedBarcodeForPosition()
             } ?: navigator.showAlertIngredientNotFound()
         }

@@ -9,7 +9,7 @@ interface IZpartVisibleConditions : IZpartInfo {
         get() {
             return zPartDataInfo.value?.let { zPartDataInfoValue ->
 
-                val producersList = zPartDataInfoValue.map { it.prodName.orEmpty() }
+                val producersList = zPartDataInfoValue.map { it.prodName }
 
                 var fullItemCount = 0
                 for (zPartName in producersList) {

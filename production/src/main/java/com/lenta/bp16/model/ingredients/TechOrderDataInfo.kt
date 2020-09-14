@@ -1,6 +1,8 @@
 package com.lenta.bp16.model.ingredients
 
 import com.google.gson.annotations.SerializedName
+import com.lenta.bp16.model.ingredients.ui.TechOrderDataInfoUI
+import com.lenta.bp16.platform.converter.IConvertable
 
 /**
  * Список заказов по переделу
@@ -25,4 +27,14 @@ data class TechOrderDataInfo(
         /** Плановое количество ингредиента в заказе */
         @SerializedName("PLAN_QNT")
         val plan_qnt: String?
-)
+) : IConvertable<TechOrderDataInfoUI?> {
+    override fun convert(): TechOrderDataInfoUI? {
+        return TechOrderDataInfoUI(
+                ktsch = ktsch.orEmpty(),
+                text1 = text1.orEmpty(),
+                text2 = text2.orEmpty(),
+                text3 = text3.orEmpty(),
+                plan_qnt = plan_qnt.orEmpty()
+        )
+    }
+}

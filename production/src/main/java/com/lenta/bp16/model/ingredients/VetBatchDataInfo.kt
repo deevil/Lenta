@@ -1,6 +1,8 @@
 package com.lenta.bp16.model.ingredients
 
 import com.google.gson.annotations.SerializedName
+import com.lenta.bp16.model.ingredients.ui.VetBatchDataInfoUI
+import com.lenta.bp16.platform.converter.IConvertable
 
 data class VetBatchDataInfo(
 
@@ -19,4 +21,13 @@ data class VetBatchDataInfo(
         /** Дата производства */
         @SerializedName("PROD_DATE")
         val prodDate: String?
-)
+) : IConvertable<VetBatchDataInfoUI?> {
+    override fun convert(): VetBatchDataInfoUI? {
+        return VetBatchDataInfoUI(
+                entryId = entryId.orEmpty(),
+                prodName = prodName.orEmpty(),
+                prodCode = prodCode.orEmpty(),
+                prodDate = prodDate.orEmpty()
+        )
+    }
+}

@@ -8,6 +8,7 @@ import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentMaterialRemakeDetailsBinding
 import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
 import com.lenta.bp16.model.ingredients.OrderByBarcode
+import com.lenta.bp16.model.ingredients.ui.MaterialIngredientDataInfoUI
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
 import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener
@@ -32,8 +33,8 @@ class MaterialRemakeDetailsFragment : CoreFragment<FragmentMaterialRemakeDetails
         return SCREEN_NUMBER
     }
 
-    private val materialIngredientDataInfo: MaterialIngredientDataInfo by unsafeLazy {
-        arguments?.getParcelable<MaterialIngredientDataInfo>(KEY_INGREDIENT)
+    private val materialIngredientDataInfo: MaterialIngredientDataInfoUI by unsafeLazy {
+        arguments?.getParcelable<MaterialIngredientDataInfoUI>(KEY_INGREDIENT)
                 ?: throw IllegalArgumentException("There is no argument value with key $KEY_INGREDIENT")
     }
 
@@ -113,7 +114,7 @@ class MaterialRemakeDetailsFragment : CoreFragment<FragmentMaterialRemakeDetails
         private const val KEY_PARENT_NAME = "KEY_PARENT_NAME"
         private const val KEY_EAN_INFO = "KEY_EAN_INFO"
 
-        fun newInstance(selectedIngredient: MaterialIngredientDataInfo, parentCode: String, parentName: String, barcode: OrderByBarcodeUI) =
+        fun newInstance(selectedIngredient: MaterialIngredientDataInfoUI, parentCode: String, parentName: String, barcode: OrderByBarcodeUI) =
                 MaterialRemakeDetailsFragment().apply {
                     arguments = bundleOf(
                             KEY_INGREDIENT to selectedIngredient,

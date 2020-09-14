@@ -2,6 +2,8 @@ package com.lenta.bp16.model
 
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import com.lenta.bp16.model.ingredients.ui.ZPartDataInfoUI
+import com.lenta.bp16.platform.converter.IConvertable
 import kotlinx.android.parcel.Parcelize
 
 /**
@@ -29,4 +31,14 @@ data class ZPartDataInfo(
         /** Дата производства */
         @SerializedName("PROD_DATE")
         val prodDate: String?
-) : Parcelable
+) : Parcelable, IConvertable<ZPartDataInfoUI?> {
+    override fun convert(): ZPartDataInfoUI? {
+        return ZPartDataInfoUI(
+                matnr = matnr.orEmpty(),
+                batchId = batchId.orEmpty(),
+                prodCode = prodCode.orEmpty(),
+                prodName = prodName.orEmpty(),
+                prodDate = prodDate.orEmpty()
+        )
+    }
+}

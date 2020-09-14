@@ -5,8 +5,7 @@ import android.view.View
 import androidx.core.os.bundleOf
 import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentMaterialAttributeBinding
-import com.lenta.bp16.features.material_remake_details.MaterialRemakeDetailsFragment
-import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
+import com.lenta.bp16.model.ingredients.ui.MaterialIngredientDataInfoUI
 import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -23,8 +22,8 @@ class MaterialAttributeFragment : CoreFragment<FragmentMaterialAttributeBinding,
                 ?: throw IllegalArgumentException("There is no argument value with key $KEY_PARENT_CODE")
     }
 
-    private val materialIngredientDataInfo: MaterialIngredientDataInfo by unsafeLazy {
-        arguments?.getParcelable<MaterialIngredientDataInfo>(KEY_INGREDIENT)
+    private val materialIngredientDataInfo: MaterialIngredientDataInfoUI by unsafeLazy {
+        arguments?.getParcelable<MaterialIngredientDataInfoUI>(KEY_INGREDIENT)
                 ?: throw IllegalArgumentException("There is no argument value with key $KEY_INGREDIENT")
     }
 
@@ -72,7 +71,7 @@ class MaterialAttributeFragment : CoreFragment<FragmentMaterialAttributeBinding,
         private const val KEY_INGREDIENT = "KEY_INGREDIENT"
         private const val KEY_PARENT_CODE = "KEY_PARENT_CODE"
 
-        fun newInstance(selectedIngredient: MaterialIngredientDataInfo, parentCode: String) = MaterialAttributeFragment().apply {
+        fun newInstance(selectedIngredient: MaterialIngredientDataInfoUI, parentCode: String) = MaterialAttributeFragment().apply {
             arguments = bundleOf(
                     KEY_INGREDIENT to selectedIngredient,
                     KEY_PARENT_CODE to parentCode

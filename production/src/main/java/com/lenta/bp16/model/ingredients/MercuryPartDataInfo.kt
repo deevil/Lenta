@@ -2,6 +2,8 @@ package com.lenta.bp16.model.ingredients
 
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import com.lenta.bp16.model.ingredients.ui.MercuryPartDataInfoUI
+import com.lenta.bp16.platform.converter.IConvertable
 import kotlinx.android.parcel.Parcelize
 
 /**
@@ -30,4 +32,14 @@ data class MercuryPartDataInfo(
         @SerializedName("PROD_DATE")
         val prodDate: String?
 
-) : Parcelable
+) : Parcelable, IConvertable<MercuryPartDataInfoUI?> {
+    override fun convert(): MercuryPartDataInfoUI? {
+        return MercuryPartDataInfoUI(
+                matnr = matnr.orEmpty(),
+                entryId = entryId.orEmpty(),
+                zProd = zProd.orEmpty(),
+                prodName = prodName.orEmpty(),
+                prodDate = prodDate.orEmpty()
+        )
+    }
+}

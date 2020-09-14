@@ -11,8 +11,7 @@ import com.lenta.bp16.model.ingredients.MercuryPartDataInfo
 import com.lenta.bp16.model.ingredients.params.GetIngredientDataParams
 import com.lenta.bp16.model.ingredients.params.UnblockIngredientsParams
 import com.lenta.bp16.model.ingredients.params.WarehouseParam
-import com.lenta.bp16.model.ingredients.ui.ItemMaterialIngredientUi
-import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
+import com.lenta.bp16.model.ingredients.ui.*
 import com.lenta.bp16.model.warehouse.IWarehousePersistStorage
 import com.lenta.bp16.platform.extention.getFieldWithSuffix
 import com.lenta.bp16.platform.extention.getModeType
@@ -65,12 +64,12 @@ class MaterialRemakesListViewModel : CoreViewModel() {
 
 
     // выбранный ингредиент
-    val ingredient = MutableLiveData<IngredientInfo>()
+    val ingredient = MutableLiveData<IngredientInfoUI>()
     private val allEanMaterialIngredients = MutableLiveData<List<OrderByBarcodeUI>>()
-    private val allMaterialIngredients = MutableLiveData<List<MaterialIngredientDataInfo>>()
-    private val allProducersList = MutableLiveData<List<ProducerDataInfo>>()
-    private val allMercuryPartDataInfoList = MutableLiveData<List<MercuryPartDataInfo>>()
-    private val zPartDataInfoList = MutableLiveData<List<ZPartDataInfo>>()
+    private val allMaterialIngredients = MutableLiveData<List<MaterialIngredientDataInfoUI>>()
+    private val allProducersList = MutableLiveData<List<ProducerDataInfoUI>>()
+    private val allMercuryPartDataInfoList = MutableLiveData<List<MercuryPartDataInfoUI>>()
+    private val zPartDataInfoList = MutableLiveData<List<ZPartDataInfoUI>>()
 
     // суффикс
     val suffix: String by unsafeLazy {
@@ -116,8 +115,8 @@ class MaterialRemakesListViewModel : CoreViewModel() {
             asyncLiveData<List<ItemMaterialIngredientUi>> {
                 emit(it.mapIndexed { index, materialIngredientDataInfo ->
                     ItemMaterialIngredientUi(
-                            lgort = materialIngredientDataInfo.lgort.orEmpty(),
-                            desc = materialIngredientDataInfo.ltxa1.orEmpty(),
+                            lgort = materialIngredientDataInfo.lgort,
+                            desc = materialIngredientDataInfo.ltxa1,
                             position = (index + 1).toString(),
                             plan = getFieldWithSuffix(materialIngredientDataInfo.plan_qnt, suffix),
                             fact = getFieldWithSuffix(materialIngredientDataInfo.done_qnt, suffix)

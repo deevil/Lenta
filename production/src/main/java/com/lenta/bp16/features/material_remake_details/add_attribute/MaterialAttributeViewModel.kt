@@ -8,6 +8,9 @@ import com.lenta.bp16.model.IAttributeManager
 import com.lenta.bp16.model.ProducerDataInfo
 import com.lenta.bp16.model.ZPartDataInfo
 import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
+import com.lenta.bp16.model.ingredients.ui.MaterialIngredientDataInfoUI
+import com.lenta.bp16.model.ingredients.ui.ProducerDataInfoUI
+import com.lenta.bp16.model.ingredients.ui.ZPartDataInfoUI
 import com.lenta.bp16.platform.base.IZpartVisibleConditions
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.repository.IDatabaseRepository
@@ -57,22 +60,22 @@ class MaterialAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
     @Inject
     lateinit var setAddAttributeInfoUseCase: SetAddAttributeInfoUseCase
 
-    private val producerDataInfo = MutableLiveData<List<ProducerDataInfo>>()
-    override val zPartDataInfo = MutableLiveData<List<ZPartDataInfo>>()
-    val materialIngredient = MutableLiveData<MaterialIngredientDataInfo>()
+    private val producerDataInfo = MutableLiveData<List<ProducerDataInfoUI>>()
+    override val zPartDataInfo = MutableLiveData<List<ZPartDataInfoUI>>()
+    val materialIngredient = MutableLiveData<MaterialIngredientDataInfoUI>()
 
     // значение параметра OBJ_CODE из родительского компонента заказа
     var parentCode: String by Delegates.notNull()
     val producerNameList = producerDataInfo.switchMap {
         asyncLiveData<List<String>> {
-            val producerNameList = it.map { it.prodName.orEmpty() }
+            val producerNameList = it.map { it.prodName }
             emit(producerNameList)
         }
     }
 
     val producerCodeList = producerDataInfo.switchMap {
         asyncLiveData<List<String>> {
-            val producerCodeList = it.map { it.prodCode.orEmpty() }
+            val producerCodeList = it.map { it.prodCode }
             emit(producerCodeList)
         }
     }
@@ -81,8 +84,8 @@ class MaterialAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
 
     private var productionDate = ""
     private var productionTime = ""
-    val dateInfoField = MutableLiveData<String>("")
-    val timeField = MutableLiveData<String>("")
+    val dateInfoField = MutableLiveData<String>()
+    val timeField = MutableLiveData<String>()
 
     /** Условие отображения ошибки, если лист производителей заполнен с пробелами */
     private val alertNotFoundProducerName = MutableLiveData<Boolean>()
