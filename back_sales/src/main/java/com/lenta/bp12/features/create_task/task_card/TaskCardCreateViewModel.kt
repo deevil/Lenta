@@ -1,7 +1,7 @@
 package com.lenta.bp12.features.create_task.task_card
 
 import androidx.lifecycle.MutableLiveData
-import com.lenta.bp12.model.ICreateTaskManager
+import com.lenta.bp12.managers.interfaces.ICreateTaskManager
 import com.lenta.bp12.model.pojo.ReturnReason
 import com.lenta.bp12.model.pojo.TaskType
 import com.lenta.bp12.model.pojo.create_task.TaskCreate

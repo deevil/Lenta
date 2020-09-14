@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.lenta.bp12.features.create_task.marked_good_info.MarkedGoodInfoCreateFragment">
+
+    <data>
+        <variable
+            name="vm"
+            type="com.lenta.bp12.features.create_task.marked_good_info.MarkedGoodInfoCreateViewModel" />
+
+        <variable
+            name="viewPagerSettings"
+            type="com.lenta.shared.utilities.databinding.ViewPagerSettings" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/view_pager"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            app:pageSelectionListener="@{vm}"
+            app:tabPosition="@{vm.selectedPage}"
+            app:viewPagerSettings="@{viewPagerSettings}">
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tab_strip"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/tab_height"
+                android:background="@color/colorBottomPanelBackground"
+                android:elevation="0dp"
+                app:tabIndicatorColor="@color/colorTabIndicator"
+                app:tabIndicatorHeight="@dimen/tab_indicator_height"
+                app:tabMode="scrollable"
+                app:tabSelectedTextColor="@color/colorTabIndicator"
+                app:tabTextAppearance="@style/TabLayoutStyle"
+                app:tabTextColor="@color/colorWhite"
+                tools:targetApi="lollipop" />
+
+        </androidx.viewpager.widget.ViewPager>
+
+
+        <!-- Блок с иконками -->
+        <LinearLayout style="@style/BottomIconBarStyle">
+
+            <LinearLayout style="@style/BottomIconContainerStyle">
+
+                <TextView
+                    style="@style/BottomCircleIconStyle"
+                    app:matrixType="@{vm.good.matrix}"
+                    tools:text="A" />
+
+            </LinearLayout>
+
+            <LinearLayout style="@style/BottomIconContainerStyle">
+
+                <TextView
+                    style="@style/BottomCircleIconStyle"
+                    app:section="@{vm.good.section}"
+                    tools:text="02" />
+
+            </LinearLayout>
+
+            <ImageView
+                style="@style/BottomIconStyle"
+                app:goodKindIcon="@{vm.good.kind}"
+                tools:src="@drawable/ic_excise_alcohol_white_32dp" />
+
+            <FrameLayout style="@style/BottomIconStyle">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_clear_basket_32dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/size_2dp"
+                    android:text="@{vm.basketNumber}"
+                    android:textColor="@color/button_bg_color"
+                    android:textSize="@dimen/text_12sp"
+                    tools:text="5" />
+
+            </FrameLayout>
+
+            <ImageView
+                style="@style/BottomIconStyle"
+                android:onClick="@{(v) -> vm.navigator.openBoxInfoScreen()}"
+                android:src="@drawable/ic_scan_box_white_32dp" />
+
+            <ImageView
+                style="@style/BottomIconStyle"
+                android:onClick="@{(v) -> vm.navigator.openESInfoScreen()}"
+                android:src="@drawable/ic_scan_barcode_es_white_32dp" />
+
+            <ImageView
+                style="@style/BottomIconStyle"
+                android:onClick="@{(v) -> vm.navigator.openEanInfoScreen()}"
+                android:src="@drawable/ic_scan_barcode_white_32dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</layout>

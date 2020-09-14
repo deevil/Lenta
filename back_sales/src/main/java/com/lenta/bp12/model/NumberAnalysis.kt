@@ -4,10 +4,7 @@ import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.constants.Constants.TOBACCO_BOX_MARK_RANGE_21_28
 import com.lenta.shared.platform.constants.Constants.TOBACCO_MARK_BLOCK_OR_BOX_RANGE_30_44
 import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
-import com.lenta.shared.utilities.Logg
-import com.lenta.shared.utilities.getMaterialInCommonFormat
-import com.lenta.shared.utilities.isShoesMark
-import com.lenta.shared.utilities.isTobaccoCartonMark
+import com.lenta.shared.utilities.*
 
 fun actionByNumber(
         number: String,
@@ -58,7 +55,7 @@ fun actionByNumber(
         if (isShoesMark(number)) {
             funcForMark?.invoke(number)
         } else when (numberLength) {
-            Constants.MARK_150, Constants.MARK_68 -> {
+            Constants.EXCISE_MARK_150, Constants.EXCISE_MARK_68 -> {
                 funcForExcise?.invoke(number) ?: funcForNotValidBarFormat()
             }
             in TOBACCO_BOX_MARK_RANGE_21_28 -> {
@@ -69,7 +66,7 @@ fun actionByNumber(
                 funcForMark?.invoke(number) ?: funcForNotValidBarFormat()
             }
             else -> {
-                if (isTobaccoCartonMark(number)) {
+                if (isCigarettesBox(number)) {
                     funcForMark?.invoke(number) ?: funcForNotValidBarFormat()
                 } else {
                     funcForNotValidBarFormat()

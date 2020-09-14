@@ -168,9 +168,14 @@ fun ZmpUtz14V001.getParamGrzPerishableHH(): String? {
     return getParams("GRZ_PERISHABLE_HH").firstOrNull()
 }
 
+fun ZmpUtz14V001.getSpecialTaskTypes(): List<String> {
+    return getParams("WOB_SPEC_TASK_TYPE")
+}
+
 fun ZmpUtz14V001.getBKSBasketVolume(): Double? {
     return getParams("BKS_PALLET_VOL_KUBM").firstOrNull()?.toDoubleOrNull()
 }
+
 private fun ZmpUtz14V001.getParams(paramName: String): List<String> {
     @Suppress("INACCESSIBLE_TYPE")
     return localHelper_ET_PARAMS.getWhere("PARAMNAME = \"$paramName\"").map { it.paramvalue }

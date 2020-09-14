@@ -23,7 +23,6 @@ class ScanInfoNetRequest @Inject constructor(
     companion object {
         private const val RESOURCE_NAME = "ZMP_UTZ_100_V001"
     }
-
 }
 
 data class ScanInfoParams(
@@ -81,7 +80,7 @@ data class ScanInfoResult(
         @SerializedName("ET_PROD_TEXT")
         val producers: List<ProducerInfo>,
         /** Номер партии */
-        @SerializedName("EV_ZCHARG")
+        @SerializedName("ET_ZCHARG")
         val partNumber: String,
         /** Код возврата */
         @SerializedName("EV_RETCODE")

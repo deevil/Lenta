@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.features.good_information.base.BaseProductInfoViewModel
-import com.lenta.bp10.models.StampCollector
+import com.lenta.bp10.models.AlcoholStampCollector
 import com.lenta.bp10.models.repositories.ITaskRepository
 import com.lenta.bp10.models.task.ProcessExciseAlcoProductService
 import com.lenta.bp10.models.task.TaskDescription
@@ -28,14 +28,13 @@ class ExciseAlcoInfoViewModel : BaseProductInfoViewModel() {
         processServiceManager.getWriteOffTask()!!.processExciseAlcoProduct(productInfo.value!!)!!
     }
 
-    private val stampCollector: StampCollector by lazy {
-        StampCollector(processExciseAlcoProductService)
+    private val alcoholStampCollector: AlcoholStampCollector by lazy {
+        AlcoholStampCollector(processExciseAlcoProductService)
     }
 
     init {
         launchUITryCatch {
             exciseAlcoDelegate.init(
-                    viewModelScope = this@ExciseAlcoInfoViewModel::viewModelScope,
                     handleNewStamp = this@ExciseAlcoInfoViewModel::handleNewStamp,
                     tkNumber = getTaskDescription().tkNumber,
                     materialNumber = productInfo.value!!.materialNumber
@@ -76,29 +75,25 @@ class ExciseAlcoInfoViewModel : BaseProductInfoViewModel() {
 
     private fun addGood(): Boolean {
         countValue.value?.let {
-
             if (enabledApplyButton.value != true && it != 0.0) {
-                if (getSelectedReason() === WriteOffReason.empty) {
-                    screenNavigator.openNotPossibleSaveWithoutReasonScreen()
-                } else {
-                    screenNavigator.openNotPossibleSaveNegativeQuantityScreen()
-                }
+                showNotPossibleSaveScreen()
                 return false
             }
 
             if (it != 0.0) {
-                stampCollector.processAll(getSelectedReason())
+                alcoholStampCollector.processAll(getSelectedReason())
             }
 
             count.value = ""
 
             return true
         }
+
         return false
     }
 
     private fun handleNewStamp(isBadStamp: Boolean) {
-        if (!stampCollector.add(
+        if (!alcoholStampCollector.add(
                         materialNumber = productInfo.value!!.materialNumber,
                         setMaterialNumber = "",
                         writeOffReason = getSelectedReason().code,
@@ -110,7 +105,7 @@ class ExciseAlcoInfoViewModel : BaseProductInfoViewModel() {
 
 
     override fun onBackPressed(): Boolean {
-        if (stampCollector.isNotEmpty()) {
+        if (alcoholStampCollector.isNotEmpty()) {
             screenNavigator.openConfirmationToBackNotEmptyStampsScreen {
                 screenNavigator.goBack()
             }
@@ -122,7 +117,7 @@ class ExciseAlcoInfoViewModel : BaseProductInfoViewModel() {
 
     override fun onScanResult(data: String) {
         if (data.length > 60) {
-            if (stampCollector.prepare(stampCode = data)) {
+            if (alcoholStampCollector.prepare(stampCode = data)) {
                 exciseAlcoDelegate.searchExciseStamp(data)
             } else {
                 screenNavigator.openAlertDoubleScanStamp()
@@ -146,11 +141,11 @@ class ExciseAlcoInfoViewModel : BaseProductInfoViewModel() {
     }
 
     override fun initCountLiveData(): MutableLiveData<String> {
-        return stampCollector.observeCount().map { it.toStringFormatted() }
+        return alcoholStampCollector.observeCount().map { it.toStringFormatted() }
     }
 
     fun onClickRollBack() {
-        stampCollector.rollback()
+        alcoholStampCollector.rollback()
     }
 
 }

@@ -118,9 +118,11 @@
     <string name="product_search">Поиск товара</string>
     <string name="sap_code">SAP-код</string>
     <string name="barcode">Штрихкод</string>
+    <string name="damaged">Повреждена</string>
     <string name="general_product">Обычный товар</string>
     <string name="excise_alco">Акцизный алкоголь</string>
     <string name="non_excise_alco">Не акцизный алкоголь</string>
+    <string name="marked_good">Маркированный товар</string>
     <string name="marks_comp_already_scanned">Требуемое количество АМ для этой причины списания уже отсканировано</string>
     <string name="another_market_stamp">Отсканированная марка не обнаружена на остатках магазина, отложите товар. Добавить эту марку в проблемные?</string>
     <string name="another_product_stamp">Марка принадлежит товару «%s», отложите бутылку и проведите расследование</string>
@@ -207,9 +209,13 @@
     <string name="app_update">Обновление версии</string>
     <string name="reset">Сбросить</string>
     <string name="stickers">Этикетки</string>
+    <string name="marking">Маркировка</string>
     <string name="marking_goods">Маркированный товар</string>
     <string name="exceptions_shelf_life">Исключение по СГ</string>
     <string name="data_retrieval_error">Ошибка получения данных</string>
     <string name="change_label_printer">Смена принтера этикеток</string>
     <string name="open">Открыть</string>
+    <string name="twelve_characters_entered">Введено 12 знаков. Какой код вы ввели?</string>
+    <string name="incorrect_ean_format">Неверный формат штрихкода</string>
+
 </resources>

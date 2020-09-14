@@ -81,6 +81,7 @@
     <string name="box_already_scanned_delete">Отсканированная коробка уже была добавлена в задание. Удалить коробку?</string>
     <string name="scanned_wrong_mrc">Отсканированный МРЦ товара, 1%s 2%s, не соответствует МРЦ заказа.</string>
     <string name="no_settings_for_that_markType">Не заведена настройка присвоения группы маркировки текущему типу маркировки</string>
+    <string name="scanned_mark_with_different_mrc">Отсканирована марка с МРЦ, отличающаяся от МРЦ текущей корзинки. Сохранить подсчет текущей корзинки и открыть другую?</string>
 
     // Описание иконок
     <string name="alcohol_good">Алкогольный товар</string>

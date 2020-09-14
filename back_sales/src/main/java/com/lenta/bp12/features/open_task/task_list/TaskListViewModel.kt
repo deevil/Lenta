@@ -1,8 +1,8 @@
 package com.lenta.bp12.features.open_task.task_list
 
 import androidx.lifecycle.MutableLiveData
+import com.lenta.bp12.managers.interfaces.IOpenTaskManager
 import com.lenta.bp12.model.BlockType
-import com.lenta.bp12.model.IOpenTaskManager
 import com.lenta.bp12.model.TaskSearchMode
 import com.lenta.bp12.model.pojo.open_task.TaskOpen
 import com.lenta.bp12.platform.navigation.IScreenNavigator
