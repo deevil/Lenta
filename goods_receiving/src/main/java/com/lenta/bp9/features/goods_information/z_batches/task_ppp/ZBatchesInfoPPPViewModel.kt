@@ -4,8 +4,8 @@ import android.annotation.SuppressLint
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
-import com.lenta.bp9.features.goods_information.base.BaseGoodsInfo
 import com.lenta.bp9.features.delegates.SearchProductDelegate
+import com.lenta.bp9.features.goods_information.base.BaseGoodsInfo
 import com.lenta.bp9.model.processing.ProcessZBatchesPPPService
 import com.lenta.bp9.model.task.PartySignsTypeOfZBatches
 import com.lenta.bp9.model.task.TaskProductInfo
@@ -248,7 +248,8 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
 
             paramGrsGrundNeg.value = dataBase.getParamGrsGrundNeg().orEmpty()
 
-            val paramGrzPerishableHH = (dataBase.getParamGrzPerishableHH()?.toDoubleOrNull() ?: 0.0) /24
+            val paramGrzPerishableHH = (dataBase.getParamGrzPerishableHH()?.toDoubleOrNull()
+                    ?: 0.0) / 24
             val generalShelfLifeValue = generalShelfLife.value?.toDoubleOrNull() ?: 0.0
             isVisibilityEnteredTime.value = generalShelfLifeValue <= paramGrzPerishableHH
         }
@@ -562,7 +563,8 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
         val enteredCount = countValue.value ?: 0.0
         //блок 6.187
         val productOrderQuantity = productInfo.value?.orderQuantity?.toDoubleOrNull() ?: 0.0
-        val productOverdToleranceLimit = productInfo.value?.overdToleranceLimit?.toDoubleOrNull() ?: 0.0
+        val productOverdToleranceLimit = productInfo.value?.overdToleranceLimit?.toDoubleOrNull()
+                ?: 0.0
         val countOverdelivery = productOrderQuantity + (productOverdToleranceLimit / 100) * productOrderQuantity
 
         //блок 6.190
@@ -642,7 +644,7 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
     }
 
     private fun getPartySignsType(): PartySignsTypeOfZBatches {
-        return when(currentTermControlCode) {
+        return when (currentTermControlCode) {
             TERM_CONTROL_CODE_SHELF_LIFE -> PartySignsTypeOfZBatches.ShelfLife
             TERM_CONTROL_CODE_PRODUCTION_DATE -> PartySignsTypeOfZBatches.ProductionDate
             else -> PartySignsTypeOfZBatches.None
