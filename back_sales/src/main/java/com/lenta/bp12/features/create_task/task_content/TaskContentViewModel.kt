@@ -358,9 +358,7 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                             markTypeGroup = database.getMarkTypeGroupByMarkType(markType)
                     )
 
-                    if (good.kind == GoodKind.EXCISE) {
-                        navigator.showForExciseGoodNeedScanFirstMark()
-                    }
+
 
                     setFoundGood(good)
                 }.orIfNull {

@@ -335,6 +335,10 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
     private fun setFoundGood(foundGood: Good) {
         manager.updateCurrentGood(foundGood)
 
+        if (foundGood.kind == GoodKind.EXCISE) {
+            navigator.showForExciseGoodNeedScanFirstMark()
+        }
+
         setScreenStatus(foundGood)
         updateProviders(foundGood.providers)
         updateProducers(foundGood.producers)
