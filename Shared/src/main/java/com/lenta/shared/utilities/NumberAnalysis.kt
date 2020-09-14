@@ -39,34 +39,46 @@ fun actionByNumber(
     }
 
     if (isShoesMark(number)) {
-        val matchResult = Regex(Constants.SHOES_MARK_PATTERN).find(number)
-        matchResult?.let {
-            val (markWithoutTail, ean, _, _, _, _) = it.destructured
-            Logg.d { "--> Shoes mark without tail = $markWithoutTail" }
-            funcForShoes?.invoke(ean, markWithoutTail) ?: funcForNotValidFormat()
-        } ?: funcForNotValidFormat()
+        runCatching {
+            val matchResult = Regex(Constants.SHOES_MARK_PATTERN).find(number)
+            matchResult?.let {
+                val (markWithoutTail, ean, _, _, _, _) = it.destructured
+                Logg.d { "--> Shoes mark without tail = $markWithoutTail" }
+                funcForShoes?.invoke(ean, markWithoutTail) ?: funcForNotValidFormat()
+            } ?: funcForNotValidFormat()
+        }.onFailure {
+            Logg.e { "e: $it" }
+        }
 
         return
     }
 
     if (isCigarettesMark(number)) {
-        val matchResult = Regex(Constants.CIGARETTES_MARK_PATTERN).find(number)
-        matchResult?.let {
-            val (markWithoutTail, _, _, _, _, _) = it.destructured
-            Logg.d { "--> Cigarette mark without tail = $markWithoutTail" }
-            funcForCigarettes?.invoke(markWithoutTail) ?: funcForNotValidFormat()
-        } ?: funcForNotValidFormat()
+        runCatching {
+            val matchResult = Regex(Constants.CIGARETTES_MARK_PATTERN).find(number)
+            matchResult?.let {
+                val (markWithoutTail, _, _, _, _, _) = it.destructured
+                Logg.d { "--> Cigarette mark without tail = $markWithoutTail" }
+                funcForCigarettes?.invoke(markWithoutTail) ?: funcForNotValidFormat()
+            } ?: funcForNotValidFormat()
+        }.onFailure {
+            Logg.e { "e: $it" }
+        }
 
         return
     }
 
     if (isCigarettesBox(number)) {
-        val matchResult = Regex(Constants.CIGARETTES_BOX_PATTERN).find(number)
-        matchResult?.let {
-            val (markWithoutTail, _, _, _, _, _) = it.destructured
-            Logg.d { "--> Cigarette box mark without tail = $markWithoutTail" }
-            funcForCigaretteBox?.invoke(markWithoutTail) ?: funcForNotValidFormat()
-        } ?: funcForNotValidFormat()
+        runCatching {
+            val matchResult = Regex(Constants.CIGARETTES_BOX_PATTERN).find(number)
+            matchResult?.let {
+                val (markWithoutTail, _, _, _, _, _) = it.destructured
+                Logg.d { "--> Cigarette box mark without tail = $markWithoutTail" }
+                funcForCigaretteBox?.invoke(markWithoutTail) ?: funcForNotValidFormat()
+            } ?: funcForNotValidFormat()
+        }.onFailure {
+            Logg.e { "e: $it" }
+        }
 
         return
     }

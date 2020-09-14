@@ -41,8 +41,6 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
         MarkedGoodStampCollector(processMarkedGoodProductService)
     }
 
-    var selectedPage = MutableLiveData(0)
-
     val isSpecialMode = MutableLiveData(false)
 
     private val properties = MutableLiveData(listOf<Property>())
