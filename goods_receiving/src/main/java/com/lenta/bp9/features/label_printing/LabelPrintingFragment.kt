@@ -61,7 +61,7 @@ class LabelPrintingFragment : CoreFragment<FragmentLabelPrintingBinding, LabelPr
             layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                     layoutId = R.layout.item_tile_label_printing,
                     itemId = BR.item,
-                    onAdapterItemBind = { binding: ItemTileLabelPrintingBinding, position: Int ->
+                    onItemBind = { binding: ItemTileLabelPrintingBinding, position: Int ->
                         binding.tvItemNumber.tag = position
                         binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                         binding.selectedForDelete = vm.labelSelectionsHelper.isSelected(position)

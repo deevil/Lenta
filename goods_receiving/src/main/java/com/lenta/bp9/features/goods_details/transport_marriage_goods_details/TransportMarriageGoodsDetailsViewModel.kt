@@ -1,4 +1,4 @@
-package com.lenta.bp9.features.transport_marriage.goods_details
+package com.lenta.bp9.features.goods_details.transport_marriage_goods_details
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp9.features.goods_details.GoodsDetailsCategoriesItem
@@ -44,14 +44,15 @@ class TransportMarriageGoodsDetailsViewModel : CoreViewModel() {
                     }?.mapIndexed { index, taskTransportMarriageInfo ->
                         GoodsDetailsCategoriesItem(
                                 number = index + 1,
-                                name = discrepanciesName.value ?: "",
+                                name = discrepanciesName.value .orEmpty(),
                                 nameBatch = "",
                                 visibilityNameBatch = false,
-                                quantityWithUom = "${taskTransportMarriageInfo.quantity.toStringFormatted()} ${taskTransportMarriageInfo.uom.name}",
+                                quantityWithUom = "${taskTransportMarriageInfo.quantity.toStringFormatted()} ${taskTransportMarriageInfo.uom.name.orEmpty()}",
                                 isNormDiscrepancies = false,
                                 typeDiscrepancies = "",
-                                materialNumber = materialNumber.value ?: "",
+                                materialNumber = materialNumber.value.orEmpty(),
                                 batchDiscrepancies = null,
+                                zBatchDiscrepancies = null,
                                 even = index % 2 == 0
                         )
                     }?.reversed()

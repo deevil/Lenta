@@ -59,7 +59,6 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     @SuppressLint("SimpleDateFormat")
     private val formatterERP = SimpleDateFormat(Constants.DATE_FORMAT_yyyyMMdd)
 
-    val selectedPage = MutableLiveData(0)
     val countedSelectionsHelper = SelectionItemsHelper()
     val toProcessingSelectionsHelper = SelectionItemsHelper()
     val processedSelectionsHelper = SelectionItemsHelper()
@@ -75,6 +74,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     val taskType: MutableLiveData<TaskType> = MutableLiveData()
 
     private val isBatches: MutableLiveData<Boolean> = MutableLiveData(false)
+    private val taskRepository by lazy { taskManager.getReceivingTask()?.taskRepository }
 
     val visibilityCleanButton: MutableLiveData<Boolean> = selectedPage.map {
         it == 0
@@ -187,6 +187,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                                                     countRefusalWithUom = getRefusalTotalCountWithUomBatch(batchInfo, uom),
                                                     isNotEdit = productInfo.isNotEdit,
                                                     productInfo = productInfo,
+                                                    zBatchDiscrepancies = null,
                                                     even = index % 2 == 0
                                             )
                                     )
@@ -224,6 +225,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                                                     countRefusalWithUom = "",
                                                     isNotEdit = productInfo.isNotEdit,
                                                     productInfo = productInfo,
+                                                    zBatchDiscrepancies = zBatch,
                                                     even = index % 2 == 0
                                             )
                                     )
@@ -242,6 +244,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                                             countRefusalWithUom = getRefusalTotalCountWithUomProduct(productInfo, uom),
                                             isNotEdit = productInfo.isNotEdit,
                                             productInfo = productInfo,
+                                            zBatchDiscrepancies = null,
                                             even = index % 2 == 0
                                     )
                             )
@@ -428,7 +431,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                     ?.map { position ->
                         listCounted
                                 .value
-                                ?.get(position)
+                                ?.getOrNull(position)
                                 ?.productInfo
                                 ?.let { selectedProduct ->
                                     val isNotRecountCargoUnit = isTaskPGE.value == true && selectedProduct.isWithoutRecount
@@ -451,7 +454,16 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                                                         deleteDiscrepanciesForSet(component.componentNumber)
                                                     }
                                         }
-                                        deleteDiscrepanciesForProduct(selectedProduct)
+                                        if (isBatches.value == true && selectedProduct.isZBatches && !selectedProduct.isVet) {
+                                            listCounted
+                                                    .value
+                                                    ?.getOrNull(position)
+                                                    ?.zBatchDiscrepancies
+                                                    ?.let { deleteDiscrepanciesForZBatch(it) }
+
+                                        } else {
+                                            deleteDiscrepanciesForProduct(selectedProduct)
+                                        }
                                     }
                                 }
                     }
@@ -511,6 +523,20 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                             .getZBatchesDiscrepancies()
                             .deleteZBatchesDiscrepanciesForProduct(product.materialNumber)
                 }
+    }
+
+    private fun deleteDiscrepanciesForZBatch(zBatchDiscrepancies: TaskZBatchesDiscrepancies) {
+        taskRepository
+                ?.getZBatchesDiscrepancies()
+                ?.deleteZBatchDiscrepancies(zBatchDiscrepancies)
+
+        taskRepository
+                ?.getProductsDiscrepancies()
+                ?.deleteProductDiscrepancyByBatch(
+                        materialNumber = zBatchDiscrepancies.materialNumber,
+                        typeDiscrepancies = zBatchDiscrepancies.typeDiscrepancies,
+                        quantityByDiscrepancyForBatch = zBatchDiscrepancies.numberDiscrepancies.toDouble()
+                )
     }
 
     fun onClickFourthBtn() {

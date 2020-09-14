@@ -248,7 +248,7 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
 
             paramGrsGrundNeg.value = dataBase.getParamGrsGrundNeg().orEmpty()
 
-            val paramGrzPerishableHH = dataBase.getParamGrzPerishableHH()?.toDoubleOrNull() ?: 0.0
+            val paramGrzPerishableHH = (dataBase.getParamGrzPerishableHH()?.toDoubleOrNull() ?: 0.0) /24
             val generalShelfLifeValue = generalShelfLife.value?.toDoubleOrNull() ?: 0.0
             isVisibilityEnteredTime.value = generalShelfLifeValue <= paramGrzPerishableHH
         }

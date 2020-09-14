@@ -74,6 +74,11 @@ class GoodsDetailsViewModel : CoreViewModel() {
         )
     }
 
+    private val isZBatch: MutableLiveData<Boolean> by lazy {
+        MutableLiveData(productInfo.value?.isZBatches == true
+                && productInfo.value?.isVet == false) //см. SearchProductDelegate
+    }
+
     val categoriesSelectionsHelper = SelectionItemsHelper()
     val enabledDelBtn: MutableLiveData<Boolean> = categoriesSelectionsHelper.selectedPositions.map {
         !categoriesSelectionsHelper.selectedPositions.value.isNullOrEmpty()
@@ -163,6 +168,7 @@ class GoodsDetailsViewModel : CoreViewModel() {
                                     typeDiscrepancies = discrepancy.typeDiscrepancies,
                                     materialNumber = productInfo.value?.materialNumber.orEmpty(),
                                     batchDiscrepancies = null,
+                                    zBatchDiscrepancies = null,
                                     even = index % 2 == 0
                             )
                         }
@@ -232,6 +238,7 @@ class GoodsDetailsViewModel : CoreViewModel() {
                 typeDiscrepancies = discrepancy.typeDiscrepancies,
                 materialNumber = discrepancy.materialNumber,
                 batchDiscrepancies = discrepancy,
+                zBatchDiscrepancies = null,
                 even = index % 2 == 0
         )
     }
@@ -266,6 +273,7 @@ class GoodsDetailsViewModel : CoreViewModel() {
                                     typeDiscrepancies = discrepancy.typeDiscrepancies,
                                     materialNumber = productInfo.value?.materialNumber.orEmpty(),
                                     batchDiscrepancies = null,
+                                    zBatchDiscrepancies = null,
                                     even = index % 2 == 0
                             )
                     )
@@ -301,6 +309,7 @@ class GoodsDetailsViewModel : CoreViewModel() {
                 typeDiscrepancies = discrepancy.typeDiscrepancies,
                 materialNumber = discrepancy.materialNumber,
                 batchDiscrepancies = null,
+                zBatchDiscrepancies = discrepancy,
                 even = index % 2 == 0
         )
     }
@@ -323,6 +332,7 @@ class GoodsDetailsViewModel : CoreViewModel() {
                                     typeDiscrepancies = discrepancy.typeDiscrepancies,
                                     materialNumber = productInfo.value?.materialNumber.orEmpty(),
                                     batchDiscrepancies = null,
+                                    zBatchDiscrepancies = null,
                                     even = index % 2 == 0
                             )
                         }
@@ -345,6 +355,7 @@ class GoodsDetailsViewModel : CoreViewModel() {
                 typeDiscrepancies = discrepancy.typeDiscrepancies,
                 materialNumber = materialNumber,
                 batchDiscrepancies = null,
+                zBatchDiscrepancies = null,
                 even = index % 2 == 0
         )
     }
@@ -357,7 +368,7 @@ class GoodsDetailsViewModel : CoreViewModel() {
         } else {
             if (productInfo.value != null && !productInfo.value!!.isNotEdit) {
                 categoriesSelectionsHelper.selectedPositions.value?.map { position ->
-                    val goodsDetailsItem = goodsDetails.value?.get(position)
+                    val goodsDetailsItem = goodsDetails.value?.getOrNull(position)
                     val materialNumber = goodsDetailsItem?.materialNumber.orEmpty()
                     val typeDiscrepancies = goodsDetailsItem?.typeDiscrepancies.orEmpty()
 
@@ -377,31 +388,42 @@ class GoodsDetailsViewModel : CoreViewModel() {
                             ?.getExciseStampsDiscrepancies()
                             ?.deleteExciseStampsDiscrepanciesForProductAndDiscrepancies(materialNumber, typeDiscrepancies)
 
-                    taskRepository
-                            ?.getZBatchesDiscrepancies()
-                            ?.deleteZBatchesDiscrepanciesForProductAndDiscrepancies(materialNumber, typeDiscrepancies)
-
-
                     if (isVetProduct.value == true) {
                             processMercuryProductService.deleteDetails(typeDiscrepancies)
                     }
 
-                    if (isBatchProduct.value == true) {
-                        goodsDetailsItem
-                                ?.batchDiscrepancies
-                                ?.let {
-                                    taskRepository
-                                            ?.getBatchesDiscrepancies()
-                                            ?.deleteBatchDiscrepancies(it)
+                    when {
+                        isBatchProduct.value == true -> {
+                            goodsDetailsItem
+                                    ?.batchDiscrepancies
+                                    ?.let {
+                                        taskRepository
+                                                ?.getBatchesDiscrepancies()
+                                                ?.deleteBatchDiscrepancies(it)
 
-                                    taskRepository
-                                            ?.getProductsDiscrepancies()
-                                            ?.deleteProductDiscrepancyByBatch(materialNumber, typeDiscrepancies, it.numberDiscrepancies.toDouble())
-                                }
-                    } else {
-                        taskRepository
-                                ?.getProductsDiscrepancies()
-                                ?.deleteProductDiscrepancy(materialNumber, typeDiscrepancies)
+                                        taskRepository
+                                                ?.getProductsDiscrepancies()
+                                                ?.deleteProductDiscrepancyByBatch(materialNumber, typeDiscrepancies, it.numberDiscrepancies.toDouble())
+                                    }
+                        }
+                        isZBatch.value == true -> {
+                            goodsDetailsItem
+                                    ?.zBatchDiscrepancies
+                                    ?.let {
+                                        taskRepository
+                                                ?.getZBatchesDiscrepancies()
+                                                ?.deleteZBatchDiscrepancies(it)
+
+                                        taskRepository
+                                                ?.getProductsDiscrepancies()
+                                                ?.deleteProductDiscrepancyByBatch(materialNumber, typeDiscrepancies, it.numberDiscrepancies.toDouble())
+                                    }
+                        }
+                        else -> {
+                            taskRepository
+                                    ?.getProductsDiscrepancies()
+                                    ?.deleteProductDiscrepancy(materialNumber, typeDiscrepancies)
+                        }
                     }
                 }
             }

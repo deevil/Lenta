@@ -1,4 +1,4 @@
-package com.lenta.bp9.features.transport_marriage.goods_details
+package com.lenta.bp9.features.goods_details.transport_marriage_goods_details
 
 import android.os.Bundle
 import android.view.View
