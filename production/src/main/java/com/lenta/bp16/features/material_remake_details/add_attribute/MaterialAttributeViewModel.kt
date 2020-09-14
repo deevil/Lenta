@@ -161,14 +161,11 @@ class MaterialAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
             val monthWith31Days = listOf(1, 3, 5, 7, 8, 10, 12)
             val monthWith30Days = listOf(4, 6, 9, 11)
             if (year in 2000..2100 && month in 1..12 && day in 1..31) {
-                if (monthWith31Days.contains(month)) {
-                    day <= 31
-                } else if (monthWith30Days.contains(month) && month != 2) {
-                    day <= 30
-                } else if (year % 4 == 0) {
-                    day <= 29
-                } else {
-                    day <= 28
+                when{
+                    monthWith31Days.contains(month) -> day <= 31
+                    monthWith30Days.contains(month) && month != 2 -> day <= 30
+                    year % 4 == 0 -> day <= 29
+                    else -> day <= 28
                 }
             } else {
                 false
