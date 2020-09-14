@@ -258,7 +258,7 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     private fun setFoundGood(foundGood: GoodCreate) {
         with(navigator){
             if (manager.isWholesaleTaskType && foundGood.kind == GoodKind.EXCISE) {
-                showExciseAlcoholGoodInfoScreen()
+                showCantAddExciseGoodForWholesale()
             } else {
                 manager.updateCurrentGood(foundGood)
                 if (foundGood.markType != MarkType.UNKNOWN) {

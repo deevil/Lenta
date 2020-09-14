@@ -601,7 +601,13 @@ class ScreenNavigator @Inject constructor(
     }
 
     override fun showCantAddExciseGoodForWholesale() {
-        TODO("Not yet implemented")
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "98",
+                    message = context.getString(R.string.cant_scan_excise_for_wholesale_task),
+                    iconRes = R.drawable.ic_warning_red_80dp
+            ))
+        }
     }
 
     override fun showInternalError(cause: String) {
