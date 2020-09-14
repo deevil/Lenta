@@ -101,21 +101,21 @@ class MarkManager @Inject constructor(
                 loadBoxInfo(number)
             }
             Constants.MARK_TOBACCO_PACK_29 -> {
-                if (isTobaccoPackMark(number))
+                if (isCigarettesMark(number))
                     return MarkScreenStatus.CANT_SCAN_PACK
                 else {
                     loadBoxInfo(number)
                 }
             }
             in Constants.TOBACCO_MARK_BLOCK_OR_BOX_RANGE_30_44 -> {
-                if (isTobaccoCartonMark(number)) {
+                if (isCigarettesBox(number)) {
                     openMarkedGoodWithCarton(number)
                 } else {
                     loadBoxInfo(number)
                 }
             }
             else -> {
-                if (isTobaccoCartonMark(number)) {
+                if (isCigarettesBox(number)) {
                     openMarkedGoodWithCarton(number)
                 } else {
                     MarkScreenStatus.INCORRECT_EAN_FORMAT
@@ -134,7 +134,7 @@ class MarkManager @Inject constructor(
         }
         Logg.e { good.value.toString() }
 
-        val regex = Regex(Constants.TOBACCO_MARK_CARTON_REGEX_PATTERN).find(number)
+        val regex = Regex(Constants.CIGARETTES_BOX_PATTERN).find(number)
         return regex?.let {
             val (blocBarcode, gtin, _, mrc, _, _) = it.destructured // blockBarcode, gtin, serial, mrc, verificationKey, other
             val container = Pair(blocBarcode, Mark.Container.CARTON)
@@ -191,7 +191,7 @@ class MarkManager @Inject constructor(
     }
 
     private suspend fun openMarkedGoodWithShoe(number: String): MarkScreenStatus {
-        val regex = Regex(Constants.SHOES_MARK_REGEX_PATTERN).find(number)
+        val regex = Regex(Constants.SHOES_MARK_PATTERN).find(number)
         return regex?.let {
             val (barcode, gtin, _, _, _, _) = it.destructured // barcode, gtin, serial, tradeCode, verificationKey, verificationCode
             val container = Pair(barcode, Mark.Container.SHOE)

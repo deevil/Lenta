@@ -412,16 +412,6 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun showIncorrectEanFormat() {
-        runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(
-                    pageNumber = "119",
-                    message = context.getString(R.string.incorrect_ean_format),
-                    iconRes = R.drawable.ic_warning_red_80dp
-            ))
-        }
-    }
-
     override fun showCantScanPackAlert() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
@@ -637,7 +627,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openMarkedGoodInfoOpenScreen()
 
     fun showUnsentDataFoundOnDevice(deleteCallback: () -> Unit, goOverCallback: () -> Unit)
-    fun showTwelveCharactersEntered(sapCallback: () -> Unit, barCallback: () -> Unit)
     fun showUnsavedDataWillBeLost(proceedCallback: () -> Unit)
     fun showMakeTaskCountedAndClose(yesCallback: () -> Unit)
     fun showTaskUnsentDataWillBeDeleted(taskName: String, applyCallback: () -> Unit)
@@ -655,7 +644,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun showFinishProcessingBox()
     fun showFinishProcessingCurrentBox()
     fun showGoodIsMissingInTask()
-    fun showIncorrectEanFormat()
     fun showCantScanPackAlert()
 
     fun showExciseAlcoholGoodInfoScreen()

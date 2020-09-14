@@ -25,8 +25,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_height="wrap_content"
-                android:layout_weight="1">
+                android:layout_height="wrap_content">
 
                 <TextView
                     style="@style/CellTextStyle"
@@ -66,8 +65,7 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_height="wrap_content"
-                android:layout_weight="1">
+                android:layout_height="wrap_content">
 
                 <TextView
                     style="@style/CellTextStyle"

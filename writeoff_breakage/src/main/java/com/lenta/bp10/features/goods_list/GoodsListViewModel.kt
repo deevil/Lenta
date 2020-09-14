@@ -1,7 +1,6 @@
 package com.lenta.bp10.features.goods_list
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.bp10.models.repositories.getTotalCountForProduct
 import com.lenta.bp10.models.task.TaskWriteOffReason
@@ -11,8 +10,8 @@ import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.platform.requestCodeDelete
 import com.lenta.bp10.platform.requestCodeSelectPersonnelNumber
 import com.lenta.bp10.requests.network.PrintTaskNetRequest
-import com.lenta.bp10.requests.network.SendWriteOffReportRequest
-import com.lenta.bp10.requests.network.WriteOffReportResponse
+import com.lenta.bp10.requests.network.SendWriteOffDataNetRequest
+import com.lenta.bp10.requests.network.SendWriteOffDataResult
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.exception.Failure
@@ -47,7 +46,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     lateinit var sharedStringResourceManager: ISharedStringResourceManager
 
     @Inject
-    lateinit var sendWriteOffReportRequest: SendWriteOffReportRequest
+    lateinit var sendWriteOffDataNetRequest: SendWriteOffDataNetRequest
 
     @Inject
     lateinit var printTaskNetRequest: PrintTaskNetRequest
@@ -99,8 +98,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     init {
         launchUITryCatch {
-            searchProductDelegate.init(viewModelScope = this@GoodsListViewModel::viewModelScope,
-                    scanResultHandler = this@GoodsListViewModel::handleProductSearchResult)
+            searchProductDelegate.init(scanResultHandler = this@GoodsListViewModel::handleProductSearchResult)
             updateCounted()
             updateFilter()
         }
@@ -202,9 +200,6 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onResult(code: Int?) {
-        if (searchProductDelegate.handleResultCode(code)) {
-            return
-        }
         when (code) {
             requestCodeDelete -> onConfirmAllDelete()
             requestCodeSelectPersonnelNumber -> saveData()
@@ -235,9 +230,9 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     private fun saveData() {
         launchUITryCatch {
-            screenNavigator.showProgress(sendWriteOffReportRequest)
+            screenNavigator.showProgress(sendWriteOffDataNetRequest)
             processServiceManager.getWriteOffTask()?.let {
-                sendWriteOffReportRequest(it.getReport()).either(::handleFailure, ::handleSentSuccess)
+                sendWriteOffDataNetRequest(it.getReport()).either(::handleFailure, ::handleSentSuccess)
             }
 
             screenNavigator.hideProgress()
@@ -246,14 +241,14 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
 
-    private fun handleSentSuccess(writeOffReportResponse: WriteOffReportResponse) {
-        Logg.d { "writeOffReportResponse: $writeOffReportResponse" }
-        if (writeOffReportResponse.retCode.isEmpty() || writeOffReportResponse.retCode == "0") {
+    private fun handleSentSuccess(sendWriteOffDataResult: SendWriteOffDataResult) {
+        Logg.d { "writeOffReportResponse: $sendWriteOffDataResult" }
+        if (sendWriteOffDataResult.retCode.isEmpty() || sendWriteOffDataResult.retCode == "0") {
             processServiceManager.clearTask()
-            screenNavigator.openSendingReportsScreen(writeOffReportResponse)
+            screenNavigator.openSendingReportsScreen(sendWriteOffDataResult)
         } else {
-            analyticsHelper.onRetCodeNotEmpty("$writeOffReportResponse")
-            screenNavigator.openAlertScreen(writeOffReportResponse.errorText)
+            analyticsHelper.onRetCodeNotEmpty("$sendWriteOffDataResult")
+            screenNavigator.openAlertScreen(sendWriteOffDataResult.errorText)
         }
 
 

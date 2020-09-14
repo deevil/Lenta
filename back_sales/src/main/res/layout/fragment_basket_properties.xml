@@ -20,9 +20,7 @@
         <LinearLayout style="@style/LinearRowStyle"
             android:visibility="@{vm.isSectionVisible}">
 
-            <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="1">
+            <LinearLayout style="@style/LinearCellStyle">
 
                 <TextView
                     style="@style/CellTextStyle"
@@ -53,9 +51,7 @@
         <LinearLayout style="@style/LinearRowStyle"
             android:visibility="@{vm.isGoodTypeVisible}">
 
-            <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="1">
+            <LinearLayout style="@style/LinearCellStyle">
 
                 <TextView
                     style="@style/CellTextStyle"
@@ -85,9 +81,7 @@
         <!-- ГИС-контроль -->
         <LinearLayout style="@style/LinearRowStyle">
 
-            <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="1">
+            <LinearLayout style="@style/LinearCellStyle">
 
                 <TextView
                     style="@style/CellTextStyle"
@@ -117,9 +111,7 @@
         <LinearLayout style="@style/LinearRowStyle"
             android:visibility="@{vm.isProviderVisible}">
 
-            <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="1">
+            <LinearLayout style="@style/LinearCellStyle">
 
                 <TextView
                     style="@style/CellTextStyle"
