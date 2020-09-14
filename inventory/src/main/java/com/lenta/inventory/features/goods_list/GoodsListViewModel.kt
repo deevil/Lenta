@@ -47,7 +47,6 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     val unprocessedGoods: MutableLiveData<List<ProductInfoVM>> = MutableLiveData()
     val processedGoods: MutableLiveData<List<ProductInfoVM>> = MutableLiveData()
-    var selectedPage = MutableLiveData(0)
 
     val eanCode: MutableLiveData<String> = MutableLiveData()
     val requestFocusToEan: MutableLiveData<Boolean> = MutableLiveData()

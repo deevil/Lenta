@@ -8,10 +8,8 @@ import com.lenta.movement.databinding.FragmentTaskEoMergeEoInsidesBinding
 import com.lenta.movement.databinding.LayoutItemEoInsidesGoodsListBinding
 import com.lenta.movement.models.ProcessingUnit
 import com.lenta.movement.platform.extensions.getAppComponent
-import com.lenta.shared.keys.KeyCode
-import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.activity.OnBackPresserListener
-import com.lenta.shared.platform.fragment.CoreFragment
+import com.lenta.shared.platform.fragment.KeyDownCoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
@@ -19,11 +17,10 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
 
 /** Список вложенных ЕО (при нажатии на элемент в списке ГЕ на экране Объединение ЕО (TaskEOMergeFragment)*/
-class TaskEOMergeEOInsidesFragment : CoreFragment<FragmentTaskEoMergeEoInsidesBinding, TaskEOMergeEOInsidesViewModel>(),
-        OnBackPresserListener,
-        OnKeyDownListener {
+class TaskEOMergeEOInsidesFragment : KeyDownCoreFragment<FragmentTaskEoMergeEoInsidesBinding, TaskEOMergeEOInsidesViewModel>(),
+        OnBackPresserListener {
 
-    private var eo : ProcessingUnit? by state(null)
+    private var eo: ProcessingUnit? by state(null)
 
     override fun getLayoutId() = R.layout.fragment_task_eo_merge_eo_insides
 
@@ -46,25 +43,11 @@ class TaskEOMergeEOInsidesFragment : CoreFragment<FragmentTaskEoMergeEoInsidesBi
             rvConfig = initRecycleAdapterDataBinding(
                     layoutId = R.layout.layout_item_eo_insides_goods_list,
                     itemId = BR.item,
-                    onAdapterItemBind = { binding: LayoutItemEoInsidesGoodsListBinding, position ->
+                    onItemBind = { binding: LayoutItemEoInsidesGoodsListBinding, position ->
                         binding.tvCounter.tag = position
-                        onAdapterBindHandler(
-                                bindItem = binding,
-                                position = position)
                     },
-                    onAdapterItemClicked = { position ->
-                        recyclerViewKeyHandler?.let {
-                            if (it.isSelected(position).not()) {
-                                it.selectPosition(position)
-                            }
-                        }
-                    }
-            )
-
-            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
                     recyclerView = recyclerView,
-                    items = this@TaskEOMergeEOInsidesFragment.vm.goodsItemList,
-                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value
+                    items = this@TaskEOMergeEOInsidesFragment.vm.goodsItemList
             )
         }
     }
@@ -84,28 +67,15 @@ class TaskEOMergeEOInsidesFragment : CoreFragment<FragmentTaskEoMergeEoInsidesBi
         return false
     }
 
-    override fun onKeyDown(keyCode: KeyCode): Boolean {
-        recyclerViewKeyHandler?.let {
-            if (it.onKeyDown(keyCode)) {
-                keyCode.digit?.let { digit ->
-                    vm.onDigitPressed(digit)
-                    return true
-                }
-                return false
-            }
-            return true
-        }
-        return false
-    }
-
     companion object {
         private const val PAGE_NUMBER = "13/21"
 
-        fun newInstance(inputEo : ProcessingUnit): TaskEOMergeEOInsidesFragment {
+        fun newInstance(inputEo: ProcessingUnit): TaskEOMergeEOInsidesFragment {
             return TaskEOMergeEOInsidesFragment().apply {
                 this.eo = inputEo
             }
         }
     }
+
 }
 

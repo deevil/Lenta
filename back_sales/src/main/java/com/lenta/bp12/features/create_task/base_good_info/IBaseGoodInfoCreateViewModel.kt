@@ -1,8 +1,9 @@
 package com.lenta.bp12.features.create_task.base_good_info
 
 import androidx.lifecycle.MutableLiveData
-import com.lenta.bp12.model.ICreateTaskManager
+import com.lenta.bp12.managers.interfaces.ICreateTaskManager
 import com.lenta.bp12.model.pojo.Basket
+import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -10,13 +11,23 @@ import com.lenta.bp12.request.ScanInfoNetRequest
 import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.account.ISessionInfo
 
+/**
+ * Базовый интерфейс для viewmodel карточки товара в разделе Создание задания
+ * Имплементации:
+ * @see BaseGoodInfoCreateViewModel
+ * @see com.lenta.bp12.features.create_task.good_info.GoodInfoCreateViewModel
+ * @see com.lenta.bp12.features.create_task.marked_good_info.MarkedGoodInfoCreateViewModel
+ * */
 interface IBaseGoodInfoCreateViewModel {
     var database: IDatabaseRepository
+
     var navigator: IScreenNavigator
     var resource: IResourceManager
     var scanInfoNetRequest: ScanInfoNetRequest
     var sessionInfo: ISessionInfo
     var manager: ICreateTaskManager
+
+    val isWholesaleTaskType: MutableLiveData<Boolean>
 
     val quantityFieldEnabled : MutableLiveData<Boolean>
     val quantity: MutableLiveData<Double>
@@ -47,7 +58,7 @@ interface IBaseGoodInfoCreateViewModel {
     fun onScanResult(number: String)
 
     fun checkSearchNumber(number: String)
-    fun getBasket(): Basket?
+    fun getBasket(good: Good): Basket?
 
     fun updateData()
     fun onClickApply()

@@ -7,48 +7,45 @@ import javax.inject.Inject
 @AppScope
 class StampsCollectorManager @Inject constructor() {
 
-    private var setsStampCollector: StampCollector? = null
+    private var setsAlcoholStampCollector: AlcoholStampCollector? = null
 
-    private var componentsStampCollector: StampCollector? = null
-
+    private var componentsAlcoholStampCollector: AlcoholStampCollector? = null
 
     fun newStampCollector(processExciseAlcoProductService: ProcessExciseAlcoProductService) {
-        setsStampCollector = StampCollector(
+        setsAlcoholStampCollector = AlcoholStampCollector(
                 processExciseAlcoProductService
         )
-        componentsStampCollector = StampCollector(
+        componentsAlcoholStampCollector = AlcoholStampCollector(
                 processExciseAlcoProductService
         )
     }
 
     fun clearAllStampsCollectors() {
-        setsStampCollector?.clear()
-        componentsStampCollector?.clear()
-
+        setsAlcoholStampCollector?.clear()
+        componentsAlcoholStampCollector?.clear()
     }
-
 
     fun clearComponentsStampCollector() {
-        componentsStampCollector?.clear()
+        componentsAlcoholStampCollector?.clear()
     }
 
-    fun getComponentsStampCollector(): StampCollector? {
-        return componentsStampCollector
+    fun getComponentsStampCollector(): AlcoholStampCollector? {
+        return componentsAlcoholStampCollector
     }
 
-    fun getSetsStampCollector(): StampCollector? {
-        return setsStampCollector
+    fun getSetsStampCollector(): AlcoholStampCollector? {
+        return setsAlcoholStampCollector
     }
 
     fun saveStampsToSet() {
-        setsStampCollector?.moveStampsFrom(componentsStampCollector)
+        setsAlcoholStampCollector?.moveStampsFrom(componentsAlcoholStampCollector)
     }
 
     fun addStampToComponentsStampCollector(materialNumber: String, setMaterialNumber: String, writeOffReason: String, isBadStamp: Boolean): Boolean {
-        if (setsStampCollector!!.containsStamp(componentsStampCollector?.getPreparedStampCode().orEmpty())) {
+        if (setsAlcoholStampCollector!!.containsStamp(componentsAlcoholStampCollector?.getPreparedStampCode().orEmpty())) {
             return false
         }
-        return componentsStampCollector!!.add(materialNumber, setMaterialNumber, writeOffReason, isBadStamp)
-
+        return componentsAlcoholStampCollector!!.add(materialNumber, setMaterialNumber, writeOffReason, isBadStamp)
     }
+
 }

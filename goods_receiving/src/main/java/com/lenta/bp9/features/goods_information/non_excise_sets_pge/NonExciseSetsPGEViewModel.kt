@@ -31,7 +31,6 @@ import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import com.mobrun.plugin.api.HyperHive
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class NonExciseSetsPGEViewModel : CoreViewModel(),
@@ -72,7 +71,6 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
     }
 
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
-    val selectedPage = MutableLiveData(0)
     val componentsSelectionsHelper = SelectionItemsHelper()
     val listComponents: MutableLiveData<List<ListComponentsItem>> = MutableLiveData()
     val eanCode: MutableLiveData<String> = MutableLiveData()

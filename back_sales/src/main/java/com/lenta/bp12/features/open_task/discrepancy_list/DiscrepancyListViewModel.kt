@@ -1,6 +1,6 @@
 package com.lenta.bp12.features.open_task.discrepancy_list
 
-import com.lenta.bp12.model.IOpenTaskManager
+import com.lenta.bp12.managers.interfaces.IOpenTaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.shared.account.ISessionInfo
@@ -81,8 +81,6 @@ class DiscrepancyListViewModel : CoreViewModel() {
         task.value?.let { task ->
             goods.value?.get(position)?.material?.let { material ->
                 task.goods.find { it.material == material }?.let {
-                    manager.searchNumber = material
-                    manager.isSearchFromList = true
                     navigator.openGoodInfoOpenScreen()
                 }
             }

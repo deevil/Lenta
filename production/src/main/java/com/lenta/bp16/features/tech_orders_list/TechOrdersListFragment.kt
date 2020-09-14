@@ -8,6 +8,7 @@ import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentTechOrdersListBinding
 import com.lenta.bp16.databinding.ItemTechOrderBinding
 import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
+import com.lenta.bp16.model.ingredients.ui.ItemTechOrderUi
 import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -69,15 +70,11 @@ class TechOrdersListFragment : CoreFragment<FragmentTechOrdersListBinding, TechO
 
     private fun initRvConfig() {
         binding?.let { layoutBinding ->
-            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemTechOrderBinding>(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemTechOrderUi, ItemTechOrderBinding>(
                     layoutId = R.layout.item_tech_order,
-                    itemId = BR.item
-            )
-
-            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    itemId = BR.item,
                     recyclerView = layoutBinding.rv,
-                    items = vm.allTechOrdersList,
-                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value
+                    items = vm.allTechOrdersList
             )
         }
     }

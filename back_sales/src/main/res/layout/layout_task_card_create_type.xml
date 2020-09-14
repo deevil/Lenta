@@ -20,9 +20,7 @@
         <!-- Тип задания -->
         <LinearLayout style="@style/LinearRowStyle">
 
-            <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="1">
+            <LinearLayout style="@style/LinearCellStyle">
 
                 <com.lenta.shared.view.ClickableSpinner
                     android:id="@+id/spin_task_type"
@@ -41,9 +39,7 @@
         <!-- Наименование задания -->
         <LinearLayout style="@style/LinearRowStyle">
 
-            <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="1">
+            <LinearLayout style="@style/LinearCellStyle">
 
                 <EditText
                     style="@style/CellEditTextStyle"
@@ -60,9 +56,7 @@
         <!-- Все поставщики -->
         <LinearLayout style="@style/LinearRowStyle">
 
-            <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="1">
+            <LinearLayout style="@style/LinearCellStyle">
 
                 <TextView
                     style="@style/CellTextStyle"
@@ -79,9 +73,7 @@
         <!-- Склад -->
         <LinearLayout style="@style/LinearRowStyle">
 
-            <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="1">
+            <LinearLayout style="@style/LinearCellStyle">
 
                 <TextView
                     style="@style/CellTextStyle"
@@ -97,9 +89,7 @@
 
             <View style="@style/VerticalDivider" />
 
-            <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="1">
+            <LinearLayout style="@style/LinearCellStyle">
 
                 <com.lenta.shared.view.ClickableSpinner
                     android:id="@+id/spin_storage"
@@ -118,9 +108,7 @@
         <!-- Поставщик -->
         <LinearLayout style="@style/LinearRowStyle">
 
-            <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="1">
+            <LinearLayout style="@style/LinearCellStyle">
 
                 <com.lenta.shared.view.ClickableSpinner
                     android:id="@+id/spin_reason_for_return"

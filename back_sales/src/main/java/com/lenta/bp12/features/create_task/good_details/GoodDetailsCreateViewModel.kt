@@ -4,8 +4,8 @@ import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.features.other.ItemBasketUi
 import com.lenta.bp12.features.other.ItemCategory
 import com.lenta.bp12.features.other.ItemCategoryUi
+import com.lenta.bp12.managers.interfaces.ICreateTaskManager
 import com.lenta.bp12.model.CategoryType
-import com.lenta.bp12.model.ICreateTaskManager
 import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.extentions.getDescription
 import com.lenta.bp12.model.pojo.extentions.getPosition
@@ -50,8 +50,6 @@ class GoodDetailsCreateViewModel : CoreViewModel(), PageSelectionListener {
             good?.getNameWithMaterial()
         }
     }
-
-    val selectedPage = MutableLiveData(0)
 
     val baskets by lazy {
         task.combineLatest(good).map {

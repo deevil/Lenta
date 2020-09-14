@@ -56,14 +56,10 @@ class ProcessingUnitListFragment : KeyDownCoreFragment<FragmentProcessingUnitLis
 
     private fun initRvConfig() {
         binding?.let { layoutBinding ->
-            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemProcessingUnitBinding>(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemProcessingUnitUi, ItemProcessingUnitBinding>(
                     layoutId = R.layout.item_processing_unit,
-                    itemId = BR.item
-            )
-
-            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    itemId = BR.item,
                     recyclerView = layoutBinding.rv,
-                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
                     items = vm.goods,
                     onClickHandler = vm::onClickItemPosition
             )

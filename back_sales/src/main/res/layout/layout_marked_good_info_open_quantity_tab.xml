@@ -22,9 +22,7 @@
             <!-- Количество -->
             <LinearLayout style="@style/LinearRowStyle">
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <EditText
                         style="@style/CellEditTextStyle"
@@ -38,9 +36,7 @@
 
                 <View style="@style/VerticalDivider" />
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <com.lenta.shared.view.EditTextWithSuffix
                         style="@style/CellEditTextStyle"
@@ -61,9 +57,7 @@
             <!-- Итого -->
             <LinearLayout style="@style/LinearRowStyle">
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <TextView
                         style="@style/CellTextStyle"
@@ -81,9 +75,7 @@
 
                 <View style="@style/VerticalDivider" />
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <TextView
                         style="@style/CellTextStyle"
@@ -101,13 +93,48 @@
 
             <View style="@style/HorizontalDivider" />
 
+            <!-- Поставщик -->
+            <LinearLayout
+                style="@style/LinearRowStyle"
+                android:visibility="@{!vm.isWholesaleTaskType}">
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+
+                    <com.lenta.shared.view.ClickableSpinner
+                        android:id="@+id/spin_provider"
+                        style="@style/CellSpinnerStyle"
+                        android:layout_height="match_parent"
+                        android:enabled="@{vm.providerEnabled}"
+                        app:items="@{vm.providerList}"
+                        app:position="@={vm.providerPosition}"
+                        tools:entries="@array/test_list" />
+
+                </LinearLayout>
+
+                <ImageButton
+                    android:id="@+id/btn_increase_quantity"
+                    android:layout_width="@dimen/size_30dp"
+                    android:layout_height="@dimen/size_30dp"
+                    android:layout_marginEnd="@dimen/size_8dp"
+                    android:background="@drawable/bg_border_rectangle"
+                    android:foreground="?selectableItemBackground"
+                    android:onClick="@{(v) -> vm.addProvider()}"
+                    android:src="@drawable/ic_add_white_24dp" />
+
+            </LinearLayout>
+
+            <View
+                style="@style/HorizontalDivider"
+                android:visibility="@{!vm.isWholesaleTaskType}" />
+
             <!-- МРЦ -->
             <LinearLayout style="@style/LinearRowStyle"
                 android:visibility="@{vm.isMrcVisible}">
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <TextView
                         style="@style/CellTextStyle"
@@ -118,9 +145,7 @@
 
                 <View style="@style/VerticalDivider" />
 
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="1">
+                <LinearLayout style="@style/LinearCellStyle">
 
                     <EditText
                         style="@style/CellEditTextStyle"

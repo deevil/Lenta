@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".features.good_information.general.GoodInfoFragment">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.lenta.bp10.features.good_information.base.BaseProductInfoViewModel" />
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Текущее количество -->
+        <LinearLayout style="@style/LinearRowStyle">
+
+            <LinearLayout style="@style/LinearCellStyle">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@string/mark" />
+
+            </LinearLayout>
+
+            <View style="@style/VerticalDivider" />
+
+            <LinearLayout style="@style/LinearCellStyle">
+
+                <com.lenta.shared.view.EditTextWithSuffix
+                    style="@style/CellEditTextStyle"
+                    android:enabled="false"
+                    android:inputType="numberDecimal"
+                    android:text="@={vm.count}"
+                    app:digitsForUom="@{vm.productInfo.uom}"
+                    app:maxLengthForScanProtect="@{6}"
+                    app:suffix="@{vm.suffix}"
+                    tools:text="1 шт" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View style="@style/HorizontalDivider" />
+
+        <!-- Количество итого -->
+        <LinearLayout style="@style/LinearRowStyle">
+
+            <LinearLayout style="@style/LinearCellStyle">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@string/total" />
+
+            </LinearLayout>
+
+            <View style="@style/VerticalDivider" />
+
+            <LinearLayout style="@style/LinearCellStyle">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@{vm.totalCountWithUom}"
+                    tools:text="1 шт" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View style="@style/HorizontalDivider" />
+
+        <!-- Причина возврата -->
+        <LinearLayout style="@style/LinearRowStyle">
+
+            <com.lenta.shared.view.ClickableSpinner
+                style="@style/CellSpinnerStyle"
+                app:items="@{vm.writeOffReasonTitles}"
+                app:onPositionClickListener="@{vm.onSelectReason}"
+                app:position="@{vm.reasonPosition}"
+                tools:entries="@array/test_list" />
+
+        </LinearLayout>
+
+        <View style="@style/HorizontalDivider" />
+
+    </LinearLayout>
+
+</layout>

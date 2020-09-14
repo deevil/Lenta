@@ -12,29 +12,22 @@ import com.lenta.movement.databinding.LayoutItemSimpleBinding
 import com.lenta.movement.databinding.LayoutTaskGoodsBucketsTabBinding
 import com.lenta.movement.databinding.LayoutTaskGoodsProcessedTabBinding
 import com.lenta.movement.platform.extensions.getAppComponent
-import com.lenta.shared.keys.KeyCode
-import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.activity.OnBackPresserListener
-import com.lenta.shared.platform.fragment.CoreFragment
+import com.lenta.shared.platform.fragment.KeyDownCoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
-import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class TaskGoodsFragment : CoreFragment<FragmentTaskGoodsBinding, TaskGoodsViewModel>(),
+class TaskGoodsFragment : KeyDownCoreFragment<FragmentTaskGoodsBinding, TaskGoodsViewModel>(),
         ViewPagerSettings,
         ToolbarButtonsClickListener,
         OnBackPresserListener,
-        OnScanResultListener,
-        OnKeyDownListener {
-
-    private var processedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
-    private var basketRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
+        OnScanResultListener {
 
     override fun getLayoutId() = R.layout.fragment_task_goods
 
@@ -97,33 +90,20 @@ class TaskGoodsFragment : CoreFragment<FragmentTaskGoodsBinding, TaskGoodsViewMo
                     layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.layout_item_simple,
                             itemId = BR.item,
-                            onAdapterItemBind = { binding: LayoutItemSimpleBinding, position ->
+                            onItemBind = { binding: LayoutItemSimpleBinding, position ->
                                 binding.tvCounter.tag = position
                                 binding.tvCounter.setOnClickListener(onClickSelectionListener)
                                 binding.selectedForDelete = vm.processedSelectionHelper.isSelected(position)
-                                processedRecyclerViewKeyHandler?.let {
-                                    binding.root.isSelected = it.isSelected(position)
-                                }
                             },
-                            onAdapterItemClicked = { position ->
-                                processedRecyclerViewKeyHandler?.let {
-                                    if (it.isSelected(position)) {
-                                        vm.onClickProcessedItem(position)
-                                    } else {
-                                        it.selectPosition(position)
-                                    }
-                                }
-                            }
+                            keyHandlerId = TaskGoodsPage.PROCESSED.ordinal,
+                            recyclerView = layoutBinding.processedRecyclerView,
+                            items = vm.processedList,
+                            onClickHandler = vm::onClickProcessedItem
                     )
+
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-                    processedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
-                            recyclerView = layoutBinding.processedRecyclerView,
-                            items = vm.processedList,
-                            previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
-                            onClickHandler = vm::onClickProcessedItem
-                    )
                     layoutBinding.root
                 }
             }
@@ -143,28 +123,20 @@ class TaskGoodsFragment : CoreFragment<FragmentTaskGoodsBinding, TaskGoodsViewMo
                     layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.layout_item_simple,
                             itemId = BR.item,
-                            onAdapterItemBind = { binding: LayoutItemSimpleBinding, position ->
+                            onItemBind = { binding: LayoutItemSimpleBinding, position ->
                                 binding.tvCounter.tag = position
                                 binding.tvCounter.setOnClickListener(onClickSelectionListener)
                                 binding.selectedForDelete = vm.basketSelectionHelper.isSelected(position)
-                                basketRecyclerViewKeyHandler?.let {
-                                    binding.root.isSelected = it.isSelected(position)
-                                }
                             },
-                            onAdapterItemClicked = { position ->
-                                basketRecyclerViewKeyHandler?.onItemClicked(position)
-                            }
+                            keyHandlerId = TaskGoodsPage.BASKETS.ordinal,
+                            recyclerView = layoutBinding.basketRecyclerView,
+                            items = vm.basketItemList,
+                            onClickHandler = vm::onClickBasketItem
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-                    basketRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
-                            recyclerView = layoutBinding.basketRecyclerView,
-                            items = vm.basketItemList,
-                            previousPosInfo = basketRecyclerViewKeyHandler?.posInfo?.value,
-                            onClickHandler = vm::onClickBasketItem
-                    )
                     layoutBinding.root
                 }
             }
@@ -184,24 +156,6 @@ class TaskGoodsFragment : CoreFragment<FragmentTaskGoodsBinding, TaskGoodsViewMo
 
     override fun onBackPressed(): Boolean {
         vm.onBackPressed()
-        return false
-    }
-
-    override fun onKeyDown(keyCode: KeyCode): Boolean {
-        when (vm.currentPage.value) {
-            TaskGoodsPage.PROCESSED -> processedRecyclerViewKeyHandler
-            TaskGoodsPage.BASKETS -> basketRecyclerViewKeyHandler
-            else -> null
-        }?.let {
-            if (!it.onKeyDown(keyCode)) {
-                keyCode.digit?.let { digit ->
-                    vm.onDigitPressed(digit)
-                    return true
-                }
-                return false
-            }
-            return true
-        }
         return false
     }
 

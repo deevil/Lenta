@@ -110,7 +110,7 @@ fun analyseCode(
             return
         }
 
-        if (length == Constants.MARK_150 || length == Constants.MARK_68) {
+        if (length == Constants.EXCISE_MARK_150 || length == Constants.EXCISE_MARK_68) {
             funcForExciseCode?.let {
                 it(code)
                 return

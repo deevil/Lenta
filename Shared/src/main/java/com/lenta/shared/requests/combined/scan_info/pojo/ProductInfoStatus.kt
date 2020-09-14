@@ -54,7 +54,11 @@ data class Material(
         @SerializedName("MATYPE")
         val materialType: String,
         @SerializedName("NAME")
-        val name: String
+        val name: String,
+        @SerializedName("IS_MARK")
+        var isMark: String?,
+        @SerializedName("ZMARKTYPE")
+        var markType: String?
 )
 
 data class Ean(
