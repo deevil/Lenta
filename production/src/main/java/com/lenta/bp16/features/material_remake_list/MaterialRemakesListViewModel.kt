@@ -73,6 +73,7 @@ class MaterialRemakesListViewModel : CoreViewModel() {
 
     // суффикс
     val suffix: String by unsafeLazy {
+        //TODO: Заменить суффикс
         resourceManager.kgSuffix()
     }
 
@@ -156,14 +157,14 @@ class MaterialRemakesListViewModel : CoreViewModel() {
         saveDataInStorage()
 
         allMaterialIngredients.value?.getOrNull(position)?.let { selectedMaterial ->
-            val code = ingredient.value?.getFormattedCode().orEmpty()
-            val name = ingredient.value?.nameMatnrOsn.orEmpty()
-            val warehouse = ingredient.value?.lgort.orEmpty()
             launchUITryCatch {
+                val code = ingredient.value?.getFormattedCode().orEmpty()
+                val name = ingredient.value?.nameMatnrOsn.orEmpty()
+                val warehouse = ingredient.value?.lgort.orEmpty()
                 setWarehouseForSelectedItemUseCase(listOf(warehouse))
-            }
-            allEanMaterialIngredients.value?.getOrNull(position)?.let { barcode ->
-                navigator.openMaterialRemakeDetailsScreen(selectedMaterial, code, name, barcode)
+                allEanMaterialIngredients.value?.getOrNull(0)?.let { barcode ->
+                    navigator.openMaterialRemakeDetailsScreen(selectedMaterial, code, name, barcode)
+                }
             }
         } ?: navigator.showAlertPartNotFound()
     }
