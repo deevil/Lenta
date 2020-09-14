@@ -1,6 +1,8 @@
 package com.lenta.bp12.features.create_task.task_card
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.liveData
+import androidx.lifecycle.switchMap
 import com.lenta.bp12.managers.interfaces.ICreateTaskManager
 import com.lenta.bp12.model.pojo.ReturnReason
 import com.lenta.bp12.model.pojo.TaskType
@@ -17,7 +19,6 @@ import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.unsafeLazy
 import com.lenta.shared.utilities.orIfNull
 import java.text.SimpleDateFormat
 import java.util.*
@@ -107,7 +108,6 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
     /**
     Описание задачи и аттрибуты
      */
-
     val taskDescription = taskTypePosition.map {
         it?.let { position ->
             types.value?.let { types ->
@@ -126,14 +126,18 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
         attributes?.contains("N") == true
     }
 
-    val isWholeSaleTask by unsafeLazy {
-        selectedType.value?.isWholesaleType()
+    val isWholeSaleTask by lazy {
+        selectedType.switchMap {
+            liveData {
+                val isWholesaleType = it?.isWholesaleType()
+                emit(isWholesaleType)
+            }
+        }
     }
 
     /**
     Кнопки нижнего тулбара
      */
-
     val nextEnabled by lazy {
         taskName.map {
             it?.isNotEmpty()
@@ -166,10 +170,7 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
                     types.getOrNull(position)?.let {
                         storage.value = database.getStorageList(it.code)
                         taskAttributes.value = database.getTaskAttributes(it.code)
-
-                        if (isWholeSaleTask == false) {
-                            reasons.value = database.getReturnReasonList(it.code)
-                        }
+                        reasons.value = database.getReturnReasonList(it.code)
                     }
                 }
             }
@@ -183,7 +184,7 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
     fun onClickNext() {
         taskTypePosition.value?.let { taskTypePositionValue ->
             storagePosition.value?.let { storagePositionValue ->
-                val reason = returnReasonPosition.value?.takeIf{ isWholeSaleTask == false }?.let{ returnReasonPositionValue ->
+                val reason = returnReasonPosition.value?.takeIf{ isWholeSaleTask.value == false }?.let{ returnReasonPositionValue ->
                     reasons.value?.getOrNull(returnReasonPositionValue)
                 }
                 val task = TaskCreate(
@@ -194,16 +195,13 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
                         reason = reason
                 )
                 manager.updateCurrentTask(task)
-                manager.isWholesaleTaskType = (isWholeSaleTask == true)
+                manager.isWholesaleTaskType = (isWholeSaleTask.value == true)
 
                 navigator.openTaskCompositionScreen()
 
-            }.orIfNull { "storagePosition null" }
+            }.orIfNull { Logg.e {"storagePosition null"} }
         }.orIfNull {
             Logg.e { "taskTypePosition null" }
         }
-
-
     }
-
 }

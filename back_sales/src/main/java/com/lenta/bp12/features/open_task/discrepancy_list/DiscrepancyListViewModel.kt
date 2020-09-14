@@ -1,6 +1,7 @@
 package com.lenta.bp12.features.open_task.discrepancy_list
 
 import com.lenta.bp12.managers.interfaces.IOpenTaskManager
+import com.lenta.bp12.model.pojo.ui.DiscrepancyListItemGoodUi
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.shared.account.ISessionInfo
@@ -50,7 +51,7 @@ class DiscrepancyListViewModel : CoreViewModel() {
         task.map { task ->
             task?.goods?.filter { !it.isCounted }?.let { list ->
                 list.mapIndexed { index, good ->
-                    ItemGoodUi(
+                    DiscrepancyListItemGoodUi(
                             position = "${list.size - index}",
                             name = good.name,
                             material = good.material,
@@ -156,10 +157,3 @@ class DiscrepancyListViewModel : CoreViewModel() {
     }
 
 }
-
-data class ItemGoodUi(
-        val position: String,
-        val name: String,
-        val material: String,
-        val providerCode: String
-)
