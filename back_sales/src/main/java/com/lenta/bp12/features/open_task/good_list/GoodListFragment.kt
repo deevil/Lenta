@@ -80,9 +80,10 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
                 false)
 
         val onClickSelectionListener = View.OnClickListener {
-            val position = (it?.tag as Int)
-            vm.processingSelectionsHelper.revert(position = position)
-            layoutBinding.rv.adapter?.notifyItemChanged(position)
+            (it.tag as? Int)?.let{ position ->
+                vm.processingSelectionsHelper.revert(position = position)
+                layoutBinding.rv.adapter?.notifyItemChanged(position)
+            }
         }
 
         layoutBinding.rvConfig = initRecycleAdapterDataBinding(
@@ -114,9 +115,10 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
                 false)
 
         val onClickSelectionListener = View.OnClickListener {
-            val position = (it?.tag as Int)
-            vm.processedSelectionsHelper.revert(position = position)
-            layoutBinding.rv.adapter?.notifyItemChanged(position)
+            (it.tag as? Int)?.let{ position ->
+                vm.processedSelectionsHelper.revert(position = position)
+                layoutBinding.rv.adapter?.notifyItemChanged(position)
+            }
         }
 
         layoutBinding.rvConfig = initRecycleAdapterDataBinding(
@@ -147,9 +149,10 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
                 false)
 
         val onClickSelectionListener = View.OnClickListener {
-            val position = (it?.tag as Int)
-            vm.basketSelectionsHelper.revert(position = position)
-            layoutBinding.rv.adapter?.notifyItemChanged(position)
+            (it.tag as? Int)?.let{ position ->
+                vm.basketSelectionsHelper.revert(position = position)
+                layoutBinding.rv.adapter?.notifyItemChanged(position)
+            }
         }
 
         layoutBinding.rvConfig = initRecycleAdapterDataBinding(
@@ -181,9 +184,10 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
                 false)
 
         val onClickSelectionListener = View.OnClickListener {
-            val position = (it?.tag as Int)
-            vm.basketSelectionsHelper.revert(position = position)
-            layoutBinding.rv.adapter?.notifyItemChanged(position)
+            (it.tag as? Int)?.let{ position ->
+                vm.basketSelectionsHelper.revert(position = position)
+                layoutBinding.rv.adapter?.notifyItemChanged(position)
+            }
         }
 
         layoutBinding.rvConfig = initRecycleAdapterDataBinding(

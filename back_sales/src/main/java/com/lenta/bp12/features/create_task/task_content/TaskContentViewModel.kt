@@ -428,7 +428,11 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     private fun handleDeleteItemBasketTab() {
         val basketList = mutableListOf<Basket>()
         basketSelectionsHelper.selectedPositions.value?.mapNotNullTo(basketList) { position ->
-            commonBaskets.value?.get(position)?.basket
+            if (manager.isWholesaleTaskType) {
+                wholesaleBaskets.value?.get(position)?.basket
+            } else {
+                commonBaskets.value?.get(position)?.basket
+            }
         }
 
         basketSelectionsHelper.clearPositions()

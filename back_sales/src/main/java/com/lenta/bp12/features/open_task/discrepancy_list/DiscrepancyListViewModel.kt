@@ -1,7 +1,10 @@
 package com.lenta.bp12.features.open_task.discrepancy_list
 
+import androidx.lifecycle.switchMap
 import com.lenta.bp12.managers.interfaces.IOpenTaskManager
 import com.lenta.bp12.model.pojo.ui.DiscrepancyListItemGoodUi
+import com.lenta.bp12.model.pojo.ui.DiscrepancyListItemGoodUi
+import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.shared.account.ISessionInfo
@@ -9,6 +12,8 @@ import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
+import com.lenta.shared.utilities.extentions.asyncLiveData
+import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.orIfNull
 import javax.inject.Inject
@@ -30,7 +35,6 @@ class DiscrepancyListViewModel : CoreViewModel() {
     @Inject
     lateinit var resource: IResourceManager
 
-
     /**
     Переменные
      */
@@ -48,18 +52,28 @@ class DiscrepancyListViewModel : CoreViewModel() {
     }
 
     val goods by lazy {
-        task.map { task ->
-            task?.goods?.filter { !it.isCounted }?.let { list ->
-                list.mapIndexed { index, good ->
-                    DiscrepancyListItemGoodUi(
-                            position = "${list.size - index}",
-                            name = good.name,
-                            material = good.material,
-                            providerCode = good.provider.code.orEmpty()
-                    )
-                }
+        task.switchMap { task ->
+            asyncLiveData<List<ItemGoodUi>>() {
+                val result = mapToUI(task.goods)
+                emit(result)
             }
         }
+    }
+
+    private fun mapToUI(goodList: List<Good>): List<ItemGoodUi> {
+        var localIndex = 0
+        return goodList.mapNotNull { good ->
+            good.takeIf { it.isNotDeletedAndQuantityNotActual() }?.run {
+                ++localIndex
+                DiscrepancyListItemGoodUi(
+                        position = "$localIndex",
+                        name = good.name,
+                        material = good.material,
+                        providerCode = good.provider.code.orEmpty(),
+                        quantity = chooseQuantity(good)
+                )
+            }
+        }.reversed()
     }
 
     /**
@@ -153,6 +167,15 @@ class DiscrepancyListViewModel : CoreViewModel() {
         }.orIfNull {
             Logg.e { "good null" }
             navigator.showInternalError(resource.goodNotFoundErrorMsg)
+        }
+    }
+
+    private fun chooseQuantity(good: Good): String {
+        return if (good.planQuantity > 0.0) {
+            val difference = good.planQuantity - good.getTotalQuantity()
+            "?${difference.dropZeros()} ${good.commonUnits.name}"
+        } else {
+            "?${good.commonUnits.name}"
         }
     }
 
