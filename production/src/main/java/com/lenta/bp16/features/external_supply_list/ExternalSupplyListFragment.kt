@@ -57,15 +57,12 @@ class ExternalSupplyListFragment : KeyDownCoreFragment<FragmentExternalSupplyLis
 
     private fun initRvConfig() {
         binding?.let { layoutBinding ->
-            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemExternalSupplyBinding>(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemExternalSupplyUi, ItemExternalSupplyBinding>(
                     layoutId = R.layout.item_external_supply,
-                    itemId = BR.item
-            )
-
-            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    itemId = BR.item,
+                    keyHandlerId = 0,
                     recyclerView = layoutBinding.rv,
                     items = vm.goods,
-                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
                     onClickHandler = vm::onClickItemPosition
             )
         }
@@ -74,15 +71,6 @@ class ExternalSupplyListFragment : KeyDownCoreFragment<FragmentExternalSupplyLis
     override fun onBackPressed(): Boolean {
         vm.onBackPressed()
         return false
-    }
-
-    override fun onKeyDown(keyCode: KeyCode): Boolean {
-        return recyclerViewKeyHandler?.onKeyDown(keyCode) ?: false
-    }
-
-    override fun onDestroyView() {
-        recyclerViewKeyHandler?.onClickPositionFunc = null
-        super.onDestroyView()
     }
 
     companion object {

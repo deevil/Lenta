@@ -5,7 +5,6 @@ import android.view.View
 import com.lenta.bp9.BR
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentInputOutgoingFillingsBinding
-import com.lenta.bp9.databinding.ItemTileGoodsDetailsBinding
 import com.lenta.bp9.databinding.ItemTileInputOutgoingFillingsBinding
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -13,8 +12,6 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.databinding.DataBindingAdapter
-import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class InputOutgoingFillingsFragment : CoreFragment<FragmentInputOutgoingFillingsBinding, InputOutgoingFillingsViewModel>(), ToolbarButtonsClickListener {

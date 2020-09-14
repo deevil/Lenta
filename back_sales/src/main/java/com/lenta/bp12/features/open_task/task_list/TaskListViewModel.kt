@@ -49,8 +49,6 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         resource.tk(sessionInfo.market.orEmpty())
     }
 
-    val selectedPage = MutableLiveData(0)
-
     val processingNumberField by lazy {
         MutableLiveData(sessionInfo.userName)
     }

@@ -55,7 +55,6 @@ class ControlDeliveryCargoUnitsViewModel : CoreViewModel(), PageSelectionListene
     @Inject
     lateinit var dataBase: IDataBaseRepo
 
-    val selectedPage = MutableLiveData(0)
     val notProcessedSelectionsHelper = SelectionItemsHelper()
     val isUnlockTaskLoadingScreen: MutableLiveData<Boolean> = MutableLiveData(false)
 

@@ -45,7 +45,6 @@ class TaskListViewModel : CoreViewModel(),
     var requestFocusPageSearch: MutableLiveData<Boolean> = MutableLiveData()
     var requestFocusPagePostponed: MutableLiveData<Boolean> = MutableLiveData()
 
-    var selectedPage = MutableLiveData(0)
     var orderNumberPageToProcess = MutableLiveData("")
     var orderNumberPageSearch = MutableLiveData("")
     var orderNumberPagePostponed = MutableLiveData("")

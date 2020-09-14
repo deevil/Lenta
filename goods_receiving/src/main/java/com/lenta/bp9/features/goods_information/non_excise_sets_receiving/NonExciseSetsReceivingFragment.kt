@@ -10,7 +10,10 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.lenta.bp9.BR
 import com.lenta.bp9.R
-import com.lenta.bp9.databinding.*
+import com.lenta.bp9.databinding.FragmentNonExciseSetsReceivingBinding
+import com.lenta.bp9.databinding.ItemTileNonExciseSetsComponentsBinding
+import com.lenta.bp9.databinding.LayoutNonExciseSetsComponentsReceivingBinding
+import com.lenta.bp9.databinding.LayoutNonExciseSetsCountedReceivingBinding
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener
@@ -20,7 +23,6 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
-import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
@@ -32,24 +34,12 @@ class NonExciseSetsReceivingFragment : CoreFragment<FragmentNonExciseSetsReceivi
         ToolbarButtonsClickListener,
         OnBackPresserListener {
 
-    companion object {
-        fun create(productInfo: TaskProductInfo, isDiscrepancy: Boolean): NonExciseSetsReceivingFragment {
-            NonExciseSetsReceivingFragment().let {
-                it.productInfo = productInfo
-                it.isDiscrepancy = isDiscrepancy
-                return it
-            }
-        }
-    }
-
     private var isDiscrepancy by state<Boolean?>(null)
     private var productInfo by state<TaskProductInfo?>(null)
 
-    private var componentsRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
-
     override fun getLayoutId(): Int = R.layout.fragment_non_excise_sets_receiving
 
-    override fun getPageNumber(): String = "09/39"
+    override fun getPageNumber(): String = SCREEN_NUMBER
 
     override fun getViewModel(): NonExciseSetsReceivingViewModel {
         provideViewModel(NonExciseSetsReceivingViewModel::class.java).let { vm ->
@@ -94,7 +84,7 @@ class NonExciseSetsReceivingFragment : CoreFragment<FragmentNonExciseSetsReceivi
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
         when (position) {
-            0 -> {
+            TAB_QUANTITY -> {
                 DataBindingUtil
                         .inflate<LayoutNonExciseSetsCountedReceivingBinding>(LayoutInflater.from(container.context),
                                 R.layout.layout_non_excise_sets_counted_receiving,
@@ -142,28 +132,19 @@ class NonExciseSetsReceivingFragment : CoreFragment<FragmentNonExciseSetsReceivi
                             layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                                     layoutId = R.layout.item_tile_non_excise_sets_components,
                                     itemId = BR.item,
-                                    onAdapterItemBind = { binding: ItemTileNonExciseSetsComponentsBinding, position: Int ->
+                                    onItemBind = { binding: ItemTileNonExciseSetsComponentsBinding, position: Int ->
                                         binding.tvItemNumber.tag = position
                                         binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                                         binding.selectedForDelete = vm.componentsSelectionsHelper.isSelected(position)
-                                        componentsRecyclerViewKeyHandler?.let {
-                                            binding.root.isSelected = it.isSelected(position)
-                                        }
                                     },
-                                    onAdapterItemClicked = {position ->
-                                        componentsRecyclerViewKeyHandler?.onItemClicked(position)
-                                    }
+                                    keyHandlerId = TAB_COMPONENT,
+                                    recyclerView = layoutBinding.rv,
+                                    items = vm.listComponents,
+                                    onClickHandler = vm::onClickItemPosition
                             )
 
                             layoutBinding.vm = vm
                             layoutBinding.lifecycleOwner = viewLifecycleOwner
-
-                            componentsRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
-                                    recyclerView = layoutBinding.rv,
-                                    previousPosInfo = componentsRecyclerViewKeyHandler?.posInfo?.value,
-                                    items = vm.listComponents,
-                                    onClickHandler = vm::onClickItemPosition
-                            )
 
                             return layoutBinding.root
                         }
@@ -182,11 +163,11 @@ class NonExciseSetsReceivingFragment : CoreFragment<FragmentNonExciseSetsReceivi
     }
 
     override fun getTextTitle(position: Int): String {
-        return getString(if (position == 0) R.string.quantity else R.string.components)
+        return getString(if (position == TAB_QUANTITY) R.string.quantity else R.string.components)
     }
 
     override fun countTab(): Int {
-        return 2
+        return TABS
     }
 
     override fun onScanResult(data: String) {
@@ -206,6 +187,22 @@ class NonExciseSetsReceivingFragment : CoreFragment<FragmentNonExciseSetsReceivi
             vm.requestFocusToEan.value = true
         }
         vm.onResume()
+    }
+
+    companion object {
+        fun create(productInfo: TaskProductInfo, isDiscrepancy: Boolean): NonExciseSetsReceivingFragment {
+            NonExciseSetsReceivingFragment().let {
+                it.productInfo = productInfo
+                it.isDiscrepancy = isDiscrepancy
+                return it
+            }
+        }
+
+        const val SCREEN_NUMBER = "09/39"
+
+        private const val TABS = 2
+        private const val TAB_QUANTITY = 0
+        private const val TAB_COMPONENT = 1
     }
 
 }

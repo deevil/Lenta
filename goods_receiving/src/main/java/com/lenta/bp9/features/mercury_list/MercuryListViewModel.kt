@@ -21,7 +21,6 @@ class MercuryListViewModel : CoreViewModel(), PageSelectionListener {
     lateinit var taskManager: IReceivingTaskManager
 
     val productDoc: MutableLiveData<DeliveryProductDocumentRevise> = MutableLiveData()
-    val selectedPage = MutableLiveData(0)
     val tiedSelectionsHelper = SelectionItemsHelper()
     val untiedSelectionsHelper = SelectionItemsHelper()
     val listTied: MutableLiveData<List<MercuryListItem>> = MutableLiveData()

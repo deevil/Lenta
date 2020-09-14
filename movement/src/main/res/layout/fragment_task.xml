@@ -25,7 +25,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:pageSelectionListener="@{vm}"
-            app:tabPosition="@{vm.selectedPagePosition}"
+            app:tabPosition="@{vm.selectedPage}"
             app:viewPagerSettings="@{viewPagerSettings}">
 
             <com.google.android.material.tabs.TabLayout
