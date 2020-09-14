@@ -521,8 +521,12 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
                                                 isEizUnit.value = false
                                                 screenNavigator.openAlertAmountNormWillBeReduced()
                                             },
-                                            realBoxNumber = "${realBoxNumber?.substring(0, 4)}...${realBoxNumber?.substring(realBoxNumber.length - 10)}"
-                                    )
+                                            realBoxNumber = if (realBoxNumber?.length in 4..10) {
+                                                "${realBoxNumber?.substring(0, 4)}...${realBoxNumber?.substring(realBoxNumber.length - 10)}"
+                                                } else {
+                                            ""
+                                            }
+                                )
                                 }
                             }
                         }

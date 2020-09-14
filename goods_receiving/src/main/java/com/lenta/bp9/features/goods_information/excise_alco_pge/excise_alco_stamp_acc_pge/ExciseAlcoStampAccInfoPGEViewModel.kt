@@ -29,7 +29,7 @@ import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import com.mobrun.plugin.api.HyperHive
-import kotlinx.coroutines.launch
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import javax.inject.Inject
 
@@ -354,8 +354,7 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
                     } else {
                         if (exciseStampInfo.value!!.materialNumber != productInfo.value!!.materialNumber) {
                             //Отсканированная марка принадлежит товару <SAP-код> <Название>"
-                            screenNavigator.openAlertScannedStampBelongsAnotherProductScreen(exciseStampInfo.value?.materialNumber.orEmpty(), zfmpUtz48V001.getProductInfoByMaterial(exciseStampInfo.value!!.materialNumber)?.name
-                                    ?: "")
+                            screenNavigator.openAlertScannedStampBelongsAnotherProductScreen(exciseStampInfo.value?.materialNumber.orEmpty(), zfmpUtz48V001.getProductInfoByMaterial(exciseStampInfo.value!!.materialNumber)?.name.orEmpty())
                         } else {
                             addExciseStampDiscrepancy()
                         }
@@ -493,12 +492,12 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
         val bottlingDate = "${_bottlingDate?.substring(6, 10)}-${_bottlingDate?.substring(3, 5)}-${_bottlingDate?.substring(0, 2)}"
         exciseStampInfo.value = TaskExciseStampInfo(
                 materialNumber = productInfo.value!!.materialNumber,
-                code = scannedStampCode.value ?: "",
-                processingUnitNumber = enteredProcessingUnitNumber.value ?: "",
+                code = scannedStampCode.value.orEmpty(),
+                processingUnitNumber = enteredProcessingUnitNumber.value.orEmpty(),
                 batchNumber = "",
                 boxNumber = "",
                 setMaterialNumber = "",
-                organizationCodeEGAIS = manufacturerCode ?: "",
+                organizationCodeEGAIS = manufacturerCode.orEmpty(),
                 bottlingDate = bottlingDate
         )
         addExciseStampDiscrepancy()
@@ -509,8 +508,15 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
         val dateOfPour = taskManager.getReceivingTask()?.taskRepository?.getBatches()?.getBatches()?.findLast {
             it.batchNumber == exciseStampInfo.value?.batchNumber.orEmpty()
         }?.bottlingDate.orEmpty()
-        if (!dateOfPour.isEmpty())
-        spinBottlingDate.value = listOf(formatterRU.format(formatterEN.parse(dateOfPour)))
+
+        if (!dateOfPour.isEmpty()) {
+            try {
+                val formatter =  listOf(formatterRU.format(formatterEN.parse(dateOfPour)))
+                spinBottlingDate.value = formatter
+            } catch (e: ParseException){
+                e.printStackTrace()
+            }
+        }
     }
 
     fun onBackPressed() {
