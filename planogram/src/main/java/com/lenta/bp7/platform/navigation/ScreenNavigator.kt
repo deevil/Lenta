@@ -211,17 +211,6 @@ class ScreenNavigator(
         }
     }
 
-    override fun showTwelveCharactersEntered(sapCallback: () -> Unit, barCallback: () -> Unit) {
-        runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.twelve_characters_entered),
-                    pageNumber = "40",
-                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(sapCallback),
-                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(barCallback),
-                    leftButtonDecorationInfo = ButtonDecorationInfo.sap,
-                    rightButtonDecorationInfo = ButtonDecorationInfo.barcode))
-        }
-    }
-
     override fun showUnknownGoodBarcode(barCode: String, yesCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.unknown_good_barcode, barCode),
@@ -347,7 +336,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun showIncompleteSegmentDetected(goOverCallback: () -> Unit)
     fun showUnsavedSelfControlDataDetected(goOverCallback: () -> Unit)
     fun showUnsavedExternalAuditDataDetected(goOverCallback: () -> Unit)
-    fun showTwelveCharactersEntered(sapCallback: () -> Unit, barCallback: () -> Unit)
     fun showUnknownGoodBarcode(barCode: String, yesCallback: () -> Unit)
     fun showShelfIsDeleted(reviewCallback: () -> Unit, createCallback: () -> Unit)
     fun showDeleteShelfData(shelfNumbers: String, deleteCallback: () -> Unit)

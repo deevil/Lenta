@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
@@ -15,7 +14,6 @@ import com.lenta.bp14.databinding.ItemClGoodQuantityEditableSelectableBinding
 import com.lenta.bp14.databinding.LayoutClGoodsListBinding
 import com.lenta.bp14.di.CheckListComponent
 import com.lenta.shared.di.CoreInjectHelper
-import com.lenta.shared.keys.KeyCode
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.KeyDownCoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -23,9 +21,6 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
-import com.lenta.shared.utilities.databinding.DataBindingAdapter
-import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
-import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
@@ -69,57 +64,36 @@ class GoodsListClFragment : KeyDownCoreFragment<FragmentGoodsListClBinding, Good
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
-        DataBindingUtil
-                .inflate<LayoutClGoodsListBinding>(LayoutInflater.from(container.context),
-                        R.layout.layout_cl_goods_list,
-                        container,
-                        false).let { layoutBinding ->
+        DataBindingUtil.inflate<LayoutClGoodsListBinding>(LayoutInflater.from(container.context),
+                R.layout.layout_cl_goods_list,
+                container,
+                false).let { layoutBinding ->
 
-                    val onClickSelectionListener = View.OnClickListener {
-                        (it!!.tag as Int).let { position ->
-                            vm.selectionsHelper.revert(position = position)
-                            layoutBinding.rv.adapter?.notifyItemChanged(position)
-                        }
-                    }
-
-                    layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                            layoutId = R.layout.item_cl_good_quantity_editable_selectable,
-                            itemId = BR.good,
-                            realisation = object : DataBindingAdapter<ItemClGoodQuantityEditableSelectableBinding> {
-                                override fun onCreate(binding: ItemClGoodQuantityEditableSelectableBinding) {
-                                }
-
-                                override fun onBind(binding: ItemClGoodQuantityEditableSelectableBinding, position: Int) {
-                                    binding.tvItemNumber.tag = position
-                                    binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                                    binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
-                                    recyclerViewKeyHandler?.let {
-                                        binding.root.isSelected = it.isSelected(position)
-                                    }
-                                }
-                            },
-                            onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                                recyclerViewKeyHandler?.selectPosition(position)
-                            }
-                    )
-
-                    layoutBinding.vm = vm
-                    layoutBinding.lifecycleOwner = viewLifecycleOwner
-                    recyclerViewKeyHandler = RecyclerViewKeyHandler(
-                            rv = layoutBinding.rv,
-                            items = vm.goods,
-                            lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                            initPosInfo = recyclerViewKeyHandler?.posInfo?.value
-                    )
-
-                    return layoutBinding.root
+            val onClickSelectionListener = View.OnClickListener {
+                (it!!.tag as Int).let { position ->
+                    vm.selectionsHelper.revert(position = position)
+                    layoutBinding.rv.adapter?.notifyItemChanged(position)
                 }
-    }
+            }
 
-    override fun onAdapterItemClickHandler(position: Int) {
-        recyclerViewKeyHandler?.selectPosition(position)
-    }
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                    layoutId = R.layout.item_cl_good_quantity_editable_selectable,
+                    itemId = BR.good,
+                    onItemBind = { binding: ItemClGoodQuantityEditableSelectableBinding, position: Int ->
+                        binding.tvItemNumber.tag = position
+                        binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                        binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
+                    },
+                    recyclerView = layoutBinding.rv,
+                    items = vm.goods
+            )
 
+            layoutBinding.vm = vm
+            layoutBinding.lifecycleOwner = viewLifecycleOwner
+
+            return layoutBinding.root
+        }
+    }
 
     override fun getTextTitle(position: Int): String {
         return getString(R.string.goods)
@@ -130,20 +104,6 @@ class GoodsListClFragment : KeyDownCoreFragment<FragmentGoodsListClBinding, Good
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding?.viewPagerSettings = this
-    }
-
-    override fun onKeyDown(keyCode: KeyCode): Boolean {
-        recyclerViewKeyHandler?.let {
-            if (!it.onKeyDown(keyCode)) {
-                keyCode.digit?.let { digit ->
-                    vm.onDigitPressed(digit)
-                    return true
-                }
-                return false
-            }
-            return true
-        }
-        return false
     }
 
     override fun onScanResult(data: String) {

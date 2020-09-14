@@ -62,13 +62,8 @@ class GoodInfoViewModel : BaseProductInfoViewModel() {
 
     private fun addGood(): Boolean {
         countValue.value?.let {
-
             if (enabledApplyButton.value != true && it != 0.0) {
-                if (getSelectedReason() === WriteOffReason.empty) {
-                    screenNavigator.openNotPossibleSaveWithoutReasonScreen()
-                } else {
-                    screenNavigator.openNotPossibleSaveNegativeQuantityScreen()
-                }
+                showNotPossibleSaveScreen()
                 return false
             }
 
@@ -80,9 +75,9 @@ class GoodInfoViewModel : BaseProductInfoViewModel() {
 
             return true
         }
+
         return false
     }
-
 
     override fun onBackPressed(): Boolean {
         processGeneralProductService.discard()

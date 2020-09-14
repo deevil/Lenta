@@ -15,7 +15,6 @@ class TransferGoodsSectionViewModel : CoreViewModel(), PageSelectionListener {
     lateinit var taskManager: IReceivingTaskManager
 
     val listSections: MutableLiveData<List<TransferGoodsSectionItem>> = MutableLiveData()
-    val selectedPage = MutableLiveData(0)
     val enabledBtnSave by lazy {
         MutableLiveData(taskManager.getReceivingTask()?.taskRepository?.getSections()?.getSignModification() == true)
     }

@@ -1,7 +1,7 @@
 package com.lenta.bp12.features.open_task.task_card
 
 import androidx.lifecycle.MutableLiveData
-import com.lenta.bp12.model.IOpenTaskManager
+import com.lenta.bp12.managers.interfaces.IOpenTaskManager
 import com.lenta.bp12.platform.extention.isAlcohol
 import com.lenta.bp12.platform.extention.isCommon
 import com.lenta.bp12.platform.extention.isMark
@@ -59,8 +59,6 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
     val task by lazy {
         manager.currentTask
     }
-
-    val selectedPage = MutableLiveData(0)
 
     val ui by lazy {
         task.map {

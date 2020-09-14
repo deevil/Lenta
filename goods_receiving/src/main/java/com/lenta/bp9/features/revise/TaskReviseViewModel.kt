@@ -25,7 +25,6 @@ class TaskReviseViewModel : CoreViewModel(), PageSelectionListener {
     @Inject
     lateinit var taskManager: IReceivingTaskManager
 
-    val selectedPage = MutableLiveData(0)
 
     val taskCaption: String by lazy {
         taskManager.getReceivingTask()?.taskHeader?.caption.orEmpty()

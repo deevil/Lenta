@@ -71,18 +71,13 @@ class ListOfDifferencesFragment : CoreFragment<FragmentListOfDifferencesBinding,
             layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                     layoutId = R.layout.item_simple_good_selectable,
                     itemId = BR.vm,
-                    onAdapterItemBind = { binding: ItemSimpleGoodSelectableBinding, position: Int ->
+                    onItemBind = { binding: ItemSimpleGoodSelectableBinding, position: Int ->
                         binding.tvItemNumber.tag = position
                         binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                         binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
-                        onAdapterBindHandler(binding, position)
-                    }
-            )
-
-            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    },
                     recyclerView = layoutBinding.rv,
                     items = vm.goods,
-                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
                     onClickHandler = vm::onClickItemPosition
             )
         }

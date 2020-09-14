@@ -5,9 +5,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import com.google.android.material.tabs.TabLayout
 import com.lenta.shared.R
-import com.lenta.shared.platform.constants.Constants.SHOES_MARK_REGEX_PATTERN
-import com.lenta.shared.platform.constants.Constants.TOBACCO_MARK_CARTON_REGEX_PATTERN
-import com.lenta.shared.platform.constants.Constants.TOBACCO_MARK_PACK_REGEX_PATTERN
+import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import java.text.SimpleDateFormat
 import java.util.*
@@ -50,21 +48,21 @@ fun isCommonFormatNumber(number: String): Boolean {
     return ScanCodeInfo(number).isEnterCodeValid
 }
 
-fun isTobaccoPackMark(number: String) : Boolean {
-    val tobaccoMarkRegex = Regex(TOBACCO_MARK_PACK_REGEX_PATTERN)
-    return number.matches(tobaccoMarkRegex)
+fun getMaterialInCommonFormat(number: String): String {
+    return "000000000000${number.takeLast(6)}"
 }
 
-fun isTobaccoCartonMark(number: String) : Boolean {
-    val tobaccoMarkRegex = Regex(TOBACCO_MARK_CARTON_REGEX_PATTERN)
-    return number.matches(tobaccoMarkRegex)
+fun isCigarettesMark(number: String) : Boolean {
+    val cigarettesMarkPattern = Regex(Constants.CIGARETTES_MARK_PATTERN)
+    return number.matches(cigarettesMarkPattern)
+}
+
+fun isCigarettesBox(number: String) : Boolean {
+    val cigarettesBoxPattern = Regex(Constants.CIGARETTES_BOX_PATTERN)
+    return number.matches(cigarettesBoxPattern)
 }
 
 fun isShoesMark(number: String) : Boolean {
-    val shoesMarkRegex = Regex(SHOES_MARK_REGEX_PATTERN)
-    return number.matches(shoesMarkRegex)
-}
-
-fun getMaterialInCommonFormat(number: String): String {
-    return "000000000000${number.takeLast(6)}"
+    val shoesMarkPattern = Regex(Constants.SHOES_MARK_PATTERN)
+    return number.matches(shoesMarkPattern)
 }

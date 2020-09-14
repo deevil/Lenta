@@ -26,7 +26,6 @@ class GoodsDetailsStorageViewModel : CoreViewModel() {
     val partly: MutableLiveData<String> = MutableLiveData()
     val vintage: MutableLiveData<String> = MutableLiveData()
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
-    val selectedPage = MutableLiveData(0)
     val countedCategories: MutableLiveData<List<GoodsDetailsCategoriesItem>> = MutableLiveData()
     val countedProssed: MutableLiveData<List<GoodsDetailsStorageItem>> = MutableLiveData()
     val countedNotProssed: MutableLiveData<List<GoodsDetailsStorageItem>> = MutableLiveData()

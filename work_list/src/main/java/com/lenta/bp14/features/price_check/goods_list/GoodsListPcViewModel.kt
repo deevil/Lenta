@@ -69,8 +69,6 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     val processedSelectionsHelper = SelectionItemsHelper()
     val searchSelectionsHelper = SelectionItemsHelper()
 
-    val selectedPage = MutableLiveData(0)
-
     val correctedSelectedPage = selectedPage.map { getCorrectedPagePosition(it) }
 
     val taskName by lazy {

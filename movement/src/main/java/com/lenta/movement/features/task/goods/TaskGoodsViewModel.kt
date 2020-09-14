@@ -92,8 +92,7 @@ class TaskGoodsViewModel : CoreViewModel(),
         }
     }
 
-    val selectedPagePosition = MutableLiveData(0)
-    val currentPage = selectedPagePosition.mapSkipNulls { TaskGoodsPage.values().getOrNull(it) }
+    val currentPage = selectedPage.mapSkipNulls { TaskGoodsPage.values().getOrNull(it) }
 
     val deleteEnabled = combineLatest(
             currentPage,
@@ -119,7 +118,7 @@ class TaskGoodsViewModel : CoreViewModel(),
     }
 
     override fun onPageSelected(position: Int) {
-        selectedPagePosition.value = position
+        selectedPage.value = position
     }
 
     fun getTitle(): String {

@@ -7,10 +7,8 @@ import com.lenta.movement.R
 import com.lenta.movement.databinding.FragmentGoodsListBinding
 import com.lenta.movement.databinding.LayoutItemGoodsListBinding
 import com.lenta.movement.platform.extensions.getAppComponent
-import com.lenta.shared.keys.KeyCode
-import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.activity.OnBackPresserListener
-import com.lenta.shared.platform.fragment.CoreFragment
+import com.lenta.shared.platform.fragment.KeyDownCoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
@@ -19,10 +17,9 @@ import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewModel>(),
+class GoodsListFragment : KeyDownCoreFragment<FragmentGoodsListBinding, GoodsListViewModel>(),
         OnScanResultListener,
         OnBackPresserListener,
-        OnKeyDownListener,
         ToolbarButtonsClickListener {
 
     override fun getLayoutId() = R.layout.fragment_goods_list
@@ -73,18 +70,13 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
             layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                     layoutId = R.layout.layout_item_goods_list,
                     itemId = BR.item,
-                    onAdapterItemBind = { binding: LayoutItemGoodsListBinding, position ->
+                    onItemBind = { binding: LayoutItemGoodsListBinding, position ->
                         binding.tvCounter.tag = position
                         binding.tvCounter.setOnClickListener(onClickSelectionListener)
                         binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
-                        onAdapterBindHandler(binding, position)
-                    }
-            )
-
-            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    },
                     recyclerView = layoutBinding.rv,
-                    items = vm.goodsList,
-                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value
+                    items = vm.goodsList
             )
         }
     }
@@ -104,21 +96,8 @@ class GoodsListFragment : CoreFragment<FragmentGoodsListBinding, GoodsListViewMo
         vm.onResume()
     }
 
-    override fun onKeyDown(keyCode: KeyCode): Boolean {
-        recyclerViewKeyHandler?.let {
-            if (!it.onKeyDown(keyCode)) {
-                keyCode.digit?.let { digit ->
-                    vm.onDigitPressed(digit)
-                    return true
-                }
-                return false
-            }
-            return true
-        }
-        return false
-    }
-
     companion object {
         private const val PAGE_NUMBER = "13/06"
     }
+
 }

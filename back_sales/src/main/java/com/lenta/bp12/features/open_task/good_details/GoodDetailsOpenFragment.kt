@@ -77,21 +77,17 @@ class GoodDetailsOpenFragment : CoreFragment<FragmentGoodDetailsOpenBinding, Goo
             layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                     layoutId = R.layout.item_category,
                     itemId = BR.item,
-                    onAdapterItemBind = { binding: ItemCategoryBinding, position: Int ->
+                    onItemBind = { binding: ItemCategoryBinding, position: Int ->
                         binding.tvItemNumber.tag = position
                         binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                         binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
-                        onAdapterBindHandler(binding, position)
-                    }
+                    },
+                    recyclerView = layoutBinding.rv,
+                    items = vm.categories
             )
 
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
-            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
-                    recyclerView = layoutBinding.rv,
-                    items = vm.categories,
-                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value
-            )
 
             return layoutBinding.root
         }
