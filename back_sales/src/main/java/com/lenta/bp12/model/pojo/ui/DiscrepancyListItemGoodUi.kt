@@ -4,5 +4,6 @@ data class DiscrepancyListItemGoodUi(
         val position: String,
         val name: String,
         val material: String,
-        val providerCode: String
+        val providerCode: String,
+        val quantity: String
 )

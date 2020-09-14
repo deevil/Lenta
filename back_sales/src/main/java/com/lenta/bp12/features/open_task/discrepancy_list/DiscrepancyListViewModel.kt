@@ -2,9 +2,8 @@ package com.lenta.bp12.features.open_task.discrepancy_list
 
 import androidx.lifecycle.switchMap
 import com.lenta.bp12.managers.interfaces.IOpenTaskManager
-import com.lenta.bp12.model.pojo.ui.DiscrepancyListItemGoodUi
-import com.lenta.bp12.model.pojo.ui.DiscrepancyListItemGoodUi
 import com.lenta.bp12.model.pojo.Good
+import com.lenta.bp12.model.pojo.ui.DiscrepancyListItemGoodUi
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.shared.account.ISessionInfo
@@ -53,14 +52,14 @@ class DiscrepancyListViewModel : CoreViewModel() {
 
     val goods by lazy {
         task.switchMap { task ->
-            asyncLiveData<List<ItemGoodUi>>() {
+            asyncLiveData<List<DiscrepancyListItemGoodUi>>() {
                 val result = mapToUI(task.goods)
                 emit(result)
             }
         }
     }
 
-    private fun mapToUI(goodList: List<Good>): List<ItemGoodUi> {
+    private fun mapToUI(goodList: List<Good>): List<DiscrepancyListItemGoodUi> {
         var localIndex = 0
         return goodList.mapNotNull { good ->
             good.takeIf { it.isNotDeletedAndQuantityNotActual() }?.run {
@@ -178,5 +177,4 @@ class DiscrepancyListViewModel : CoreViewModel() {
             "?${good.commonUnits.name}"
         }
     }
-
 }
