@@ -78,8 +78,6 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     val basketSelectionsHelper = SelectionItemsHelper()
 
-    val selectedPage = MutableLiveData(0)
-
     private val task by lazy {
         manager.currentTask
     }

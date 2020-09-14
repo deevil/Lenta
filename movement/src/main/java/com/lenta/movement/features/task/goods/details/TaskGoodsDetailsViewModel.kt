@@ -36,8 +36,7 @@ class TaskGoodsDetailsViewModel : CoreViewModel(), PageSelectionListener {
 
     val boxesSelectionHelper = SelectionItemsHelper()
 
-    val selectedPagePosition = MutableLiveData(0)
-    val currentPage = selectedPagePosition.mapSkipNulls { TaskGoodsDetailsPage.values()[it] }
+    val currentPage = selectedPage.mapSkipNulls { TaskGoodsDetailsPage.values()[it] }
 
     init {
         launchUITryCatch {
@@ -65,7 +64,7 @@ class TaskGoodsDetailsViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     override fun onPageSelected(position: Int) {
-        selectedPagePosition.value = position
+        selectedPage.value = position
     }
 
     fun getAvailablePages(): List<TaskGoodsDetailsPage> {

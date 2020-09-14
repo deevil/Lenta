@@ -52,7 +52,6 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     val titleProgressScreen: MutableLiveData<String> = MutableLiveData()
     val storePlaceNumber: MutableLiveData<String> = MutableLiveData()
     val isStorePlaceNumber: MutableLiveData<Boolean> = storePlaceNumber.map { it != "00" }
-    var selectedPage = MutableLiveData(0)
     val componentsSelectionsHelper = SelectionItemsHelper()
     val spinList: MutableLiveData<List<String>> = MutableLiveData()
     val selectedPosition: MutableLiveData<Int> = MutableLiveData(0)

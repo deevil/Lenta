@@ -73,8 +73,6 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     val processedSelectionsHelper = SelectionItemsHelper()
 
-    val selectedPage = MutableLiveData(PROCESSING_PAGE_INDEX)
-
     val basketSelectionsHelper = SelectionItemsHelper()
 
 

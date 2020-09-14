@@ -19,8 +19,6 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.databinding.DataBindingAdapter
-import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
@@ -31,12 +29,9 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
         ToolbarButtonsClickListener,
         OnBackPresserListener {
 
-    private var toCheckRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
-    private var checkedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
-
     override fun getLayoutId(): Int = R.layout.fragment_transport_conditions_revise
 
-    override fun getPageNumber() = "09/14"
+    override fun getPageNumber() = SCREEN_NUMBER
 
     override fun getViewModel(): TransportConditionsReviseViewModel {
         provideViewModel(TransportConditionsReviseViewModel::class.java).let {
@@ -69,25 +64,24 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
-        return when(position) {
-            0 -> prepareToCheckView(container)
-            1 -> prepareCheckedView(container)
-            2 -> prepareNotificationsView(container)
+        return when (position) {
+            TAB_TO_CHECK -> prepareToCheckView(container)
+            TAB_CHECKED -> prepareCheckedView(container)
+            TAB_INFO -> prepareNotificationsView(container)
             else -> View(context)
         }
     }
 
     private fun prepareToCheckView(container: ViewGroup): View {
-        DataBindingUtil
-                .inflate<LayoutTransportConditionsUncheckedBinding>(LayoutInflater.from(container.context),
-                        R.layout.layout_transport_conditions_unchecked,
-                        container,
-                        false)
+        DataBindingUtil.inflate<LayoutTransportConditionsUncheckedBinding>(LayoutInflater.from(container.context),
+                R.layout.layout_transport_conditions_unchecked,
+                container,
+                false)
                 .let { layoutBinding ->
                     layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_transport_condition,
                             itemId = BR.item,
-                            onAdapterItemBind = { binding: ItemTileTransportConditionBinding, position: Int ->
+                            onItemBind = { binding: ItemTileTransportConditionBinding, position: Int ->
                                 binding.tvItemNumber.tag = position
                                 binding.cbChecked.setOnClickListener { view ->
                                     val cb = view as? CheckBox
@@ -99,7 +93,7 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
                                     }
                                 }
                                 binding.etEditText.setOnEditorActionListener { v, actionId, event ->
-                                    when(actionId) {
+                                    when (actionId) {
                                         EditorInfo.IME_ACTION_DONE -> {
                                             vm.finishedInput(position)
                                             return@setOnEditorActionListener false
@@ -120,36 +114,29 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
                                                 else -> View.INVISIBLE
                                             }
                                 }
-                                toCheckRecyclerViewKeyHandler?.let {
-                                    binding.root.isSelected = it.isSelected(position)
-                                }
-                            }
+                            },
+                            keyHandlerId = TAB_TO_CHECK,
+                            recyclerView = layoutBinding.rv,
+                            items = vm.conditionsToCheck
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-
-                    toCheckRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
-                            recyclerView = layoutBinding.rv,
-                            previousPosInfo = toCheckRecyclerViewKeyHandler?.posInfo?.value,
-                            items = vm.conditionsToCheck
-                    )
 
                     return layoutBinding.root
                 }
     }
 
     private fun prepareCheckedView(container: ViewGroup): View {
-        DataBindingUtil
-                .inflate<LayoutTransportConditionsCheckedBinding>(LayoutInflater.from(container.context),
-                        R.layout.layout_transport_conditions_checked,
-                        container,
-                        false)
+        DataBindingUtil.inflate<LayoutTransportConditionsCheckedBinding>(LayoutInflater.from(container.context),
+                R.layout.layout_transport_conditions_checked,
+                container,
+                false)
                 .let { layoutBinding ->
                     layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_transport_condition_checked,
                             itemId = BR.item,
-                            onAdapterItemBind = { binding: ItemTileTransportConditionCheckedBinding, position: Int ->
+                            onItemBind = { binding: ItemTileTransportConditionCheckedBinding, position: Int ->
                                 binding.tvItemNumber.tag = position
                                 binding.cbChecked.setOnClickListener { view ->
                                     val cb = view as? CheckBox
@@ -173,7 +160,7 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
                                     }
                                 }
                                 binding.etConditionValue.setOnEditorActionListener { v, actionId, event ->
-                                    when(actionId) {
+                                    when (actionId) {
                                         EditorInfo.IME_ACTION_DONE -> {
                                             vm.finishedInput(position)
                                             return@setOnEditorActionListener false
@@ -181,20 +168,14 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
                                         else -> return@setOnEditorActionListener false
                                     }
                                 }
-                                checkedRecyclerViewKeyHandler?.let {
-                                    binding.root.isSelected = it.isSelected(position)
-                                }
-                            }
+                            },
+                            keyHandlerId = TAB_CHECKED,
+                            recyclerView = layoutBinding.rv,
+                            items = vm.checkedConditions
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-
-                    checkedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
-                            recyclerView = layoutBinding.rv,
-                            previousPosInfo = checkedRecyclerViewKeyHandler?.posInfo?.value,
-                            items = vm.checkedConditions
-                    )
 
                     return layoutBinding.root
                 }
@@ -220,15 +201,15 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
 
     override fun getTextTitle(position: Int): String {
         return when (position) {
-            0 -> getString(R.string.verify)
-            1 -> getString(R.string.verified)
-            2 -> getString(R.string.information)
+            TAB_TO_CHECK -> getString(R.string.verify)
+            TAB_CHECKED -> getString(R.string.verified)
+            TAB_INFO -> getString(R.string.information)
             else -> ""
         }
     }
 
     override fun countTab(): Int {
-        return 3
+        return TABS
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -252,4 +233,14 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
         vm.onBackPressed()
         return false
     }
+
+    companion object {
+        const val SCREEN_NUMBER = "09/14"
+
+        private const val TABS = 3
+        private const val TAB_TO_CHECK = 0
+        private const val TAB_CHECKED = 1
+        private const val TAB_INFO = 2
+    }
+
 }

@@ -34,8 +34,6 @@ class ProductDocumentsReviseViewModel : CoreViewModel(), PageSelectionListener {
         ZfmpUtz48V001(hyperHive)
     }
 
-    val selectedPage = MutableLiveData(0)
-
     val typeTask: TaskType by lazy {
         taskManager.getTaskType()
     }

@@ -4,49 +4,37 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
 import com.lenta.bp9.BR
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.*
-import com.lenta.bp9.features.goods_information.general.GoodsInfoFragment
-import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.extentions.getAppComponent
-import com.lenta.shared.keys.KeyCode
-import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.activity.OnBackPresserListener
-import com.lenta.shared.platform.fragment.CoreFragment
+import com.lenta.shared.platform.fragment.KeyDownCoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
-import com.lenta.shared.utilities.databinding.DataBindingAdapter
-import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
-import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
-import com.lenta.shared.utilities.state.state
 
-class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCargoUnitsBinding, ControlDeliveryCargoUnitsViewModel>(),
+class ControlDeliveryCargoUnitsFragment : KeyDownCoreFragment<FragmentControlDeliveryCargoUnitsBinding, ControlDeliveryCargoUnitsViewModel>(),
         ViewPagerSettings,
         ToolbarButtonsClickListener,
-        OnKeyDownListener,
         OnScanResultListener,
         OnBackPresserListener {
 
     private var isUnlockTaskLoadingScreen: Boolean? = null
-    private var notProcessedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
-    private var processedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_control_delivery_cargo_units
 
-    override fun getPageNumber() = "09/26"
+    override fun getPageNumber() = SCREEN_NUMBER
 
     override fun getViewModel(): ControlDeliveryCargoUnitsViewModel {
-        provideViewModel(ControlDeliveryCargoUnitsViewModel::class.java).let {vm ->
+        provideViewModel(ControlDeliveryCargoUnitsViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)
             vm.isUnlockTaskLoadingScreen.value = isUnlockTaskLoadingScreen
             return vm
@@ -85,35 +73,24 @@ class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCa
     }
 
     private fun getPagerGE(container: ViewGroup, position: Int): View {
-        if (position == 0) {
+        if (position == TAB_NOT_PROCESSED) {
             DataBindingUtil
                     .inflate<LayoutControlDeliveryCuBinding>(LayoutInflater.from(container.context),
                             R.layout.layout_control_delivery_cu,
                             container,
                             false)
                     .let { layoutBinding ->
-                        layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                        layoutBinding.rvConfig = initRecycleAdapterDataBinding<ControlDeliveryCargoUnitItem, ItemTileControlDeliveryCuBinding>(
                                 layoutId = R.layout.item_tile_control_delivery_cu,
                                 itemId = BR.item,
-                                onAdapterItemBind = { binding: ItemTileControlDeliveryCuBinding, position: Int ->
-                                    notProcessedRecyclerViewKeyHandler?.let {
-                                        binding.root.isSelected = it.isSelected(position)
-                                    }
-                                },
-                                onAdapterItemClicked = {position ->
-                                    notProcessedRecyclerViewKeyHandler?.onItemClicked(position)
-                                }
+                                keyHandlerId = TAB_NOT_PROCESSED,
+                                recyclerView = layoutBinding.rv,
+                                items = vm.listNotProcessed,
+                                onClickHandler = vm::onClickItemPosition
                         )
 
                         layoutBinding.vm = vm
                         layoutBinding.lifecycleOwner = viewLifecycleOwner
-
-                        notProcessedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
-                                recyclerView = layoutBinding.rv,
-                                previousPosInfo = notProcessedRecyclerViewKeyHandler?.posInfo?.value,
-                                items = vm.listNotProcessed,
-                                onClickHandler = vm::onClickItemPosition
-                        )
 
                         return layoutBinding.root
                     }
@@ -125,63 +102,41 @@ class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCa
                         container,
                         false)
                 .let { layoutBinding ->
-                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding<ControlDeliveryCargoUnitItem, ItemTileControlDeliveryCuBinding>(
                             layoutId = R.layout.item_tile_control_delivery_cu,
                             itemId = BR.item,
-                            onAdapterItemBind = { binding: ItemTileControlDeliveryCuBinding, position: Int ->
-                                processedRecyclerViewKeyHandler?.let {
-                                    binding.root.isSelected = it.isSelected(position)
-                                }
-                            },
-                            onAdapterItemClicked = {position ->
-                                processedRecyclerViewKeyHandler?.onItemClicked(position)
-                            }
+                            keyHandlerId = TAB_PROCESSED,
+                            recyclerView = layoutBinding.rv,
+                            items = vm.listProcessed,
+                            onClickHandler = vm::onClickItemPosition
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-
-                    processedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
-                            recyclerView = layoutBinding.rv,
-                            previousPosInfo = processedRecyclerViewKeyHandler?.posInfo?.value,
-                            items = vm.listProcessed,
-                            onClickHandler = vm::onClickItemPosition
-                    )
 
                     return layoutBinding.root
                 }
     }
 
     private fun getPagerEO(container: ViewGroup, position: Int): View {
-        if (position == 0) {
+        if (position == TAB_NOT_PROCESSED) {
             DataBindingUtil
                     .inflate<LayoutControlDeliveryEoBinding>(LayoutInflater.from(container.context),
                             R.layout.layout_control_delivery_eo,
                             container,
                             false)
                     .let { layoutBinding ->
-                        layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                        layoutBinding.rvConfig = initRecycleAdapterDataBinding<ControlDeliveryCargoUnitItem, ItemTileControlDeliveryCuBinding>(
                                 layoutId = R.layout.item_tile_control_delivery_cu,
                                 itemId = BR.item,
-                                onAdapterItemBind = { binding: ItemTileControlDeliveryCuBinding, position: Int ->
-                                    notProcessedRecyclerViewKeyHandler?.let {
-                                        binding.root.isSelected = it.isSelected(position)
-                                    }
-                                },
-                                onAdapterItemClicked = {position ->
-                                    notProcessedRecyclerViewKeyHandler?.onItemClicked(position)
-                                }
+                                keyHandlerId = TAB_NOT_PROCESSED,
+                                recyclerView = layoutBinding.rv,
+                                items = vm.listNotProcessed,
+                                onClickHandler = vm::onClickItemPosition
                         )
 
                         layoutBinding.vm = vm
                         layoutBinding.lifecycleOwner = viewLifecycleOwner
-
-                        notProcessedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
-                                recyclerView = layoutBinding.rv,
-                                previousPosInfo = notProcessedRecyclerViewKeyHandler?.posInfo?.value,
-                                items = vm.listNotProcessed,
-                                onClickHandler = vm::onClickItemPosition
-                        )
 
                         return layoutBinding.root
                     }
@@ -193,35 +148,24 @@ class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCa
                         container,
                         false)
                 .let { layoutBinding ->
-                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding<ControlDeliveryCargoUnitItem, ItemTileControlDeliveryCuBinding>(
                             layoutId = R.layout.item_tile_control_delivery_cu,
                             itemId = BR.item,
-                            onAdapterItemBind = { binding: ItemTileControlDeliveryCuBinding, position: Int ->
-                                processedRecyclerViewKeyHandler?.let {
-                                    binding.root.isSelected = it.isSelected(position)
-                                }
-                            },
-                            onAdapterItemClicked = {position ->
-                                processedRecyclerViewKeyHandler?.onItemClicked(position)
-                            }
+                            keyHandlerId = TAB_PROCESSED,
+                            recyclerView = layoutBinding.rv,
+                            items = vm.listProcessed,
+                            onClickHandler = vm::onClickItemPosition
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-
-                    processedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
-                            recyclerView = layoutBinding.rv,
-                            previousPosInfo = processedRecyclerViewKeyHandler?.posInfo?.value,
-                            items = vm.listProcessed,
-                            onClickHandler = vm::onClickItemPosition
-                    )
 
                     return layoutBinding.root
                 }
     }
 
     private fun getPagerShipmentRC(container: ViewGroup, position: Int): View {
-        if (position == 0) {
+        if (position == TAB_NOT_PROCESSED) {
             DataBindingUtil
                     .inflate<LayoutControlDeliveryShipmentCuBinding>(LayoutInflater.from(container.context),
                             R.layout.layout_control_delivery_shipment_cu,
@@ -239,28 +183,20 @@ class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCa
                         layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                                 layoutId = R.layout.item_tile_control_delivery_shipment_cu,
                                 itemId = BR.item,
-                                onAdapterItemBind = { binding: ItemTileControlDeliveryShipmentCuBinding, position: Int ->
+                                onItemBind = { binding: ItemTileControlDeliveryShipmentCuBinding, position: Int ->
                                     binding.tvItemNumber.tag = position
                                     binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                                     binding.selectedForDelete = vm.notProcessedSelectionsHelper.isSelected(position)
-                                    notProcessedRecyclerViewKeyHandler?.let {
-                                        binding.root.isSelected = it.isSelected(position)
-                                    }
+
                                 },
-                                onAdapterItemClicked = {position ->
-                                    notProcessedRecyclerViewKeyHandler?.onItemClicked(position)
-                                }
+                                keyHandlerId = TAB_NOT_PROCESSED,
+                                recyclerView = layoutBinding.rv,
+                                items = vm.listNotProcessed,
+                                onClickHandler = vm::onClickItemPosition
                         )
 
                         layoutBinding.vm = vm
                         layoutBinding.lifecycleOwner = viewLifecycleOwner
-
-                        notProcessedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
-                                recyclerView = layoutBinding.rv,
-                                previousPosInfo = notProcessedRecyclerViewKeyHandler?.posInfo?.value,
-                                items = vm.listNotProcessed,
-                                onClickHandler = vm::onClickItemPosition
-                        )
 
                         return layoutBinding.root
                     }
@@ -272,28 +208,17 @@ class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCa
                         container,
                         false)
                 .let { layoutBinding ->
-                    layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                    layoutBinding.rvConfig = initRecycleAdapterDataBinding<ControlDeliveryCargoUnitItem, ItemTileControlDeliveryCuBinding>(
                             layoutId = R.layout.item_tile_control_delivery_cu,
                             itemId = BR.item,
-                            onAdapterItemBind = { binding: ItemTileControlDeliveryCuBinding, position: Int ->
-                                processedRecyclerViewKeyHandler?.let {
-                                    binding.root.isSelected = it.isSelected(position)
-                                }
-                            },
-                            onAdapterItemClicked = {position ->
-                                processedRecyclerViewKeyHandler?.onItemClicked(position)
-                            }
+                            keyHandlerId = TAB_PROCESSED,
+                            recyclerView = layoutBinding.rv,
+                            items = vm.listProcessed,
+                            onClickHandler = vm::onClickItemPosition
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-
-                    processedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
-                            recyclerView = layoutBinding.rv,
-                            previousPosInfo = processedRecyclerViewKeyHandler?.posInfo?.value,
-                            items = vm.listProcessed,
-                            onClickHandler = vm::onClickItemPosition
-                    )
 
                     return layoutBinding.root
                 }
@@ -301,37 +226,19 @@ class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCa
 
     override fun getTextTitle(position: Int): String {
         return when (position) {
-            0 -> getString(R.string.not_processed)
-            1 -> getString(R.string.processed)
+            TAB_NOT_PROCESSED -> getString(R.string.not_processed)
+            TAB_PROCESSED -> getString(R.string.processed)
             else -> throw IllegalArgumentException("Wrong pager position!")
         }
     }
 
     override fun countTab(): Int {
-        return 2
+        return TABS
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding?.viewPagerSettings = this
-    }
-
-    override fun onKeyDown(keyCode: KeyCode): Boolean {
-        when (vm.selectedPage.value) {
-            0 -> notProcessedRecyclerViewKeyHandler
-            1 -> processedRecyclerViewKeyHandler
-            else -> null
-        }?.let {
-            if (!it.onKeyDown(keyCode)) {
-                keyCode.digit?.let { digit ->
-                    vm.onDigitPressed(digit)
-                    return true
-                }
-                return false
-            }
-            return true
-        }
-        return false
     }
 
     override fun onResume() {
@@ -355,6 +262,12 @@ class ControlDeliveryCargoUnitsFragment : CoreFragment<FragmentControlDeliveryCa
                 return it
             }
         }
+
+        const val SCREEN_NUMBER = "09/26"
+
+        private const val TABS = 2
+        private const val TAB_NOT_PROCESSED = 0
+        private const val TAB_PROCESSED = 1
     }
 
 }
