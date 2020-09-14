@@ -32,7 +32,6 @@ class TransportMarriageViewModel : CoreViewModel(), PageSelectionListener,
     @Inject
     lateinit var zmpUtzGrz25V001NetRequest: ZmpUtzGrz25V001NetRequest
 
-    val selectedPage = MutableLiveData(0)
 
     val cargoUnits: MutableLiveData<List<CargoUnitsItem>> = MutableLiveData()
 

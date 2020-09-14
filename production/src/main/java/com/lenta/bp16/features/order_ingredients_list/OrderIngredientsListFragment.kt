@@ -3,12 +3,12 @@ package com.lenta.bp16.features.order_ingredients_list
 import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
-import androidx.lifecycle.lifecycleScope
 import com.lenta.bp16.BR
 import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentIngredientsByOrderBinding
 import com.lenta.bp16.databinding.ItemOrderIngredientBinding
 import com.lenta.bp16.model.ingredients.IngredientInfo
+import com.lenta.bp16.model.ingredients.ui.ItemOrderIngredientUi
 import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -70,15 +70,11 @@ class OrderIngredientsListFragment : CoreFragment<FragmentIngredientsByOrderBind
 
     private fun initRvConfig() {
         binding?.let { layoutBinding ->
-            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemOrderIngredientBinding>(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemOrderIngredientUi, ItemOrderIngredientBinding>(
                     layoutId = R.layout.item_order_ingredient,
-                    itemId = BR.item
-            )
-
-            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    itemId = BR.item,
                     recyclerView = layoutBinding.rv,
                     items = vm.orderIngredientsList,
-                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
                     onClickHandler = vm::onClickItemPosition
             )
         }
