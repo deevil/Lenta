@@ -3,8 +3,8 @@ package com.lenta.bp12.features.open_task.good_details
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.features.other.ItemCategory
 import com.lenta.bp12.features.other.ItemCategoryUi
+import com.lenta.bp12.managers.interfaces.IOpenTaskManager
 import com.lenta.bp12.model.CategoryType
-import com.lenta.bp12.model.IOpenTaskManager
 import com.lenta.bp12.model.pojo.extentions.removeAllMark
 import com.lenta.bp12.model.pojo.extentions.removeAllPart
 import com.lenta.bp12.platform.navigation.IScreenNavigator
@@ -30,8 +30,6 @@ class GoodDetailsOpenViewModel : CoreViewModel(), PageSelectionListener {
     lateinit var resource: IResourceManager
 
     val selectionsHelper = SelectionItemsHelper()
-
-    val selectedPage = MutableLiveData(0)
 
     val task by lazy {
         manager.currentTask

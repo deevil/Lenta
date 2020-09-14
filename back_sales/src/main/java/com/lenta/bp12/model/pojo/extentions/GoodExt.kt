@@ -87,21 +87,5 @@ fun Good.deletePositionsFromTask(goodFromBasket: Good, basketToGetQuantity: Bask
     }
 }
 
-fun Good.deletePositionsFromTask2(goodFromBasket: Good, quantityToMinus: Double) {
-    //Найдем у этого товара позиции с подходящим количеством
-    val positionThatFits = positions.firstOrNull { positionFromTask ->
-        goodFromBasket.positions.any { it.quantity >= positionFromTask.quantity }
-    }
 
-    positionThatFits?.let {
-        //Получим количество позиций этого товара
-        val quantityOfPositionFromTask = it.quantity
-        //Получим количество удаляемого товара из корзины
-//        val quantityToMinus = basketToGetQuantity.goods[goodFromBasket] ?: 0.0
-        //Отнимем первое от второго и вернем в товар
-        val newQuantity = quantityOfPositionFromTask.minus(quantityToMinus)
-        it.quantity = newQuantity
-        val index = positions.indexOf(it)
-        positions.set(index, it)
-    }
-}
+fun Good.removeMarks(other: List<Mark>) = this.marks.removeAll(other)

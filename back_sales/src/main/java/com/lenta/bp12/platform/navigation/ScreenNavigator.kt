@@ -412,16 +412,6 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun showIncorrectEanFormat() {
-        runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(
-                    pageNumber = "119",
-                    message = context.getString(R.string.incorrect_ean_format),
-                    iconRes = R.drawable.ic_warning_red_80dp
-            ))
-        }
-    }
-
     override fun showCantScanPackAlert() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
@@ -590,11 +580,23 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showMrcNotSameInBasketAlert(yesCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "89",
+                    message = context.getString(R.string.scanned_mark_with_different_mrc),
+                    iconRes = R.drawable.ic_info_green_80dp,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.next,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback)
+            ))
+        }
+    }
+
     override fun showNoMarkTypeInSettings() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "98",
-                    message = context.getString(R.string.cant_scan_excise_for_wholesale_task),
+                    message = context.getString(R.string.no_settings_for_that_markType),
                     iconRes = R.drawable.ic_warning_red_80dp
             ))
         }
@@ -610,8 +612,18 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showChooseProviderFirst() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "98",
+                    message = context.getString(R.string.choose_provider),
+                    iconRes = R.drawable.ic_warning_red_80dp
+            ))
+        }
+    }
+
     override fun showInternalError(cause: String) {
-        openAlertScreen(Failure.MessageFailure("Внутренняя ошибка программы: $cause", R.drawable.ic_warning_red_80dp))
+        openAlertScreen(Failure.MessageFailure("Внутренняя ошибка программы: $cause"))
     }
 
 }
@@ -646,7 +658,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openMarkedGoodInfoOpenScreen()
 
     fun showUnsentDataFoundOnDevice(deleteCallback: () -> Unit, goOverCallback: () -> Unit)
-    fun showTwelveCharactersEntered(sapCallback: () -> Unit, barCallback: () -> Unit)
     fun showUnsavedDataWillBeLost(proceedCallback: () -> Unit)
     fun showMakeTaskCountedAndClose(yesCallback: () -> Unit)
     fun showTaskUnsentDataWillBeDeleted(taskName: String, applyCallback: () -> Unit)
@@ -665,7 +676,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun showFinishProcessingBox()
     fun showFinishProcessingCurrentBox()
     fun showGoodIsMissingInTask()
-    fun showIncorrectEanFormat()
     fun showCantScanPackAlert()
 
     fun showExciseAlcoholGoodInfoScreen()
@@ -688,8 +698,11 @@ interface IScreenNavigator : ICoreNavigator {
     fun showCartonAlreadyScannedDelete(yesCallback: () -> Unit)
     fun showBoxAlreadyScannedDelete(yesCallback: () -> Unit)
     fun showMrcNotSameAlert(good: Good)
+    fun showMrcNotSameInBasketAlert(yesCallback: () -> Unit)
 
     fun showNoMarkTypeInSettings()
+
+    fun showChooseProviderFirst()
 
     fun showCantAddExciseGoodForWholesale()
 }

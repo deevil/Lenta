@@ -37,4 +37,8 @@ data class Basket(
      * Оставшийся объем после добавления товара
      */
     var freeVolume: Double = volume
+
+    override fun toString(): String {
+        return "Basket(index=$index, section=$section, goodType=$goodType, control=$control, provider=$provider, volume=$volume, goods=$goods, markTypeGroup=$markTypeGroup, maxRetailPrice='$maxRetailPrice', isPrinted=$isPrinted, isLocked=$isLocked, markedForLock=$markedForLock, freeVolume=$freeVolume)"
+    }
 }

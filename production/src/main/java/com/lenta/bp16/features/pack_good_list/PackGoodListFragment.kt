@@ -56,15 +56,11 @@ class PackGoodListFragment : KeyDownCoreFragment<FragmentPackGoodListBinding, Pa
 
     private fun initRvConfig() {
         binding?.let { layoutBinding ->
-            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemPackGoodListBinding>(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemPackGoodListUi, ItemPackGoodListBinding>(
                     layoutId = R.layout.item_pack_good_list,
-                    itemId = BR.item
-            )
-
-            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    itemId = BR.item,
                     recyclerView = layoutBinding.rv,
                     items = vm.packGoods,
-                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
                     onClickHandler = vm::onClickItemPosition
             )
         }

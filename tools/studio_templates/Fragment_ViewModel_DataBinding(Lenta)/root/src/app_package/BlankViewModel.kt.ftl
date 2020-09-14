@@ -22,8 +22,6 @@ class ${viewModelName} : CoreViewModel()<#if numberOfTabs != "0">, PageSelection
     }
 
     <#if numberOfTabs != "0">
-    val selectedPage = MutableLiveData(0)
-
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
     }

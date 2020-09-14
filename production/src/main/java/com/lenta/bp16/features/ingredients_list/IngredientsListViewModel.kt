@@ -52,7 +52,6 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
     @Inject
     lateinit var getIngredientsRequest: GetIngredientsNetRequest
 
-    val selectedPage by unsafeLazy { MutableLiveData(0) }
     val numberField by unsafeLazy { MutableLiveData<String>("") }
     val requestFocusToNumberField by unsafeLazy { MutableLiveData(true) }
     val marketNumber by unsafeLazy { sessionInfo.market }

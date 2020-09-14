@@ -7,6 +7,7 @@ import com.lenta.bp10.features.auth.AuthFragment
 import com.lenta.bp10.features.detection_saved_data.DetectionSavedDataFragment
 import com.lenta.bp10.features.good_information.excise_alco.ExciseAlcoInfoFragment
 import com.lenta.bp10.features.good_information.general.GoodInfoFragment
+import com.lenta.bp10.features.good_information.marked.MarkedInfoFragment
 import com.lenta.bp10.features.good_information.sets.ComponentItem
 import com.lenta.bp10.features.good_information.sets.SetsFragment
 import com.lenta.bp10.features.good_information.sets.component.ComponentFragment
@@ -20,7 +21,7 @@ import com.lenta.bp10.features.select_market.SelectMarketFragment
 import com.lenta.bp10.features.select_personnel_number.SelectPersonnelNumberFragment
 import com.lenta.bp10.features.write_off_details.WriteOffDetailsFragment
 import com.lenta.bp10.progress.IWriteOffProgressUseCaseInformator
-import com.lenta.bp10.requests.network.WriteOffReportResponse
+import com.lenta.bp10.requests.network.SendWriteOffDataResult
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.features.printer_change.PrinterChangeFragment
@@ -62,7 +63,6 @@ class ScreenNavigator(
                 it.replace(AuthFragment())
             }
         }
-
     }
 
     override fun openFastDataLoadingScreen() {
@@ -115,6 +115,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openMarkedInfoScreen(productInfo: ProductInfo, quantity: Double) {
+        runOrPostpone {
+            getFragmentStack()?.push(MarkedInfoFragment.create(productInfo, quantity))
+        }
+    }
+
     override fun openExciseAlcoScreen(productInfo: ProductInfo) {
         runOrPostpone {
             getFragmentStack()?.push(ExciseAlcoInfoFragment.create(productInfo))
@@ -159,11 +165,11 @@ class ScreenNavigator(
         }
     }
 
-    override fun openMatrixAlertScreen(matrixType: MatrixType, codeConfirmation: Int) {
+    override fun openMatrixAlertScreen(matrixType: MatrixType, yesCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(if (matrixType == MatrixType.Deleted) R.string.allert_deleted_matrix_message else R.string.allert_unknown_matrix_message),
-                    codeConfirmForRight = codeConfirmation,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
                     leftButtonDecorationInfo = ButtonDecorationInfo.no,
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes)
             )
@@ -177,9 +183,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openSendingReportsScreen(writeOffReportResponse: WriteOffReportResponse) {
+    override fun openSendingReportsScreen(sendWriteOffDataResult: SendWriteOffDataResult) {
         runOrPostpone {
-            getFragmentStack()?.replace(ReportResultFragment.create(writeOffReportResponse))
+            getFragmentStack()?.replace(ReportResultFragment.create(sendWriteOffDataResult))
         }
     }
 
@@ -221,7 +227,6 @@ class ScreenNavigator(
                     rightButtonDecorationInfo = ButtonDecorationInfo.barcode)
             )
         }
-
     }
 
     override fun openAlertDoubleScanStamp() {
@@ -289,6 +294,20 @@ class ScreenNavigator(
     override fun openNotPossibleSaveWithoutReasonScreen() {
         openInfoScreen(message = context.getString(R.string.not_possible_save_without_reason))
     }
+
+    override fun showWriteOffToProductionConfirmation(nextCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(
+                    AlertFragment.create(
+                            message = context.getString(com.lenta.shared.R.string.writeoff_to_production_confirmation),
+                            pageNumber = "95",
+                            codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallback),
+                            rightButtonDecorationInfo = ButtonDecorationInfo.nextAlternate
+                    )
+            )
+        }
+    }
+
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -302,16 +321,17 @@ interface IScreenNavigator : ICoreNavigator {
     fun openLoadingTaskSettingsScreen()
     fun openGoodsListScreen()
     fun openGoodInfoScreen(productInfo: ProductInfo, quantity: Double = 0.0)
+    fun openMarkedInfoScreen(productInfo: ProductInfo, quantity: Double = 0.0)
     fun openExciseAlcoScreen(productInfo: ProductInfo)
     fun openRemoveTaskConfirmationScreen(taskDescription: String, codeConfirmation: Int)
-    fun openSendingReportsScreen(writeOffReportResponse: WriteOffReportResponse)
+    fun openSendingReportsScreen(sendWriteOffDataResult: SendWriteOffDataResult)
     fun openSetsInfoScreen(productInfo: ProductInfo, quantity: Double)
     fun openGoodsReasonsScreen(productInfo: ProductInfo)
     fun openSuccessPrintMessage()
     fun openComponentSetScreen(productInfo: ProductInfo, componentItem: ComponentItem, targetTotalCount: Double)
     fun openDetectionSavedDataScreen()
     fun openRemoveLinesConfirmationScreen(taskDescription: String, count: Int, codeConfirmation: Int)
-    fun openMatrixAlertScreen(matrixType: MatrixType, codeConfirmation: Int)
+    fun openMatrixAlertScreen(matrixType: MatrixType, yesCallback: () -> Unit)
     fun openAlertGoodsNotForTaskScreen()
     fun openNotPossibleSaveNegativeQuantityScreen()
     fun openSelectTypeCodeScreen(codeConfirmationForSap: Int, codeConfirmationForBarCode: Int)
@@ -323,4 +343,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openLimitExceededScreen()
     fun openNotPossibleSaveWithoutReasonScreen()
     fun openConfirmationToBackNotEmptyStampsScreen(callbackFunc: () -> Unit)
+    fun showWriteOffToProductionConfirmation(nextCallback: () -> Unit)
 }

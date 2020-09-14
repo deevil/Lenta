@@ -50,7 +50,6 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     @Inject
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
 
-    val selectedPage = MutableLiveData(0)
     val countedSelectionsHelper = SelectionItemsHelper()
     val toProcessingSelectionsHelper = SelectionItemsHelper()
     val processedSelectionsHelper = SelectionItemsHelper()

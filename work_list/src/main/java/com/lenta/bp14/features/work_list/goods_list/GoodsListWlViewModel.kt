@@ -41,7 +41,6 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     val processedSelectionsHelper = SelectionItemsHelper()
 
-    val selectedPage = MutableLiveData(0)
     val correctedSelectedPage = selectedPage.map { getCorrectedPagePosition(it) }
 
     val taskName = MutableLiveData("")

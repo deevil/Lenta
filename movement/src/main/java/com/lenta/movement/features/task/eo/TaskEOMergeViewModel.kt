@@ -70,8 +70,7 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     val eoSelectionHelper = SelectionItemsHelper()
     val geSelectionHelper = SelectionItemsHelper()
 
-    val selectedPagePosition = MutableLiveData(EO_LIST_TAB)
-    val currentPage = selectedPagePosition.mapSkipNulls { TaskEOMergePage.values()[it] }
+    val currentPage = selectedPage.mapSkipNulls { TaskEOMergePage.values()[it] }
 
     val eanCode: MutableLiveData<String> = MutableLiveData()
     val requestFocusToEan: MutableLiveData<Boolean> = MutableLiveData()
@@ -125,7 +124,7 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     override fun onPageSelected(position: Int) {
-        selectedPagePosition.value = position
+        selectedPage.value = position
     }
 
     fun getTitle(): String {
@@ -427,7 +426,7 @@ class TaskEOMergeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     private fun changeTabToGEList() {
-        selectedPagePosition.value = GE_LIST_TAB
+        selectedPage.value = GE_LIST_TAB
     }
 
     fun onDigitPressed(digit: Int) = Unit // TODO

@@ -7,9 +7,7 @@ import com.lenta.movement.R
 import com.lenta.movement.databinding.FragmentTaskBasketBinding
 import com.lenta.movement.databinding.LayoutItemSimpleBinding
 import com.lenta.movement.platform.extensions.getAppComponent
-import com.lenta.shared.keys.KeyCode
-import com.lenta.shared.keys.OnKeyDownListener
-import com.lenta.shared.platform.fragment.CoreFragment
+import com.lenta.shared.platform.fragment.KeyDownCoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
@@ -19,12 +17,11 @@ import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
 
-class TaskBasketFragment: CoreFragment<FragmentTaskBasketBinding, TaskBasketViewModel>(),
-    ToolbarButtonsClickListener,
-    OnScanResultListener,
-    OnKeyDownListener {
+class TaskBasketFragment : KeyDownCoreFragment<FragmentTaskBasketBinding, TaskBasketViewModel>(),
+        ToolbarButtonsClickListener,
+        OnScanResultListener {
 
-    private var basketIndex: Int by state( DEFAULT_BASKET_INDEX )
+    private var basketIndex: Int by state(DEFAULT_BASKET_INDEX)
 
     override fun getLayoutId() = R.layout.fragment_task_basket
 
@@ -52,18 +49,13 @@ class TaskBasketFragment: CoreFragment<FragmentTaskBasketBinding, TaskBasketView
             rvConfig = initRecycleAdapterDataBinding(
                     layoutId = R.layout.layout_item_simple,
                     itemId = BR.item,
-                    onAdapterItemBind = { binding: LayoutItemSimpleBinding, position ->
+                    onItemBind = { binding: LayoutItemSimpleBinding, position ->
                         binding.tvCounter.tag = position
                         binding.tvCounter.setOnClickListener(onClickSelectionListener)
                         binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
-                        super.onAdapterBindHandler(binding, position)
-                    }
-            )
-
-            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    },
                     recyclerView = recyclerView,
                     items = vm.goodsItemList,
-                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
                     onClickHandler = vm::onItemClick
             )
         }
@@ -92,20 +84,6 @@ class TaskBasketFragment: CoreFragment<FragmentTaskBasketBinding, TaskBasketView
 
     override fun onScanResult(data: String) {
         vm.onScanResult(data)
-    }
-
-    override fun onKeyDown(keyCode: KeyCode): Boolean {
-        recyclerViewKeyHandler?.let {
-            if (!it.onKeyDown(keyCode)) {
-                keyCode.digit?.let { digit ->
-                    vm.onDigitPressed(digit)
-                    return true
-                }
-                return false
-            }
-            return true
-        }
-        return false
     }
 
     companion object {

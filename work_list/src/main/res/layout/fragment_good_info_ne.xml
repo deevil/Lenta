@@ -55,11 +55,7 @@
             <LinearLayout style="@style/BottomIconContainerStyle">
 
                 <TextView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:background="@drawable/bg_white_circle"
-                    android:gravity="center"
-                    android:textSize="12sp"
+                    style="@style/BottomCircleIconStyle"
                     app:matrixType="@{vm.productParamsUi.matrixType}"
                     tools:text="A" />
 
@@ -68,11 +64,7 @@
             <LinearLayout style="@style/BottomIconContainerStyle">
 
                 <TextView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:background="@drawable/bg_white_circle"
-                    android:gravity="center"
-                    android:textSize="12sp"
+                    style="@style/BottomCircleIconStyle"
                     app:section="@{vm.productParamsUi.sectionId}"
                     tools:text="02" />
 
