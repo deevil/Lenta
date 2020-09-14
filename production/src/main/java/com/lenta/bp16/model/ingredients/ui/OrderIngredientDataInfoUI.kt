@@ -14,8 +14,11 @@ data class OrderIngredientDataInfoUI(
         /** Наименование товара (ингредиент) */
         val name: String,
 
-        /** Единица измерения товара */
-        val buom: String,
+        /** Единица измерения товара (план)*/
+        val buomPln: String,
+
+        /** Единица измерения товара (скоплектовано)*/
+        val buomDone: String,
 
         /** Расчетное количество ингредиента в технологическом заказе */
         val plan_qnt: Double,
@@ -36,15 +39,19 @@ data class OrderIngredientDataInfoUI(
         val shelfLife: String
 
 ) : Parcelable {
-    fun getSuffix(): String {
-        return buom.toUom().name
+    fun getPlnSuffix(): String {
+        return buomPln.toUom().name
+    }
+
+    fun getDoneSuffix(): String {
+        return buomDone.toUom().name
     }
 
     fun getPlanCount(): String {
         return buildString {
             append(plan_qnt.dropZeros())
             append(" ")
-            append(getSuffix())
+            append(getPlnSuffix())
         }
     }
 
@@ -52,7 +59,7 @@ data class OrderIngredientDataInfoUI(
         return buildString {
             append(done_qnt.dropZeros())
             append(" ")
-            append(getSuffix())
+            append(getDoneSuffix())
         }
     }
 

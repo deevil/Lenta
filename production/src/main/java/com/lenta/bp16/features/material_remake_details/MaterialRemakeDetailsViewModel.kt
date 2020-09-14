@@ -176,14 +176,25 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
     }
 
     val planQntWithSuffix by unsafeLazy {
-        materialIngredient.combineLatest(eanInfo).map {
-            val uom: String? =
+        materialIngredient.combineLatest(eanInfo).mapSkipNulls {
+            val uom: String =
                     when (eanInfo.value?.ean_nom.orEmpty()) {
-                        OrderByBarcode.KAR -> Uom.KAR.name
-                        OrderByBarcode.ST -> Uom.ST.name
+                        OrderByBarcode.KAR, OrderByBarcode.KOR_RUS -> Uom.KAR.name
+                        OrderByBarcode.ST, OrderByBarcode.ST_RUS -> Uom.ST.name
                         else -> Uom.KG.name
                     }
-            MutableLiveData("${materialIngredient.value?.plan_qnt} $uom")
+            MutableLiveData("${materialIngredient.value?.plan_qnt?.toDouble().dropZeros()} $uom")
+        }
+    }
+
+    val doneQtnWithSuffix by unsafeLazy {
+        materialIngredient.combineLatest(eanInfo).mapSkipNulls {
+            val uom: String = when (eanInfo.value?.ean_nom.orEmpty()) {
+                OrderByBarcode.KAR, OrderByBarcode.KOR_RUS -> Uom.KAR.name
+                OrderByBarcode.ST, OrderByBarcode.ST_RUS -> Uom.ST.name
+                else -> Uom.KG.name
+            }
+            MutableLiveData("${materialIngredient.value?.done_qnt?.toDouble().dropZeros()} $uom")
         }
     }
 

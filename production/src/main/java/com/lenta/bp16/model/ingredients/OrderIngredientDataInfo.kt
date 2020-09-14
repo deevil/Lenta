@@ -25,10 +25,16 @@ data class OrderIngredientDataInfo(
         val name: String?,
 
         /**
-         * Единица измерения товара
+         * Единица измерения товара (план)
          */
-        @SerializedName("BUOM")
-        val buom: String?,
+        @SerializedName("BUOM_PLN")
+        val buomPln: String?,
+
+        /**
+         * Единица измерения товара (скоплектовано)
+         */
+        @SerializedName("BUOM_DONE")
+        val buomDone: String?,
 
         /**
          * Расчетное количество ингредиента в технологическом заказе
@@ -72,7 +78,8 @@ data class OrderIngredientDataInfo(
         return OrderIngredientDataInfoUI(
                 matnr = matnr.orEmpty(),
                 name = name.orEmpty(),
-                buom = buom.orEmpty(),
+                buomPln = buomPln.orEmpty(),
+                buomDone = buomDone.orEmpty(),
                 plan_qnt = plan_qnt.orIfNull { 0.0 },
                 done_qnt = done_qnt.orIfNull { 0.0 },
                 isZpart = isZpart.orEmpty(),

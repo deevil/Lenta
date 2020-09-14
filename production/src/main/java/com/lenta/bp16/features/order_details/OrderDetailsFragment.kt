@@ -6,8 +6,6 @@ import androidx.lifecycle.lifecycleScope
 import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentOrderDetailsBinding
 import com.lenta.bp16.platform.extention.getAppComponent
-import com.lenta.bp16.model.ingredients.IngredientInfo
-import com.lenta.bp16.model.ingredients.OrderByBarcode
 import com.lenta.bp16.model.ingredients.ui.IngredientInfoUI
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
 import com.lenta.shared.platform.fragment.CoreFragment

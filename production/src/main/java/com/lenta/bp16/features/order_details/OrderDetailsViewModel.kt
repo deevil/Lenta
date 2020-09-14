@@ -12,10 +12,7 @@ import com.lenta.bp16.request.ingredients_use_case.set_data.SetWarehouseForSelec
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.extentions.combineLatest
-import com.lenta.shared.utilities.extentions.launchUITryCatch
-import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.unsafeLazy
+import com.lenta.shared.utilities.extentions.*
 import javax.inject.Inject
 
 class OrderDetailsViewModel : CoreViewModel() {
@@ -70,7 +67,7 @@ class OrderDetailsViewModel : CoreViewModel() {
                         OrderByBarcode.ST -> Uom.KAR.name
                         else -> Uom.KG.name
                     }
-            MutableLiveData("${ingredient.value?.doneQnt} $uom")
+            MutableLiveData("${ingredient.value?.doneQnt?.toDouble().dropZeros()} $uom")
         }
     }
 

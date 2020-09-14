@@ -6,8 +6,6 @@ import androidx.core.os.bundleOf
 import androidx.lifecycle.lifecycleScope
 import com.lenta.bp16.R
 import com.lenta.bp16.databinding.FragmentMaterialRemakeDetailsBinding
-import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
-import com.lenta.bp16.model.ingredients.OrderByBarcode
 import com.lenta.bp16.model.ingredients.ui.MaterialIngredientDataInfoUI
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
 import com.lenta.bp16.platform.extention.getAppComponent

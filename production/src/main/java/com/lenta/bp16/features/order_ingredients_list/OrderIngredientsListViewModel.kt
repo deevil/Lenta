@@ -131,8 +131,8 @@ class OrderIngredientsListViewModel : CoreViewModel() {
                     ItemOrderIngredientUi(
                             name = orderIngredientDataInfo.getItemName(),
                             position = (index + 1).toString(),
-                            plan = getFieldWithSuffix(orderIngredientDataInfo.plan_qnt.dropZeros(), orderIngredientDataInfo.getSuffix()),
-                            fact = getFieldWithSuffix(orderIngredientDataInfo.done_qnt.dropZeros(), orderIngredientDataInfo.getSuffix())
+                            plan = getFieldWithSuffix(orderIngredientDataInfo.plan_qnt.dropZeros(), orderIngredientDataInfo.getPlnSuffix()),
+                            fact = getFieldWithSuffix(orderIngredientDataInfo.done_qnt.dropZeros(), orderIngredientDataInfo.getDoneSuffix())
                     )
                 })
             }
