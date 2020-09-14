@@ -76,7 +76,6 @@
             app:layout_constraintStart_toEndOf="@+id/vertical_guideline_2"
             app:layout_constraintTop_toTopOf="parent" />
 
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

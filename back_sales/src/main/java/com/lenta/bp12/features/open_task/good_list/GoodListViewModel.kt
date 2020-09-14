@@ -112,6 +112,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         MutableLiveData(true)
     }
 
+    //TODO REFACTOR TO ASYNCLIVEDATA, COMBINE TWO CYCLES IN ONE, GET RID OF LET
     val processing by lazy {
         task.map { currentTask ->
             currentTask?.let { task ->
@@ -130,6 +131,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         }
     }
 
+    //TODO REFACTOR TO ASYNCLIVEDATA, COMBINE TWO CYCLES IN ONE, GET RID OF LET
     val processed by lazy {
         task.map { currentTask ->
             currentTask?.let { task ->
@@ -148,6 +150,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         }
     }
 
+    //TODO REFACTOR TO ASYNCLIVEDATA, COMBINE TWO CYCLES IN ONE, GET RID OF LET
     val commonBaskets by lazy {
         task.map {
             it?.let { task ->
@@ -165,6 +168,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         }
     }
 
+    //TODO REFACTOR TO ASYNCLIVEDATA, COMBINE TWO CYCLES IN ONE, GET RID OF LET
     val wholesaleBaskets by lazy {
         task.map {
             it?.let { task ->
@@ -194,14 +198,16 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         }
     }
 
-    val deleteEnabled = selectedPage.combineLatest(processingSelectionsHelper.selectedPositions)
+    val deleteEnabled = basketSelectionsHelper.selectedPositions.combineLatest(selectedPage).combineLatest(processingSelectionsHelper.selectedPositions)
             .combineLatest(processedSelectionsHelper.selectedPositions).map {
                 it?.let {
-                    val page = it.first.first
+                    val isSelectedBaskets = it.first.first.first.isNotEmpty()
+                    val page = it.first.first.second
                     val isSelectedProcessing = it.first.second.isNotEmpty()
                     val isSelectedProcessed = it.second.isNotEmpty()
 
-                    (page == PROCESSED_PAGE_INDEX && isSelectedProcessing) || (page == PROCESSED_PAGE_INDEX && isSelectedProcessed)
+                    (page == PROCESSING_PAGE_INDEX && isSelectedProcessing) || (page == PROCESSED_PAGE_INDEX && isSelectedProcessed)
+                            || (page == BASKETS_PAGE_INDEX && isSelectedBaskets)
                 }
             }
 
@@ -495,7 +501,11 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                 BASKETS_PAGE_INDEX -> {
                     val basketList = mutableListOf<Basket>()
                     basketSelectionsHelper.selectedPositions.value?.mapNotNullTo(basketList) { position ->
-                        commonBaskets.value?.get(position)?.basket
+                        if (manager.isWholesaleTaskType) {
+                            wholesaleBaskets.value?.get(position)?.basket
+                        } else {
+                            commonBaskets.value?.get(position)?.basket
+                        }
                     }
 
                     basketSelectionsHelper.clearPositions()

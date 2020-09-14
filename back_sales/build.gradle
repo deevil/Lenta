@@ -69,7 +69,7 @@ android {
 
     sourceSets {
         main {
-            res.srcDirs = ['src/main/res', 'src/main/res/fragments', 'src/main/res/items', 'src/main/res/layout']
+            res.srcDirs = ['src/main/res', 'src/main/res/fragments', 'src/main/res/items']
         }
     }
 

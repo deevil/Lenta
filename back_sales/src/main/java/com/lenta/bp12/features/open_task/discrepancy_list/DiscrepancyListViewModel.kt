@@ -1,5 +1,6 @@
 package com.lenta.bp12.features.open_task.discrepancy_list
 
+import androidx.lifecycle.switchMap
 import com.lenta.bp12.managers.interfaces.IOpenTaskManager
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.platform.navigation.IScreenNavigator
@@ -9,9 +10,9 @@ import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
+import com.lenta.shared.utilities.extentions.asyncLiveData
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.mapSkipNulls
 import com.lenta.shared.utilities.orIfNull
 import javax.inject.Inject
 
@@ -49,18 +50,28 @@ class DiscrepancyListViewModel : CoreViewModel() {
     }
 
     val goods by lazy {
-        task.mapSkipNulls { task ->
-            val list = task.goods.filter { it.isNotDeletedAndQuantityNotActual() }
-            list.mapIndexed { index, good ->
+        task.switchMap { task ->
+            asyncLiveData<List<ItemGoodUi>>() {
+                val result = task.goods.mapToUI()
+                emit(result)
+            }
+        }
+    }
+
+    private fun List<Good>.mapToUI(): List<ItemGoodUi> {
+        var localIndex = 0
+        return this.mapNotNull { good ->
+            good.takeIf { it.isNotDeletedAndQuantityNotActual() }?.run {
+                ++localIndex
                 ItemGoodUi(
-                        position = "${list.size - index}",
+                        position = "$localIndex",
                         name = good.name,
                         material = good.material,
                         providerCode = good.provider.code.orEmpty(),
                         quantity = chooseQuantity(good)
                 )
             }
-        }
+        }.reversed()
     }
 
     /**

@@ -61,9 +61,10 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
     private fun initDiscrepancyList() {
         binding?.let { layoutBinding ->
             val onClickSelectionListener = View.OnClickListener {
-                val position = (it?.tag as Int)
-                vm.selectionsHelper.revert(position = position)
-                layoutBinding.rv.adapter?.notifyItemChanged(position)
+                (it.tag as? Int)?.let{ position ->
+                    vm.selectionsHelper.revert(position = position)
+                    layoutBinding.rv.adapter?.notifyItemChanged(position)
+                }
             }
 
             layoutBinding.rvConfig = initRecycleAdapterDataBinding(
