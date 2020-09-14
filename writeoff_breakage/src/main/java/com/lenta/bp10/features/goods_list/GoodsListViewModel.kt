@@ -61,7 +61,6 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     @Inject
     lateinit var analyticsHelper: AnalyticsHelper
 
-    var selectedPage = MutableLiveData(0)
     val countedGoods: MutableLiveData<List<GoodItem>> = MutableLiveData()
     val filteredGoods: MutableLiveData<List<FilterItem>> = MutableLiveData()
     val categories: MutableLiveData<List<String>> = MutableLiveData()

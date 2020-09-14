@@ -13,6 +13,7 @@ import com.lenta.bp12.databinding.ItemGoodInfoPropertyBinding
 import com.lenta.bp12.databinding.LayoutMarkedGoodInfoOpenPropertiesTabBinding
 import com.lenta.bp12.databinding.LayoutMarkedGoodInfoOpenQuantityTabBinding
 import com.lenta.bp12.features.create_task.marked_good_info.GoodProperty
+import com.lenta.bp12.features.create_task.marked_good_info.GoodPropertyItem
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.platform.extention.getAppComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener
@@ -127,19 +128,17 @@ class MarkedGoodInfoOpenFragment : CoreFragment<FragmentMarkedGoodInfoOpenBindin
                 container,
                 false)
 
-        layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemGoodInfoPropertyBinding>(
+        // todo Здесь точно нужен KeyHandler?
+        layoutBinding.rvConfig = initRecycleAdapterDataBinding<GoodPropertyItem, ItemGoodInfoPropertyBinding>(
                 layoutId = R.layout.item_good_info_property,
-                itemId = BR.item
+                itemId = BR.item,
+                recyclerView = layoutBinding.rv,
+                items = vm.propertiesItems
         )
 
         layoutBinding.vm = vm
         layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-        recyclerViewKeyHandler = initRecyclerViewKeyHandler(
-                recyclerView = layoutBinding.rv,
-                items = vm.propertiesItems,
-                previousPosInfo = recyclerViewKeyHandler?.posInfo?.value
-        )
         return layoutBinding.root
     }
 

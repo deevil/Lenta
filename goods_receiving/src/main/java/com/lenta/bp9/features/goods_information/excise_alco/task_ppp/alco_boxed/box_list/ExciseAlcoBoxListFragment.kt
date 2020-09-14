@@ -11,52 +11,35 @@ import com.lenta.bp9.R
 import com.lenta.bp9.databinding.*
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.extentions.getAppComponent
-import com.lenta.shared.keys.KeyCode
-import com.lenta.shared.keys.OnKeyDownListener
-import com.lenta.shared.platform.fragment.CoreFragment
+import com.lenta.shared.platform.fragment.KeyDownCoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
-import com.lenta.shared.utilities.databinding.*
+import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
 
-class ExciseAlcoBoxListFragment : CoreFragment<FragmentExciseAlcoBoxListBinding, ExciseAlcoBoxListViewModel>(),
+class ExciseAlcoBoxListFragment : KeyDownCoreFragment<FragmentExciseAlcoBoxListBinding, ExciseAlcoBoxListViewModel>(),
         ViewPagerSettings,
         PageSelectionListener,
         ToolbarButtonsClickListener,
-        OnScanResultListener,
-        OnKeyDownListener {
-
-    companion object {
-        fun create(productInfo: TaskProductInfo, selectQualityCode: String, selectReasonRejectionCode: String?, initialCount: String): ExciseAlcoBoxListFragment {
-            ExciseAlcoBoxListFragment().let {
-                it.productInfo = productInfo
-                it.selectQualityCode = selectQualityCode
-                it.selectReasonRejectionCode = selectReasonRejectionCode
-                it.initialCount = initialCount
-                return it
-            }
-        }
-    }
+        OnScanResultListener {
 
     private var productInfo by state<TaskProductInfo?>(null)
     private var selectQualityCode by state<String?>(null)
     private var selectReasonRejectionCode by state<String?>(null)
     private var initialCount by state<String?>(null)
 
-    private var notProcessedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
-    private var processedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
-
     override fun getLayoutId(): Int = R.layout.fragment_excise_alco_box_list
 
-    override fun getPageNumber(): String = "09/42"
+    override fun getPageNumber(): String = SCREEN_NUMBER
 
     override fun getViewModel(): ExciseAlcoBoxListViewModel {
-        provideViewModel(ExciseAlcoBoxListViewModel::class.java).let {vm ->
+        provideViewModel(ExciseAlcoBoxListViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)
             vm.productInfo.value = productInfo
             vm.selectQualityCode.value = this.selectQualityCode
@@ -75,7 +58,8 @@ class ExciseAlcoBoxListFragment : CoreFragment<FragmentExciseAlcoBoxListBinding,
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.clean, visible = vm.visibilityCleanButton.value ?: false, enabled = vm.enabledCleanButton.value ?: false)
+        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.clean, visible = vm.visibilityCleanButton.value
+                ?: false, enabled = vm.enabledCleanButton.value ?: false)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply)
 
         connectLiveData(vm.visibilityCleanButton, bottomToolbarUiModel.uiModelButton3.visibility)
@@ -97,7 +81,7 @@ class ExciseAlcoBoxListFragment : CoreFragment<FragmentExciseAlcoBoxListBinding,
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
-        if (position == 0) {
+        if (position == TAB_NOT_PROCESSED) {
             DataBindingUtil
                     .inflate<LayoutExciseAlcoBoxListNotProcessedBinding>(LayoutInflater.from(container.context),
                             R.layout.layout_excise_alco_box_list_not_processed,
@@ -114,29 +98,19 @@ class ExciseAlcoBoxListFragment : CoreFragment<FragmentExciseAlcoBoxListBinding,
                         layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                                 layoutId = R.layout.item_tile_excis_alco_box_list_not_processed,
                                 itemId = BR.item,
-                                onAdapterItemBind = { binding: ItemTileExcisAlcoBoxListNotProcessedBinding, position: Int ->
+                                onItemBind = { binding: ItemTileExcisAlcoBoxListNotProcessedBinding, position: Int ->
                                     binding.tvItemNumber.tag = position
                                     binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                                     binding.selectedItem = if (vm.isSelectAll.value == true) true else vm.notProcessedSelectionsHelper.isSelected(position)
-                                    notProcessedRecyclerViewKeyHandler
-                                            ?.let {
-                                                binding.root.isSelected = it.isSelected(position)
-                                            }
                                 },
-                                onAdapterItemClicked = {position ->
-                                    notProcessedRecyclerViewKeyHandler?.onItemClicked(position)
-                                }
+                                keyHandlerId = TAB_NOT_PROCESSED,
+                                recyclerView = layoutBinding.rv,
+                                items = vm.countNotProcessed,
+                                onClickHandler = vm::onClickItemPosition
                         )
 
                         layoutBinding.vm = vm
                         layoutBinding.lifecycleOwner = viewLifecycleOwner
-
-                        notProcessedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
-                                recyclerView = layoutBinding.rv,
-                                previousPosInfo = notProcessedRecyclerViewKeyHandler?.posInfo?.value,
-                                items = vm.countNotProcessed,
-                                onClickHandler = vm::onClickItemPosition
-                        )
 
                         return layoutBinding.root
                     }
@@ -158,29 +132,19 @@ class ExciseAlcoBoxListFragment : CoreFragment<FragmentExciseAlcoBoxListBinding,
                     layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_excise_alco_box_list_processed,
                             itemId = BR.item,
-                            onAdapterItemBind = { binding: ItemTileExciseAlcoBoxListProcessedBinding, position: Int ->
+                            onItemBind = { binding: ItemTileExciseAlcoBoxListProcessedBinding, position: Int ->
                                 binding.tvItemNumber.tag = position
                                 binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                                 binding.selectedForDelete = vm.processedSelectionsHelper.isSelected(position)
-                                processedRecyclerViewKeyHandler
-                                        ?.let {
-                                            binding.root.isSelected = it.isSelected(position)
-                                        }
                             },
-                            onAdapterItemClicked = {position ->
-                                processedRecyclerViewKeyHandler?.onItemClicked(position)
-                            }
+                            keyHandlerId = TAB_PROCESSED,
+                            recyclerView = layoutBinding.rv,
+                            items = vm.countNotProcessed,
+                            onClickHandler = vm::onClickItemPosition
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-
-                    processedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
-                            recyclerView = layoutBinding.rv,
-                            previousPosInfo = processedRecyclerViewKeyHandler?.posInfo?.value,
-                            items = vm.countNotProcessed,
-                            onClickHandler = vm::onClickItemPosition
-                    )
 
                     return layoutBinding.root
                 }
@@ -195,9 +159,9 @@ class ExciseAlcoBoxListFragment : CoreFragment<FragmentExciseAlcoBoxListBinding,
         }
     }
 
-    override fun getTextTitle(position: Int): String = getString(if (position == 0) R.string.to_processing else R.string.processed)
+    override fun getTextTitle(position: Int): String = getString(if (position == TAB_NOT_PROCESSED) R.string.to_processing else R.string.processed)
 
-    override fun countTab(): Int = 2
+    override fun countTab(): Int = TABS
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -218,22 +182,22 @@ class ExciseAlcoBoxListFragment : CoreFragment<FragmentExciseAlcoBoxListBinding,
         vm.onResume()
     }
 
-    override fun onKeyDown(keyCode: KeyCode): Boolean {
-        when (vm.selectedPage.value) {
-            0 -> notProcessedRecyclerViewKeyHandler
-            1 -> processedRecyclerViewKeyHandler
-            else -> null
-        }?.let {
-            if (!it.onKeyDown(keyCode)) {
-                keyCode.digit?.let { digit ->
-                    vm.onDigitPressed(digit)
-                    return true
-                }
-                return false
+    companion object {
+        fun create(productInfo: TaskProductInfo, selectQualityCode: String, selectReasonRejectionCode: String?, initialCount: String): ExciseAlcoBoxListFragment {
+            ExciseAlcoBoxListFragment().let {
+                it.productInfo = productInfo
+                it.selectQualityCode = selectQualityCode
+                it.selectReasonRejectionCode = selectReasonRejectionCode
+                it.initialCount = initialCount
+                return it
             }
-            return true
         }
-        return false
+
+        const val SCREEN_NUMBER = "09/42"
+
+        private const val TABS = 2
+        private const val TAB_NOT_PROCESSED = 0
+        private const val TAB_PROCESSED = 1
     }
 
 }

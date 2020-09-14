@@ -38,7 +38,6 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkI
         ZfmpUtz48V001(hyperHive)
     }
 
-    val selectedPage = MutableLiveData(0)
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
     val selectQualityCode: MutableLiveData<String> = MutableLiveData()
     val selectReasonRejectionCode: MutableLiveData<String> = MutableLiveData()

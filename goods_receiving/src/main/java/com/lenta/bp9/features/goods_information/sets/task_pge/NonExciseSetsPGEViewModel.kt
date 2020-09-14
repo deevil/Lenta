@@ -71,7 +71,6 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
     }
 
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
-    val selectedPage = MutableLiveData(0)
     val componentsSelectionsHelper = SelectionItemsHelper()
     val listComponents: MutableLiveData<List<ListComponentsItem>> = MutableLiveData()
     val eanCode: MutableLiveData<String> = MutableLiveData()

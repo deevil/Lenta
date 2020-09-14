@@ -70,18 +70,13 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
             layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                     layoutId = R.layout.item_discrepancy_list,
                     itemId = BR.item,
-                    onAdapterItemBind = { binding: ItemDiscrepancyListBinding, position: Int ->
+                    onItemBind = { binding: ItemDiscrepancyListBinding, position: Int ->
                         binding.tvItemNumber.tag = position
                         binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                         binding.selectedForDelete = vm.selectionsHelper.isSelected(position)
-                        onAdapterBindHandler(binding, position)
-                    }
-            )
-
-            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
+                    },
                     recyclerView = layoutBinding.rv,
                     items = vm.goods,
-                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
                     onClickHandler = vm::onClickItemPosition
             )
         }

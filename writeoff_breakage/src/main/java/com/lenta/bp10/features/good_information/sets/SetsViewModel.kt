@@ -75,9 +75,6 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
         processServiceManager.getWriteOffTask()!!.processExciseAlcoProduct(setProductInfo.value!!)!!
     }
 
-
-    var selectedPage = MutableLiveData(0)
-
     val setProductInfo: MutableLiveData<ProductInfo> = MutableLiveData()
     val writeOffReasons: MutableLiveData<List<WriteOffReason>> = MutableLiveData()
     val writeOffReasonTitles: LiveData<List<String>> = writeOffReasons.map { it?.map { reason -> reason.name } }

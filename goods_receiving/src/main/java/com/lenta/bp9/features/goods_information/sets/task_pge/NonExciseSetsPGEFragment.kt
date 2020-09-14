@@ -143,26 +143,19 @@ class NonExciseSetsPGEFragment : CoreFragment<FragmentNonExciseSetsPgeBinding, N
                             layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                                     layoutId = R.layout.item_tile_non_excise_sets_components,
                                     itemId = BR.item,
-                                    onAdapterItemBind = { binding: ItemTileNonExciseSetsComponentsBinding, position: Int ->
+                                    onItemBind = { binding: ItemTileNonExciseSetsComponentsBinding, position: Int ->
                                         binding.tvItemNumber.tag = position
                                         binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                                         binding.selectedForDelete = vm.componentsSelectionsHelper.isSelected(position)
-                                        onAdapterBindHandler(binding, position)
                                     },
-                                    onAdapterItemClicked = {position ->
-                                        recyclerViewKeyHandler?.onItemClicked(position)
-                                    }
+                                    keyHandlerId = position,
+                                    recyclerView = layoutBinding.rv,
+                                    items = vm.listComponents,
+                                    onClickHandler = vm::onClickItemPosition
                             )
 
                             layoutBinding.vm = vm
                             layoutBinding.lifecycleOwner = viewLifecycleOwner
-
-                            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
-                                    recyclerView = layoutBinding.rv,
-                                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value,
-                                    items = vm.listComponents,
-                                    onClickHandler = vm::onClickItemPosition
-                            )
 
                             return layoutBinding.root
                         }

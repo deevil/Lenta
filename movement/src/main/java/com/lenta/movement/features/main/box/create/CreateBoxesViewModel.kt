@@ -56,8 +56,7 @@ class CreateBoxesViewModel : CoreViewModel(),
 
     val selectionsHelper = SelectionItemsHelper()
 
-    val selectedPagePosition = MutableLiveData(0)
-    val selectedPage = MutableLiveData(CreateBoxesPage.FILLING)
+    val selectedPageType = MutableLiveData(CreateBoxesPage.FILLING)
 
     val productInfo: MutableLiveData<ProductInfo> = MutableLiveData()
     val stamps: MutableLiveData<List<ExciseStamp>> = MutableLiveData(emptyList())
@@ -92,8 +91,8 @@ class CreateBoxesViewModel : CoreViewModel(),
             }
 
     override fun onPageSelected(position: Int) {
-        selectedPagePosition.value = position
-        selectedPage.value = CreateBoxesPage.values().getOrNull(position)
+        selectedPage.value = position
+        selectedPageType.value = CreateBoxesPage.values().getOrNull(position)
     }
 
     fun onResume() = updateBoxes()
