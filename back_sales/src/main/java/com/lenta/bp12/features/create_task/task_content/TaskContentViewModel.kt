@@ -269,14 +269,20 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     private fun setFoundGood(foundGood: Good) {
-        manager.updateCurrentGood(foundGood)
-        if (foundGood.markType != MarkType.UNKNOWN) {
-            navigator.openMarkedGoodInfoCreateScreen()
-            navigator.showForGoodNeedScanFirstMark()
-        } else {
-            navigator.openGoodInfoCreateScreen()
+        with(navigator){
+            if (manager.isWholesaleTaskType && foundGood.kind == GoodKind.EXCISE) {
+                showCantAddExciseGoodForWholesale()
+            } else {
+                manager.updateCurrentGood(foundGood)
+                if (foundGood.markType != MarkType.UNKNOWN) {
+                    openMarkedGoodInfoCreateScreen()
+                    showForGoodNeedScanFirstMark()
+                } else {
+                    openGoodInfoCreateScreen()
+                }
+                Logg.d { "--> found good: $foundGood" }
+            }
         }
-        Logg.d { "--> found good: $foundGood" }
     }
 
     private suspend fun loadGoodInfoByEan(ean: String) {
@@ -352,9 +358,7 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                             markTypeGroup = database.getMarkTypeGroupByMarkType(markType)
                     )
 
-                    if (good.kind == GoodKind.EXCISE) {
-                        navigator.showForExciseGoodNeedScanFirstMark()
-                    }
+
 
                     setFoundGood(good)
                 }.orIfNull {

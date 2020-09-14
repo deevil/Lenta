@@ -829,7 +829,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
 
     override fun onClickApply() {
         if (isPlannedQuantityActual()) {
-            navigator.showQuantityMoreThenPlannedScreen()
+            navigator.showQuantityMoreThanPlannedScreen()
             return
         }
 
