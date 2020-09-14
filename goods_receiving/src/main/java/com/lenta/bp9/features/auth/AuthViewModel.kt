@@ -38,6 +38,7 @@ class AuthViewModel : CoreAuthViewModel() {
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
 
     val msgUserNoRights: MutableLiveData<String> = MutableLiveData()
+    val packageName = MutableLiveData<String>()
 
     init {
         launchUITryCatch {
@@ -52,6 +53,8 @@ class AuthViewModel : CoreAuthViewModel() {
                     password.value = "1q2w3e4r"
                 }
             }
+
+            sessionInfo.packageName = packageName.value
         }
     }
 
@@ -98,7 +101,6 @@ class AuthViewModel : CoreAuthViewModel() {
     override fun handleFailure(failure: Failure) {
         super.handleFailure(failure)
         progress.value = false
-        navigator.openAlertScreen(failure, pageNumber = "96")
     }
 
 

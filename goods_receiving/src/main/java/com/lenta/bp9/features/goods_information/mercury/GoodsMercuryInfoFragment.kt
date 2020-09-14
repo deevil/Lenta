@@ -43,7 +43,7 @@ class GoodsMercuryInfoFragment : CoreFragment<FragmentGoodsMercuryInfoBinding, G
     override fun getPageNumber(): String = "09/107"
 
     override fun getViewModel(): GoodsMercuryInfoViewModel {
-        provideViewModel(GoodsMercuryInfoViewModel::class.java).let {vm->
+        provideViewModel(GoodsMercuryInfoViewModel::class.java).let { vm->
             getAppComponent()?.inject(vm)
             vm.productInfo.value = this.productInfo
             vm.isDiscrepancy.value = this.isDiscrepancy

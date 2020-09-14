@@ -7,15 +7,19 @@ import app_update.AppUpdaterInstallerFromFmp
 import com.lenta.bp9.BuildConfig.APPLICATION_ID
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.ReceivingTaskManager
-import com.lenta.bp9.platform.data.IPrinter
-import com.lenta.bp9.platform.data.Printer
+import com.lenta.bp9.data.IPrinter
+import com.lenta.bp9.data.Printer
+import com.lenta.bp9.features.delegates.ISaveProductDelegate
+import com.lenta.bp9.features.delegates.SaveProductDelegate
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.platform.navigation.ScreenNavigator
 import com.lenta.bp9.repos.DataBaseRepo
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.repos.RepoInMemoryHolder
+import com.lenta.bp9.requests.network.EndRecountDirectDeliveriesNetRequest
 import com.lenta.shared.account.IAuthenticator
+import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
@@ -37,6 +41,18 @@ class AppModule {
         @Binds
         @AppScope
         fun bindPrinter(realisation: Printer): IPrinter
+    }
+
+    @Provides
+    @AppScope
+    internal fun provideSaveProductDelegate(
+            taskManager: IReceivingTaskManager,
+            screenNavigator: IScreenNavigator,
+            sessionInfo: ISessionInfo,
+            context: Context,
+            endRecountDirectDeliveries: EndRecountDirectDeliveriesNetRequest
+    ): ISaveProductDelegate {
+        return SaveProductDelegate(taskManager, screenNavigator, sessionInfo, context, endRecountDirectDeliveries)
     }
 
     @Provides

@@ -2,14 +2,14 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".features.goods_information.excise_alco_pge.excise_alco_stamp_acc_pge.batch_signs.ExciseAlcoStampPGEBatchSignsFragment">
+    tools:context=".features.goods_information.excise_alco.task_pge.alco_stamp.batch_signs.ExciseAlcoStampPGEBatchSignsFragment">
 
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_stamp_acc_pge.batch_signs.ExciseAlcoStampPGEBatchSignsViewModel" />
+            type="com.lenta.bp9.features.goods_information.excise_alco.task_pge.alco_stamp.batch_signs.ExciseAlcoStampPGEBatchSignsViewModel" />
 
 
     </data>

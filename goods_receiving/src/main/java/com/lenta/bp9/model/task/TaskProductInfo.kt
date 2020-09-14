@@ -2,7 +2,7 @@ package com.lenta.bp9.model.task
 
 import com.lenta.shared.models.core.*
 
-//ET_TASK_POS Таблица состава задания ППП (ZSGRZ_TASK_DS_POS_EXCH)
+//ET_TASK_POS Таблица состава задания ППП
 class TaskProductInfo(materialNumber: String,
                       description: String,
                       uom: Uom,
@@ -42,7 +42,11 @@ class TaskProductInfo(materialNumber: String,
                       val nestingInOneBlock: String, //маркированный товар, Вложенность в один блок
                       val isControlGTIN: Boolean, //маркированный товар, Контроль GTIN
                       val isGrayZone: Boolean, //маркированный товар
-                      val countPiecesBox: String //маркированный товар, сколько пачек (штук) в одной коробке
+                      val countPiecesBox: String, //маркированный товар, сколько пачек (штук) в одной коробке
+                      val numeratorConvertBaseUnitMeasure: Double, //числитель для преобразования в базовую единицу измерения
+                      val denominatorConvertBaseUnitMeasure: Double,  //знаменатель для преобразования в базовую единицу измерения
+                      val isZBatches: Boolean, //Z-партии
+                      val isNeedPrint: Boolean
                         ) : ProductInfo(materialNumber, description, uom, type, isSet, sectionId, matrixType, materialType) {
 
     fun copy(materialNumber: String = this.materialNumber,
@@ -84,7 +88,11 @@ class TaskProductInfo(materialNumber: String,
              nestingInOneBlock: String = this.nestingInOneBlock,
              isControlGTIN: Boolean = this.isControlGTIN,
              isGrayZone: Boolean = this.isGrayZone,
-             countPiecesBox: String= this.countPiecesBox) : TaskProductInfo {
+             countPiecesBox: String= this.countPiecesBox,
+             numeratorConvertBaseUnitMeasure: Double = this.numeratorConvertBaseUnitMeasure,
+             denominatorConvertBaseUnitMeasure: Double = this.denominatorConvertBaseUnitMeasure,
+             isZBatches: Boolean = this.isZBatches,
+             isNeedPrint: Boolean = this.isNeedPrint) : TaskProductInfo {
         return TaskProductInfo(
                 materialNumber = materialNumber,
                 description = description,
@@ -125,7 +133,11 @@ class TaskProductInfo(materialNumber: String,
                 nestingInOneBlock = nestingInOneBlock,
                 isControlGTIN = isControlGTIN,
                 isGrayZone = isGrayZone,
-                countPiecesBox = countPiecesBox
+                countPiecesBox = countPiecesBox,
+                numeratorConvertBaseUnitMeasure = numeratorConvertBaseUnitMeasure,
+                denominatorConvertBaseUnitMeasure = denominatorConvertBaseUnitMeasure,
+                isZBatches = isZBatches,
+                isNeedPrint = isNeedPrint
         )
     }
 }

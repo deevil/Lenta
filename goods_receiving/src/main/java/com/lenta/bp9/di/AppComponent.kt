@@ -11,30 +11,33 @@ import com.lenta.bp9.features.editing_invoice.EditingInvoiceViewModel
 import com.lenta.bp9.features.formed_docs.FormedDocsViewModel
 import com.lenta.bp9.features.goods_details.GoodsDetailsViewModel
 import com.lenta.bp9.features.goods_details.marking_goods_details.MarkingGoodsDetailsViewModel
-import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge.ExciseAlcoBoxAccInfoPGEViewModel
-import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge.excise_alco_box_card.ExciseAlcoBoxCardPGEViewModel
-import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge.excise_alco_box_list.ExciseAlcoBoxListPGEViewModel
-import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_stamp_acc_pge.ExciseAlcoStampAccInfoPGEViewModel
-import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_stamp_acc_pge.batch_signs.ExciseAlcoStampPGEBatchSignsViewModel
-import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.ExciseAlcoBoxAccInfoViewModel
-import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.excise_alco_box_card.ExciseAlcoBoxCardViewModel
-import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.excise_alco_box_list.ExciseAlcoBoxListViewModel
-import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.excise_alco_box_product_failure.ExciseAlcoBoxProductFailureViewModel
-import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_stamp_acc.ExciseAlcoStampAccInfoViewModel
-import com.lenta.bp9.features.goods_information.general.GoodsInfoViewModel
-import com.lenta.bp9.features.goods_information.general_opp.GoodsInfoShipmentPPViewModel
+import com.lenta.bp9.features.goods_information.excise_alco.task_pge.alco_boxed.ExciseAlcoBoxAccInfoPGEViewModel
+import com.lenta.bp9.features.goods_information.excise_alco.task_pge.alco_boxed.box_card.ExciseAlcoBoxCardPGEViewModel
+import com.lenta.bp9.features.goods_information.excise_alco.task_pge.alco_boxed.box_list.ExciseAlcoBoxListPGEViewModel
+import com.lenta.bp9.features.goods_information.excise_alco.task_pge.alco_stamp.ExciseAlcoStampAccInfoPGEViewModel
+import com.lenta.bp9.features.goods_information.excise_alco.task_pge.alco_stamp.batch_signs.ExciseAlcoStampPGEBatchSignsViewModel
+import com.lenta.bp9.features.goods_information.excise_alco.task_ppp.alco_boxed.ExciseAlcoBoxAccInfoViewModel
+import com.lenta.bp9.features.goods_information.excise_alco.task_ppp.alco_boxed.box_card.ExciseAlcoBoxCardViewModel
+import com.lenta.bp9.features.goods_information.excise_alco.task_ppp.alco_boxed.box_list.ExciseAlcoBoxListViewModel
+import com.lenta.bp9.features.goods_information.excise_alco.task_ppp.alco_boxed.box_product_failure.ExciseAlcoBoxProductFailureViewModel
+import com.lenta.bp9.features.goods_information.excise_alco.task_ppp.alco_stamp.ExciseAlcoStampAccInfoViewModel
+import com.lenta.bp9.features.goods_information.general.task_ppp_pge.GoodsInfoViewModel
+import com.lenta.bp9.features.goods_information.general.task_opp.GoodsInfoShipmentPPViewModel
 import com.lenta.bp9.features.goods_information.marking.uom_st_without_counting_in_boxes.MarkingInfoViewModel
 import com.lenta.bp9.features.goods_information.marking.marking_product_failure.MarkingProductFailureViewModel
 import com.lenta.bp9.features.goods_information.marking.uom_st_with_counting_in_boxes.MarkingBoxInfoViewModel
 import com.lenta.bp9.features.goods_information.mercury.GoodsMercuryInfoViewModel
-import com.lenta.bp9.features.goods_information.non_excise_alco_pge.NonExciseAlcoInfoPGEViewModel
-import com.lenta.bp9.features.goods_information.non_excise_alco_receiving.NonExciseAlcoInfoViewModel
-import com.lenta.bp9.features.goods_information.non_excise_sets_pge.NonExciseSetsPGEViewModel
-import com.lenta.bp9.features.goods_information.non_excise_sets_pge.set_component_pge.NonExciseSetComponentInfoPGEViewModel
-import com.lenta.bp9.features.goods_information.non_excise_sets_receiving.NonExciseSetsReceivingViewModel
-import com.lenta.bp9.features.goods_information.non_excise_sets_receiving.set_component_receiving.NonExciseSetComponentInfoReceivingViewModel
+import com.lenta.bp9.features.goods_information.non_excise_alco.task_pge.NonExciseAlcoInfoPGEViewModel
+import com.lenta.bp9.features.goods_information.non_excise_alco.task_ppp.NonExciseAlcoInfoViewModel
+import com.lenta.bp9.features.goods_information.sets.task_pge.NonExciseSetsPGEViewModel
+import com.lenta.bp9.features.goods_information.sets.task_pge.set_component_pge.NonExciseSetComponentInfoPGEViewModel
+import com.lenta.bp9.features.goods_information.sets.task_ppp.NonExciseSetsReceivingViewModel
+import com.lenta.bp9.features.goods_information.sets.task_ppp.set_component_receiving.NonExciseSetComponentInfoReceivingViewModel
+import com.lenta.bp9.features.goods_information.z_batches.task_ppp.ZBatchesInfoPPPViewModel
 import com.lenta.bp9.features.goods_list.GoodsListViewModel
 import com.lenta.bp9.features.input_outgoing_fillings.InputOutgoingFillingsViewModel
+import com.lenta.bp9.features.label_printing.LabelPrintingViewModel
+import com.lenta.bp9.features.label_printing.print_labels_count_copies.PrintLabelsCountCopiesViewModel
 import com.lenta.bp9.features.list_goods_transfer.ListGoodsTransferViewModel
 import com.lenta.bp9.features.loading.fast.FastDataLoadingViewModel
 import com.lenta.bp9.features.loading.tasks.*
@@ -58,7 +61,7 @@ import com.lenta.bp9.features.task_list.TaskListViewModel
 import com.lenta.bp9.features.transfer_goods_section.TransferGoodsSectionViewModel
 import com.lenta.bp9.features.transport_marriage.TransportMarriageViewModel
 import com.lenta.bp9.features.transport_marriage.cargo_unit.TransportMarriageCargoUnitViewModel
-import com.lenta.bp9.features.transport_marriage.goods_details.TransportMarriageGoodsDetailsViewModel
+import com.lenta.bp9.features.goods_details.transport_marriage_goods_details.TransportMarriageGoodsDetailsViewModel
 import com.lenta.bp9.features.transport_marriage.goods_info.TransportMarriageGoodsInfoViewModel
 import com.lenta.bp9.features.transportation_number.TransportationNumberViewModel
 import com.lenta.bp9.main.MainActivity
@@ -158,4 +161,7 @@ interface AppComponent : FromParentToCoreProvider {
     fun inject(it: MarkingGoodsDetailsViewModel)
     fun inject(it: MarkingProductFailureViewModel)
     fun inject(it: MarkingBoxInfoViewModel)
+    fun inject(it: ZBatchesInfoPPPViewModel)
+    fun inject(it: LabelPrintingViewModel)
+    fun inject(it: PrintLabelsCountCopiesViewModel)
 }

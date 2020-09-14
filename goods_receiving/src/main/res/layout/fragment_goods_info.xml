@@ -2,13 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".features.goods_information.general.GoodsInfoFragment">
+    tools:context=".features.goods_information.general.task_ppp_pge.GoodsInfoFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp9.features.goods_information.general.GoodsInfoViewModel" />
+            type="com.lenta.bp9.features.goods_information.general.task_ppp_pge.GoodsInfoViewModel" />
 
 
     </data>

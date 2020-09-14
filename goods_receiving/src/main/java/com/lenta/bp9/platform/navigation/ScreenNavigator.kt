@@ -14,30 +14,34 @@ import com.lenta.bp9.features.editing_invoice.EditingInvoiceFragment
 import com.lenta.bp9.features.formed_docs.FormedDocsFragment
 import com.lenta.bp9.features.goods_details.GoodsDetailsFragment
 import com.lenta.bp9.features.goods_details.marking_goods_details.MarkingGoodsDetailsFragment
-import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge.ExciseAlcoBoxAccInfoPGEFragment
-import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge.excise_alco_box_card.ExciseAlcoBoxCardPGEFragment
-import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge.excise_alco_box_list.ExciseAlcoBoxListPGEFragment
-import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_stamp_acc_pge.ExciseAlcoStampAccInfoPGEFragment
-import com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_stamp_acc_pge.batch_signs.ExciseAlcoStampPGEBatchSignsFragment
-import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.ExciseAlcoBoxAccInfoFragment
-import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.excise_alco_box_card.ExciseAlcoBoxCardFragment
-import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.excise_alco_box_list.ExciseAlcoBoxListFragment
-import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.excise_alco_box_product_failure.ExciseAlcoBoxProductFailureFragment
-import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_stamp_acc.ExciseAlcoStampAccInfoFragment
-import com.lenta.bp9.features.goods_information.general.GoodsInfoFragment
-import com.lenta.bp9.features.goods_information.general_opp.GoodsInfoShipmentPPFragment
+import com.lenta.bp9.features.goods_information.excise_alco.task_pge.alco_boxed.ExciseAlcoBoxAccInfoPGEFragment
+import com.lenta.bp9.features.goods_information.excise_alco.task_pge.alco_boxed.box_card.ExciseAlcoBoxCardPGEFragment
+import com.lenta.bp9.features.goods_information.excise_alco.task_pge.alco_boxed.box_list.ExciseAlcoBoxListPGEFragment
+import com.lenta.bp9.features.goods_information.excise_alco.task_pge.alco_stamp.ExciseAlcoStampAccInfoPGEFragment
+import com.lenta.bp9.features.goods_information.excise_alco.task_pge.alco_stamp.batch_signs.ExciseAlcoStampPGEBatchSignsFragment
+import com.lenta.bp9.features.goods_information.excise_alco.task_ppp.alco_boxed.ExciseAlcoBoxAccInfoFragment
+import com.lenta.bp9.features.goods_information.excise_alco.task_ppp.alco_boxed.box_card.ExciseAlcoBoxCardFragment
+import com.lenta.bp9.features.goods_information.excise_alco.task_ppp.alco_boxed.box_list.ExciseAlcoBoxListFragment
+import com.lenta.bp9.features.goods_information.excise_alco.task_ppp.alco_boxed.box_product_failure.ExciseAlcoBoxProductFailureFragment
+import com.lenta.bp9.features.goods_information.excise_alco.task_ppp.alco_stamp.ExciseAlcoStampAccInfoFragment
+import com.lenta.bp9.features.goods_information.general.task_ppp_pge.GoodsInfoFragment
+import com.lenta.bp9.features.goods_information.general.task_opp.GoodsInfoShipmentPPFragment
 import com.lenta.bp9.features.goods_information.marking.uom_st_without_counting_in_boxes.MarkingInfoFragment
 import com.lenta.bp9.features.goods_information.marking.marking_product_failure.MarkingProductFailureFragment
 import com.lenta.bp9.features.goods_information.marking.uom_st_with_counting_in_boxes.MarkingBoxInfoFragment
 import com.lenta.bp9.features.goods_information.mercury.GoodsMercuryInfoFragment
-import com.lenta.bp9.features.goods_information.non_excise_alco_pge.NonExciseAlcoInfoPGEFragment
-import com.lenta.bp9.features.goods_information.non_excise_alco_receiving.NonExciseAlcoInfoFragment
-import com.lenta.bp9.features.goods_information.non_excise_sets_pge.NonExciseSetsPGEFragment
-import com.lenta.bp9.features.goods_information.non_excise_sets_pge.set_component_pge.NonExciseSetComponentInfoPGEFragment
-import com.lenta.bp9.features.goods_information.non_excise_sets_receiving.NonExciseSetsReceivingFragment
-import com.lenta.bp9.features.goods_information.non_excise_sets_receiving.set_component_receiving.NonExciseSetComponentInfoReceivingFragment
+import com.lenta.bp9.features.goods_information.non_excise_alco.task_pge.NonExciseAlcoInfoPGEFragment
+import com.lenta.bp9.features.goods_information.non_excise_alco.task_ppp.NonExciseAlcoInfoFragment
+import com.lenta.bp9.features.goods_information.sets.task_pge.NonExciseSetsPGEFragment
+import com.lenta.bp9.features.goods_information.sets.task_pge.set_component_pge.NonExciseSetComponentInfoPGEFragment
+import com.lenta.bp9.features.goods_information.sets.task_ppp.NonExciseSetsReceivingFragment
+import com.lenta.bp9.features.goods_information.sets.task_ppp.set_component_receiving.NonExciseSetComponentInfoReceivingFragment
+import com.lenta.bp9.features.goods_information.z_batches.task_ppp.ZBatchesInfoPPPFragment
 import com.lenta.bp9.features.goods_list.GoodsListFragment
 import com.lenta.bp9.features.input_outgoing_fillings.InputOutgoingFillingsFragment
+import com.lenta.bp9.features.label_printing.LabelPrintingFragment
+import com.lenta.bp9.features.label_printing.LabelPrintingItem
+import com.lenta.bp9.features.label_printing.print_labels_count_copies.PrintLabelsCountCopiesFragment
 import com.lenta.bp9.features.list_goods_transfer.ListGoodsTransferFragment
 import com.lenta.bp9.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp9.features.loading.tasks.*
@@ -61,7 +65,7 @@ import com.lenta.bp9.features.task_list.TaskListFragment
 import com.lenta.bp9.features.transfer_goods_section.TransferGoodsSectionFragment
 import com.lenta.bp9.features.transport_marriage.TransportMarriageFragment
 import com.lenta.bp9.features.transport_marriage.cargo_unit.TransportMarriageCargoUnitFragment
-import com.lenta.bp9.features.transport_marriage.goods_details.TransportMarriageGoodsDetailsFragment
+import com.lenta.bp9.features.goods_details.transport_marriage_goods_details.TransportMarriageGoodsDetailsFragment
 import com.lenta.bp9.features.transport_marriage.goods_info.TransportMarriageGoodsInfoFragment
 import com.lenta.bp9.features.transportation_number.TransportationNumberFragment
 import com.lenta.bp9.model.task.*
@@ -69,6 +73,10 @@ import com.lenta.bp9.model.task.revise.DeliveryDocumentRevise
 import com.lenta.bp9.model.task.revise.DeliveryProductDocumentRevise
 import com.lenta.bp9.model.task.revise.ProductDocumentType
 import com.lenta.bp9.model.task.revise.ProductVetDocumentRevise
+import com.lenta.bp9.platform.navigation.ScreenNavigatorPageNumberConstant.PAGE_NUMBER_94
+import com.lenta.bp9.platform.navigation.ScreenNavigatorPageNumberConstant.PAGE_NUMBER_95
+import com.lenta.bp9.platform.navigation.ScreenNavigatorPageNumberConstant.PAGE_NUMBER_96
+import com.lenta.bp9.platform.navigation.ScreenNavigatorPageNumberConstant.PAGE_NUMBER_97
 import com.lenta.bp9.requests.network.TaskListSearchParams
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
@@ -77,11 +85,6 @@ import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.navigation.runOrPostpone
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.progress.IProgressUseCaseInformator
-
-private const val PAGE_NUMBER_94 = "94"
-private const val PAGE_NUMBER_95 = "95"
-private const val PAGE_NUMBER_96 = "96"
-private const val PAGE_NUMBER_97 = "97"
 
 class ScreenNavigator(
         private val context: Context,
@@ -1717,6 +1720,57 @@ class ScreenNavigator(
         }
     }
 
+    override fun openZBatchesInfoPPPScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean) {
+        runOrPostpone {
+            getFragmentStack()?.push(ZBatchesInfoPPPFragment.newInstance(productInfo, isDiscrepancy))
+        }
+    }
+
+    override fun openLabelPrintingScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(LabelPrintingFragment())
+        }
+    }
+
+    override fun openPrintLabelsCountCopiesScreen(labels: List<LabelPrintingItem>?) {
+        runOrPostpone {
+            getFragmentStack()?.push(PrintLabelsCountCopiesFragment.newInstance(labels))
+        }
+    }
+
+    override fun showAlertNoIpPrinter() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = PAGE_NUMBER_96,
+                    message = context.getString(R.string.no_ip_printer_alert)
+            ))
+        }
+    }
+
+    override fun openSaveCountedQuantitiesAndGoToLabelPrintingDialog(yesCallbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(
+                    AlertFragment.create(
+                            message = context.getString(R.string.save_counted_quantities_and_go_to_label_printing),
+                            iconRes = R.drawable.ic_question_yellow_80dp,
+                            codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallbackFunc),
+                            leftButtonDecorationInfo = ButtonDecorationInfo.no,
+                            rightButtonDecorationInfo = ButtonDecorationInfo.yes,
+                            pageNumber = PAGE_NUMBER_94
+                    ),
+                    disableAnimations = true
+            )
+        }
+    }
+
+    override fun openAlertNotCorrectTime() {
+        openAlertScreen(message = context.getString(R.string.alert_not_correct_time),
+                iconRes = R.drawable.ic_info_pink_80dp,
+                textColor = ContextCompat.getColor(context, R.color.color_text_dialogWarning),
+                pageNumber = PAGE_NUMBER_96
+        )
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -1910,4 +1964,10 @@ interface IScreenNavigator : ICoreNavigator {
     fun openMarkingBoxNotIncludedDeliveryScreen()
     fun openMarkingPerformRateControlScreen()
     fun openMarkingBlockDeclaredDifferentCategoryScreen(typeDiscrepanciesName: String)
+    fun openZBatchesInfoPPPScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean)
+    fun openLabelPrintingScreen()
+    fun openPrintLabelsCountCopiesScreen(labels: List<LabelPrintingItem>? = null)
+    fun showAlertNoIpPrinter()
+    fun openSaveCountedQuantitiesAndGoToLabelPrintingDialog(yesCallbackFunc: () -> Unit)
+    fun openAlertNotCorrectTime()
 }
