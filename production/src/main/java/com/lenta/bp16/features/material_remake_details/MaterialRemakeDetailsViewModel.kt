@@ -18,7 +18,6 @@ import com.lenta.bp16.platform.base.IZpartVisibleConditions
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.platform.resource.IResourceManager
 import com.lenta.bp16.request.CompleteIngredientByMaterialNetRequest
-import com.lenta.bp16.request.ingredients_use_case.get_data.GetAddAttributeInfoUseCase
 import com.lenta.bp16.request.ingredients_use_case.get_data.GetMercuryPartDataInfoUseCase
 import com.lenta.bp16.request.ingredients_use_case.get_data.GetWarehouseForSelectedItemUseCase
 import com.lenta.bp16.request.ingredients_use_case.get_data.GetZPartDataInfoUseCase
@@ -59,9 +58,6 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
     lateinit var getZPartDataInfoUseCase: GetZPartDataInfoUseCase
 
     @Inject
-    lateinit var getAddAttributeInfoUseCase: GetAddAttributeInfoUseCase
-
-    @Inject
     lateinit var warehouseForSelectedItemUseCase: GetWarehouseForSelectedItemUseCase
 
     // значение параметра OBJ_CODE из родительского компонента заказа
@@ -83,7 +79,7 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
 
     private val mercuryDataInfo = MutableLiveData<List<MercuryPartDataInfoUI>>()
     override val zPartDataInfo = MutableLiveData<List<ZPartDataInfoUI>>()
-    private val addedAttribute = MutableLiveData<List<AddAttributeProdInfo>>()
+    private val addedAttribute = MutableLiveData<AddAttributeProdInfo>()
     private val warehouseSelected = MutableLiveData<List<String>>()
 
     val producerNameField by unsafeLazy {
@@ -142,9 +138,7 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
     }
 
     /** Условие блокировки спиннеров производителя и даты*/
-    val disableSpinner by unsafeLazy {
-        true //Заменить на условие
-    }
+    val disableSpinner = MutableLiveData<Boolean>()
 
     /** Условие разблокировки кнопок добавить и завершить */
     val nextAndAddButtonEnabled: MutableLiveData<Boolean> = producerNameField
@@ -205,12 +199,13 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
         launchUITryCatch {
             mercuryDataInfo.value = getMercuryPartDataInfoUseCase()
             zPartDataInfo.value = getZPartDataInfoUseCase()
-            addedAttribute.value = getAddAttributeInfoUseCase()
+            addedAttribute.value = attributeManager.currentAttribute.value
             warehouseSelected.value = warehouseForSelectedItemUseCase()
             if (alertNotFoundProducerName.value == true) {
                 navigator.goBack()
                 navigator.showAlertProducerCodeNotFound()
             } else {
+                disableSpinner.value = addedAttribute.value?.let { false }.orIfNull { true }
                 checkProducerInfo()
                 checkDataInfo()
             }
@@ -219,13 +214,13 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
 
     private fun checkProducerInfo() {
         /** Если был передан производитель из AddAttributeFragment, то заполнять данными из нее*/
-        val addedAttributeIsNotEmpty = !addedAttribute.value.isNullOrEmpty()
+        val addedAttributeIsNotEmpty = !addedAttribute.value?.name.isNullOrBlank()
         val orderIngredientIsVet = !materialIngredient.value?.isVet.isNullOrBlank()
         when {
             addedAttributeIsNotEmpty -> {
                 addedAttribute.value?.let { addAttributeDataInfoList ->
-                    val producerNameList = addAttributeDataInfoList.map { it.name }
-                    producerNameField.value = producerNameList
+                    val producerName = addAttributeDataInfoList.name
+                    producerNameField.value = listOf(producerName)
                 }
             }
             orderIngredientIsVet -> {
@@ -251,13 +246,13 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
 
     private fun checkDataInfo() {
         /** Если была передана дата из AddAttributeFragment, то заполнять данными из нее*/
-        val addedAttributeIsNotEmpty = !addedAttribute.value.isNullOrEmpty()
+        val addedAttributeIsNotEmpty = !addedAttribute.value?.date.isNullOrBlank()
         val orderIngredientIsVet = !materialIngredient.value?.isVet.isNullOrBlank()
         when {
             addedAttributeIsNotEmpty -> {
                 addedAttribute.value?.let { addAttributeDataInfoList ->
-                    val productionDate = addAttributeDataInfoList.map { it.date }
-                    productionDateField.value = productionDate
+                    val productionDate = addAttributeDataInfoList.date
+                    productionDateField.value = listOf(productionDate)
                 }
             }
             orderIngredientIsVet -> {
@@ -299,7 +294,7 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
     private suspend fun setBatchNewInfo(): List<BatchNewDataInfoParam>? {
         return withContext(Dispatchers.IO) {
             /** Если не удалось определить партию*/
-            val addedAttributeInfo = addedAttribute.value?.getOrNull(0)
+            val addedAttributeInfo = addedAttribute.value
             val selectedWarehouse = warehouseSelected.value?.getOrNull(0).orEmpty()
             addedAttributeInfo?.let {
                 listOf(BatchNewDataInfoParam(
@@ -403,6 +398,7 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
     }
 
     fun onBackPressed() {
+        attributeManager.currentAttribute.value = null
         navigator.showNotSavedDataWillBeLost {
             navigator.goBack()
         }

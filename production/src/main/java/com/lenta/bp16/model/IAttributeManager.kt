@@ -6,6 +6,6 @@ interface IAttributeManager {
 
     val currentAttribute: MutableLiveData<AddAttributeProdInfo>
 
-    fun updateCurrentAttribute(attribute: AddAttributeProdInfo?)
+    fun updateCurrentAttribute(attribute: AddAttributeProdInfo)
 
 }

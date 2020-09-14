@@ -12,7 +12,6 @@ import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.repository.IDatabaseRepository
 import com.lenta.bp16.request.ingredients_use_case.get_data.GetProducerDataInfoUseCase
 import com.lenta.bp16.request.ingredients_use_case.get_data.GetZPartDataInfoUseCase
-import com.lenta.bp16.request.ingredients_use_case.set_data.SetAddAttributeInfoUseCase
 import com.lenta.bp16.request.ingredients_use_case.set_data.SetProducerDataInfoUseCase
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.time.ITimeMonitor
@@ -52,9 +51,6 @@ class MaterialAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
 
     @Inject
     lateinit var saveProducerDataInfoUseCase: SetProducerDataInfoUseCase
-
-    @Inject
-    lateinit var setAddAttributeInfoUseCase: SetAddAttributeInfoUseCase
 
     private val producerDataInfo = MutableLiveData<List<ProducerDataInfoUI>>()
     override val zPartDataInfo = MutableLiveData<List<ZPartDataInfoUI>>()
@@ -215,7 +211,7 @@ class MaterialAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
                         code = prodCode,
                         date = productionDate
                 )
-                setAddAttributeInfoUseCase(listOf(result))
+                attributeManager.updateCurrentAttribute(result)
                 navigator.goBack()
             }
         }

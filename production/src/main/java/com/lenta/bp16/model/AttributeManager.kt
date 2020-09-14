@@ -9,7 +9,7 @@ class AttributeManager @Inject constructor(
 
     override val currentAttribute = MutableLiveData<AddAttributeProdInfo>()
 
-    override fun updateCurrentAttribute(attribute: AddAttributeProdInfo?) {
+    override fun updateCurrentAttribute(attribute: AddAttributeProdInfo) {
         currentAttribute.value = attribute
     }
 }
