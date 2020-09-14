@@ -52,15 +52,15 @@ class DiscrepancyListViewModel : CoreViewModel() {
     val goods by lazy {
         task.switchMap { task ->
             asyncLiveData<List<ItemGoodUi>>() {
-                val result = task.goods.mapToUI()
+                val result = mapToUI(task.goods)
                 emit(result)
             }
         }
     }
 
-    private fun List<Good>.mapToUI(): List<ItemGoodUi> {
+    private fun mapToUI(goodList: List<Good>): List<ItemGoodUi> {
         var localIndex = 0
-        return this.mapNotNull { good ->
+        return goodList.mapNotNull { good ->
             good.takeIf { it.isNotDeletedAndQuantityNotActual() }?.run {
                 ++localIndex
                 ItemGoodUi(
