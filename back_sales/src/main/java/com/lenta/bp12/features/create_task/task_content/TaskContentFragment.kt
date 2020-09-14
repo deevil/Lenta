@@ -36,7 +36,7 @@ class TaskContentFragment : CoreFragment<FragmentTaskContentBinding, TaskContent
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.description.value = getString(R.string.task_content)
+        topToolbarUiModel.description.value = getString(R.string.good_list)
         connectLiveData(vm.title, topToolbarUiModel.title)
     }
 
@@ -81,9 +81,10 @@ class TaskContentFragment : CoreFragment<FragmentTaskContentBinding, TaskContent
                 false)
 
         val onClickSelectionListener = View.OnClickListener {
-            val position = (it?.tag as Int)
-            vm.goodSelectionsHelper.revert(position = position)
-            layoutBinding.rv.adapter?.notifyItemChanged(position)
+            (it.tag as? Int)?.let{ position ->
+                vm.goodSelectionsHelper.revert(position = position)
+                layoutBinding.rv.adapter?.notifyItemChanged(position)
+            }
         }
 
         layoutBinding.rvConfig = initRecycleAdapterDataBinding(
@@ -114,9 +115,10 @@ class TaskContentFragment : CoreFragment<FragmentTaskContentBinding, TaskContent
                 false).let { layoutBinding ->
 
             val onClickSelectionListener = View.OnClickListener {
-                val position = (it?.tag as Int)
-                vm.basketSelectionsHelper.revert(position = position)
-                layoutBinding.rv.adapter?.notifyItemChanged(position)
+                (it.tag as? Int)?.let{ position ->
+                    vm.basketSelectionsHelper.revert(position = position)
+                    layoutBinding.rv.adapter?.notifyItemChanged(position)
+                }
             }
 
             layoutBinding.rvConfig = initRecycleAdapterDataBinding(
@@ -147,9 +149,10 @@ class TaskContentFragment : CoreFragment<FragmentTaskContentBinding, TaskContent
                 false).let { layoutBinding ->
 
             val onClickSelectionListener = View.OnClickListener {
-                val position = (it?.tag as Int)
-                vm.basketSelectionsHelper.revert(position = position)
-                layoutBinding.rv.adapter?.notifyItemChanged(position)
+                (it.tag as? Int)?.let{ position ->
+                    vm.basketSelectionsHelper.revert(position = position)
+                    layoutBinding.rv.adapter?.notifyItemChanged(position)
+                }
             }
 
             layoutBinding.rvConfig = initRecycleAdapterDataBinding(
@@ -175,7 +178,7 @@ class TaskContentFragment : CoreFragment<FragmentTaskContentBinding, TaskContent
 
     override fun getTextTitle(position: Int): String {
         return when (position) {
-            TAB_GOODS -> getString(R.string.goods)
+            TAB_GOODS -> getString(R.string.processed)
             TAB_BASKETS -> getString(R.string.baskets)
             else -> throw IllegalArgumentException("Wrong pager position!")
         }

@@ -46,7 +46,7 @@
 
                     <TextView
                         style="@style/FirstRowTextStyle"
-                        android:text="@string/goods" />
+                        android:text="@string/basket" />
 
                 </LinearLayout>
 
@@ -56,7 +56,7 @@
 
                     <TextView
                         style="@style/FirstRowTextStyle"
-                        android:text="@string/quantity_short" />
+                        android:text="@string/of_goods" />
 
                 </LinearLayout>
 
