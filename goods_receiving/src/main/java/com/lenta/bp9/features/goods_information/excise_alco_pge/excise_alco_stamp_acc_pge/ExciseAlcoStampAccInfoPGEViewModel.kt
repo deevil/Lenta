@@ -487,9 +487,9 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
         return addNewCount
     }
 
-    fun onBatchSignsResult(_manufacturerSelectedPosition: Int?, _bottlingDate: String?) {
-        val manufacturerCode = _manufacturerSelectedPosition?.let { repoInMemoryHolder.manufacturers.value?.get(it)?.code }
-        val bottlingDate = "${_bottlingDate?.substring(6, 10)}-${_bottlingDate?.substring(3, 5)}-${_bottlingDate?.substring(0, 2)}"
+    fun onBatchSignsResult(_manufacturerSelectedPosition: Int, _bottlingDate: String) {
+        val manufacturerCode = _manufacturerSelectedPosition.let { repoInMemoryHolder.manufacturers.value?.get(it)?.code }
+        val bottlingDate = "${_bottlingDate.substring(6, 10)}-${_bottlingDate.substring(3, 5)}-${_bottlingDate.substring(0, 2)}"
         exciseStampInfo.value = TaskExciseStampInfo(
                 materialNumber = productInfo.value!!.materialNumber,
                 code = scannedStampCode.value.orEmpty(),
@@ -503,7 +503,7 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
         addExciseStampDiscrepancy()
     }
 
-    fun onBatchSignsResultW() {
+    fun onBatchSignsResult() {
         setSurplusSearchMode()
         val dateOfPour = taskManager.getReceivingTask()?.taskRepository?.getBatches()?.getBatches()?.findLast {
             it.batchNumber == exciseStampInfo.value?.batchNumber.orEmpty()

@@ -80,7 +80,7 @@ class ExciseAlcoStampAccInfoPGEFragment : CoreFragment<FragmentExciseAlcoStampAc
             super.onFragmentResult(arguments)
             vm.onBatchSignsResult(arguments.getInt("manufacturerSelectedPosition"), arguments.getString("bottlingDate"))
         }else
-            vm.onBatchSignsResultW()
+            vm.onBatchSignsResult()
     }
 
 
