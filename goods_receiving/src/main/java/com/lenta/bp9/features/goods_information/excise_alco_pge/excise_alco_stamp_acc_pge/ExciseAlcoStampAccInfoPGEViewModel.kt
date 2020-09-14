@@ -10,6 +10,7 @@ import com.lenta.bp9.model.processing.ProcessExciseAlcoStampAccPGEService
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskExciseStampInfo
 import com.lenta.bp9.model.task.TaskProductInfo
+import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
@@ -75,6 +76,7 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
     val spinBottlingDateSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val suffix: MutableLiveData<String> = MutableLiveData()
     val exciseStampInfo: MutableLiveData<TaskExciseStampInfo> = MutableLiveData()
+    val taskType: MutableLiveData<TaskType> = MutableLiveData()
 
     val tvBottlingDate: MutableLiveData<String> by lazy {
         if (productInfo.value?.isRus == true && !(productInfo.value?.origQuantity.isNullOrEmpty())) {
@@ -529,8 +531,9 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
             )
             return
         }
-
-        screenNavigator.goBack()
+        val taskTypeValue = taskType.value
+            if (taskTypeValue != null) {
+                screenNavigator.openGoodsListScreen(taskTypeValue)
+            }
     }
-
 }
