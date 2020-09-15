@@ -9,6 +9,7 @@ import com.lenta.bp16.databinding.FragmentTechOrdersListBinding
 import com.lenta.bp16.databinding.ItemTechOrderBinding
 import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
 import com.lenta.bp16.model.ingredients.ui.ItemTechOrderUi
+import com.lenta.bp16.model.ingredients.ui.MaterialIngredientDataInfoUI
 import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -19,8 +20,8 @@ import com.lenta.shared.utilities.extentions.unsafeLazy
 
 class TechOrdersListFragment : CoreFragment<FragmentTechOrdersListBinding, TechOrdersListViewModel>() {
 
-    private val materialIngredientDataInfo: MaterialIngredientDataInfo by unsafeLazy {
-        arguments?.getParcelable<MaterialIngredientDataInfo>(KEY_INGREDIENT)
+    private val materialIngredientDataInfo: MaterialIngredientDataInfoUI by unsafeLazy {
+        arguments?.getParcelable<MaterialIngredientDataInfoUI>(KEY_INGREDIENT)
                 ?: throw IllegalArgumentException("There is no argument value with key $KEY_INGREDIENT")
     }
 
@@ -85,7 +86,7 @@ class TechOrdersListFragment : CoreFragment<FragmentTechOrdersListBinding, TechO
         private const val KEY_PARENT_CODE = "KEY_PARENT_CODE"
         private const val KEY_INGREDIENT_KTSCH = "KEY_INGREDIENT_KTSCH"
 
-        fun newInstance(selectedIngredient: MaterialIngredientDataInfo, parentCode: String, materialIngredientKtsch: String) =
+        fun newInstance(selectedIngredient: MaterialIngredientDataInfoUI, parentCode: String, materialIngredientKtsch: String) =
                 TechOrdersListFragment().apply {
                     arguments = bundleOf(
                             KEY_INGREDIENT to selectedIngredient,

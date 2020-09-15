@@ -9,6 +9,7 @@ import com.lenta.bp16.databinding.FragmentRemakesByMaterialBinding
 import com.lenta.bp16.databinding.ItemMaterialIngredientBinding
 import com.lenta.bp16.model.ingredients.IngredientInfo
 import com.lenta.bp16.model.ingredients.ui.ItemMaterialIngredientUi
+import com.lenta.bp16.model.ingredients.ui.IngredientInfoUI
 import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -22,8 +23,8 @@ class MaterialRemakesListFragment : CoreFragment<FragmentRemakesByMaterialBindin
         MaterialRemakesListViewModel>(), OnBackPresserListener {
 
     // выбранный ранее ингредиент
-    private val ingredientInfo: IngredientInfo by unsafeLazy {
-        arguments?.getParcelable<IngredientInfo>(KEY_INGREDIENT_BY_MATERIAL)
+    private val ingredientInfo: IngredientInfoUI by unsafeLazy {
+        arguments?.getParcelable<IngredientInfoUI>(KEY_INGREDIENT_BY_MATERIAL)
                 ?: throw IllegalArgumentException("There is no argument value with key $KEY_INGREDIENT_BY_MATERIAL")
     }
 
@@ -50,7 +51,7 @@ class MaterialRemakesListFragment : CoreFragment<FragmentRemakesByMaterialBindin
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         val material = ingredientInfo.getFormattedCode()
-        val productName = ingredientInfo.text1?.substring(6)?.trim()
+        val productName = ingredientInfo.text1.substring(6).trim()
         topToolbarUiModel.title.value = "$material $productName"
         topToolbarUiModel.description.value = getString(R.string.desc_remakes_list)
     }
@@ -86,7 +87,7 @@ class MaterialRemakesListFragment : CoreFragment<FragmentRemakesByMaterialBindin
         private const val KEY_INGREDIENT_BY_MATERIAL = "KEY_INGREDIENT_BY_MATERIAL"
 
         fun newInstance(
-                selectedIngredient: IngredientInfo
+                selectedIngredient: IngredientInfoUI
         ) = MaterialRemakesListFragment().apply {
             arguments = bundleOf(KEY_INGREDIENT_BY_MATERIAL to selectedIngredient)
         }

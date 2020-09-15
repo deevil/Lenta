@@ -45,6 +45,10 @@ data class OrderByBarcode(
     }
 
     companion object {
+        const val KG_RUS = "КГ"
+        const val G_RUS = "Г"
+        const val ST_RUS = "ШТ"
+        const val KOR_RUS = "КОР"
         const val KAR = "KAR"
         const val ST = "ST"
         const val KG = "KG"
