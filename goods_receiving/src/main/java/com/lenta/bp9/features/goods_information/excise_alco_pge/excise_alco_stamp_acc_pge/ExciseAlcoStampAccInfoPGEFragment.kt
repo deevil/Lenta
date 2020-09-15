@@ -80,7 +80,6 @@ class ExciseAlcoStampAccInfoPGEFragment : CoreFragment<FragmentExciseAlcoStampAc
         vm.onBatchSignsResult(arguments.getInt("manufacturerSelectedPosition"), arguments.getString("bottlingDate"))
     }
 
-
     override fun onBackPressed(): Boolean {
         vm.onBackPressed()
         return false
