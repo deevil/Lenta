@@ -22,7 +22,10 @@ import com.lenta.bp12.request.ScanInfoNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.extentions.launchAsyncTryCatch
+import com.lenta.shared.utilities.extentions.launchUITryCatch
+import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.unsafeLazy
 import com.lenta.shared.utilities.orIfNull
 import javax.inject.Inject
 
@@ -156,26 +159,21 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
     /**
     Кнопки нижнего тулбара
      */
-
     override val applyEnabled by lazy {
-        isProviderSelected
-                .combineLatest(good)
-                .combineLatest(quantity)
-                .combineLatest(totalQuantity)
-                .combineLatest(basketQuantity)
-                .map {
-                    it?.let {
-                        val isProviderSelected = it.first.first.first.first
-                        val enteredQuantity = it.first.first.second
-                        val totalQuantity = it.first.second
-                        val basketQuantity = it.second
-
-                        val isEnteredQuantityNotZero = enteredQuantity != 0.0
-                        val isTotalQuantityMoreThenZero = totalQuantity > 0.0
-
-                        isProviderSelected && isEnteredQuantityNotZero && isTotalQuantityMoreThenZero && basketQuantity > 0.0
-                    } ?: false
+        isProviderSelected.switchMap {isProviderSelected ->
+            quantity.switchMap { enteredQuantity ->
+                totalQuantity.switchMap { totalQuantity ->
+                    basketQuantity.switchMap { basketQuantity ->
+                        liveData {
+                            val isEnteredQuantityNotZero = enteredQuantity != DEFAULT_QUANTITY
+                            val isTotalQuantityMoreThenZero = totalQuantity > DEFAULT_QUANTITY
+                            val result = isProviderSelected && isEnteredQuantityNotZero && isTotalQuantityMoreThenZero && basketQuantity > DEFAULT_QUANTITY
+                            emit(result)
+                        }
+                    }
                 }
+            }
+        }
     }
 
 
@@ -489,5 +487,9 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
                 navigator.showInternalError(resource.goodNotFoundErrorMsg)
             }
         }
+    }
+
+    companion object{
+        private const val DEFAULT_QUANTITY = 0.0
     }
 }

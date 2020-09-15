@@ -29,6 +29,15 @@ enum class ControlType(val code: String, val description: String) {
     ALCOHOL("A", "Алкоголь"),
     MARK("M", "Маркированный");
 
+    fun codeInRus(): String {
+        return when (this) {
+            COMMON -> "О"
+            ALCOHOL -> "А"
+            MARK -> "М"
+            else -> ""
+        }
+    }
+
     companion object {
         fun from(code: String): ControlType {
             return when (code) {

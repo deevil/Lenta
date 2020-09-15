@@ -49,24 +49,31 @@ private fun Basket.minusQuantityOfGood(good: Good, quantityToDel: Double, newQua
     }
 }
 
-fun Basket.getDescription(isDivBySection: Boolean): String {
-
+fun Basket.getDescription(isDivBySection: Boolean, isWholeSale: Boolean): String {
     return buildString {
-        val sectionBlock = if (isDivBySection) "C-$section/" else ""
-        append(sectionBlock)
+        val control = "${control?.codeInRus()}"
 
-        val goodTypeBlock = if (goodType.isNullOrEmpty()) "" else "$goodType/"
-        append(goodTypeBlock)
+        if (!isWholeSale) {
+            val sectionBlock = if (isDivBySection) "C-$section/" else ""
+            append(sectionBlock)
 
-        append("${control?.code}")
+            val goodTypeBlock = if (goodType.isNullOrEmpty()) "" else "$goodType/"
+            append(goodTypeBlock)
 
-        val providerBlock = if (provider?.code.isNullOrEmpty()) "" else "/ПП-${provider?.code}"
+            append(control)
 
-        append(providerBlock)
+            val providerBlock = if (provider?.code.isNullOrEmpty()) "" else "/ПП-${provider?.code}"
 
-        val markTypeGroupAbr = markTypeGroup?.let { "/${it.abbreviation}" }.orEmpty()
+            append(providerBlock)
 
-        append(markTypeGroupAbr)
+        } else {
+            append(control)
+        }
+
+        val abbreviation = markTypeGroup?.abbreviation
+        val markTypeGroupBlock = if (abbreviation.isNullOrEmpty()) "" else "/$abbreviation"
+
+        append(markTypeGroupBlock)
     }
 }
 

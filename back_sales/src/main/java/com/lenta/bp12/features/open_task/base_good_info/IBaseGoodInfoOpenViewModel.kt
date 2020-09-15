@@ -1,5 +1,6 @@
 package com.lenta.bp12.features.open_task.base_good_info
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.managers.interfaces.IOpenTaskManager
 import com.lenta.bp12.model.pojo.Basket
@@ -47,7 +48,7 @@ interface IBaseGoodInfoOpenViewModel {
 
     val basketTitle: MutableLiveData<String>
 
-    val applyEnabled: MutableLiveData<Boolean>
+    val applyEnabled: LiveData<Boolean>
     val rollbackVisibility: MutableLiveData<Boolean>
     val closeVisibility: MutableLiveData<Boolean>
     val closeEnabled: MutableLiveData<Boolean>

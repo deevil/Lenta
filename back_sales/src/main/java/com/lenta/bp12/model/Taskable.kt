@@ -13,4 +13,3 @@ interface Taskable{
     fun removeEmptyGoods()
     fun removeEmptyBaskets()
 }
-

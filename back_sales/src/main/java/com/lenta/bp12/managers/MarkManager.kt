@@ -137,7 +137,7 @@ class MarkManager @Inject constructor(
      * Метод вычленяет регулярным выражением шк(barcode), гтин и мрц из марки блока
      * */
     private suspend fun openMarkedGoodWithCarton(number: String): MarkScreenStatus {
-        val regex = Regex(Constants.CIGARETTES_MARK_PATTERN).find(number)
+        val regex = Regex(Constants.CIGARETTES_BOX_PATTERN).find(number)
         return regex?.let {
             val (blocBarcode, gtin, _, mrc, _, _) = it.destructured // blockBarcode, gtin, serial, mrc, verificationKey, other
             val container = Pair(blocBarcode, Mark.Container.CARTON)
@@ -323,8 +323,6 @@ class MarkManager @Inject constructor(
         val goodFromManager = createManager.currentGood
         val good = goodFromManager.value
         return with(result) {
-            taskFromManager.value?.let { task ->
-                val taskType = task.type
                 val goodEan = eanInfo?.ean.orEmpty()
                 val markType = getMarkType()
                 val createdGood = Good(
@@ -336,15 +334,15 @@ class MarkManager @Inject constructor(
                         material = materialInfo?.material.orEmpty(),
                         name = materialInfo?.name.orEmpty(),
                         kind = getGoodKind(),
-                        type = materialInfo?.goodType.takeIf { taskType.isDivByGoodType }.orEmpty(),
+                        type = materialInfo?.goodType.orEmpty(),
                         control = getControlType(),
-                        section = materialInfo?.section.takeIf { taskType.isDivBySection }.orEmpty(),
+                        section = materialInfo?.section.orEmpty(),
                         matrix = getMatrixType(materialInfo?.matrix.orEmpty()),
                         commonUnits = database.getUnitsByCode(materialInfo?.commonUnitsCode.orEmpty()),
                         innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
                         innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull()
                                 ?: 1.0,
-                        providers = providers?.takeIf { taskType.isDivByProvider }.orEmpty().toMutableList(),
+                        providers = providers.orEmpty().toMutableList(),
                         producers = producers.orEmpty().toMutableList(),
                         volume = materialInfo?.volume?.toDoubleOrNull() ?: DEFAULT_VOLUME_VALUE,
                         markType = markType,
@@ -366,11 +364,6 @@ class MarkManager @Inject constructor(
                 } else {
                     MarkScreenStatus.NO_MARKTYPE_IN_SETTINGS
                 }
-            }.orIfNull {
-                internalErrorMessage = resource.taskNotFoundErrorMsg
-                Logg.e { internalErrorMessage }
-                MarkScreenStatus.INTERNAL_ERROR
-            }
         }
     }
 

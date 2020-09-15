@@ -19,7 +19,7 @@ fun String.splitByLines(oneLineMaxLength: Int): List<String> {
 
     val lines = mutableListOf<String>()
 
-    var line = StringBuilder()
+    val line = StringBuilder()
     var prefix = ""
 
     this.split(" ").forEach { word ->

@@ -81,7 +81,7 @@ data class ScanInfoResult(
         val producers: List<ProducerInfo>,
         /** Номер партии */
         @SerializedName("ET_ZCHARG")
-        val partNumber: String,
+        val partNumber: List<String>,
         /** Код возврата */
         @SerializedName("EV_RETCODE")
         override val retCode: Int,
