@@ -3,8 +3,8 @@ package com.lenta.bp9.features.discrepancy_list
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.lenta.bp9.features.goods_list.SearchProductDelegate
-import com.lenta.bp9.features.loading.tasks.TaskCardMode
+import com.lenta.bp9.features.delegates.ISaveProductDelegate
+import com.lenta.bp9.features.delegates.SearchProductDelegate
 import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
 import com.lenta.bp9.model.processing.ProcessMarkingBoxProductService
 import com.lenta.bp9.model.processing.ProcessMarkingProductService
@@ -14,11 +14,8 @@ import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUAL
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
-import com.lenta.bp9.requests.network.EndRecountDDParameters
-import com.lenta.bp9.requests.network.EndRecountDDResult
 import com.lenta.bp9.requests.network.EndRecountDirectDeliveriesNetRequest
 import com.lenta.shared.account.ISessionInfo
-import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -26,7 +23,6 @@ import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
@@ -63,6 +59,9 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     lateinit var searchProductDelegate: SearchProductDelegate
 
     @Inject
+    lateinit var saveProductDelegate: ISaveProductDelegate
+
+    @Inject
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
 
     @Inject
@@ -72,6 +71,15 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     val countNotProcessed: MutableLiveData<List<GoodsDiscrepancyItem>> = MutableLiveData()
     val countProcessed: MutableLiveData<List<GoodsDiscrepancyItem>> = MutableLiveData()
     val countControl: MutableLiveData<List<GoodsDiscrepancyItem>> = MutableLiveData()
+
+    private val taskType by lazy {
+        taskManager
+                .getReceivingTask()
+                ?.taskHeader
+                ?.taskType
+                ?: TaskType.None
+    }
+
     private val isBatches: MutableLiveData<Boolean> = MutableLiveData(false)
     private val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     private val paramGrzGrundMarkCode: MutableLiveData<String> = MutableLiveData("")
@@ -106,7 +114,9 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     val visibilityBatchesButton: MutableLiveData<Boolean> by lazy {
-        MutableLiveData(taskManager.getReceivingTask()?.taskDescription?.isAlco == true && !(taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentPP || taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentRC)) //для заданий ОПП и ОРЦ не показываем кнопку Партия, уточнил у Артема
+        val taskDescription = taskManager.getReceivingTask()?.taskDescription
+        MutableLiveData(taskDescription?.isAlco == true //Z-партии на этом экране не учитываются
+                && !(taskType == TaskType.ShipmentPP || taskType == TaskType.ShipmentRC)) //для заданий ОПП и ОРЦ не показываем кнопку Партия, уточнил у Артема
     }
 
     init {
@@ -731,6 +741,10 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                     taskRepository
                             .getBlocksDiscrepancies()
                             .deleteBlocksDiscrepanciesForProductAndDiscrepancies(materialNumber, typeDiscrepancies)
+
+                    taskRepository
+                            .getZBatchesDiscrepancies()
+                            .deleteZBatchesDiscrepanciesForProductAndDiscrepancies(materialNumber, typeDiscrepancies)
                 }
     }
 
@@ -766,6 +780,10 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                     taskRepository
                             .getBlocksDiscrepancies()
                             .deleteBlocksDiscrepanciesNotNormForProduct(product.materialNumber)
+
+                    taskRepository
+                            .getZBatchesDiscrepancies()
+                            .deleteZBatchesDiscrepanciesNotNormForProduct(product.materialNumber)
                 }
     }
 
@@ -774,102 +792,8 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
         updateData()
     }
 
-    private fun filterClearTabTaskDiff(productInfo: TaskProductInfo) : Boolean {
-        //партионный - это помеченный IS_ALCO и не помеченный IS_BOX_FL, IS_MARK_FL (Артем)
-        val isBatchNonExciseAlcoholProduct =
-                productInfo.type == ProductType.NonExciseAlcohol
-                        && !productInfo.isBoxFl
-                        && !productInfo.isMarkFl
-        val isVetProduct = productInfo.isVet && !productInfo.isNotEdit
-        //коробочный или марочный алкоголь
-        val isExciseAlcoholProduct =
-                productInfo.type == ProductType.ExciseAlcohol
-                        && (productInfo.isBoxFl || productInfo.isMarkFl)
-        return isBatchNonExciseAlcoholProduct
-                || isVetProduct
-                || isExciseAlcoholProduct
-    }
-
     fun onClickSave() {
-        launchUITryCatch {
-            screenNavigator.showProgressLoadingData(::handleFailure)
-            /**
-             * очищаем таблицу ET_TASK_DIFF от не акцизного (партионного) алкоголя и веттоваров,
-             * т.к. для партионного товара необходимо передавать только данные из таблицы ET_PARTS_DIFF, а для веттоваров - ET_VET_DIFF
-             */
-            val receivingTask = taskManager.getReceivingTask()
-            val taskRepository = taskManager.getReceivingTask()?.taskRepository
-            receivingTask
-                    ?.getProcessedProductsDiscrepancies()
-                    ?.mapNotNull { productDiscr ->
-                        taskRepository
-                                ?.getProducts()
-                                ?.findProduct(productDiscr.materialNumber)
-                    }
-                    ?.filter { filterClearTabTaskDiff(it) }
-                    ?.forEach { productForDel ->
-                        taskRepository
-                                ?.getProductsDiscrepancies()
-                                ?.deleteProductsDiscrepanciesForProduct(productForDel.materialNumber)
-                    }
-
-            endRecountDirectDeliveries(EndRecountDDParameters(
-                    taskNumber = receivingTask
-                            ?.taskHeader
-                            ?.taskNumber
-                            .orEmpty(),
-                    deviceIP = context.getDeviceIp(),
-                    personalNumber = sessionInfo.personnelNumber.orEmpty(),
-                    discrepanciesProduct = receivingTask
-                            ?.getProcessedProductsDiscrepancies()
-                            ?.map { TaskProductDiscrepanciesRestData.from(it) }
-                            .orEmpty(),
-                    discrepanciesBatches = receivingTask
-                            ?.getProcessedBatchesDiscrepancies()
-                            ?.map { TaskBatchesDiscrepanciesRestData.from(it) }
-                            .orEmpty(),
-                    discrepanciesBoxes = receivingTask
-                            ?.getProcessedBoxesDiscrepancies()
-                            ?.map { TaskBoxDiscrepanciesRestData.from(it) }
-                            .orEmpty(),
-                    discrepanciesExciseStamp = receivingTask
-                            ?.getProcessedExciseStampsDiscrepancies()
-                            ?.map { TaskExciseStampDiscrepanciesRestData.from(it) }
-                            .orEmpty(),
-                    exciseStampBad = receivingTask
-                            ?.getProcessedExciseStampsBad()
-                            ?.map { TaskExciseStampBadRestData.from(it) }
-                            .orEmpty(),
-                    discrepanciesMercury = receivingTask
-                            ?.getProcessedMercuryDiscrepancies()
-                            ?.map { TaskMercuryDiscrepanciesRestData.from(it) }
-                            .orEmpty(),
-                    discrepanciesBlocks = receivingTask
-                            ?.getProcessedBlocksDiscrepancies()
-                            ?.map { TaskBlockDiscrepanciesRestData.from(it) }
-                            .orEmpty()
-            )).either(::handleFailure, ::handleSuccess)
-            screenNavigator.hideProgress()
-        }
-    }
-
-    private fun handleSuccess(result: EndRecountDDResult) {
-        val taskType =
-                taskManager
-                        .getReceivingTask()
-                        ?.taskHeader
-                        ?.taskType
-                        ?: TaskType.None
-        taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))
-        screenNavigator.openTaskCardScreen(
-                mode = TaskCardMode.Full,
-                taskType = taskType
-        )
-    }
-
-    override fun handleFailure(failure: Failure) {
-        super.handleFailure(failure)
-        screenNavigator.openAlertScreen(failure, pageNumber = "97")
+        saveProductDelegate.saveDataInERP()
     }
 
     private fun normEnteredButControlNotPassed(productInfo: TaskProductInfo): Boolean {

@@ -1,6 +1,6 @@
 package com.lenta.bp9.model.task
 
-import com.lenta.bp9.features.goods_list.SearchProductDelegate
+import com.lenta.bp9.features.delegates.SearchProductDelegate
 
 enum class MarkingGoodsRegime {
     UomStWithoutBoxes,

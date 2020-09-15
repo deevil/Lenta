@@ -2,13 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".features.transport_marriage.goods_details.TransportMarriageGoodsDetailsFragment">
+    tools:context=".features.goods_details.transport_marriage_goods_details.TransportMarriageGoodsDetailsFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp9.features.transport_marriage.goods_details.TransportMarriageGoodsDetailsViewModel" />
+            type="com.lenta.bp9.features.goods_details.transport_marriage_goods_details.TransportMarriageGoodsDetailsViewModel" />
 
         <variable
             name="rvConfig"

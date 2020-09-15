@@ -2,13 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".features.goods_information.excise_alco_pge.excise_alco_box_acc_pge.ExciseAlcoBoxAccInfoPGEFragment">
+    tools:context=".features.goods_information.excise_alco.task_pge.alco_boxed.ExciseAlcoBoxAccInfoPGEFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp9.features.goods_information.excise_alco_pge.excise_alco_box_acc_pge.ExciseAlcoBoxAccInfoPGEViewModel" />
+            type="com.lenta.bp9.features.goods_information.excise_alco.task_pge.alco_boxed.ExciseAlcoBoxAccInfoPGEViewModel" />
 
     </data>
 

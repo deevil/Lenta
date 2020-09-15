@@ -150,6 +150,7 @@ class MarkingGoodsDetailsViewModel : CoreViewModel(), PageSelectionListener {
                                     typeDiscrepancies = discrepancy.typeDiscrepancies,
                                     materialNumber = discrepancy.materialNumber,
                                     batchDiscrepancies = null,
+                                    zBatchDiscrepancies = null,
                                     even = index % 2 == 0
                             )
                         }?.reversed()

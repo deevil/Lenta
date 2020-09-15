@@ -7,7 +7,7 @@
     <data>
         <variable
             name="vm"
-            type="com.lenta.bp9.features.goods_information.non_excise_sets_receiving.NonExciseSetsReceivingViewModel" />
+            type="com.lenta.bp9.features.goods_information.sets.task_ppp.NonExciseSetsReceivingViewModel" />
 
     </data>
 

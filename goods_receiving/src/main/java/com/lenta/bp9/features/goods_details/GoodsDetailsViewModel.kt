@@ -1,6 +1,8 @@
 package com.lenta.bp9.features.goods_details
 
+import android.annotation.SuppressLint
 import androidx.lifecycle.MutableLiveData
+import com.lenta.bp9.features.goods_list.ListCountedItem
 import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
 import com.lenta.bp9.model.processing.ProcessExciseAlcoBoxAccPGEService
 import com.lenta.bp9.model.processing.ProcessMercuryProductService
@@ -11,12 +13,14 @@ import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.models.core.Uom
+import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
+import java.text.SimpleDateFormat
 import javax.inject.Inject
 
 class GoodsDetailsViewModel : CoreViewModel() {
@@ -35,6 +39,12 @@ class GoodsDetailsViewModel : CoreViewModel() {
 
     @Inject
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
+
+    @SuppressLint("SimpleDateFormat")
+    private val formatterRU = SimpleDateFormat("dd.MM.yyyy")
+
+    @SuppressLint("SimpleDateFormat")
+    private val formatterERP = SimpleDateFormat(Constants.DATE_FORMAT_yyyyMMdd)
 
     private val taskRepository by lazy { taskManager.getReceivingTask()?.taskRepository }
     private val boxNumberForTaskPGEBoxAlco: MutableLiveData<String> = MutableLiveData("")
@@ -56,15 +66,16 @@ class GoodsDetailsViewModel : CoreViewModel() {
         MutableLiveData(productInfo.value?.isVet ?: false)
     }
 
-    private val isNonExciseAlcoProduct: MutableLiveData<Boolean> by lazy {
-        MutableLiveData(productInfo.value?.type == ProductType.NonExciseAlcohol)
-    }
-
     private val isBatchProduct: MutableLiveData<Boolean> by lazy {
         MutableLiveData(productInfo.value?.type == ProductType.NonExciseAlcohol
                 && productInfo.value?.isBoxFl == false
                 && productInfo.value?.isMarkFl == false
         )
+    }
+
+    private val isZBatch: MutableLiveData<Boolean> by lazy {
+        MutableLiveData(productInfo.value?.isZBatches == true
+                && productInfo.value?.isVet == false) //см. SearchProductDelegate
     }
 
     val categoriesSelectionsHelper = SelectionItemsHelper()
@@ -133,6 +144,8 @@ class GoodsDetailsViewModel : CoreViewModel() {
             updatingInfoPGEAlcoBoxProducts()
         } else if (isBatchProduct.value == true || productInfo.value?.isSet == true) {
             updatingInfoBatchesOrSetsProducts()
+        } else if (productInfo.value?.isZBatches == true && productInfo.value?.isVet == false) {
+            updatingInfoZBatches()
         } else {
             updatingInfoOtherProducts()
         }
@@ -154,6 +167,7 @@ class GoodsDetailsViewModel : CoreViewModel() {
                                     typeDiscrepancies = discrepancy.typeDiscrepancies,
                                     materialNumber = productInfo.value?.materialNumber.orEmpty(),
                                     batchDiscrepancies = null,
+                                    zBatchDiscrepancies = null,
                                     even = index % 2 == 0
                             )
                         }
@@ -223,6 +237,78 @@ class GoodsDetailsViewModel : CoreViewModel() {
                 typeDiscrepancies = discrepancy.typeDiscrepancies,
                 materialNumber = discrepancy.materialNumber,
                 batchDiscrepancies = discrepancy,
+                zBatchDiscrepancies = null,
+                even = index % 2 == 0
+        )
+    }
+
+    private fun updatingInfoZBatches() {
+        val itemsZBatchesDiscrepancies: ArrayList<GoodsDetailsCategoriesItem> = ArrayList()
+        var quantityItem = 0
+        taskRepository
+                ?.getZBatchesDiscrepancies()
+                ?.findZBatchDiscrepanciesOfProduct(productInfo.value?.materialNumber.orEmpty())
+                ?.mapIndexed { index, discrepancy ->
+                    itemsZBatchesDiscrepancies.add(
+                            getItemsZBatchesDiscrepanciesOfBatch(index, discrepancy)
+                    )
+                    quantityItem += quantityItem
+                }
+
+        taskRepository
+                ?.getProductsDiscrepancies()
+                ?.findProductDiscrepanciesOfProduct(productInfo.value?.materialNumber.orEmpty())
+                ?.asSequence()
+                ?.filter { it.typeDiscrepancies != TYPE_DISCREPANCIES_QUALITY_NORM }
+                ?.mapIndexed { index, discrepancy ->
+                    itemsZBatchesDiscrepancies.add(
+                            GoodsDetailsCategoriesItem(
+                                    number = quantityItem + index + 1,
+                                    name = reasonRejectionInfo.value?.firstOrNull { it.code == discrepancy.typeDiscrepancies }?.name.orEmpty(),
+                                    nameBatch = "",
+                                    visibilityNameBatch = false,
+                                    quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${uom.value?.name.orEmpty()}",
+                                    isNormDiscrepancies = isNormDiscrepancies(discrepancy.typeDiscrepancies),
+                                    typeDiscrepancies = discrepancy.typeDiscrepancies,
+                                    materialNumber = productInfo.value?.materialNumber.orEmpty(),
+                                    batchDiscrepancies = null,
+                                    zBatchDiscrepancies = null,
+                                    even = index % 2 == 0
+                            )
+                    )
+                }
+                ?.toList()
+
+        goodsDetails.value = itemsZBatchesDiscrepancies.reversed()
+    }
+
+    private fun getItemsZBatchesDiscrepanciesOfBatch(index: Int, discrepancy: TaskZBatchesDiscrepancies): GoodsDetailsCategoriesItem {
+        val shelfLifeDate =
+                discrepancy
+                        .shelfLifeDate
+                        .takeIf { it.isNotEmpty() }
+                        ?.let { formatterRU.format(formatterERP.parse(it)) }
+                        .orEmpty()
+
+        val partySign =
+                taskRepository
+                        ?.getZBatchesDiscrepancies()
+                        ?.findPartySignOfZBatch(discrepancy)
+                        ?.partySign
+                        ?.partySignsTypeString
+                        .orEmpty()
+
+        return GoodsDetailsCategoriesItem(
+                number = index + 1,
+                name = reasonRejectionInfo.value?.firstOrNull { it.code == discrepancy.typeDiscrepancies }?.name.orEmpty(),
+                nameBatch = "$partySign-$shelfLifeDate // ${getManufacturerNameZBatch(discrepancy.manufactureCode)}",
+                visibilityNameBatch = true,
+                quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${uom.value?.name.orEmpty()}",
+                isNormDiscrepancies = isNormDiscrepancies(discrepancy.typeDiscrepancies),
+                typeDiscrepancies = discrepancy.typeDiscrepancies,
+                materialNumber = discrepancy.materialNumber,
+                batchDiscrepancies = null,
+                zBatchDiscrepancies = discrepancy,
                 even = index % 2 == 0
         )
     }
@@ -245,6 +331,7 @@ class GoodsDetailsViewModel : CoreViewModel() {
                                     typeDiscrepancies = discrepancy.typeDiscrepancies,
                                     materialNumber = productInfo.value?.materialNumber.orEmpty(),
                                     batchDiscrepancies = null,
+                                    zBatchDiscrepancies = null,
                                     even = index % 2 == 0
                             )
                         }
@@ -267,6 +354,7 @@ class GoodsDetailsViewModel : CoreViewModel() {
                 typeDiscrepancies = discrepancy.typeDiscrepancies,
                 materialNumber = materialNumber,
                 batchDiscrepancies = null,
+                zBatchDiscrepancies = null,
                 even = index % 2 == 0
         )
     }
@@ -279,7 +367,7 @@ class GoodsDetailsViewModel : CoreViewModel() {
         } else {
             if (productInfo.value != null && !productInfo.value!!.isNotEdit) {
                 categoriesSelectionsHelper.selectedPositions.value?.map { position ->
-                    val goodsDetailsItem = goodsDetails.value?.get(position)
+                    val goodsDetailsItem = goodsDetails.value?.getOrNull(position)
                     val materialNumber = goodsDetailsItem?.materialNumber.orEmpty()
                     val typeDiscrepancies = goodsDetailsItem?.typeDiscrepancies.orEmpty()
 
@@ -299,27 +387,42 @@ class GoodsDetailsViewModel : CoreViewModel() {
                             ?.getExciseStampsDiscrepancies()
                             ?.deleteExciseStampsDiscrepanciesForProductAndDiscrepancies(materialNumber, typeDiscrepancies)
 
-
                     if (isVetProduct.value == true) {
                             processMercuryProductService.deleteDetails(typeDiscrepancies)
                     }
 
-                    if (isBatchProduct.value == true) {
-                        goodsDetailsItem
-                                ?.batchDiscrepancies
-                                ?.let {
-                                    taskRepository
-                                            ?.getBatchesDiscrepancies()
-                                            ?.deleteBatchDiscrepancies(it)
+                    when {
+                        isBatchProduct.value == true -> {
+                            goodsDetailsItem
+                                    ?.batchDiscrepancies
+                                    ?.let {
+                                        taskRepository
+                                                ?.getBatchesDiscrepancies()
+                                                ?.deleteBatchDiscrepancies(it)
 
-                                    taskRepository
-                                            ?.getProductsDiscrepancies()
-                                            ?.deleteProductDiscrepancyByBatch(materialNumber, typeDiscrepancies, it.numberDiscrepancies.toDouble())
-                                }
-                    } else {
-                        taskRepository
-                                ?.getProductsDiscrepancies()
-                                ?.deleteProductDiscrepancy(materialNumber, typeDiscrepancies)
+                                        taskRepository
+                                                ?.getProductsDiscrepancies()
+                                                ?.deleteProductDiscrepancyByBatch(materialNumber, typeDiscrepancies, it.numberDiscrepancies.toDouble())
+                                    }
+                        }
+                        isZBatch.value == true -> {
+                            goodsDetailsItem
+                                    ?.zBatchDiscrepancies
+                                    ?.let {
+                                        taskRepository
+                                                ?.getZBatchesDiscrepancies()
+                                                ?.deleteZBatchDiscrepancies(it)
+
+                                        taskRepository
+                                                ?.getProductsDiscrepancies()
+                                                ?.deleteProductDiscrepancyByBatch(materialNumber, typeDiscrepancies, it.numberDiscrepancies.toDouble())
+                                    }
+                        }
+                        else -> {
+                            taskRepository
+                                    ?.getProductsDiscrepancies()
+                                    ?.deleteProductDiscrepancy(materialNumber, typeDiscrepancies)
+                        }
                     }
                 }
             }
@@ -328,9 +431,23 @@ class GoodsDetailsViewModel : CoreViewModel() {
     }
 
     private fun getManufacturerName(manufactureCode: String?): String {
-        return repoInMemoryHolder.manufacturers.value?.findLast { manufacture ->
-            manufacture.code == manufactureCode
-        }?.name ?: ""
+        return repoInMemoryHolder
+                .manufacturers.value
+                ?.findLast { manufacture ->
+                    manufacture.code == manufactureCode
+                }
+                ?.name
+                .orEmpty()
+    }
+
+    private fun getManufacturerNameZBatch(manufactureCode: String?): String {
+        return repoInMemoryHolder
+                .manufacturersForZBatches.value
+                ?.findLast { manufacture ->
+                    manufacture.manufactureCode == manufactureCode
+                }
+                ?.manufactureName
+                .orEmpty()
     }
 
 }

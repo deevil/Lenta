@@ -2,13 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".features.goods_information.non_excise_sets_pge.NonExciseSetsPGEFragment">
+    tools:context=".features.goods_information.sets.task_pge.NonExciseSetsPGEFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp9.features.goods_information.non_excise_sets_pge.NonExciseSetsPGEViewModel" />
+            type="com.lenta.bp9.features.goods_information.sets.task_pge.NonExciseSetsPGEViewModel" />
 
         <variable
             name="viewPagerSettings"

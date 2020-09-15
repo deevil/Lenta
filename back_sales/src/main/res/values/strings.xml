@@ -61,6 +61,7 @@
     <string name="incorrect_ean_format">Неверный формат штрихкода</string>
     <string name="cant_scan_tobacco_pack_scan_carton">Добавление отдельной пачки запрещено. Отсканируйте целый блок.</string>
     <string name="for_good_need_scan_first_mark">Для данного товара, необходимо дополнительно отсканировать марку.</string>
+    <string name="cant_scan_excise_for_wholesale_task">Невозможно добавление акцизного алкоголя в тип задания "ПКО"</string>
 
     <string name="close_basket">Закрыть текущую корзину для редактирования? В случае согласия система запретит добавление товаров в текущую корзину.</string>
     <string name="some_of_chosen_baskets_not_closed">Некоторые выбранные корзины не закрыты. Закройте корзины и повторите печать</string>
