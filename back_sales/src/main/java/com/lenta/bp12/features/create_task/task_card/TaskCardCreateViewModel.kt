@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
 import com.lenta.bp12.managers.interfaces.ICreateTaskManager
+import com.lenta.bp12.model.ControlType
 import com.lenta.bp12.model.pojo.ReturnReason
 import com.lenta.bp12.model.pojo.TaskType
 import com.lenta.bp12.model.pojo.create_task.TaskCreate
@@ -19,6 +20,7 @@ import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.mapSkipNulls
 import com.lenta.shared.utilities.orIfNull
 import java.text.SimpleDateFormat
 import java.util.*
@@ -52,7 +54,11 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
     val taskName by lazy {
         selectedType.map { type ->
             type?.takeIf { !it.isWholesaleType() }?.run {
-                val date = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm, Locale.getDefault()).format(Date())
+                val date = SimpleDateFormat(
+                        Constants.DATE_FORMAT_dd_mm_yyyy_hh_mm,
+                        Locale.getDefault()
+                ).format(Date())
+
                 resource.backSalesFromDate(date)
             }.orEmpty()
         }
@@ -60,7 +66,8 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
 
     val provider by lazy {
         selectedType.map { type ->
-            if (type?.isWholesaleType() == false) resource.allSuppliers() else resource.wholesaleBuyer()
+            if (type?.isWholesaleType() == false) resource.allSuppliers()
+            else resource.wholesaleBuyer()
         }
     }
 
@@ -70,15 +77,15 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
 
     private val types = MutableLiveData(listOf<TaskType>())
 
-    val taskTypeList = types.map { list ->
-        list?.map { it.description }
+    val taskTypeList = types.mapSkipNulls { list ->
+        list.map { it.description }
     }
 
-    val taskTypePosition = MutableLiveData(0)
+    val taskTypePosition = MutableLiveData(DEFAULT_POSITION)
 
     private val selectedType by lazy {
-        types.combineLatest(taskTypePosition).map {
-            it?.let {
+        types.combineLatest(taskTypePosition).mapSkipNulls {
+            it.let {
                 val (list, position) = it
                 list.getOrNull(position)
             }
@@ -89,9 +96,9 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
     Список складов
      */
 
-    val storage = MutableLiveData(listOf<String>())
+    val storage = MutableLiveData(emptyList<String>())
 
-    val storagePosition = MutableLiveData(0)
+    val storagePosition = MutableLiveData(DEFAULT_POSITION)
 
     /**
     Список причин возврата
@@ -99,31 +106,29 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
 
     private val reasons = MutableLiveData(emptyList<ReturnReason>())
 
-    val returnReasonList = reasons.map { list ->
-        list?.map { it.description }
+    val returnReasonList = reasons.mapSkipNulls { list ->
+        list.map { it.description }
     }
 
-    val returnReasonPosition = MutableLiveData(0)
+    val returnReasonPosition = MutableLiveData(DEFAULT_POSITION)
 
     /**
     Описание задачи и аттрибуты
      */
-    val taskDescription = taskTypePosition.map {
-        it?.let { position ->
-            types.value?.let { types ->
-                if (types.isNotEmpty()) types[position].description else ""
-            }
+    val taskDescription = taskTypePosition.mapSkipNulls { position ->
+        types.value?.let { types ->
+            if (types.isNotEmpty()) types[position].description else ""
         }
     }
 
     private val taskAttributes = MutableLiveData<Set<String>>(emptySet())
 
-    val isAlcohol = taskAttributes.map { attributes ->
-        attributes?.contains("A") == true
+    val isAlcohol = taskAttributes.mapSkipNulls { attributes ->
+        attributes.contains(ControlType.ALCOHOL.code)
     }
 
-    val isCommon = taskAttributes.map { attributes ->
-        attributes?.contains("N") == true
+    val isCommon = taskAttributes.mapSkipNulls { attributes ->
+        attributes.contains(ControlType.COMMON.code)
     }
 
     val isWholeSaleTask by lazy {
@@ -139,8 +144,8 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
     Кнопки нижнего тулбара
      */
     val nextEnabled by lazy {
-        taskName.map {
-            it?.isNotEmpty()
+        taskName.mapSkipNulls {
+            it.isNotEmpty()
         }
     }
 
@@ -149,10 +154,7 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
      */
 
     init {
-        launchUITryCatch {
-            types.value = database.getTaskTypeList()
-            updateLists()
-        }
+        onInitTaskCard()
     }
 
     /**
@@ -184,24 +186,37 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
     fun onClickNext() {
         taskTypePosition.value?.let { taskTypePositionValue ->
             storagePosition.value?.let { storagePositionValue ->
-                val reason = returnReasonPosition.value?.takeIf{ isWholeSaleTask.value == false }?.let{ returnReasonPositionValue ->
-                    reasons.value?.getOrNull(returnReasonPositionValue)
-                }
-                val task = TaskCreate(
-                        name = taskName.value.orEmpty(),
-                        type = types.value?.getOrNull(taskTypePositionValue)
-                                ?: TaskType.empty(),
-                        storage = storage.value?.getOrNull(storagePositionValue).orEmpty(),
-                        reason = reason
-                )
-                manager.updateCurrentTask(task)
-                manager.isWholesaleTaskType = (isWholeSaleTask.value == true)
+                //Причина возврата может быть пустой если это ОПТ
+                val reason = returnReasonPosition.value
+                        ?.takeIf { isWholeSaleTask.value == false }
+                        ?.let { returnReasonPositionValue ->
+                            reasons.value?.getOrNull(returnReasonPositionValue)
+                        }
 
-                navigator.openTaskCompositionScreen()
+                types.value?.getOrNull(taskTypePositionValue)?.let { type ->
+                    val task = TaskCreate(
+                            name = taskName.value.orEmpty(),
+                            type = type,
+                            storage = storage.value?.getOrNull(storagePositionValue).orEmpty(),
+                            reason = reason
+                    )
+                    manager.updateCurrentTask(task)
+                    manager.isWholesaleTaskType = (isWholeSaleTask.value == true)
+                    navigator.openTaskCompositionScreen()
 
-            }.orIfNull { Logg.e {"storagePosition null"} }
-        }.orIfNull {
-            Logg.e { "taskTypePosition null" }
+                }.orIfNull { Logg.e { "TaskType null" } }
+            }.orIfNull { Logg.e { "storagePosition null" } }
+        }.orIfNull { Logg.e { "taskTypePosition null" } }
+    }
+
+    private fun onInitTaskCard() {
+        launchUITryCatch {
+            types.value = database.getTaskTypeList()
+            updateLists()
         }
+    }
+
+    companion object {
+        private const val DEFAULT_POSITION = 0
     }
 }

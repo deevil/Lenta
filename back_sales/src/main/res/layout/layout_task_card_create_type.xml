@@ -104,7 +104,7 @@
         <!-- Поставщик -->
         <LinearLayout
             style="@style/LinearRowStyle"
-            android:visibility="@{vm.isWholeSaleTask}"
+            android:visibility="@{!vm.isWholeSaleTask}"
             >
 
             <LinearLayout style="@style/LinearCellStyle">
