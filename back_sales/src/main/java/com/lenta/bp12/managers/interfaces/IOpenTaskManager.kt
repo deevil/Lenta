@@ -3,8 +3,6 @@ package com.lenta.bp12.managers.interfaces
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.Good
-import com.lenta.bp12.model.pojo.Mark
-import com.lenta.bp12.model.pojo.Part
 import com.lenta.bp12.model.pojo.open_task.TaskOpen
 import com.lenta.bp12.request.TaskContentResult
 import com.lenta.bp12.request.pojo.ProviderInfo
@@ -25,8 +23,6 @@ interface IOpenTaskManager : ITaskManager {
     val tasks: MutableLiveData<List<TaskOpen>>
     val foundTasks: MutableLiveData<List<TaskOpen>>
 
-    suspend fun addGoodToBasket(good: Good, part: Part? = null, provider: ProviderInfo, count: Double)
-    suspend fun addGoodToBasketWithMark(good: Good, mark: Mark, provider: ProviderInfo)
     suspend fun getOrCreateSuitableBasket(task: TaskOpen, good: Good, provider: ProviderInfo): Basket?
 
     fun deleteGoodsFromBaskets(materials: List<String>)

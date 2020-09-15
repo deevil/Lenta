@@ -373,6 +373,11 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
 
     private fun setFoundGood(foundGood: Good) {
         manager.updateCurrentGood(foundGood)
+
+        if (foundGood.kind == GoodKind.EXCISE) {
+            navigator.showForExciseGoodNeedScanFirstMark()
+        }
+
         setScreenStatus(foundGood)
         setProducerList(foundGood)
         clearSpinnerPositions()
@@ -473,7 +478,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
     private fun setGood(result: GoodInfoResult, number: String) {
         launchUITryCatch {
             with(result) {
-                good.value = Good(
+                val foundGood = Good(
                         ean = eanInfo?.ean.orEmpty(),
                         material = materialInfo?.material.orEmpty(),
                         name = materialInfo?.name.orEmpty(),
@@ -490,23 +495,9 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
                         volume = materialInfo?.volume?.toDoubleOrNull() ?: 0.0,
                         type = materialInfo?.goodType.orEmpty()
                 )
-            }
 
-            good.value?.let { good ->
+                setFoundGood(foundGood)
                 lastSuccessSearchNumber = number
-                setProducerList(good)
-                clearSpinnerPositions()
-                setScreenStatus(good)
-                setDefaultQuantity(good)
-
-                if (good.kind == GoodKind.EXCISE) {
-                    navigator.showForExciseGoodNeedScanFirstMark()
-                }
-
-                Logg.d { "--> added good: $good" }
-            }.orIfNull {
-                Logg.e { "good null" }
-                navigator.showInternalError(resource.goodNotFoundErrorMsg)
             }
         }
     }

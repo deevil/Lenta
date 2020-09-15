@@ -318,26 +318,33 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
             val foundGood = withContext(Dispatchers.IO) { manager.findGoodByEan(ean) }
             navigator.hideProgress()
             foundGood?.let(::setFoundGood).orIfNull {
-                if (task.value?.isStrict == false) {
-                    loadGoodInfoByEan(ean)
-                } else {
-                    navigator.showGoodIsMissingInTask()
-                }
+                actionWhenGoodNotFoundByEan(ean)
             }
+        }
+    }
+
+    private suspend fun actionWhenGoodNotFoundByEan(ean: String) {
+        if (task.value?.isStrict == false) {
+            loadGoodInfoByEan(ean)
+        } else {
+            navigator.showGoodIsMissingInTask()
         }
     }
 
     private suspend fun loadGoodInfoByEan(ean: String) {
         navigator.showProgressLoadingData(::handleFailure)
-        goodInfoNetRequest(GoodInfoParams(
-                tkNumber = sessionInfo.market.orEmpty(),
-                ean = ean,
-                taskType = task.value?.type?.code.orEmpty()
-        )).also {
+        goodInfoNetRequest(
+                GoodInfoParams(
+                        tkNumber = sessionInfo.market.orEmpty(),
+                        ean = ean,
+                        taskType = task.value?.type?.code.orEmpty()
+                )
+        ).also {
             navigator.hideProgress()
-        }.either(::handleFailure) {
-            handleLoadGoodInfoResult(it)
-        }
+        }.either(
+                fnL = ::handleFailure,
+                fnR = ::handleLoadGoodInfoResult
+        )
     }
 
     /**
@@ -351,12 +358,12 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
             val foundGood = withContext(Dispatchers.IO) { manager.findGoodByMaterial(material) }
             navigator.hideProgress()
             foundGood?.let(::setFoundGood).orIfNull {
-                actionWhenGoodNotFound(material)
+                actionWhenGoodNotFoundByMaterial(material)
             }
         }
     }
 
-    private suspend fun actionWhenGoodNotFound(material: String) {
+    private suspend fun actionWhenGoodNotFoundByMaterial(material: String) {
         if (task.value?.isStrict == false) {
             loadGoodInfoByMaterial(material)
         } else {
@@ -366,16 +373,19 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     private suspend fun loadGoodInfoByMaterial(material: String) {
         navigator.showProgressLoadingData(::handleFailure)
-        goodInfoNetRequest(GoodInfoParams(
-                tkNumber = sessionInfo.market.orEmpty(),
-                material = material,
-                taskType = task.value?.type?.code.orEmpty(),
-                mode = ScanInfoMode.MARK.mode.toString()
-        )).also {
+        goodInfoNetRequest(
+                GoodInfoParams(
+                        tkNumber = sessionInfo.market.orEmpty(),
+                        material = material,
+                        taskType = task.value?.type?.code.orEmpty(),
+                        mode = ScanInfoMode.MARK.mode.toString()
+                )
+        ).also {
             navigator.hideProgress()
-        }.either(::handleFailure) { result ->
-            handleLoadGoodInfoResult(result)
-        }
+        }.either(
+                fnL = ::handleFailure,
+                fnR = ::handleLoadGoodInfoResult
+        )
     }
 
     private fun handleLoadGoodInfoResult(result: GoodInfoResult) {
@@ -426,7 +436,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
 
     private fun setFoundGood(foundGood: Good) {
-        with(navigator){
+        with(navigator) {
             if (manager.isWholesaleTaskType && foundGood.kind == GoodKind.EXCISE) {
                 showExciseAlcoholGoodInfoScreen()
             } else {
