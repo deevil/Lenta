@@ -99,7 +99,7 @@ class CoreNavigator @Inject constructor(
         }
     }
 
-    override fun goBackTo(fragmentName: String) {
+    override fun goBackTo(fragmentName: String?) {
         runOrPostpone {
             analyticsHelper.onGoBack()
             getFragmentStack()?.pop(fragmentName)
@@ -540,7 +540,7 @@ interface ICoreNavigator {
     fun goBackWithArgs(args: Bundle)
     fun goBackWithResultCode(code: Int?)
     fun goBack()
-    fun goBackTo(fragmentName: String)
+    fun goBackTo(fragmentName: String?)
     fun finishApp(restart: Boolean = false)
     fun openAlertScreen(message: String,
                         iconRes: Int = 0,
