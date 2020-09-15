@@ -10,6 +10,7 @@ fun actionByNumber(
         funcForSapOrBar: ((sapCallback: () -> Unit, barCallback: () -> Unit) -> Unit)? = null,
         funcForExcise: ((exciseNumber: String) -> Unit)? = null,
         funcForExciseBox: ((boxNumber: String) -> Unit)? = null,
+        funcForPriceQrCode: ((qrCode: String) -> Unit)? = null,
         funcForMark: ((markNumber: String) -> Unit)? = null,
         funcForShoes: ((markWithoutTail: String) -> Unit)? = null,
         funcForCigarettes: ((markWithoutTail: String) -> Unit)? = null,
@@ -79,6 +80,11 @@ fun actionByNumber(
             funcForCigaretteBox?.invoke(markWithoutTail) ?: funcForNotValidFormat()
         } ?: funcForNotValidFormat()
 
+        return
+    }
+
+    if (number.startsWith("(01)")) {
+        funcForPriceQrCode?.invoke(number) ?: funcForNotValidFormat()
         return
     }
 
