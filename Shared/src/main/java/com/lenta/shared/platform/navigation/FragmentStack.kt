@@ -19,8 +19,6 @@ class FragmentStack(
     private val random: Random = Random(System.currentTimeMillis())
     private var listener: FragmentManager.OnBackStackChangedListener? = null
 
-    private val fragmentsIds = hashMapOf<String, Int>()
-
     @Inject
     lateinit var analyticsHelper: AnalyticsHelper
 
