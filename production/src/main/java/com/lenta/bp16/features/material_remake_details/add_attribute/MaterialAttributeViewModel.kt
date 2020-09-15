@@ -101,7 +101,7 @@ class MaterialAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
     }
 
     private suspend fun checkTimeFieldVisibleCondition(): Boolean {
-        var visibleCondition = true
+        val visibleCondition: Boolean
         val timeParams = database.getPerishable()?.div(DIVIDER) ?: 0
         val shelfLife = materialIngredient.value?.shelfLife?.toInt() ?: 0
         visibleCondition = shelfLife < timeParams
@@ -153,13 +153,13 @@ class MaterialAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
             val year = splitCheckDate[2].toInt()
             val monthWith31Days = listOf(1, 3, 5, 7, 8, 10, 12)
             val monthWith30Days = listOf(4, 6, 9, 11)
-                when{
-                    monthWith31Days.contains(month) -> day <= 31
-                    monthWith30Days.contains(month) && month != 2 -> day <= 30
-                    year % 4 == 0 -> day <= 29
-                    month == 2 -> day <= 28
-                    else -> false
-                }
+            when {
+                monthWith31Days.contains(month) -> day <= 31
+                monthWith30Days.contains(month) && month != 2 -> day <= 30
+                year % 4 == 0 -> day <= 29
+                month == 2 -> day <= 28
+                else -> false
+            }
         } else {
             false
         }

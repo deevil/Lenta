@@ -150,7 +150,7 @@ class IngredientAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
             val year = splitCheckDate[2].toInt()
             val monthWith31Days = listOf(1, 3, 5, 7, 8, 10, 12)
             val monthWith30Days = listOf(4, 6, 9, 11)
-            when{
+            when {
                 monthWith31Days.contains(month) -> day <= 31
                 monthWith30Days.contains(month) && month != 2 -> day <= 30
                 year % 4 == 0 -> day <= 29
