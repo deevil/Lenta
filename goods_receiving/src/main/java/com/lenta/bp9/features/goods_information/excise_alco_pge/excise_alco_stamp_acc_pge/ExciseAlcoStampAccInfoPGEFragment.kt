@@ -22,15 +22,6 @@ class ExciseAlcoStampAccInfoPGEFragment : CoreFragment<FragmentExciseAlcoStampAc
         OnScanResultListener,
         OnBackPresserListener {
 
-    companion object {
-        fun create(productInfo: TaskProductInfo): ExciseAlcoStampAccInfoPGEFragment {
-            ExciseAlcoStampAccInfoPGEFragment().let {
-                it.productInfo = productInfo
-                return it
-            }
-        }
-    }
-
     private var productInfo by state<TaskProductInfo?>(null)
 
     override fun getLayoutId(): Int = R.layout.fragment_excise_alco_stamp_acc_info_pge
@@ -76,9 +67,9 @@ class ExciseAlcoStampAccInfoPGEFragment : CoreFragment<FragmentExciseAlcoStampAc
     }
 
     override fun onFragmentResult(arguments: Bundle) {
-        if (arguments.getInt("manufacturerSelectedPosition") != 0 && arguments.getString("bottlingDate") != null) {
+        if (arguments.getInt("KEY_MANUFACTURER_POSITION") != 0 && arguments.getString("KEY_BOTTLING_DATE") != null) {
             super.onFragmentResult(arguments)
-            vm.onBatchSignsResult(arguments.getInt("manufacturerSelectedPosition"), arguments.getString("bottlingDate"))
+            vm.onBatchSignsResult(arguments.getInt("KEY_MANUFACTURER_POSITION"), arguments.getString("KEY_BOTTLING_DATE"))
         }else
             vm.onBatchSignsResult()
     }
@@ -87,5 +78,17 @@ class ExciseAlcoStampAccInfoPGEFragment : CoreFragment<FragmentExciseAlcoStampAc
     override fun onBackPressed(): Boolean {
         vm.onBackPressed()
         return false
+    }
+
+    companion object {
+        fun create(productInfo: TaskProductInfo): ExciseAlcoStampAccInfoPGEFragment {
+            ExciseAlcoStampAccInfoPGEFragment().let {
+                it.productInfo = productInfo
+                return it
+            }
+        }
+
+        private const val KEY_MANUFACTURER_POSITION = "manufacturerSelectedPosition"
+        private const val KEY_BOTTLING_DATE = "bottlingDate"
     }
 }
