@@ -14,7 +14,7 @@ import com.lenta.shared.utilities.extentions.sumWith
 import com.lenta.shared.utilities.getDateFromString
 
 /**
- * Родительский класс для всех товаров, Basket хранит именно его
+ * Товар
  * Методы для взаимодействия со списками находятся в файле GoodExt:
  * @see com.lenta.bp12.model.pojo.extentions.addPosition
  * @see com.lenta.bp12.model.pojo.extentions.addPart
@@ -133,5 +133,4 @@ class Good(
     override fun toString(): String {
         return "Good(ean='$ean', eans=$eans, material='$material', name='$name', kind=$kind, section='$section', matrix=$matrix, volume=$volume, control=$control, commonUnits=$commonUnits, innerUnits=$innerUnits, innerQuantity=$innerQuantity, producers=$producers, positions=$positions, marks=$marks, parts=$parts, markType=$markType, markTypeGroup=$markTypeGroup, maxRetailPrice='$maxRetailPrice')"
     }
-
 }

@@ -66,3 +66,7 @@ fun isShoesMark(number: String) : Boolean {
     val shoesMarkPattern = Regex(Constants.SHOES_MARK_PATTERN)
     return number.matches(shoesMarkPattern)
 }
+
+fun String.getEan(): String {
+    return if (startsWith("0")) drop(1) else this
+}

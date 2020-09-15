@@ -27,8 +27,8 @@ data class IngredientsListResult(
 
     override fun convert(): IngredientsListResultUI {
         return IngredientsListResultUI(
-                ingredientsList = ingredientsList.orEmpty(),
-                goodsListByOrder = goodsListByOrder.orEmpty(),
+                ingredientsList = ingredientsList.orEmpty().mapNotNull { it.convert() },
+                goodsListByOrder = goodsListByOrder.orEmpty().mapNotNull { it.convert() },
                 goodsEanList = goodsEanList.orEmpty().mapNotNull { it.convert() },
                 retCodes = retCodes.orEmpty()
         )

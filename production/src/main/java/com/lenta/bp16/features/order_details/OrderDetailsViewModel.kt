@@ -5,15 +5,14 @@ import androidx.lifecycle.MutableLiveData
 import com.lenta.bp16.R
 import com.lenta.bp16.model.ingredients.IngredientInfo
 import com.lenta.bp16.model.ingredients.OrderByBarcode
+import com.lenta.bp16.model.ingredients.ui.IngredientInfoUI
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
 import com.lenta.bp16.platform.navigation.IScreenNavigator
+import com.lenta.bp16.request.ingredients_use_case.set_data.SetWarehouseForSelectedItemUseCase
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.extentions.combineLatest
-import com.lenta.shared.utilities.extentions.launchUITryCatch
-import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.unsafeLazy
+import com.lenta.shared.utilities.extentions.*
 import javax.inject.Inject
 
 class OrderDetailsViewModel : CoreViewModel() {
@@ -27,12 +26,15 @@ class OrderDetailsViewModel : CoreViewModel() {
     @Inject
     lateinit var context: Context
 
+    @Inject
+    lateinit var warehouseForSelectedItemUseCase: SetWarehouseForSelectedItemUseCase
+
     // Комплектация
     val weightField: MutableLiveData<String> = MutableLiveData(DEFAULT_WEIGHT)
 
     // выбранный ингредиент
     val ingredient by unsafeLazy {
-        MutableLiveData<IngredientInfo>()
+        MutableLiveData<IngredientInfoUI>()
     }
 
     //Список параметров EAN для ингредиента
@@ -48,7 +50,7 @@ class OrderDetailsViewModel : CoreViewModel() {
     val planQntWithSuffix by unsafeLazy {
         ingredient.combineLatest(eanInfo).map {
             val uom: String? =
-                    when(eanInfo.value?.ean_nom.orEmpty()){
+                    when (eanInfo.value?.ean_nom.orEmpty()) {
                         OrderByBarcode.KAR -> Uom.KAR.name
                         OrderByBarcode.ST -> Uom.KAR.name
                         else -> Uom.KG.name
@@ -60,12 +62,12 @@ class OrderDetailsViewModel : CoreViewModel() {
     val doneQntWithSuffix by unsafeLazy {
         ingredient.combineLatest(eanInfo).map {
             val uom: String =
-                    when(eanInfo.value?.ean_nom.orEmpty()){
+                    when (eanInfo.value?.ean_nom.orEmpty()) {
                         OrderByBarcode.KAR -> Uom.KAR.name
                         OrderByBarcode.ST -> Uom.KAR.name
                         else -> Uom.KG.name
                     }
-            MutableLiveData("${ingredient.value?.doneQnt} $uom")
+            MutableLiveData("${ingredient.value?.doneQnt?.toDouble().dropZeros()} $uom")
         }
     }
 
@@ -79,6 +81,8 @@ class OrderDetailsViewModel : CoreViewModel() {
         if (weight == DEFAULT_WEIGHT || weight.isEmpty()) {
             navigator.showAlertWeightNotSet()
         } else {
+            val warehouse = ingredient.value?.lgort.orEmpty()
+            warehouseForSelectedItemUseCase(listOf(warehouse))
             ingredient.value?.let {
                 navigator.openOrderIngredientsListScreen(
                         weight = weight,

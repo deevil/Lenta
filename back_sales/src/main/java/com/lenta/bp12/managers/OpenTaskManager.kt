@@ -114,8 +114,6 @@ class OpenTaskManager @Inject constructor(
             val suitableBasket = getOrCreateSuitableBasket(taskValue, good, provider)
             // Добавим марке номер корзины
             mark.basketNumber = suitableBasket.index
-            // Положим в товар
-            good.addMark(mark)
             // Продублируем марку в позиции (просто надо)
             addEmptyPosition(good, provider, suitableBasket)
             // Добавим товар в корзину
@@ -131,13 +129,42 @@ class OpenTaskManager @Inject constructor(
         }
     }
 
+    override suspend fun addGoodToBasketWithMarks(good: Good, marks: List<Mark>, provider: ProviderInfo) {
+        currentTask.value?.let { taskValue ->
+            marks.forEach { mark ->
+                val suitableBasket = getOrCreateSuitableBasket(taskValue, good, provider)
+
+                // Добавим марке номер корзины
+                mark.basketNumber = suitableBasket.index
+
+                // Продублируем марку в позиции (просто надо)
+                addEmptyPosition(good, provider, suitableBasket)
+                // Добавим товар в корзину
+                suitableBasket.addGood(good, 1.0)
+                // Добавим товар в задание
+                saveGoodInTask(good)
+                // Обновим товар в менеджере
+                updateCurrentGood(good)
+
+                if (isBasketsNeedsToBeClosed) {
+                    suitableBasket.markedForLock = true
+                }
+            }
+
+            taskValue.baskets.filter { it.markedForLock }.forEach {
+                it.isLocked = true
+                it.markedForLock = false
+            }
+        }
+    }
+
     /**
      * Метод добавляет пустую позицию, используется при добавлении марки или партии
      */
     private fun addEmptyPosition(good: Good, provider: ProviderInfo, basket: Basket) {
         good.isCounted = true
         val position = Position(
-                quantity = 0.0,
+                quantity = DEFAULT_QUANTITY,
                 provider = provider
         )
         position.basketNumber = basket.index
@@ -146,10 +173,13 @@ class OpenTaskManager @Inject constructor(
     }
 
     /** Метод ищет корзины или создает их в зависимости от того что вернет getBasket() */
-    override suspend fun getOrCreateSuitableBasket(task: TaskOpen, good: Good, provider: ProviderInfo): Basket {
+    override suspend fun getOrCreateSuitableBasket(
+            task: TaskOpen,
+            good: Good,
+            provider: ProviderInfo
+    ): Basket {
         return withContext(Dispatchers.IO) {
-            val basketVolume = database.getBasketVolume()
-                    ?: error(NULL_BASKET_VOLUME)
+            val basketVolume = database.getBasketVolume() ?: error(NULL_BASKET_VOLUME)
             val basketList = task.baskets
 
             //Найдем корзину в списке корзин задания
@@ -159,13 +189,14 @@ class OpenTaskManager @Inject constructor(
                         val index = basketList.lastOrNull()?.index?.plus(1) ?: INDEX_OF_FIRST_BASKET
                         Basket(
                                 index = index,
-                                section = good.section,
+                                section = good.section.takeIf{ task.type?.isDivBySection == true},
                                 volume = basketVolume,
-                                provider = provider,
+                                provider = provider.takeIf{ task.type?.isDivByProvider == true},
                                 control = good.control,
-                                goodType = task.goodType,
+                                goodType = good.type.takeIf{ task.type?.isDivByGoodType == true},
                                 markTypeGroup = good.markTypeGroup
                         ).also {
+                            it.maxRetailPrice = good.maxRetailPrice
                             addBasket(it)
                         }
                     }
@@ -177,16 +208,21 @@ class OpenTaskManager @Inject constructor(
     override fun getBasket(providerCode: String, goodToAdd: Good): Basket? {
         return currentTask.value?.let { task ->
             currentGood.value?.let { good ->
-                task.baskets.lastOrNull { basket ->
-                    val divByMark = if (task.type?.isDivByMark == true) basket.markTypeGroup == good.markTypeGroup else true
-                    val divByMrc = if (task.type?.isDivByMinimalPrice == true) isSameMrcGroup(basket, goodToAdd) else true
-                    isLastBasketMatches(
-                            basket = basket,
-                            good = good,
-                            providerCode = providerCode,
-                            divByMark = divByMark,
-                            divByMrc = divByMrc
-                    )
+                task.type?.let { type ->
+                    with(type){
+                        task.baskets.lastOrNull { basket ->
+                            //Если в задании есть деление по параметру (task.type), то сравниваем,
+                            //Если нет — то просто пропускаем как подходящий для корзины
+                            val divByMark = if (isDivByMark) basket.markTypeGroup == good.markTypeGroup else true
+                            val divByMrc = if (isDivByMinimalPrice) isSameMrcGroup(basket, goodToAdd) else true
+                            val divBySection = if (isDivBySection) basket.section == good.section else true
+                            val divByType = if (isDivByGoodType) basket.goodType == good.type else true
+                            val divByProviders = if (isDivByProvider) basket.provider?.code == providerCode else true
+                            val divByControl = basket.control == good.control
+                            val divs = divByMark && divByMrc && divBySection && divByType && divByProviders && divByControl
+                            isLastBasketMatches(basket, good, divs)
+                        }
+                    }
                 }
             }
         }
@@ -198,26 +234,18 @@ class OpenTaskManager @Inject constructor(
      * разные товары с разными мрц в одну корзину
      * */
     private fun isSameMrcGroup(basket: Basket, goodToAdd: Good): Boolean {
-        val sameGood = basket.goods.keys.firstOrNull { it.material ==  goodToAdd.material }
-        return sameGood?.let{
+        val sameGood = basket.goods.keys.firstOrNull { it.material == goodToAdd.material }
+        return sameGood?.let {
             it.maxRetailPrice == goodToAdd.maxRetailPrice
         } ?: true
     }
 
-    private fun isLastBasketMatches(
-            basket: Basket,
-            good: Good,
-            providerCode: String,
-            divByMark: Boolean,
-            divByMrc: Boolean
-    ): Boolean {
-        return divByMark && divByMrc &&
-                basket.section == good.section &&
-                basket.control == good.control &&
-                basket.provider?.code == providerCode &&
-                !basket.isLocked &&
-                isBasketHasEnoughVolume(basket, good)
+    private fun isLastBasketMatches(basket: Basket, good: Good, divs: Boolean): Boolean {
+        return divs && isBasketNotClosedAndHasEnoughVolume(basket, good)
     }
+
+    private fun isBasketNotClosedAndHasEnoughVolume(basket: Basket, good: Good): Boolean =
+            !basket.isLocked && isBasketHasEnoughVolume(basket, good)
 
     override fun updateTasks(taskList: List<TaskOpen>?) {
         tasks.value = taskList ?: emptyList()
@@ -281,12 +309,6 @@ class OpenTaskManager @Inject constructor(
             task.addBasketsToTask(taskContentResult)
             task.addMrcListToTask(taskContentResult)
             updateCurrentTask(task)
-            Logg.e {
-                """
-                    taskGoods: ${task.goods}
-                    taskBaskets: ${task.baskets}
-                """.trimIndent()
-            }
         }
     }
 
@@ -311,13 +333,11 @@ class OpenTaskManager @Inject constructor(
                             eans = goodInfo.eans,
                             material = material.orEmpty(),
                             name = goodInfo.name,
-                            section = goodInfo.section.takeIf {
-                                type?.isDivBySection ?: false
-                            }.orEmpty(),
+                            section = goodInfo.section,
                             matrix = goodInfo.matrix,
                             kind = goodInfo.kind,
-                            planQuantity = planQuantity?.toDoubleOrNull() ?: 0.0,
-                            factQuantity = factQuantity?.toDoubleOrNull() ?: 0.0,
+                            planQuantity = planQuantity?.toDoubleOrNull() ?: DEFAULT_QUANTITY,
+                            factQuantity = factQuantity?.toDoubleOrNull() ?: DEFAULT_QUANTITY,
                             commonUnits = commonUnits,
                             innerUnits = getInnerUnits(commonUnits),
                             innerQuantity = innerQuantity?.toDoubleOrNull() ?: 1.0,
@@ -330,7 +350,7 @@ class OpenTaskManager @Inject constructor(
                                         name = it.name
                                 )
                             }?.toMutableList() ?: mutableListOf(),
-                            volume = positionInfo.volume?.toDoubleOrNull() ?: 0.0,
+                            volume = positionInfo.volume?.toDoubleOrNull() ?: ZERO_VOLUME,
                             markType = markType,
                             markTypeGroup = database.getMarkTypeGroupByMarkType(markType),
                             maxRetailPrice = positionInfo.maxRetailPrice?.toDoubleOrNull().dropZeros(),
@@ -338,7 +358,7 @@ class OpenTaskManager @Inject constructor(
                     )
 
                     factQuantity?.toDoubleOrNull()?.let { factQuantity ->
-                        if (factQuantity != 0.0) {
+                        if (factQuantity != DEFAULT_QUANTITY) {
                             good.addPosition(Position(
                                     quantity = factQuantity,
                                     provider = provider
@@ -395,7 +415,7 @@ class OpenTaskManager @Inject constructor(
             val goodQuantity = listOfBasketsWithThatGood
                     ?.firstOrNull { it.basketNumber == index.toString() }
                     ?.quantity?.toDoubleOrNull()
-                    ?: 0.0
+                    ?: DEFAULT_QUANTITY
             maxRetailPrice = good.maxRetailPrice
             addGood(good, goodQuantity)
         }
@@ -413,11 +433,11 @@ class OpenTaskManager @Inject constructor(
         }
     }
 
-    override fun findGoodByEanAndMRC(ean:String, mrc: String): Good? {
+    override fun findGoodByEanAndMRC(ean: String, mrc: String): Good? {
         return if (mrc.isNotEmpty()) {
             findGoodByEan(ean)
         } else {
-            currentTask.value?.let{ task ->
+            currentTask.value?.let { task ->
                 task.goods.find { good ->
                     (good.ean == ean || good.eans.contains(ean)) && (good.maxRetailPrice == mrc)
                 }
@@ -669,5 +689,7 @@ class OpenTaskManager @Inject constructor(
     companion object {
         private const val NULL_BASKET_VOLUME = "Объем корзины отсутствует"
         private const val INDEX_OF_FIRST_BASKET = 1
+        private const val DEFAULT_QUANTITY = 0.0
+        private const val ZERO_VOLUME = 0.0
     }
 }

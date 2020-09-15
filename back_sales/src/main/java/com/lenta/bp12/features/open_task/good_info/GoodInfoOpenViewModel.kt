@@ -1,6 +1,8 @@
 package com.lenta.bp12.features.open_task.good_info
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.liveData
+import androidx.lifecycle.switchMap
 import com.lenta.bp12.features.open_task.base_good_info.BaseGoodInfoOpenViewModel
 import com.lenta.bp12.managers.interfaces.IOpenTaskManager
 import com.lenta.bp12.model.*
@@ -191,33 +193,31 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
     /**
     Кнопки нижнего тулбара
      */
-
     override val applyEnabled by lazy {
-        screenStatus.combineLatest(quantity)
-                .combineLatest(totalQuantity)
-                .combineLatest(isProducerSelected)
-                .combineLatest(isCorrectDate)
-                .map {
-                    it?.let {
-                        val status = it.first.first.first.first
-                        val enteredQuantity = it.first.first.first.second
-                        val totalQuantity = it.first.first.second
-                        val isProducerSelected = it.first.second
-                        val isDateEntered = it.second
+        screenStatus.switchMap { status ->
+            quantity.switchMap { enteredQuantity ->
+                totalQuantity.switchMap { totalQuantity ->
+                    isProducerSelected.switchMap { isProducerSelected ->
+                        isCorrectDate.switchMap { isDateEntered ->
+                            liveData {
+                                val isEnteredMoreThenZero = enteredQuantity > DEFAULT_QUANTITY_VALUE
 
-                        val isEnteredMoreThenZero = enteredQuantity > DEFAULT_QUANTITY_VALUE
-
-                        when (status) {
-                            ScreenStatus.COMMON -> enteredQuantity != DEFAULT_QUANTITY_VALUE && totalQuantity > 0.0
-                            ScreenStatus.ALCOHOL -> isEnteredMoreThenZero && isProducerSelected && isDateEntered
-                            ScreenStatus.MARK_150 -> isEnteredMoreThenZero && isProducerSelected
-                            ScreenStatus.MARK_68 -> isEnteredMoreThenZero && isProducerSelected
-                            ScreenStatus.PART -> isEnteredMoreThenZero && isProducerSelected && isDateEntered
-                            ScreenStatus.BOX -> isEnteredMoreThenZero && isProducerSelected
-                            else -> false
+                                val result = when (status) {
+                                    ScreenStatus.COMMON -> enteredQuantity != DEFAULT_QUANTITY_VALUE && totalQuantity > 0.0
+                                    ScreenStatus.ALCOHOL -> isEnteredMoreThenZero && isProducerSelected && isDateEntered
+                                    ScreenStatus.MARK_150 -> isEnteredMoreThenZero && isProducerSelected
+                                    ScreenStatus.MARK_68 -> isEnteredMoreThenZero && isProducerSelected
+                                    ScreenStatus.PART -> isEnteredMoreThenZero && isProducerSelected && isDateEntered
+                                    ScreenStatus.BOX -> isEnteredMoreThenZero && isProducerSelected
+                                    else -> false
+                                }
+                                emit(result)
+                            }
                         }
-                    } ?: false
+                    }
                 }
+            }
+        }
     }
 
     val detailsVisibility = screenStatus.map { status ->
@@ -487,7 +487,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
     private fun setGood(result: GoodInfoResult, number: String) {
         launchUITryCatch {
             with(result) {
-                good.value = Good(
+                val foundGood = Good(
                         ean = eanInfo?.ean.orEmpty(),
                         material = materialInfo?.material.orEmpty(),
                         name = materialInfo?.name.orEmpty(),
@@ -504,23 +504,9 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
                         volume = materialInfo?.volume?.toDoubleOrNull() ?: 0.0,
                         type = materialInfo?.goodType.orEmpty()
                 )
-            }
 
-            good.value?.let { good ->
+                setFoundGood(foundGood)
                 lastSuccessSearchNumber = number
-                setProducerList(good)
-                clearSpinnerPositions()
-                setScreenStatus(good)
-                setDefaultQuantity(good)
-
-                if (good.kind == GoodKind.EXCISE) {
-                    navigator.showForExciseGoodNeedScanFirstMark()
-                }
-
-                Logg.d { "--> added good: $good" }
-            }.orIfNull {
-                Logg.e { "good null" }
-                navigator.showInternalError(resource.goodNotFoundErrorMsg)
             }
         }
     }

@@ -95,6 +95,7 @@ fun GoodInfoResult.getControlType(): ControlType {
     val isMark = this.getMarkType() != MarkType.UNKNOWN
 
     return when {
+        isMark -> ControlType.MARK
         !isAlcohol && !isVet -> ControlType.COMMON
         isAlcohol && !isVet -> ControlType.ALCOHOL
         !isAlcohol && isVet -> ControlType.VET
