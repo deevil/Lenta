@@ -53,16 +53,31 @@ fun getMaterialInCommonFormat(number: String): String {
 }
 
 fun isCigarettesMark(number: String) : Boolean {
-    val cigarettesMarkPattern = Regex(Constants.CIGARETTES_MARK_PATTERN)
-    return number.matches(cigarettesMarkPattern)
+    return try {
+        val cigarettesMarkPattern = Regex(Constants.CIGARETTES_MARK_PATTERN)
+        number.matches(cigarettesMarkPattern)
+    } catch (e: Exception) {
+        Logg.e { "e: $e" }
+        false
+    }
 }
 
 fun isCigarettesBox(number: String) : Boolean {
-    val cigarettesBoxPattern = Regex(Constants.CIGARETTES_BOX_PATTERN)
-    return number.matches(cigarettesBoxPattern)
+    return try {
+        val cigarettesBoxPattern = Regex(Constants.CIGARETTES_BOX_PATTERN)
+        number.matches(cigarettesBoxPattern)
+    } catch (e: Exception) {
+        Logg.e { "e: $e" }
+        false
+    }
 }
 
 fun isShoesMark(number: String) : Boolean {
-    val shoesMarkPattern = Regex(Constants.SHOES_MARK_PATTERN)
-    return number.matches(shoesMarkPattern)
+    return try {
+        val shoesMarkPattern = Regex(Constants.SHOES_MARK_PATTERN)
+        number.matches(shoesMarkPattern)
+    } catch (e: Exception){
+        Logg.e { "e: $e" }
+        false
+    }
 }
