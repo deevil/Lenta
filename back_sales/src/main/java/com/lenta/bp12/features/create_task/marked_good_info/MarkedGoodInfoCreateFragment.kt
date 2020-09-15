@@ -146,6 +146,7 @@ class MarkedGoodInfoCreateFragment : CoreFragment<FragmentMarkedGoodInfoCreateBi
         super.onViewCreated(view, savedInstanceState)
         binding?.viewPagerSettings = this
     }
+
 // FOR TESTING: press digit to scan barcode
 //    override fun onKeyDown(keyCode: KeyCode): Boolean {
 //        return when (keyCode) {

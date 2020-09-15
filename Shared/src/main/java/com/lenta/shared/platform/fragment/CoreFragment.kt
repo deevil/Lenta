@@ -29,7 +29,6 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.DataBindingAdapter
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
-import com.lenta.shared.utilities.databinding.PosInfo
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.extentions.getFragmentResultCode
 import com.lenta.shared.utilities.extentions.implementationOf
@@ -204,7 +203,7 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
     }
 
     private fun getKeyHandler(key: Int): RecyclerViewKeyHandler<*>? {
-        return keyHandlers.getOrDefault(key, null)
+        return keyHandlers[key]
     }
 
     protected open fun <Item : Any> initRecyclerViewKeyHandler(
