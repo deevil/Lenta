@@ -206,6 +206,14 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
         }
     }
 
+    fun chooseGoodInfoScreen() {
+        when(goodTypeIcon.value) {
+            GoodTypeIcon.VET -> navigator.openVetInfoScreen()
+            GoodTypeIcon.FACT -> navigator.openFactInfoScreen()
+            else -> navigator.openPlanInfoScreen()
+        }
+    }
+
     fun updateData() {
         launchUITryCatch {
             mercuryDataInfo.value = getMercuryPartDataInfoUseCase()

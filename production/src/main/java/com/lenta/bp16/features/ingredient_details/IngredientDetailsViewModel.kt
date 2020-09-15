@@ -142,7 +142,6 @@ class IngredientDetailsViewModel : CoreViewModel(), IZpartVisibleConditions {
         it.isVet.isSapTrue() || it.isZpart.isSapTrue()
     }
 
-
     /** Условие отображения кнопки для показа информации о меркурианском товаре*/
     val vetIconInfoCondition = orderIngredient.mapSkipNulls {
         it.isVet.isSapTrue()
