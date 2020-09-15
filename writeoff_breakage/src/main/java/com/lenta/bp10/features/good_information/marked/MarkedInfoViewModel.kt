@@ -165,7 +165,7 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
     override fun onScanResult(data: String) {
         actionByNumber(
                 number = data,
-                funcForShoes = { _, markWithoutTail -> actionForMark(markWithoutTail) },
+                funcForShoes = ::actionForMark,
                 funcForCigarettes = ::actionForMark,
                 funcForCigaretteBox = { boxNumber ->
                     if (isSpecialMode.value == false) {
