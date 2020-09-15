@@ -24,7 +24,10 @@ import com.lenta.bp12.request.ScanInfoNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.extentions.launchAsyncTryCatch
+import com.lenta.shared.utilities.extentions.launchUITryCatch
+import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.unsafeLazy
 import com.lenta.shared.utilities.orIfNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -150,27 +153,22 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
     /**
     Кнопки нижнего тулбара
      */
-
     override val applyEnabled by lazy {
-        isProviderSelected
-                .combineLatest(good)
-                .combineLatest(quantity)
-                .combineLatest(totalQuantity)
-                .combineLatest(basketQuantity)
-                .map {
-                    it?.let {
-                        val isProviderSelected = it.first.first.first.first
-                        val good = it.first.first.first.second
-                        val enteredQuantity = it.first.first.second
-                        val totalQuantity = it.first.second
-                        val basketQuantity = it.second
+        isProviderSelected.switchMap { isProviderSelected ->
+            quantity.switchMap { enteredQuantity ->
+                totalQuantity.switchMap { totalQuantity ->
+                    basketQuantity.switchMap { basketQuantity ->
+                        liveData {
+                            val isEnteredQuantityNotZero = enteredQuantity != DEFAULT_QUANTITY_VALUE
+                            val isTotalQuantityMoreThenZero = totalQuantity > DEFAULT_QUANTITY_VALUE
 
-                        val isEnteredQuantityNotZero = enteredQuantity != 0.0
-                        val isTotalQuantityMoreThenZero = totalQuantity > 0.0
-
-                        isProviderSelected && isEnteredQuantityNotZero && isTotalQuantityMoreThenZero && basketQuantity > 0.0
-                    } ?: false
+                            val result = isProviderSelected && isEnteredQuantityNotZero && isTotalQuantityMoreThenZero && basketQuantity > DEFAULT_QUANTITY_VALUE
+                            emit(result)
+                        }
+                    }
                 }
+            }
+        }
     }
 
     val rollbackEnabled = tempMarks.map {
@@ -345,11 +343,11 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
     }
 
     private suspend fun addMarks(changedGood: Good) {
-            tempMarks.value?.let { tempMarksValue ->
-                changedGood.addMarks(tempMarksValue)
-                manager.addGoodToBasketWithMarks(changedGood, tempMarksValue, getProvider())
-            }
+        tempMarks.value?.let { tempMarksValue ->
+            changedGood.addMarks(tempMarksValue)
+            manager.addGoodToBasketWithMarks(changedGood, tempMarksValue, getProvider())
         }
+    }
 
     /**
     Обработка нажатий кнопок
@@ -374,7 +372,7 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
 
 
     override fun onClickApply() {
-        if(isPlannedQuantityActual()) {
+        if (isPlannedQuantityActual()) {
             navigator.showQuantityMoreThanPlannedScreen()
             return
         }
@@ -474,7 +472,6 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
     }
 
     companion object {
-        private const val DEFAULT_PAGE = 0
         private const val DEFAULT_QUANTITY_VALUE = 0.0
     }
 }

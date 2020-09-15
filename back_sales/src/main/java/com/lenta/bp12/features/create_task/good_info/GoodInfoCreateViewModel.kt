@@ -1,6 +1,8 @@
 package com.lenta.bp12.features.create_task.good_info
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.liveData
+import androidx.lifecycle.switchMap
 import com.lenta.bp12.features.create_task.base_good_info.BaseGoodInfoCreateViewModel
 import com.lenta.bp12.managers.interfaces.ICreateTaskManager
 import com.lenta.bp12.model.*
@@ -181,40 +183,40 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
     /**
     Кнопки нижнего тулбара
      */
-
     override val applyEnabled by lazy {
-        screenStatus.combineLatest(quantity)
-                .combineLatest(totalQuantity)
-                .combineLatest(basketQuantity)
-                .combineLatest(isProviderSelected)
-                .combineLatest(isProducerSelected)
-                .combineLatest(isCorrectDate)
-                .mapSkipNulls {
-                    val status = it.first.first.first.first.first.first
-                    val enteredQuantity = it.first.first.first.first.first.second
-                    val totalQuantity = it.first.first.first.first.second
-                    val basketQuantity = it.first.first.first.second
-                    val isProviderSelected = it.first.first.second
-                    val isProducerSelected = it.first.second
-                    val isDateEntered = it.second
+        screenStatus.switchMap { status ->
+            quantity.switchMap { enteredQuantity ->
+                totalQuantity.switchMap { totalQuantity ->
+                    basketQuantity.switchMap { basketQuantity ->
+                        isProviderSelected.switchMap { isProviderSelected ->
+                            isProducerSelected.switchMap { isProducerSelected ->
+                                isCorrectDate.switchMap { isDateEntered ->
+                                    liveData {
+                                        val isEnteredMoreThanZero = enteredQuantity > DEFAULT_QUANTITY
+                                        val isEnteredMoreThanZeroAndProviderSelected = isEnteredMoreThanZero && isProviderSelected
 
-                    val isEnteredMoreThanZero = enteredQuantity > DEFAULT_QUANTITY
-                    val isEnteredMoreThanZeroAndProviderSelected = isEnteredMoreThanZero && isProviderSelected
-
-                    when (status) {
-                        ScreenStatus.COMMON ->
-                            enteredQuantity != DEFAULT_QUANTITY &&
-                                    totalQuantity > DEFAULT_QUANTITY &&
-                                    basketQuantity > DEFAULT_QUANTITY &&
-                                    isProviderSelected
-                        ScreenStatus.ALCOHOL -> isEnteredMoreThanZeroAndProviderSelected && isProducerSelected && isDateEntered
-                        ScreenStatus.MARK_150 -> isEnteredMoreThanZeroAndProviderSelected
-                        ScreenStatus.MARK_68 -> isEnteredMoreThanZeroAndProviderSelected && isProducerSelected
-                        ScreenStatus.PART -> isEnteredMoreThanZeroAndProviderSelected && isProducerSelected && isDateEntered
-                        ScreenStatus.BOX -> isEnteredMoreThanZeroAndProviderSelected && isProducerSelected
-                        else -> false
+                                        val result = when (status) {
+                                            ScreenStatus.COMMON ->
+                                                enteredQuantity != DEFAULT_QUANTITY &&
+                                                        totalQuantity > DEFAULT_QUANTITY &&
+                                                        basketQuantity > DEFAULT_QUANTITY &&
+                                                        isProviderSelected
+                                            ScreenStatus.ALCOHOL -> isEnteredMoreThanZeroAndProviderSelected && isProducerSelected && isDateEntered
+                                            ScreenStatus.MARK_150 -> isEnteredMoreThanZeroAndProviderSelected
+                                            ScreenStatus.MARK_68 -> isEnteredMoreThanZeroAndProviderSelected && isProducerSelected
+                                            ScreenStatus.PART -> isEnteredMoreThanZeroAndProviderSelected && isProducerSelected && isDateEntered
+                                            ScreenStatus.BOX -> isEnteredMoreThanZeroAndProviderSelected && isProducerSelected
+                                            else -> false
+                                        }
+                                        emit(result)
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
+            }
+        }
     }
 
     override val rollbackVisibility = screenStatus.map { status ->

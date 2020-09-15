@@ -178,11 +178,11 @@ class CreateTaskManager @Inject constructor(
                         val index = basketList.lastOrNull()?.index?.plus(1) ?: INDEX_OF_FIRST_BASKET
                         Basket(
                                 index = index,
-                                section = good.section.takeIf{ task.type.isDivBySection },
+                                section = good.section.takeIf { task.type.isDivBySection },
                                 volume = basketVolume,
-                                provider = provider.takeIf{ task.type.isDivByProvider },
+                                provider = provider.takeIf { task.type.isDivByProvider },
                                 control = good.control,
-                                goodType = good.type.takeIf{ task.type.isDivByGoodType },
+                                goodType = good.type.takeIf { task.type.isDivByGoodType },
                                 markTypeGroup = good.markTypeGroup
                         ).also {
                             it.maxRetailPrice = good.maxRetailPrice
@@ -223,8 +223,8 @@ class CreateTaskManager @Inject constructor(
      * */
     private fun isSameMrcGroup(basket: Basket, goodToAdd: Good): Boolean {
         val sameGood = basket.goods.keys.firstOrNull { it.material == goodToAdd.material }
-        return sameGood?.let {
-            it.maxRetailPrice == goodToAdd.maxRetailPrice
+        return sameGood?.run {
+            maxRetailPrice == goodToAdd.maxRetailPrice
         } ?: true
     }
 
