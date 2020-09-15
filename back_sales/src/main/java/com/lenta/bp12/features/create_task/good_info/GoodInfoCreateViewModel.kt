@@ -335,7 +335,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
     private fun setFoundGood(foundGood: Good) {
         manager.updateCurrentGood(foundGood)
 
-        if (foundGood.kind == GoodKind.EXCISE) {
+        if (foundGood.isExciseAlco()) {
             navigator.showForExciseGoodNeedScanFirstMark()
         }
 
@@ -344,7 +344,6 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
         updateProducers(foundGood.producers)
         clearSpinnerPositions()
         setDefaultQuantity(foundGood)
-
 
         Logg.d { "--> found good: $foundGood" }
     }
@@ -371,6 +370,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
             GoodKind.ALCOHOL -> ScreenStatus.ALCOHOL
             GoodKind.EXCISE -> ScreenStatus.EXCISE
             GoodKind.MARK -> ScreenStatus.MARK
+            else -> ScreenStatus.VET
         }
     }
 
@@ -413,11 +413,21 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
 
     private fun handleLoadGoodInfoResult(result: GoodInfoResult, number: String) {
         launchUITryCatch {
-            if (manager.isGoodCanBeAdded(result)) {
-                isExistUnsavedData = true
-                setGood(result, number)
-            } else {
-                navigator.showGoodCannotBeAdded()
+            val isGoodCanBeAdded = manager.isGoodCanBeAdded(result)
+            val isWholesaleTask = manager.isWholesaleTaskType
+            val goodKind = result.getGoodKind()
+            val isGoodVet = goodKind == GoodKind.VET
+            val isGoodExcise = goodKind == GoodKind.EXCISE
+            with(navigator) {
+                when {
+                    isWholesaleTask && isGoodVet -> showCantAddVetToWholeSale()
+                    isWholesaleTask && isGoodExcise -> showCantAddExciseGoodForWholesale()
+                    isGoodCanBeAdded -> {
+                        isExistUnsavedData = true
+                        setGood(result, number)
+                    }
+                    else -> showGoodCannotBeAdded()
+                }
             }
         }
     }
@@ -442,7 +452,8 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
                             matrix = getMatrixType(materialInfo?.matrix.orEmpty()),
                             commonUnits = database.getUnitsByCode(materialInfo?.commonUnitsCode.orEmpty()),
                             innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
-                            innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull() ?: 1.0,
+                            innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull()
+                                    ?: 1.0,
                             providers = providers?.takeIf { taskType.isDivByProvider }.orEmpty().toMutableList(),
                             producers = producers.orEmpty().toMutableList(),
                             volume = materialInfo?.volume?.toDoubleOrNull() ?: 0.0

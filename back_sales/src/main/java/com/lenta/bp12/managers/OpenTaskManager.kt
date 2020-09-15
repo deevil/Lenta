@@ -3,8 +3,6 @@ package com.lenta.bp12.managers
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.managers.interfaces.IGeneralTaskManager
 import com.lenta.bp12.managers.interfaces.IOpenTaskManager
-import com.lenta.bp12.model.BlockType
-import com.lenta.bp12.model.ControlType
 import com.lenta.bp12.model.pojo.*
 import com.lenta.bp12.model.pojo.extentions.*
 import com.lenta.bp12.model.pojo.open_task.TaskOpen
@@ -270,30 +268,9 @@ class OpenTaskManager @Inject constructor(
 
     private suspend fun getTaskListFromInfo(tasksInfo: List<TaskInfo>): List<TaskOpen> {
         return tasksInfo.map { taskInfo ->
-            TaskOpen(
-                    number = taskInfo.number.orEmpty(),
-                    name = taskInfo.name.orEmpty(),
+            taskInfo.convertToTaskOpen(
                     type = database.getTaskType(taskInfo.typeCode.orEmpty()),
-                    block = Block(
-                            type = BlockType.from(taskInfo.blockType.orEmpty()),
-                            user = taskInfo.blockUser.orEmpty(),
-                            ip = taskInfo.blockIp.orEmpty()
-                    ),
-                    storage = taskInfo.storage.orEmpty(),
-                    control = ControlType.from(taskInfo.control.orEmpty()),
-                    provider = ProviderInfo(
-                            code = taskInfo.providerCode.orEmpty(),
-                            name = taskInfo.providerName.orEmpty()
-                    ),
-                    reason = database.getReturnReason(taskInfo.typeCode.orEmpty(), taskInfo.reasonCode.orEmpty()),
-                    comment = taskInfo.comment.orEmpty(),
-                    section = taskInfo.section.orEmpty(),
-                    goodType = taskInfo.goodType.orEmpty(),
-                    purchaseGroup = taskInfo.purchaseGroup.orEmpty(),
-                    goodGroup = taskInfo.goodType.orEmpty(),
-                    numberOfGoods = taskInfo.quantity?.toIntOrNull() ?: 0,
-                    isStrict = taskInfo.isStrict.isSapTrue(),
-                    isFinished = !taskInfo.isNotFinish.isSapTrue()
+                    reason = database.getReturnReason(taskInfo.typeCode.orEmpty(), taskInfo.reasonCode.orEmpty())
             )
         }
     }

@@ -373,6 +373,11 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
 
     private fun setFoundGood(foundGood: Good) {
         manager.updateCurrentGood(foundGood)
+
+        if (foundGood.isExciseAlco()) {
+            navigator.showForExciseGoodNeedScanFirstMark()
+        }
+
         setScreenStatus(foundGood)
         setProducerList(foundGood)
         clearSpinnerPositions()
@@ -410,6 +415,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
             GoodKind.ALCOHOL -> ScreenStatus.ALCOHOL
             GoodKind.EXCISE -> ScreenStatus.EXCISE
             GoodKind.MARK -> ScreenStatus.MARK
+            GoodKind.VET -> ScreenStatus.VET
         }
     }
 
@@ -452,15 +458,23 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
 
     private fun handleLoadGoodInfoResult(result: GoodInfoResult, number: String) {
         launchUITryCatch {
-            if (manager.isGoodCorrespondToTask(result)) {
-                if (manager.isGoodCanBeAdded(result)) {
-                    isExistUnsavedData = true
-                    setGood(result, number)
-                } else {
-                    navigator.showGoodCannotBeAdded()
+            val isGoodCorrespondToTask = manager.isGoodCorrespondToTask(result)
+            val isGoodCanBeAdded = manager.isGoodCanBeAdded(result)
+            val isWholesaleTask = manager.isWholesaleTaskType
+            val goodKind = result.getGoodKind()
+            val isGoodVet = goodKind == GoodKind.VET
+            val isGoodExcise = goodKind == GoodKind.EXCISE
+            with(navigator) {
+                when {
+                    isWholesaleTask && isGoodVet -> showCantAddVetToWholeSale()
+                    isWholesaleTask && isGoodExcise -> showCantAddExciseGoodForWholesale()
+                    isGoodCorrespondToTask && isGoodCanBeAdded -> {
+                        isExistUnsavedData = true
+                        setGood(result, number)
+                    }
+                    isGoodCorrespondToTask -> showGoodCannotBeAdded()
+                    else -> showNotMatchTaskSettingsAddingNotPossible()
                 }
-            } else {
-                navigator.showNotMatchTaskSettingsAddingNotPossible()
             }
         }
     }

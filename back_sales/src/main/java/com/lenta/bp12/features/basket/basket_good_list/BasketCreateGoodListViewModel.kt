@@ -190,14 +190,16 @@ class BasketCreateGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
     }
 
     private fun setFoundGood(foundGood: Good) {
-        manager.updateCurrentGood(foundGood)
-        if (foundGood.markType != MarkType.UNKNOWN) {
-            navigator.openMarkedGoodInfoCreateScreen()
-            navigator.showForGoodNeedScanFirstMark()
-        } else {
-            navigator.openGoodInfoCreateScreen()
+        with(navigator) {
+            if (foundGood.isMarked()) {
+                manager.updateCurrentGood(foundGood)
+                openMarkedGoodInfoCreateScreen()
+                showForGoodNeedScanFirstMark()
+            } else {
+                manager.updateCurrentGood(foundGood)
+                openGoodInfoCreateScreen()
+            }
         }
-        Logg.d { "--> found good: $foundGood" }
     }
 
     private suspend fun loadGoodInfoByEan(ean: String) {
@@ -222,14 +224,13 @@ class BasketCreateGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
         )).also {
             navigator.hideProgress()
         }.either(::handleFailure) { result ->
-            handleLoadGoodInfoResult(
-                    result = result)
+            handleLoadGoodInfoResult(result)
         }
     }
 
     private fun checkMark(number: String) {
         launchUITryCatch {
-            with(navigator){
+            with(navigator) {
                 showProgressLoadingData()
                 val screenStatus = markManager.checkMark(number, WorkType.CREATE)
                 hideProgress()
@@ -245,10 +246,18 @@ class BasketCreateGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
 
     private fun handleLoadGoodInfoResult(result: GoodInfoResult) {
         launchUITryCatch {
-            if (manager.isGoodCanBeAdded(result)) {
-                setGood(result)
-            } else {
-                navigator.showGoodCannotBeAdded()
+            val isGoodCanBeAdded = manager.isGoodCanBeAdded(result)
+            val isWholesaleTask = manager.isWholesaleTaskType
+            val goodKind = result.getGoodKind()
+            val isGoodVet = goodKind == GoodKind.VET
+            val isGoodExcise = goodKind == GoodKind.EXCISE
+            with(navigator) {
+                when {
+                    isWholesaleTask && isGoodVet -> showCantAddVetToWholeSale()
+                    isWholesaleTask && isGoodExcise -> showCantAddExciseGoodForWholesale()
+                    isGoodCanBeAdded -> setGood(result)
+                    else -> showGoodCannotBeAdded()
+                }
             }
         }
     }
@@ -289,11 +298,6 @@ class BasketCreateGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
                             markType = markType,
                             markTypeGroup = database.getMarkTypeGroupByMarkType(markType)
                     )
-
-                    if (good.kind == GoodKind.EXCISE) {
-                        navigator.showForExciseGoodNeedScanFirstMark()
-                    }
-
                     setFoundGood(good)
                 }.orIfNull {
                     Logg.e { "task null" }

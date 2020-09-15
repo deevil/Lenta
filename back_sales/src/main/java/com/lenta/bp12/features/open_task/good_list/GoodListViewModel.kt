@@ -380,14 +380,21 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     private fun handleLoadGoodInfoResult(result: GoodInfoResult) {
         launchUITryCatch {
-            if (manager.isGoodCorrespondToTask(result)) {
-                if (manager.isGoodCanBeAdded(result)) {
-                    setGood(result)
-                } else {
-                    navigator.showGoodCannotBeAdded()
+            val isGoodCorrespondToTask = manager.isGoodCorrespondToTask(result)
+            val isGoodCanBeAdded = manager.isGoodCanBeAdded(result)
+            val isWholesaleTask = manager.isWholesaleTaskType
+            val goodKind = result.getGoodKind()
+            val isGoodVet = goodKind == GoodKind.VET
+            val isGoodExcise = goodKind == GoodKind.EXCISE
+
+            with(navigator) {
+                when {
+                    isWholesaleTask && isGoodVet -> showCantAddVetToWholeSale()
+                    isWholesaleTask && isGoodExcise -> showCantAddExciseGoodForWholesale()
+                    isGoodCorrespondToTask && isGoodCanBeAdded -> setGood(result)
+                    isGoodCorrespondToTask -> showGoodCannotBeAdded()
+                    else -> showNotMatchTaskSettingsAddingNotPossible()
                 }
-            } else {
-                navigator.showNotMatchTaskSettingsAddingNotPossible()
             }
         }
     }
@@ -426,21 +433,18 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
 
     private fun setFoundGood(foundGood: Good) {
-        with(navigator){
-            if (manager.isWholesaleTaskType && foundGood.kind == GoodKind.EXCISE) {
-                showExciseAlcoholGoodInfoScreen()
+        with(navigator) {
+            if (foundGood.isMarked()) {
+                manager.updateCurrentGood(foundGood)
+                openMarkedGoodInfoCreateScreen()
+                showForGoodNeedScanFirstMark()
             } else {
                 manager.updateCurrentGood(foundGood)
-                if (foundGood.markType != MarkType.UNKNOWN) {
-                    openMarkedGoodInfoCreateScreen()
-                    showForGoodNeedScanFirstMark()
-                } else {
-                    openGoodInfoCreateScreen()
-                }
-                Logg.d { "--> found good: $foundGood" }
+                openGoodInfoCreateScreen()
             }
         }
     }
+
 
     private fun checkMark(number: String) {
         launchUITryCatch {

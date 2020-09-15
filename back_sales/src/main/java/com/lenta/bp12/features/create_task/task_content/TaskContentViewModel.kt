@@ -269,18 +269,17 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     private fun setFoundGood(foundGood: Good) {
-        with(navigator){
-            if (manager.isWholesaleTaskType && foundGood.kind == GoodKind.EXCISE) {
-                showCantAddExciseGoodForWholesale()
-            } else {
-                manager.updateCurrentGood(foundGood)
-                if (foundGood.markType != MarkType.UNKNOWN) {
+        with(navigator) {
+            manager.updateCurrentGood(foundGood)
+            when {
+                foundGood.isMarked() -> {
                     openMarkedGoodInfoCreateScreen()
                     showForGoodNeedScanFirstMark()
-                } else {
+                }
+                else -> {
+                    manager.updateCurrentGood(foundGood)
                     openGoodInfoCreateScreen()
                 }
-                Logg.d { "--> found good: $foundGood" }
             }
         }
     }
@@ -313,10 +312,18 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     private fun handleLoadGoodInfoResult(result: GoodInfoResult) {
         launchUITryCatch {
-            if (manager.isGoodCanBeAdded(result)) {
-                setGood(result)
-            } else {
-                navigator.showGoodCannotBeAdded()
+            val isGoodCanBeAdded = manager.isGoodCanBeAdded(result)
+            val isWholesaleTask = manager.isWholesaleTaskType
+            val goodKind = result.getGoodKind()
+            val isGoodVet = goodKind == GoodKind.VET
+            val isGoodExcise = goodKind == GoodKind.EXCISE
+            with(navigator) {
+                when {
+                    isWholesaleTask && isGoodVet -> showCantAddVetToWholeSale()
+                    isWholesaleTask && isGoodExcise -> showCantAddExciseGoodForWholesale()
+                    isGoodCanBeAdded -> setGood(result)
+                    else -> showGoodCannotBeAdded()
+                }
             }
         }
     }
@@ -357,8 +364,6 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                             markType = markType,
                             markTypeGroup = database.getMarkTypeGroupByMarkType(markType)
                     )
-
-
 
                     setFoundGood(good)
                 }.orIfNull {

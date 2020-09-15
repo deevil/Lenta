@@ -42,7 +42,7 @@ class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener 
     lateinit var navigator: IScreenNavigator
 
     @Inject
-    lateinit var openTaskManager: IOpenTaskManager
+    lateinit var manager: IOpenTaskManager
 
     @Inject
     lateinit var sessionInfo: ISessionInfo
@@ -65,11 +65,11 @@ class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener 
     val selectionsHelper = SelectionItemsHelper()
 
     private val task by lazy {
-        openTaskManager.currentTask
+        manager.currentTask
     }
 
     val basket: LiveData<Basket> by lazy {
-        openTaskManager.currentBasket
+        manager.currentBasket
     }
 
     val title by lazy {
@@ -81,7 +81,7 @@ class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener 
     }
 
     private val isWholesaleBasket by unsafeLazy {
-        openTaskManager.isWholesaleTaskType
+        manager.isWholesaleTaskType
     }
 
     val numberField: MutableLiveData<String> = MutableLiveData("")
@@ -174,7 +174,7 @@ class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener 
     private fun getGoodByEan(ean: String) {
         launchUITryCatch {
             navigator.showProgressLoadingData()
-            val foundGood = withContext(Dispatchers.IO) { openTaskManager.findGoodByEan(ean) }
+            val foundGood = withContext(Dispatchers.IO) { manager.findGoodByEan(ean) }
             navigator.hideProgress()
             foundGood?.let(::setFoundGood).orIfNull {
                 if (task.value?.isStrict == false) {
@@ -207,7 +207,7 @@ class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener 
     private fun getGoodByMaterial(material: String) {
         launchUITryCatch {
             navigator.showProgressLoadingData()
-            val foundGood = withContext(Dispatchers.IO) { openTaskManager.findGoodByMaterial(material) }
+            val foundGood = withContext(Dispatchers.IO) { manager.findGoodByMaterial(material) }
             navigator.hideProgress()
             foundGood?.let(::setFoundGood).orIfNull {
                 if (task.value?.isStrict == false) {
@@ -235,14 +235,20 @@ class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener 
 
     private fun handleLoadGoodInfoResult(result: GoodInfoResult) {
         launchUITryCatch {
-            if (openTaskManager.isGoodCorrespondToTask(result)) {
-                if (openTaskManager.isGoodCanBeAdded(result)) {
-                    setGood(result)
-                } else {
-                    navigator.showGoodCannotBeAdded()
+            val isGoodCorrespondToTask = manager.isGoodCorrespondToTask(result)
+            val isGoodCanBeAdded = manager.isGoodCanBeAdded(result)
+            val isWholesaleTask = manager.isWholesaleTaskType
+            val goodKind = result.getGoodKind()
+            val isGoodVet = goodKind == GoodKind.VET
+            val isGoodExcise = goodKind == GoodKind.EXCISE
+            with(navigator){
+                when {
+                    isWholesaleTask && isGoodVet -> showCantAddVetToWholeSale()
+                    isWholesaleTask && isGoodExcise -> showCantAddExciseGoodForWholesale()
+                    isGoodCorrespondToTask && isGoodCanBeAdded -> setGood(result)
+                    isGoodCorrespondToTask -> showGoodCannotBeAdded()
+                    else -> showNotMatchTaskSettingsAddingNotPossible()
                 }
-            } else {
-                navigator.showNotMatchTaskSettingsAddingNotPossible()
             }
         }
     }
@@ -297,24 +303,22 @@ class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener 
     }
 
     private fun setFoundGood(foundGood: Good) {
-        openTaskManager.updateCurrentGood(foundGood)
-
         with(navigator) {
-            if (foundGood.markType != MarkType.UNKNOWN) {
-                openMarkedGoodInfoCreateScreen()
-                showForGoodNeedScanFirstMark()
-            } else {
-                openGoodInfoCreateScreen()
+            manager.updateCurrentGood(foundGood)
+            when {
+                foundGood.isMarked() -> {
+                    openMarkedGoodInfoCreateScreen()
+                    showForGoodNeedScanFirstMark()
+                }
+                else -> openGoodInfoCreateScreen()
             }
         }
-
-        Logg.d { "--> found good: $foundGood" }
     }
 
     fun onClickItemPosition(position: Int) {
         goods.value?.let {
             it.getOrNull(position)?.let { item ->
-                openTaskManager.updateCurrentGood(item.good)
+                manager.updateCurrentGood(item.good)
                 navigator.goBack()
                 if (item.good.markType == MarkType.UNKNOWN)
                     navigator.openGoodInfoCreateScreen()
@@ -365,7 +369,7 @@ class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener 
                     basket.deleteGood(goodFromBasket)
                 }
                 removeEmptyBasketsAndGoods(task, basket)
-                openTaskManager.updateBasketAndTask(task, basket)
+                manager.updateBasketAndTask(task, basket)
             }.orIfNull {
                 Logg.e { "basket null" }
                 navigator.showInternalError(resource.basketNotFoundErrorMsg)
@@ -408,7 +412,7 @@ class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener 
         if (taskValue != null && basketValue != null) {
             basketValue.isLocked = isNeedLock
             taskValue.updateBasket(basketValue)
-            with(openTaskManager) {
+            with(manager) {
                 updateCurrentBasket(basketValue)
                 updateCurrentTask(taskValue)
             }
