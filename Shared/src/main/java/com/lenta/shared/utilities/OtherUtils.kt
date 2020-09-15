@@ -82,6 +82,6 @@ fun isShoesMark(number: String) : Boolean {
     }
 }
 
-fun String.getEanFromGtin(): String {
+fun String.getEan(): String {
     return if (startsWith("0")) drop(1) else this
 }

@@ -50,12 +50,11 @@ class GoodsListFragment : KeyDownCoreFragment<FragmentGoodsListBinding, GoodsLis
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        //bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete, enabled = false)
-        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete)
+        bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete, enabled = false)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.print, enabled = false)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save, enabled = true)
 
-        //connectLiveData(source = vm.deleteEnabled, target = bottomToolbarUiModel.uiModelButton3.enabled)
+        connectLiveData(source = vm.deleteEnabled, target = bottomToolbarUiModel.uiModelButton3.enabled)
         connectLiveData(source = vm.printButtonEnabled, target = bottomToolbarUiModel.uiModelButton4.enabled)
         connectLiveData(source = vm.saveButtonEnabled, target = bottomToolbarUiModel.uiModelButton5.enabled)
     }
@@ -71,8 +70,8 @@ class GoodsListFragment : KeyDownCoreFragment<FragmentGoodsListBinding, GoodsLis
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            //R.id.b_3 -> vm.onClickDelete()
-            R.id.b_3 -> vm.onScanResult("010460606832927321P2XKAUcorIL6K91qrst92bqayYmJBoBksrEBIDkeDsADTYwzBIUqqmNdMXSJLWYjCFuNnzCGITHGVZWZfCIjhXZiYVJFSmyoPfduOeRgBWYoH")
+            R.id.b_3 -> vm.onClickDelete()
+            //R.id.b_3 -> vm.onScanResult("010460606832927321P2XKAUcorIL6K91qrst92bqayYmJBoBksrEBIDkeDsADTYwzBIUqqmNdMXSJLWYjCFuNnzCGITHGVZWZfCIjhXZiYVJFSmyoPfduOeRgBWYoH")
             R.id.b_4 -> vm.onClickPrint()
             R.id.b_5 -> vm.onClickSave()
         }
