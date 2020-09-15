@@ -160,7 +160,10 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                             basket = basket,
                             position = "$position",
                             name = resource.basket("${basket.index}"),
-                            description = basket.getDescription(task.type?.isDivBySection ?: false),
+                            description = basket.getDescription(
+                                    isDivBySection = task.type?.isDivBySection ?: false,
+                                    isWholeSale = false
+                            ),
                             quantity = basket.getQuantityFromGoodList().toString()
                     )
                 }
@@ -178,7 +181,10 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                             basket = basket,
                             position = "$position",
                             name = resource.basket("${basket.index}"),
-                            description = basket.getDescription(task.type?.isDivBySection ?: false),
+                            description = basket.getDescription(
+                                    isDivBySection = task.type?.isDivBySection ?: false,
+                                    isWholeSale = true
+                            ),
                             quantity = basket.getQuantityFromGoodList().toString(),
                             isPrinted = basket.isPrinted,
                             isLocked = basket.isLocked
@@ -599,7 +605,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
             navigator.showProgressLoadingData()
             val isDivBySection = task.value?.type?.isDivBySection ?: false
             val request = printPalletListNetRequest(
-                    baskets to isDivBySection
+                    Triple(baskets, isDivBySection, manager.isWholesaleTaskType)
             )
             navigator.hideProgress()
             request.either(

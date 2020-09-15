@@ -126,7 +126,10 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                             basket = basket,
                             position = "$position",
                             name = resource.basket("${basket.index}"),
-                            description = basket.getDescription(task.type.isDivBySection),
+                            description = basket.getDescription(
+                                    isDivBySection = task.type.isDivBySection,
+                                    isWholeSale = false
+                            ),
                             quantity = "${task.getCountByBasket(basket)}"
                     )
                 }
@@ -144,7 +147,10 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                             basket = basket,
                             position = "$position",
                             name = resource.basket("${basket.index}"),
-                            description = basket.getDescription(task.type.isDivBySection),
+                            description = basket.getDescription(
+                                    isDivBySection = task.type.isDivBySection,
+                                    isWholeSale = true
+                            ),
                             quantity = "${task.getCountByBasket(basket)} ${Uom.ST.name}",
                             isPrinted = basket.isPrinted,
                             isLocked = basket.isLocked
@@ -269,7 +275,7 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     private fun setFoundGood(foundGood: Good) {
-        with(navigator){
+        with(navigator) {
             if (manager.isWholesaleTaskType && foundGood.kind == GoodKind.EXCISE) {
                 showCantAddExciseGoodForWholesale()
             } else {
@@ -478,7 +484,7 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
             navigator.showProgressLoadingData()
             val isDivBySection = task.value?.type?.isDivBySection ?: false
             printPalletListNetRequest(
-                    baskets to isDivBySection
+                    Triple(baskets, isDivBySection, manager.isWholesaleTaskType)
             ).either(
                     fnL = ::handleFailure,
                     fnR = {
