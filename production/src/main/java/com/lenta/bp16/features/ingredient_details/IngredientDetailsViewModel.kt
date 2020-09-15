@@ -201,7 +201,7 @@ class IngredientDetailsViewModel : CoreViewModel(), IZpartVisibleConditions {
     private fun checkProducerInfo() {
         /** Если был передан производитель из AddAttributeFragment, то заполнять данными из нее*/
         val addedAttributeIsNotEmpty = !addedAttribute.value?.name.isNullOrBlank()
-        val orderIngredientIsVet = !orderIngredient.value?.isVet.isNullOrBlank()
+        val orderIngredientIsVet = orderIngredient.value?.isVet.isSapTrue()
         when {
             addedAttributeIsNotEmpty -> {
                 addedAttribute.value?.let { addAttributeDataInfoList ->
@@ -233,7 +233,7 @@ class IngredientDetailsViewModel : CoreViewModel(), IZpartVisibleConditions {
     private fun checkDataInfo() {
         /** Если была передана дата из AddAttributeFragment, то заполнять данными из нее*/
         val addedAttributeIsNotEmpty = !addedAttribute.value?.date.isNullOrBlank()
-        val orderIngredientIsVet = !orderIngredient.value?.isVet.isNullOrBlank()
+        val orderIngredientIsVet = orderIngredient.value?.isVet.isSapTrue()
         when {
             addedAttributeIsNotEmpty -> {
                 addedAttribute.value?.let { addAttributeDataInfoList ->
