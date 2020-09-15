@@ -22,9 +22,9 @@ class PrintPalletListNetRequest @Inject constructor(
         private val fmpRequestsHelper: FmpRequestsHelper,
         private val sessionInfo: ISessionInfo,
         private val resource: IResourceManager
-) : UseCase<PrintPalletListResult, Pair<List<Basket>, Boolean>> {
+) : UseCase<PrintPalletListResult, Triple<List<Basket>, Boolean, Boolean>> {
 
-    override suspend fun run(params: Pair<List<Basket>, Boolean>): Either<Failure, PrintPalletListResult> {
+    override suspend fun run(params: Triple<List<Basket>, Boolean, Boolean>): Either<Failure, PrintPalletListResult> {
 
         val goodListRest = params.first.flatMap { basket ->
                 val distinctGoods = basket.goods.keys
@@ -40,9 +40,10 @@ class PrintPalletListNetRequest @Inject constructor(
             }
 
         val isDivBySection = params.second
+        val isWholeSale = params.third
 
         val basketListRest = params.first.map {
-                val description = it.getDescription(isDivBySection)
+                val description = it.getDescription(isDivBySection, isWholeSale)
                 PrintPalletListParamsBasket(
                         number = it.index.toString(),
                         description = description,
