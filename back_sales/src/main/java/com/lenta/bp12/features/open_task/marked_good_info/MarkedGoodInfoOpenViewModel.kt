@@ -347,13 +347,7 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
     private suspend fun addMarks(changedGood: Good) {
             tempMarks.value?.let { tempMarksValue ->
                 changedGood.addMarks(tempMarksValue)
-                tempMarksValue.forEach { mark ->
-                    manager.addGoodToBasketWithMark(
-                            good = changedGood,
-                            mark = mark,
-                            provider = getProvider()
-                    )
-                }
+                manager.addGoodToBasketWithMarks(changedGood, tempMarksValue, getProvider())
             }
         }
 

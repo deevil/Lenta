@@ -189,28 +189,31 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
                 .combineLatest(isProviderSelected)
                 .combineLatest(isProducerSelected)
                 .combineLatest(isCorrectDate)
-                .map {
-                    it?.let {
-                        val status = it.first.first.first.first.first.first
-                        val enteredQuantity = it.first.first.first.first.first.second
-                        val totalQuantity = it.first.first.first.first.second
-                        val basketQuantity = it.first.first.first.second
-                        val isProviderSelected = it.first.first.second
-                        val isProducerSelected = it.first.second
-                        val isDateEntered = it.second
+                .mapSkipNulls {
+                    val status = it.first.first.first.first.first.first
+                    val enteredQuantity = it.first.first.first.first.first.second
+                    val totalQuantity = it.first.first.first.first.second
+                    val basketQuantity = it.first.first.first.second
+                    val isProviderSelected = it.first.first.second
+                    val isProducerSelected = it.first.second
+                    val isDateEntered = it.second
 
-                        val isEnteredMoreThenZero = enteredQuantity > 0.0
+                    val isEnteredMoreThanZero = enteredQuantity > DEFAULT_QUANTITY
+                    val isEnteredMoreThanZeroAndProviderSelected = isEnteredMoreThanZero && isProviderSelected
 
-                        when (status) {
-                            ScreenStatus.COMMON -> enteredQuantity != 0.0 && totalQuantity > 0.0 && basketQuantity > 0.0 && isProviderSelected
-                            ScreenStatus.ALCOHOL -> isEnteredMoreThenZero && isProviderSelected && isProducerSelected && isDateEntered
-                            ScreenStatus.MARK_150 -> isEnteredMoreThenZero && isProviderSelected
-                            ScreenStatus.MARK_68 -> isEnteredMoreThenZero && isProviderSelected && isProducerSelected
-                            ScreenStatus.PART -> isEnteredMoreThenZero && isProviderSelected && isProducerSelected && isDateEntered
-                            ScreenStatus.BOX -> isEnteredMoreThenZero && isProviderSelected && isProducerSelected
-                            else -> false
-                        }
-                    } ?: false
+                    when (status) {
+                        ScreenStatus.COMMON ->
+                            enteredQuantity != DEFAULT_QUANTITY &&
+                                    totalQuantity > DEFAULT_QUANTITY &&
+                                    basketQuantity > DEFAULT_QUANTITY &&
+                                    isProviderSelected
+                        ScreenStatus.ALCOHOL -> isEnteredMoreThanZeroAndProviderSelected && isProducerSelected && isDateEntered
+                        ScreenStatus.MARK_150 -> isEnteredMoreThanZeroAndProviderSelected
+                        ScreenStatus.MARK_68 -> isEnteredMoreThanZeroAndProviderSelected && isProducerSelected
+                        ScreenStatus.PART -> isEnteredMoreThanZeroAndProviderSelected && isProducerSelected && isDateEntered
+                        ScreenStatus.BOX -> isEnteredMoreThanZeroAndProviderSelected && isProducerSelected
+                        else -> false
+                    }
                 }
     }
 
@@ -345,7 +348,6 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
         clearSpinnerPositions()
         setDefaultQuantity(foundGood)
 
-
         Logg.d { "--> found good: $foundGood" }
     }
 
@@ -425,50 +427,29 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
     private fun setGood(result: GoodInfoResult, number: String) {
         launchUITryCatch {
             with(result) {
-                task.value?.let { task ->
-                    val taskType = task.type
-                    good.value = Good(
-                            ean = eanInfo?.ean.orEmpty(),
-                            eans = database.getEanListByMaterialUnits(
-                                    material = materialInfo?.material.orEmpty(),
-                                    unitsCode = materialInfo?.commonUnitsCode.orEmpty()
-                            ),
-                            material = materialInfo?.material.orEmpty(),
-                            name = materialInfo?.name.orEmpty(),
-                            kind = getGoodKind(),
-                            type = materialInfo?.goodType.takeIf { taskType.isDivByGoodType }.orEmpty(),
-                            control = getControlType(),
-                            section = materialInfo?.section.takeIf { taskType.isDivBySection }.orEmpty(),
-                            matrix = getMatrixType(materialInfo?.matrix.orEmpty()),
-                            commonUnits = database.getUnitsByCode(materialInfo?.commonUnitsCode.orEmpty()),
-                            innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
-                            innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull() ?: 1.0,
-                            providers = providers?.takeIf { taskType.isDivByProvider }.orEmpty().toMutableList(),
-                            producers = producers.orEmpty().toMutableList(),
-                            volume = materialInfo?.volume?.toDoubleOrNull() ?: 0.0
-                    )
-                }.orIfNull {
-                    Logg.e { "task null" }
-                    navigator.showInternalError(resource.taskNotFoundErrorMsg)
-                }
-            }
+                val good = Good(
+                        ean = eanInfo?.ean.orEmpty(),
+                        eans = database.getEanListByMaterialUnits(
+                                material = materialInfo?.material.orEmpty(),
+                                unitsCode = materialInfo?.commonUnitsCode.orEmpty()
+                        ),
+                        material = materialInfo?.material.orEmpty(),
+                        name = materialInfo?.name.orEmpty(),
+                        kind = getGoodKind(),
+                        type = materialInfo?.goodType.orEmpty(),
+                        control = getControlType(),
+                        section = materialInfo?.section.orEmpty(),
+                        matrix = getMatrixType(materialInfo?.matrix.orEmpty()),
+                        commonUnits = database.getUnitsByCode(materialInfo?.commonUnitsCode.orEmpty()),
+                        innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
+                        innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull() ?: 1.0,
+                        providers = providers.orEmpty().toMutableList(),
+                        producers = producers.orEmpty().toMutableList(),
+                        volume = materialInfo?.volume?.toDoubleOrNull() ?: 0.0
+                )
 
-            good.value?.let { good ->
                 lastSuccessSearchNumber = number
-                updateProviders(good.providers)
-                updateProducers(good.producers)
-                clearSpinnerPositions()
-                setScreenStatus(good)
-                setDefaultQuantity(good)
-
-                if (good.kind == GoodKind.EXCISE) {
-                    navigator.showForExciseGoodNeedScanFirstMark()
-                }
-
-                Logg.d { "--> added good: $good" }
-            }.orIfNull {
-                Logg.e { "good null" }
-                navigator.showInternalError(resource.goodNotFoundErrorMsg)
+                setFoundGood(good)
             }
         }
     }

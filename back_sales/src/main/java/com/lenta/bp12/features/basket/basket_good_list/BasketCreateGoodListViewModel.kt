@@ -190,23 +190,31 @@ class BasketCreateGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
     }
 
     private fun setFoundGood(foundGood: Good) {
-        manager.updateCurrentGood(foundGood)
-        if (foundGood.markType != MarkType.UNKNOWN) {
-            navigator.openMarkedGoodInfoCreateScreen()
-            navigator.showForGoodNeedScanFirstMark()
-        } else {
-            navigator.openGoodInfoCreateScreen()
+        with(navigator) {
+            if (manager.isWholesaleTaskType && foundGood.kind == GoodKind.EXCISE) {
+                showCantAddExciseGoodForWholesale()
+            } else {
+                manager.updateCurrentGood(foundGood)
+                if (foundGood.markType != MarkType.UNKNOWN) {
+                    openMarkedGoodInfoCreateScreen()
+                    showForGoodNeedScanFirstMark()
+                } else {
+                    openGoodInfoCreateScreen()
+                }
+                Logg.d { "--> found good: $foundGood" }
+            }
         }
-        Logg.d { "--> found good: $foundGood" }
     }
 
     private suspend fun loadGoodInfoByEan(ean: String) {
         navigator.showProgressLoadingData(::handleFailure)
-        goodInfoNetRequest(GoodInfoParams(
-                tkNumber = sessionInfo.market.orEmpty(),
-                ean = ean,
-                taskType = task.value?.type?.code.orEmpty()
-        )).also {
+        goodInfoNetRequest(
+                GoodInfoParams(
+                        tkNumber = sessionInfo.market.orEmpty(),
+                        ean = ean,
+                        taskType = task.value?.type?.code.orEmpty()
+                )
+        ).also {
             navigator.hideProgress()
         }.either(::handleFailure) {
             handleLoadGoodInfoResult(it)
@@ -215,21 +223,22 @@ class BasketCreateGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
 
     private suspend fun loadGoodInfoByMaterial(material: String) {
         navigator.showProgressLoadingData(::handleFailure)
-        goodInfoNetRequest(GoodInfoParams(
-                tkNumber = sessionInfo.market.orEmpty(),
-                material = material,
-                taskType = task.value?.type?.code.orEmpty()
-        )).also {
+        goodInfoNetRequest(
+                GoodInfoParams(
+                        tkNumber = sessionInfo.market.orEmpty(),
+                        material = material,
+                        taskType = task.value?.type?.code.orEmpty()
+                )
+        ).also {
             navigator.hideProgress()
-        }.either(::handleFailure) { result ->
-            handleLoadGoodInfoResult(
-                    result = result)
+        }.either(::handleFailure) {
+            handleLoadGoodInfoResult(it)
         }
     }
 
     private fun checkMark(number: String) {
         launchUITryCatch {
-            with(navigator){
+            with(navigator) {
                 showProgressLoadingData()
                 val screenStatus = markManager.checkMark(number, WorkType.CREATE)
                 hideProgress()
@@ -261,44 +270,34 @@ class BasketCreateGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
     private fun setGood(result: GoodInfoResult) {
         launchUITryCatch {
             with(result) {
-                task.value?.let { task ->
-                    val taskType = task.type
-                    val goodEan = eanInfo?.ean.orEmpty()
-                    val markType = getMarkType()
+                val goodEan = eanInfo?.ean.orEmpty()
+                val markType = getMarkType()
 
-                    val good = Good(
-                            ean = goodEan,
-                            eans = database.getEanListByMaterialUnits(
-                                    material = materialInfo?.material.orEmpty(),
-                                    unitsCode = materialInfo?.commonUnitsCode.orEmpty()
-                            ),
-                            material = materialInfo?.material.orEmpty(),
-                            name = materialInfo?.name.orEmpty(),
-                            kind = getGoodKind(),
-                            type = materialInfo?.goodType.takeIf { taskType.isDivByGoodType }.orEmpty(),
-                            control = getControlType(),
-                            section = materialInfo?.section.takeIf { taskType.isDivBySection }.orEmpty(),
-                            matrix = getMatrixType(materialInfo?.matrix.orEmpty()),
-                            commonUnits = database.getUnitsByCode(materialInfo?.commonUnitsCode.orEmpty()),
-                            innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
-                            innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull()
-                                    ?: 1.0,
-                            providers = providers?.takeIf { taskType.isDivByProvider }.orEmpty().toMutableList(),
-                            producers = producers.orEmpty().toMutableList(),
-                            volume = materialInfo?.volume?.toDoubleOrNull() ?: 0.0,
-                            markType = markType,
-                            markTypeGroup = database.getMarkTypeGroupByMarkType(markType)
-                    )
+                val good = Good(
+                        ean = goodEan,
+                        eans = database.getEanListByMaterialUnits(
+                                material = materialInfo?.material.orEmpty(),
+                                unitsCode = materialInfo?.commonUnitsCode.orEmpty()
+                        ),
+                        material = materialInfo?.material.orEmpty(),
+                        name = materialInfo?.name.orEmpty(),
+                        kind = getGoodKind(),
+                        type = materialInfo?.goodType.orEmpty(),
+                        control = getControlType(),
+                        section = materialInfo?.section.orEmpty(),
+                        matrix = getMatrixType(materialInfo?.matrix.orEmpty()),
+                        commonUnits = database.getUnitsByCode(materialInfo?.commonUnitsCode.orEmpty()),
+                        innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
+                        innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull()
+                                ?: 1.0,
+                        providers = providers.orEmpty().toMutableList(),
+                        producers = producers.orEmpty().toMutableList(),
+                        volume = materialInfo?.volume?.toDoubleOrNull() ?: 0.0,
+                        markType = markType,
+                        markTypeGroup = database.getMarkTypeGroupByMarkType(markType)
+                )
 
-                    if (good.kind == GoodKind.EXCISE) {
-                        navigator.showForExciseGoodNeedScanFirstMark()
-                    }
-
-                    setFoundGood(good)
-                }.orIfNull {
-                    Logg.e { "task null" }
-                    navigator.showInternalError(resource.taskNotFoundErrorMsg)
-                }
+                setFoundGood(good)
             }
         }
     }
