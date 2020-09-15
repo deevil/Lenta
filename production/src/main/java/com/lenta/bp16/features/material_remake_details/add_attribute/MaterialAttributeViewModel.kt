@@ -84,11 +84,12 @@ class MaterialAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
 
     /** Условие отображения производителя */
     val producerVisibleCondition by unsafeLazy {
-        asyncLiveData<Boolean> {
-            val cond = producerConditions
-            val condition = cond.first
-            alertNotFoundProducerName.postValue(cond.second)
-            emit(condition)
+        producerConditions.switchMap { cond ->
+            asyncLiveData<Boolean> {
+                val condition = cond.first
+                alertNotFoundProducerName.postValue(cond.second)
+                emit(condition)
+            }
         }
     }
 

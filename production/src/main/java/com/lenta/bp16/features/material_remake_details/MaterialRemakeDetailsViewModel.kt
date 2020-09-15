@@ -107,17 +107,18 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
     /** Условие отображения производителя */
     val producerVisibleCondition by unsafeLazy {
         materialIngredient.switchMap { ingredient ->
-            asyncLiveData<Boolean> {
-                val isVet = ingredient.isVet.isSapTrue()
-                val isZPart = ingredient.isZpart.isSapTrue()
-                val cond = producerConditions
-                val condition = when {
-                    isVet -> true
-                    !isVet && isZPart -> cond.first
-                    else -> false
+            producerConditions.switchMap { cond ->
+                asyncLiveData<Boolean> {
+                    val isVet = ingredient.isVet.isSapTrue()
+                    val isZPart = ingredient.isZpart.isSapTrue()
+                    val condition = when {
+                        isVet -> true
+                        !isVet && isZPart -> cond.first
+                        else -> false
+                    }
+                    alertNotFoundProducerName.postValue(cond.second)
+                    emit(condition)
                 }
-                alertNotFoundProducerName.postValue(cond.second)
-                emit(condition)
             }
         }
     }
@@ -146,7 +147,7 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
             .map {
                 val producerName = it?.first
                 val productionDate = it?.second
-                if (!materialIngredient.value?.isVet.isNullOrBlank()) {
+                if (materialIngredient.value?.isVet.isSapTrue()) {
                     !(producerName.isNullOrEmpty() || productionDate.isNullOrEmpty())
                 } else {
                     !productionDate.isNullOrEmpty()
@@ -207,7 +208,7 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
     }
 
     fun chooseGoodInfoScreen() {
-        when(goodTypeIcon.value) {
+        when (goodTypeIcon.value) {
             GoodTypeIcon.VET -> navigator.openVetInfoScreen()
             GoodTypeIcon.FACT -> navigator.openFactInfoScreen()
             else -> navigator.openPlanInfoScreen()

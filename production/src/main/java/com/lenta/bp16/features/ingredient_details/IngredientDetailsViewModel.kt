@@ -1,6 +1,8 @@
 package com.lenta.bp16.features.ingredient_details
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
 import com.lenta.bp16.data.IScales
 import com.lenta.bp16.model.AddAttributeProdInfo
@@ -122,17 +124,18 @@ class IngredientDetailsViewModel : CoreViewModel(), IZpartVisibleConditions {
     /** Условие отображения производителя */
     val producerVisibleCondition by unsafeLazy {
         orderIngredient.switchMap { ingredient ->
-            asyncLiveData<Boolean> {
-                val isVet = ingredient.isVet.isSapTrue()
-                val isZPart = ingredient.isZpart.isSapTrue()
-                val cond = producerConditions
-                val condition = when {
-                    isVet -> true
-                    !isVet && isZPart -> cond.first
-                    else -> false
+            producerConditions.switchMap { cond ->
+                asyncLiveData<Boolean> {
+                    val isVet = ingredient.isVet.isSapTrue()
+                    val isZPart = ingredient.isZpart.isSapTrue()
+                    val condition = when {
+                        isVet -> true
+                        !isVet && isZPart -> cond.first
+                        else -> false
+                    }
+                    alertNotFoundProducerName.postValue(cond.second)
+                    emit(condition)
                 }
-                alertNotFoundProducerName.postValue(cond.second)
-                emit(condition)
             }
         }
     }
@@ -160,7 +163,7 @@ class IngredientDetailsViewModel : CoreViewModel(), IZpartVisibleConditions {
             .map {
                 val producerName = it?.first
                 val productionDate = it?.second
-                if (!orderIngredient.value?.isVet.isNullOrBlank()) {
+                if (orderIngredient.value?.isVet.isSapTrue()) {
                     !(producerName.isNullOrEmpty() || productionDate.isNullOrEmpty())
                 } else {
                     !productionDate.isNullOrEmpty()

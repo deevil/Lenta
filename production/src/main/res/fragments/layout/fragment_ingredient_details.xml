@@ -139,10 +139,10 @@
         </LinearLayout>
 
         <View style="@style/HorizontalDivider"
-            android:visibility="@{vm.producerVisibleCondition ? View.VISIBLE : View.GONE}"/>
+            android:visibility="@{vm.producerVisibleCondition}"/>
 
         <LinearLayout style="@style/LinearRowStyle"
-            android:visibility="@{vm.producerVisibleCondition ? View.VISIBLE : View.GONE}">
+            android:visibility="@{vm.producerVisibleCondition}">
 
             <com.lenta.shared.view.ClickableSpinner
                 style="@style/CellSpinnerStyle"
