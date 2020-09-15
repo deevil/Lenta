@@ -73,19 +73,8 @@ class SearchProductDelegate @Inject constructor(
 
         actionByNumber(
                 number = code,
-                funcForEan = { actionWithEan(code, fromScan) },
-                funcForMaterial = { actionWithMaterial(code, fromScan) },
-                funcForSapOrBar = navigator::showTwelveCharactersEntered,
-                funcForShoes = { ean, _ -> actionWithShoesBarcode(ean, fromScan) },
-                funcForNotValidFormat = navigator::showIncorrectEanFormat
-        )
-    }
-
-    private fun actionWithShoesBarcode(number: String, fromScan: Boolean) {
-        actionByNumber(
-                number = number,
-                funcForEan = { actionWithEan(number, fromScan) },
-                funcForMaterial = { actionWithMaterial(number, fromScan) },
+                funcForEan = { ean ->  actionWithEan(ean, fromScan) },
+                funcForMaterial = { material ->  actionWithMaterial(material, fromScan) },
                 funcForSapOrBar = navigator::showTwelveCharactersEntered,
                 funcForNotValidFormat = navigator::showIncorrectEanFormat
         )

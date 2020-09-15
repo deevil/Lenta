@@ -2,13 +2,16 @@ package com.lenta.bp16.features.order_ingredients_list
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.switchMap
+import com.lenta.bp16.model.ProducerDataInfo
+import com.lenta.bp16.model.ZPartDataInfo
+import com.lenta.bp16.model.data_storage.IIngredientDataPersistStorage
 import com.lenta.bp16.model.ingredients.IngredientInfo
+import com.lenta.bp16.model.ingredients.MercuryPartDataInfo
 import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
 import com.lenta.bp16.model.ingredients.params.GetIngredientDataParams
 import com.lenta.bp16.model.ingredients.params.UnblockIngredientsParams
 import com.lenta.bp16.model.ingredients.params.WarehouseParam
-import com.lenta.bp16.model.ingredients.ui.ItemOrderIngredientUi
-import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
+import com.lenta.bp16.model.ingredients.ui.*
 import com.lenta.bp16.model.warehouse.IWarehousePersistStorage
 import com.lenta.bp16.platform.extention.getFieldWithSuffix
 import com.lenta.bp16.platform.extention.getItemName
@@ -17,6 +20,9 @@ import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.platform.resource.IResourceManager
 import com.lenta.bp16.request.GetIngredientsDataListNetRequest
 import com.lenta.bp16.request.UnblockIngredientNetRequest
+import com.lenta.bp16.request.ingredients_use_case.set_data.SetMercuryPartDataInfoUseCase
+import com.lenta.bp16.request.ingredients_use_case.set_data.SetProducerDataInfoUseCase
+import com.lenta.bp16.request.ingredients_use_case.set_data.SetZPartDataInfoUseCase
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.asyncLiveData
@@ -46,20 +52,41 @@ class OrderIngredientsListViewModel : CoreViewModel() {
     @Inject
     lateinit var getIngredientData: GetIngredientsDataListNetRequest
 
+    @Inject
+    lateinit var setMercuryPartDataInfoUseCase: SetMercuryPartDataInfoUseCase
+
+    @Inject
+    lateinit var setProducerDataInfoUseCase: SetProducerDataInfoUseCase
+
+    @Inject
+    lateinit var setZPartDataInfoUseCase: SetZPartDataInfoUseCase
+
     // выбранное количество
     var weight: String by Delegates.notNull()
 
     // выбранный ингредиент
     val ingredient by unsafeLazy {
-        MutableLiveData<IngredientInfo>()
+        MutableLiveData<IngredientInfoUI>()
     }
 
-    private val allOrderIngredients: MutableLiveData<List<OrderIngredientDataInfo>> by unsafeLazy {
-        MutableLiveData<List<OrderIngredientDataInfo>>()
+    private val allOrderIngredients: MutableLiveData<List<OrderIngredientDataInfoUI>> by unsafeLazy {
+        MutableLiveData<List<OrderIngredientDataInfoUI>>()
     }
 
     private val allEanIngredients: MutableLiveData<List<OrderByBarcodeUI>> by unsafeLazy {
         MutableLiveData<List<OrderByBarcodeUI>>()
+    }
+
+    private val allProducersList: MutableLiveData<List<ProducerDataInfoUI>> by unsafeLazy {
+        MutableLiveData<List<ProducerDataInfoUI>>()
+    }
+
+    private val allMercuryPartDataInfoList: MutableLiveData<List<MercuryPartDataInfoUI>> by unsafeLazy {
+        MutableLiveData<List<MercuryPartDataInfoUI>>()
+    }
+
+    private val zPartDataInfoList: MutableLiveData<List<ZPartDataInfoUI>> by unsafeLazy {
+        MutableLiveData<List<ZPartDataInfoUI>>()
     }
 
     fun loadOrderIngredientsList() = launchUITryCatch {
@@ -90,6 +117,9 @@ class OrderIngredientsListViewModel : CoreViewModel() {
         result.either(::handleFailure) { ingredientsDataListResult ->
             allEanIngredients.value = ingredientsDataListResult.orderByBarcode
             allOrderIngredients.value = ingredientsDataListResult.ordersIngredientsDataInfoList
+            allProducersList.value = ingredientsDataListResult.producerDataInfoList
+            allMercuryPartDataInfoList.value = ingredientsDataListResult.mercuryPartDataInfoList
+            zPartDataInfoList.value = ingredientsDataListResult.zPartDataInfoList
             Unit
         }
     }
@@ -101,8 +131,8 @@ class OrderIngredientsListViewModel : CoreViewModel() {
                     ItemOrderIngredientUi(
                             name = orderIngredientDataInfo.getItemName(),
                             position = (index + 1).toString(),
-                            plan = getFieldWithSuffix(orderIngredientDataInfo.plan_qnt.dropZeros(), orderIngredientDataInfo.getSuffix()),
-                            fact = getFieldWithSuffix(orderIngredientDataInfo.done_qnt.dropZeros(), orderIngredientDataInfo.getSuffix())
+                            plan = getFieldWithSuffix(orderIngredientDataInfo.plan_qnt.dropZeros(), orderIngredientDataInfo.getPlnSuffix()),
+                            fact = getFieldWithSuffix(orderIngredientDataInfo.done_qnt.dropZeros(), orderIngredientDataInfo.getDoneSuffix())
                     )
                 })
             }
@@ -122,11 +152,26 @@ class OrderIngredientsListViewModel : CoreViewModel() {
         }.either(fnL = ::handleFailure)
     }
 
+    /** Сохранение списков в IngredientDataPersistStorage */
+    private fun saveDataInStorage() {
+        val producerDataInfoList = allProducersList.value
+        val zPartDataInfoList = zPartDataInfoList.value
+        val mercuryPartDataInfoList = allMercuryPartDataInfoList.value
+        launchUITryCatch {
+            setZPartDataInfoUseCase(zPartDataInfoList.orEmpty())
+            setMercuryPartDataInfoUseCase(mercuryPartDataInfoList.orEmpty())
+            setProducerDataInfoUseCase(producerDataInfoList.orEmpty())
+        }
+    }
+
     fun onClickItemPosition(position: Int) {
+
+        saveDataInStorage()
+
         ingredient.value?.let { selectedIngredient ->
             allOrderIngredients.value?.getOrNull(position)?.let { orderDataInfo ->
                 allEanIngredients.value?.getOrNull(position)?.let { barcode ->
-                    navigator.openIngredientDetailsScreen(orderDataInfo, selectedIngredient.text3.orEmpty(), barcode)
+                    navigator.openIngredientDetailsScreen(orderDataInfo, selectedIngredient.text3, barcode)
                 } ?: navigator.showNotFoundedBarcodeForPosition()
             } ?: navigator.showAlertIngredientNotFound()
         }

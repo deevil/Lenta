@@ -11,7 +11,7 @@ import com.lenta.bp12.model.pojo.extentions.*
 data class TaskCreate(
         override val name: String,
         val storage: String,
-        val reason: ReturnReason,
+        val reason: ReturnReason?,
         val type: TaskType,
         override val control: ControlType = ControlType.UNKNOWN,
         var isProcessed: Boolean = false,

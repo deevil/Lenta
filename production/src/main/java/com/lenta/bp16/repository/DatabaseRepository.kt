@@ -151,6 +151,12 @@ class DatabaseRepository @Inject constructor(
         }
     }
 
+    override suspend fun getPerishable(): Int? {
+        return withContext(Dispatchers.IO){
+            settings.getPerishableHh()
+        }
+    }
+
     override suspend fun getWarehouses(tkNumber: String): List<WarehouseInfo> {
         return withContext(Dispatchers.IO) {
             val warehousesList = warehouses.getWarehouseNumbers(tkNumber)
@@ -184,6 +190,7 @@ interface IDatabaseRepository {
     suspend fun getEanInfoByEan(ean: String): EanInfo?
     suspend fun getProFillCondition(): String?
     suspend fun getIncludeCondition(): String?
+    suspend fun getPerishable(): Int?
 
     suspend fun getWarehouses(tkNumber: String): List<WarehouseInfo>
 }

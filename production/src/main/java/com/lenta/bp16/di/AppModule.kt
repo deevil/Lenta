@@ -8,10 +8,9 @@ import com.lenta.bp16.data.IPrinter
 import com.lenta.bp16.data.IScales
 import com.lenta.bp16.data.Printer
 import com.lenta.bp16.data.Scales
-import com.lenta.bp16.model.IPersistLabelList
-import com.lenta.bp16.model.ITaskManager
-import com.lenta.bp16.model.PersistLabelList
-import com.lenta.bp16.model.TaskManager
+import com.lenta.bp16.model.*
+import com.lenta.bp16.model.data_storage.IIngredientDataPersistStorage
+import com.lenta.bp16.model.data_storage.IngredientDataPersistStorage
 import com.lenta.bp16.model.warehouse.IWarehousePersistStorage
 import com.lenta.bp16.model.warehouse.WarehousePersistStorage
 import com.lenta.bp16.platform.navigation.IScreenNavigator
@@ -64,6 +63,10 @@ class AppModule {
 
         @Binds
         @AppScope
+        fun bindAttributeManager(realisation: AttributeManager): IAttributeManager
+
+        @Binds
+        @AppScope
         fun bindScales(realisation: Scales): IScales
 
         @Binds
@@ -77,6 +80,10 @@ class AppModule {
         @Binds
         @AppScope
         fun bindPersistWarehouseData(realisation: WarehousePersistStorage): IWarehousePersistStorage
+
+        @Binds
+        @AppScope
+        fun bindPersistIngredientData(realisation: IngredientDataPersistStorage): IIngredientDataPersistStorage
 
     }
 

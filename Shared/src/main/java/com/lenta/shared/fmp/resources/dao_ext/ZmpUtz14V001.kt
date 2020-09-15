@@ -19,7 +19,7 @@ fun ZmpUtz14V001.getProFillCondition(): String? {
     return getParams("PRO_FILL_CONT").firstOrNull()
 }
 
-fun ZmpUtz14V001.getIncludeCondition(): String?{
+fun ZmpUtz14V001.getIncludeCondition(): String? {
     return getParams("PRO_INCL_CONT").firstOrNull()
 }
 
@@ -170,6 +170,10 @@ fun ZmpUtz14V001.getParamGrzPerishableHH(): String? {
 
 fun ZmpUtz14V001.getSpecialTaskTypes(): List<String> {
     return getParams("WOB_SPEC_TASK_TYPE")
+}
+
+fun ZmpUtz14V001.getPerishableHh(): Int? {
+    return getParams("GRZ_PERISHABLE_HH").getOrNull(0)?.toIntOrNull()
 }
 
 fun ZmpUtz14V001.getBKSBasketVolume(): Double? {

@@ -1,5 +1,6 @@
 package com.lenta.bp16.features.ingredient_details
 
+import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.lifecycle.lifecycleScope
@@ -8,6 +9,7 @@ import com.lenta.bp16.databinding.FragmentIngredientDetailsBinding
 import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
 import com.lenta.bp16.model.ingredients.OrderByBarcode
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
+import com.lenta.bp16.model.ingredients.ui.OrderIngredientDataInfoUI
 import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -16,6 +18,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
+import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.extentions.unsafeLazy
 
@@ -30,8 +33,8 @@ class IngredientDetailsFragment : CoreFragment<FragmentIngredientDetailsBinding,
         return SCREEN_NUMBER
     }
 
-    private val orderIngredientDataInfo: OrderIngredientDataInfo by unsafeLazy {
-        arguments?.getParcelable<OrderIngredientDataInfo>(KEY_INGREDIENT)
+    private val orderIngredientDataInfo: OrderIngredientDataInfoUI by unsafeLazy {
+        arguments?.getParcelable<OrderIngredientDataInfoUI>(KEY_INGREDIENT)
                 ?: throw IllegalArgumentException("There is no argument value with key $KEY_INGREDIENT")
     }
 
@@ -68,8 +71,11 @@ class IngredientDetailsFragment : CoreFragment<FragmentIngredientDetailsBinding,
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.getWeight)
-        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.add)
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.complete)
+        bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.add, enabled = false)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.complete, enabled = false)
+
+        connectLiveData(vm.nextAndAddButtonEnabled, bottomToolbarUiModel.uiModelButton4.enabled)
+        connectLiveData(vm.nextAndAddButtonEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {
@@ -89,13 +95,18 @@ class IngredientDetailsFragment : CoreFragment<FragmentIngredientDetailsBinding,
         vm.onScanResult(data)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        vm.updateData()
+    }
+
     companion object {
         private const val SCREEN_NUMBER = "16/83"
         private const val KEY_INGREDIENT = "KEY_INGREDIENT"
         private const val KEY_PARENT_CODE = "KEY_PARENT_CODE"
         private const val KEY_EAN_INFO = "KEY_EAN_INFO"
 
-        fun newInstance(selectedIngredient: OrderIngredientDataInfo, parentCode: String, eanInfo: OrderByBarcodeUI): IngredientDetailsFragment {
+        fun newInstance(selectedIngredient: OrderIngredientDataInfoUI, parentCode: String, eanInfo: OrderByBarcodeUI): IngredientDetailsFragment {
             return IngredientDetailsFragment().apply {
                 arguments = bundleOf(KEY_INGREDIENT to selectedIngredient, KEY_PARENT_CODE to parentCode, KEY_EAN_INFO to eanInfo)
             }

@@ -9,6 +9,7 @@ import com.lenta.bp16.databinding.FragmentIngredientsByOrderBinding
 import com.lenta.bp16.databinding.ItemOrderIngredientBinding
 import com.lenta.bp16.model.ingredients.IngredientInfo
 import com.lenta.bp16.model.ingredients.ui.ItemOrderIngredientUi
+import com.lenta.bp16.model.ingredients.ui.IngredientInfoUI
 import com.lenta.bp16.platform.extention.getAppComponent
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -23,8 +24,8 @@ class OrderIngredientsListFragment : CoreFragment<FragmentIngredientsByOrderBind
         OrderIngredientsListViewModel>(), OnBackPresserListener {
 
     // выбранный ранее ингредиент
-    private val ingredientInfo: IngredientInfo by unsafeLazy {
-        arguments?.getParcelable<IngredientInfo>(KEY_INGREDIENT)
+    private val ingredientInfo: IngredientInfoUI by unsafeLazy {
+        arguments?.getParcelable<IngredientInfoUI>(KEY_INGREDIENT)
                 ?: throw IllegalArgumentException("There is no argument value with key $KEY_INGREDIENT")
     }
 
@@ -86,7 +87,7 @@ class OrderIngredientsListFragment : CoreFragment<FragmentIngredientsByOrderBind
 
         fun newInstance(
                 weightCount: String,
-                selectedIngredient: IngredientInfo
+                selectedIngredient: IngredientInfoUI
         ) = OrderIngredientsListFragment().apply {
             weight = weightCount
             arguments = bundleOf(KEY_INGREDIENT to selectedIngredient)
