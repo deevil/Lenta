@@ -161,11 +161,11 @@ class OpenTaskManager @Inject constructor(
                         val index = basketList.lastOrNull()?.index?.plus(1) ?: INDEX_OF_FIRST_BASKET
                         Basket(
                                 index = index,
-                                section = good.section,
+                                section = good.section.takeIf{ task.type?.isDivBySection == true},
                                 volume = basketVolume,
-                                provider = provider,
+                                provider = provider.takeIf{ task.type?.isDivByProvider == true},
                                 control = good.control,
-                                goodType = task.goodType,
+                                goodType = good.type.takeIf{ task.type?.isDivByGoodType == true},
                                 markTypeGroup = good.markTypeGroup
                         ).also {
                             addBasket(it)

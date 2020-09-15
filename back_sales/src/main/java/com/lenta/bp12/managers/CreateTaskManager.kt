@@ -174,11 +174,11 @@ class CreateTaskManager @Inject constructor(
                         val index = basketList.lastOrNull()?.index?.plus(1) ?: INDEX_OF_FIRST_BASKET
                         Basket(
                                 index = index,
-                                section = good.section,
+                                section = good.section.takeIf{ task.type.isDivBySection },
                                 volume = basketVolume,
-                                provider = provider,
+                                provider = provider.takeIf{ task.type.isDivByProvider },
                                 control = good.control,
-                                goodType = good.type,
+                                goodType = good.type.takeIf{ task.type.isDivByGoodType },
                                 markTypeGroup = good.markTypeGroup
                         ).also {
                             it.maxRetailPrice = good.maxRetailPrice

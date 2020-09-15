@@ -137,7 +137,7 @@ class MarkManager @Inject constructor(
      * Метод вычленяет регулярным выражением шк(barcode), гтин и мрц из марки блока
      * */
     private suspend fun openMarkedGoodWithCarton(number: String): MarkScreenStatus {
-        val regex = Regex(Constants.CIGARETTES_MARK_PATTERN).find(number)
+        val regex = Regex(Constants.CIGARETTES_BOX_PATTERN).find(number)
         return regex?.let {
             val (blocBarcode, gtin, _, mrc, _, _) = it.destructured // blockBarcode, gtin, serial, mrc, verificationKey, other
             val container = Pair(blocBarcode, Mark.Container.CARTON)
