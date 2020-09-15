@@ -61,6 +61,7 @@
     <string name="incorrect_ean_format">Неверный формат штрихкода</string>
     <string name="cant_scan_tobacco_pack_scan_carton">Добавление отдельной пачки запрещено. Отсканируйте целый блок.</string>
     <string name="for_good_need_scan_first_mark">Для данного товара, необходимо дополнительно отсканировать марку.</string>
+    <string name="cant_scan_excise_for_wholesale_task">Невозможно добавление акцизного алкоголя в тип задания "ПКО"</string>
 
     <string name="close_basket">Закрыть текущую корзину для редактирования? В случае согласия система запретит добавление товаров в текущую корзину.</string>
     <string name="some_of_chosen_baskets_not_closed">Некоторые выбранные корзины не закрыты. Закройте корзины и повторите печать</string>
@@ -81,6 +82,7 @@
     <string name="box_already_scanned_delete">Отсканированная коробка уже была добавлена в задание. Удалить коробку?</string>
     <string name="scanned_wrong_mrc">Отсканированный МРЦ товара, 1%s 2%s, не соответствует МРЦ заказа.</string>
     <string name="no_settings_for_that_markType">Не заведена настройка присвоения группы маркировки текущему типу маркировки</string>
+    <string name="scanned_mark_with_different_mrc">Отсканирована марка с МРЦ, отличающаяся от МРЦ текущей корзинки. Сохранить подсчет текущей корзинки и открыть другую?</string>
 
     // Описание иконок
     <string name="alcohol_good">Алкогольный товар</string>

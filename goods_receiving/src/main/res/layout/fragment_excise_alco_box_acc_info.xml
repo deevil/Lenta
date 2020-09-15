@@ -2,13 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".features.goods_information.excise_alco_receiving.excise_alco_box_acc.ExciseAlcoBoxAccInfoFragment">
+    tools:context=".features.goods_information.excise_alco.task_ppp.alco_boxed.ExciseAlcoBoxAccInfoFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.ExciseAlcoBoxAccInfoViewModel" />
+            type="com.lenta.bp9.features.goods_information.excise_alco.task_ppp.alco_boxed.ExciseAlcoBoxAccInfoViewModel" />
 
     </data>
 
@@ -397,13 +397,9 @@
             <LinearLayout style="@style/BottomIconContainerStyle">
 
                 <TextView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:background="@drawable/bg_white_circle"
-                    android:gravity="center"
+                    style="@style/BottomCircleIconStyle"
                     android:onClick="@{(v) -> vm.screenNavigator.openSectionInfoScreen(vm.productInfo.sectionId)}"
                     android:text='@{"" + vm.productInfo.sectionId}'
-                    android:textSize="12sp"
                     tools:text="02" />
 
             </LinearLayout>

@@ -29,6 +29,8 @@ class SettingsViewModel : CoreViewModel(){
 
     var updateAppButtonVisibility = MutableLiveData(true)
 
+    var changeLabelPrinterVisibility = MutableLiveData(false)
+
     init {
         launchUITryCatch {
             when (sessionInfo.packageName) {
@@ -42,6 +44,9 @@ class SettingsViewModel : CoreViewModel(){
                 PackageName.OPP.path -> {
                     selectPrinterButtonVisibility.value = false
                     updateAppButtonVisibility.value = false
+                }
+                PackageName.GRZ.path -> {
+                    changeLabelPrinterVisibility.value = true
                 }
             }
         }
@@ -60,6 +65,10 @@ class SettingsViewModel : CoreViewModel(){
             PackageName.PRO.path -> screenNavigator.openEnterPrinterAddressScreen()
             else -> screenNavigator.openPrinterChangeScreen()
         }
+    }
+
+    fun onClickPrinterLabel() {
+        screenNavigator.openEnterPrinterAddressScreen()
     }
 
     fun onClickWork() {

@@ -1,11 +1,17 @@
 package com.lenta.bp12.features.create_task.task_content
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.switchMap
 import com.lenta.bp12.features.basket.ItemWholesaleBasketUi
+import com.lenta.bp12.managers.interfaces.ICreateTaskManager
+import com.lenta.bp12.managers.interfaces.IMarkManager
 import com.lenta.bp12.model.*
 import com.lenta.bp12.model.pojo.Basket
-import com.lenta.bp12.model.pojo.create_task.GoodCreate
+import com.lenta.bp12.model.pojo.Good
+import com.lenta.bp12.model.pojo.create_task.TaskCreate
 import com.lenta.bp12.model.pojo.extentions.getDescription
+import com.lenta.bp12.model.pojo.extentions.isAnyNotLocked
+import com.lenta.bp12.model.pojo.extentions.isAnyPrinted
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
 import com.lenta.bp12.platform.extention.getMarkType
@@ -26,13 +32,17 @@ import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.combineLatest
-import com.lenta.shared.utilities.extentions.dropZeros
-import com.lenta.shared.utilities.extentions.launchUITryCatch
-import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.orIfNull
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+/** Создание заданий
+ * ViewModel ответственный за экран показывающий список товаров и корзин в задании
+ * Симетричный класс в Работе с заданиями:
+ * @see com.lenta.bp12.features.open_task.good_list.GoodListViewModel
+ * */
 class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
 
     @Inject
@@ -65,20 +75,13 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     @Inject
     lateinit var database: IDatabaseRepository
 
-
     /**
     Переменные
      */
 
-    private var isEanLastScanned = false
-
-    private var lastSuccessSearchNumber = ""
-
     val goodSelectionsHelper = SelectionItemsHelper()
 
     val basketSelectionsHelper = SelectionItemsHelper()
-
-    val selectedPage = MutableLiveData(0)
 
     private val task by lazy {
         manager.currentTask
@@ -97,25 +100,27 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     val goods by lazy {
-        task.map {
-            it?.let { task ->
-                task.goods.mapIndexed { index, good ->
+        task.switchMap { task ->
+            asyncLiveData<List<ItemGoodUi>> {
+                val list = task.goods.mapIndexed { index, good ->
                     ItemGoodUi(
                             material = good.material,
                             position = "${task.goods.size - index}",
                             name = good.getNameWithMaterial(),
                             quantity = "${good.getTotalQuantity().dropZeros()} ${good.commonUnits.name}",
-                            markType = good.markType
+                            markType = good.markType,
+                            good = good
                     )
                 }
-            }.orEmpty()
+                emit(list)
+            }
         }
     }
 
     val commonBaskets by lazy {
-        task.map {
-            it?.let { task ->
-                task.baskets.reversed().mapIndexed { index, basket ->
+        task.switchMap { task ->
+            asyncLiveData<List<ItemCommonBasketUi>> {
+                val list = task.baskets.reversed().mapIndexed { index, basket ->
                     val position = task.baskets.size - index
                     ItemCommonBasketUi(
                             basket = basket,
@@ -125,14 +130,15 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                             quantity = "${task.getCountByBasket(basket)}"
                     )
                 }
-            }.orEmpty()
+                emit(list)
+            }
         }
     }
 
     val wholesaleBaskets by lazy {
-        task.map {
-            it?.let { task ->
-                task.baskets.reversed().mapIndexed { index, basket ->
+        task.switchMap { task ->
+            asyncLiveData<List<ItemWholesaleBasketUi>> {
+                val list = task.baskets.reversed().mapIndexed { index, basket ->
                     val position = task.baskets.size - index
                     ItemWholesaleBasketUi(
                             basket = basket,
@@ -144,6 +150,7 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                             isLocked = basket.isLocked
                     )
                 }
+                emit(list)
             }
         }
     }
@@ -239,11 +246,12 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
      * если нет то создает товар
      * */
     private fun getGoodByEan(ean: String) {
-        manager.findGoodByEan(ean)?.let { foundGood ->
-            lastSuccessSearchNumber = ean
-            isEanLastScanned = true
-            setFoundGood(foundGood)
-        } ?: loadGoodInfoByEan(ean)
+        launchUITryCatch {
+            navigator.showProgressLoadingData()
+            val foundGood = withContext(Dispatchers.IO) { manager.findGoodByEan(ean) }
+            navigator.hideProgress()
+            foundGood?.let(::setFoundGood).orIfNull { loadGoodInfoByEan(ean) }
+        }
     }
 
     /**
@@ -252,61 +260,62 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
      * если нет то создает товар
      * */
     private fun getGoodByMaterial(material: String) {
-        manager.findGoodByMaterial(material)?.let { foundGood ->
-            setFoundGood(foundGood)
-        } ?: loadGoodInfoByMaterial(material)
-    }
-
-    private fun setFoundGood(foundGood: GoodCreate) {
-        manager.updateCurrentGood(foundGood)
-        if (foundGood.markType != MarkType.UNKNOWN) {
-            navigator.openMarkedGoodInfoCreateScreen()
-            navigator.showForGoodNeedScanFirstMark()
-        } else {
-            navigator.openGoodInfoCreateScreen()
-        }
-        Logg.d { "--> found good: $foundGood" }
-    }
-
-    private fun loadGoodInfoByEan(ean: String) {
         launchUITryCatch {
-            navigator.showProgressLoadingData(::handleFailure)
-            goodInfoNetRequest(GoodInfoParams(
-                    tkNumber = sessionInfo.market.orEmpty(),
-                    ean = ean,
-                    taskType = task.value?.type?.code.orEmpty()
-            )).also {
-                navigator.hideProgress()
-            }.either(::handleFailure) {
-                handleLoadGoodInfoResult(it)
+            navigator.showProgressLoadingData()
+            val foundGood = withContext(Dispatchers.IO) { manager.findGoodByMaterial(material) }
+            navigator.hideProgress()
+            foundGood?.let(::setFoundGood).orIfNull { loadGoodInfoByMaterial(material) }
+        }
+    }
+
+    private fun setFoundGood(foundGood: Good) {
+        with(navigator){
+            if (manager.isWholesaleTaskType && foundGood.kind == GoodKind.EXCISE) {
+                showCantAddExciseGoodForWholesale()
+            } else {
+                manager.updateCurrentGood(foundGood)
+                if (foundGood.markType != MarkType.UNKNOWN) {
+                    openMarkedGoodInfoCreateScreen()
+                    showForGoodNeedScanFirstMark()
+                } else {
+                    openGoodInfoCreateScreen()
+                }
+                Logg.d { "--> found good: $foundGood" }
             }
         }
     }
 
-    private fun loadGoodInfoByMaterial(material: String) {
-        launchUITryCatch {
-            navigator.showProgressLoadingData(::handleFailure)
-            goodInfoNetRequest(GoodInfoParams(
-                    tkNumber = sessionInfo.market.orEmpty(),
-                    material = material,
-                    taskType = task.value?.type?.code.orEmpty()
-            )).also {
-                navigator.hideProgress()
-            }.either(::handleFailure) { result ->
-                handleLoadGoodInfoResult(
-                        result = result)
-            }
+    private suspend fun loadGoodInfoByEan(ean: String) {
+        navigator.showProgressLoadingData(::handleFailure)
+        goodInfoNetRequest(GoodInfoParams(
+                tkNumber = sessionInfo.market.orEmpty(),
+                ean = ean,
+                taskType = task.value?.type?.code.orEmpty()
+        )).also {
+            navigator.hideProgress()
+        }.either(::handleFailure) {
+            handleLoadGoodInfoResult(it)
         }
     }
 
-    private fun handleLoadGoodInfoResult(
-            result: GoodInfoResult
-    ) {
+    private suspend fun loadGoodInfoByMaterial(material: String) {
+        navigator.showProgressLoadingData(::handleFailure)
+        goodInfoNetRequest(GoodInfoParams(
+                tkNumber = sessionInfo.market.orEmpty(),
+                material = material,
+                taskType = task.value?.type?.code.orEmpty()
+        )).also {
+            navigator.hideProgress()
+        }.either(::handleFailure) { result ->
+            handleLoadGoodInfoResult(result)
+        }
+    }
+
+    private fun handleLoadGoodInfoResult(result: GoodInfoResult) {
         launchUITryCatch {
             if (manager.isGoodCanBeAdded(result)) {
                 setGood(result)
             } else {
-                manager.clearSearchFromListParams()
                 navigator.showGoodCannotBeAdded()
             }
         }
@@ -325,7 +334,7 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                     val goodEan = eanInfo?.ean.orEmpty()
                     val markType = getMarkType()
 
-                    val good = GoodCreate(
+                    val good = Good(
                             ean = goodEan,
                             eans = database.getEanListByMaterialUnits(
                                     material = materialInfo?.material.orEmpty(),
@@ -342,12 +351,14 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                             innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
                             innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull()
                                     ?: 1.0,
-                            providers = providers?.toMutableList().takeIf { taskType.isDivByProvider }.orEmpty().toMutableList(),
-                            producers = producers?.toMutableList().orEmpty().toMutableList(),
+                            providers = providers?.takeIf { taskType.isDivByProvider }.orEmpty().toMutableList(),
+                            producers = producers.orEmpty().toMutableList(),
                             volume = materialInfo?.volume?.toDoubleOrNull() ?: 0.0,
                             markType = markType,
                             markTypeGroup = database.getMarkTypeGroupByMarkType(markType)
                     )
+
+
 
                     setFoundGood(good)
                 }.orIfNull {
@@ -376,8 +387,7 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     private fun handleItemClickGoodTab(position: Int) {
         val good = goods.value?.getOrNull(position)
         good?.let {
-            manager.searchNumber = good.material
-            manager.isSearchFromList = true
+            manager.updateCurrentGood(good.good)
             if (good.markType != MarkType.UNKNOWN) {
                 navigator.openMarkedGoodInfoCreateScreen()
             } else {
@@ -422,7 +432,11 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     private fun handleDeleteItemBasketTab() {
         val basketList = mutableListOf<Basket>()
         basketSelectionsHelper.selectedPositions.value?.mapNotNullTo(basketList) { position ->
-            commonBaskets.value?.get(position)?.basket
+            if (manager.isWholesaleTaskType) {
+                wholesaleBaskets.value?.get(position)?.basket
+            } else {
+                commonBaskets.value?.get(position)?.basket
+            }
         }
 
         basketSelectionsHelper.clearPositions()
@@ -444,12 +458,12 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     private fun printBaskets(baskets: List<Basket>) {
         //Если какие-то корзины не закрыты
-        if (baskets.any { it.isLocked.not() }) {
+        if (baskets.isAnyNotLocked()) {
             // Вывести экран сообщения «Некоторые выбранные корзины не закрыты. Закройте корзины и повторите печать», с кнопкой «Назад»
             navigator.showSomeOfChosenBasketsNotClosedScreen()
         } else {
             //Если какие-то корзины напечатаны
-            if (baskets.any { it.isPrinted }) {
+            if (baskets.isAnyPrinted()) {
                 // «По некоторым выделенным корзинам уже производилась печать. Продолжить?», с кнопками «Да», «Назад» (макеты, экран №81)
                 navigator.showSomeBasketsAlreadyPrinted(
                         yesCallback = { printPalletList(baskets) }
@@ -479,14 +493,10 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     fun onClickSave() {
         task.value?.let { task ->
-            if (manager.isWholesaleTaskType) {
-                // Есть незакрытые корзины - отобразить экран сообщения «Некоторые корзины не закрыты.
+            if (isTaskWholesaleAndAnyOfBasketsIsNotClosed(task)) {
+                // Есть незакрытые в опте корзины - отобразить экран сообщения «Некоторые корзины не закрыты.
                 // Сохранение заданий невозможно», с кнопкой «Назад». См. «MRK_BKS_Макет экранов МП (Крупный ОПТ) 1.1 APP» экран №84
-                if (task.baskets.any { it.isLocked.not() }) {
-                    navigator.showSomeBasketsNotClosedCantSaveScreen()
-                } else {
-                    showMakeTaskCountedAndClose()
-                }
+                navigator.showSomeBasketsNotClosedCantSaveScreen()
             } else {
                 showMakeTaskCountedAndClose()
             }
@@ -495,6 +505,8 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
             navigator.showInternalError(resource.taskNotFoundErrorMsg)
         }
     }
+
+    private fun isTaskWholesaleAndAnyOfBasketsIsNotClosed(task: TaskCreate) = manager.isWholesaleTaskType && task.baskets.isAnyNotLocked()
 
     private fun showMakeTaskCountedAndClose() {
         navigator.showMakeTaskCountedAndClose {
@@ -525,7 +537,6 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                     navigator.goBack()
                 }
         )
-
     }
 
     fun onBackPressed() {
@@ -538,7 +549,6 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                 navigator.goBack()
             }
         }
-
     }
 
     companion object {

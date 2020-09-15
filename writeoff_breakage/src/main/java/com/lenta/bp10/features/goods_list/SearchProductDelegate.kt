@@ -1,14 +1,9 @@
 package com.lenta.bp10.features.goods_list
 
 import com.lenta.bp10.features.good_information.LimitsChecker
-import com.lenta.bp10.fmp.resources.dao_ext.isChkOwnpr
-import com.lenta.bp10.fmp.resources.tasks_settings.ZmpUtz29V001Rfc
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.bp10.platform.navigation.IScreenNavigator
-import com.lenta.bp10.platform.requestCodeAddAddToProduction
-import com.lenta.bp10.platform.requestCodeAddProductWithBadStamp
-import com.lenta.bp10.platform.requestCodeTypeBarCode
-import com.lenta.bp10.platform.requestCodeTypeSap
+import com.lenta.bp10.repos.DatabaseRepository
 import com.lenta.bp10.requests.network.PermissionToWriteoffNetRequest
 import com.lenta.bp10.requests.network.PermissionToWriteoffPrams
 import com.lenta.bp10.requests.network.PermissionToWriteoffRestInfo
@@ -21,23 +16,26 @@ import com.lenta.shared.requests.combined.scan_info.ScanInfoRequest
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequestParams
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.Logg
-import com.mobrun.plugin.api.HyperHive
+import com.lenta.shared.utilities.actionByNumber
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.coroutines.CoroutineContext
 
 class SearchProductDelegate @Inject constructor(
-        private val hyperHive: HyperHive,
-        private val screenNavigator: IScreenNavigator,
+        private val database: DatabaseRepository,
+        private val navigator: IScreenNavigator,
         private val scanInfoRequest: ScanInfoRequest,
         private val processServiceManager: IWriteOffTaskManager,
         private val sessionInfo: ISessionInfo,
         private var permissionToWriteoffNetRequest: PermissionToWriteoffNetRequest
-) {
+) : CoroutineScope {
 
-    private val zmpUtz29V001: ZmpUtz29V001Rfc by lazy {
-        ZmpUtz29V001Rfc(hyperHive)
-    }
+    private val job = SupervisorJob()
+
+    override val coroutineContext: CoroutineContext = Dispatchers.Main + job
 
     private var scanInfoResult: ScanInfoResult? = null
 
@@ -45,30 +43,24 @@ class SearchProductDelegate @Inject constructor(
 
     private var limitsChecker: LimitsChecker? = null
 
-    private lateinit var viewModelScope: () -> CoroutineScope
-
     private var scanResultHandler: ((ScanInfoResult?) -> Boolean)? = null
-
-    private var codeWith12Digits: String? = null
 
     fun copy(): SearchProductDelegate {
         val searchProductDelegate = SearchProductDelegate(
-                hyperHive,
-                screenNavigator,
+                database,
+                navigator,
                 scanInfoRequest,
                 processServiceManager,
                 sessionInfo,
                 permissionToWriteoffNetRequest
         )
 
-        searchProductDelegate.init(viewModelScope, scanResultHandler, checksEnabled, limitsChecker)
+        searchProductDelegate.init(scanResultHandler, checksEnabled, limitsChecker)
 
         return searchProductDelegate
     }
 
-    fun init(viewModelScope: () -> CoroutineScope, scanResultHandler: ((ScanInfoResult?) -> Boolean)? = null, checksEnabled: Boolean = true, limitsChecker: LimitsChecker? = null) {
-        Logg.d { "viewModelScope hash: ${viewModelScope.hashCode()}" }
-        this.viewModelScope = viewModelScope
+    fun init(scanResultHandler: ((ScanInfoResult?) -> Boolean)? = null, checksEnabled: Boolean = true, limitsChecker: LimitsChecker? = null) {
         this.scanResultHandler = scanResultHandler
         this.checksEnabled = checksEnabled
         this.limitsChecker = limitsChecker
@@ -79,14 +71,37 @@ class SearchProductDelegate @Inject constructor(
 
         checksEnabled = true
 
-        if (checksEnabled && isBarCode == null && code.length == 12) {
-            codeWith12Digits = code
-            screenNavigator.openSelectTypeCodeScreen(requestCodeTypeSap, requestCodeTypeBarCode)
-            return
-        }
+        actionByNumber(
+                number = code,
+                funcForEan = { actionWithEan(code, fromScan) },
+                funcForMaterial = { actionWithMaterial(code, fromScan) },
+                funcForSapOrBar = navigator::showTwelveCharactersEntered,
+                funcForShoes = { ean, _ -> actionWithShoesBarcode(ean, fromScan) },
+                funcForNotValidFormat = navigator::showIncorrectEanFormat
+        )
+    }
 
-        viewModelScope().launch {
-            screenNavigator.showProgress(scanInfoRequest)
+    private fun actionWithShoesBarcode(number: String, fromScan: Boolean) {
+        actionByNumber(
+                number = number,
+                funcForEan = { actionWithEan(number, fromScan) },
+                funcForMaterial = { actionWithMaterial(number, fromScan) },
+                funcForSapOrBar = navigator::showTwelveCharactersEntered,
+                funcForNotValidFormat = navigator::showIncorrectEanFormat
+        )
+    }
+
+    private fun actionWithMaterial(number: String, fromScan: Boolean) {
+        searchGoodInfoByNumber(number, fromScan = fromScan, isBarCode = false)
+    }
+
+    private fun actionWithEan(number: String, fromScan: Boolean) {
+        searchGoodInfoByNumber(number, fromScan = fromScan, isBarCode = true)
+    }
+
+    private fun searchGoodInfoByNumber(code: String, fromScan: Boolean, isBarCode: Boolean? = null) {
+        launch {
+            navigator.showProgress(scanInfoRequest)
             scanInfoRequest(
                     ScanInfoRequestParams(
                             number = code,
@@ -96,53 +111,30 @@ class SearchProductDelegate @Inject constructor(
                     )
             ).either(::handleFailure, ::handleSearchSuccess)
 
-            screenNavigator.hideProgress()
-        }
-    }
-
-    fun handleResultCode(code: Int?): Boolean {
-        return when (code) {
-            requestCodeAddProductWithBadStamp -> {
-                checkPermissions()
-                true
-            }
-            requestCodeTypeSap -> {
-                searchCode("000000000000${codeWith12Digits?.takeLast(6)}", fromScan = false, isBarCode = false)
-                codeWith12Digits = null
-                true
-            }
-            requestCodeTypeBarCode -> {
-                searchCode(code = codeWith12Digits.orEmpty(), fromScan = false, isBarCode = true)
-                codeWith12Digits = null
-                true
-            }
-            requestCodeAddAddToProduction -> {
-                handleSearchResultOrOpenProductScreen()
-                true
-            }
-            else -> false
+            navigator.hideProgress()
         }
     }
 
     private fun checkPermissions() {
-        if (checksEnabled && zmpUtz29V001.isChkOwnpr(processServiceManager.getWriteOffTask()?.taskDescription!!.taskType.code)) {
-            screenNavigator.showProgress(permissionToWriteoffNetRequest)
+        launch {
+            val taskTypeCode = processServiceManager.getWriteOffTask()?.taskDescription?.taskType?.code.orEmpty()
+            if (checksEnabled && database.isChkOwnpr(taskTypeCode)) {
+                navigator.showProgress(permissionToWriteoffNetRequest)
 
-            viewModelScope().launch {
                 permissionToWriteoffNetRequest(
                         PermissionToWriteoffPrams(
                                 matnr = scanInfoResult!!.productInfo.materialNumber,
                                 werks = sessionInfo.market!!)
                 ).either(::handleFailure, ::handlePermissionsSuccess)
+
+                checksEnabled = false
+                navigator.hideProgress()
+
+                return@launch
             }
 
-            checksEnabled = false
-            screenNavigator.hideProgress()
-
-            return
+            handleSearchResultOrOpenProductScreen()
         }
-
-        handleSearchResultOrOpenProductScreen()
     }
 
     private fun handleSearchResultOrOpenProductScreen() {
@@ -153,17 +145,22 @@ class SearchProductDelegate @Inject constructor(
                 }
             }
 
-            with(infoResult) {
-                openProductScreen(
-                        productInfo = productInfo,
-                        quantity = if (productInfo.type == ProductType.ExciseAlcohol && !productInfo.isSet) 0.0 else quantity
-                )
-            }
+            openProductScreen(
+                    productInfo = infoResult.productInfo,
+                    quantity = if (isMarkedProductType(infoResult)) 0.0 else infoResult.quantity
+            )
+        }
+    }
+
+    private fun isMarkedProductType(infoResult: ScanInfoResult): Boolean {
+        return with(infoResult) {
+            productInfo.type == ProductType.ExciseAlcohol && !productInfo.isSet ||
+                    productInfo.type == ProductType.Marked
         }
     }
 
     private fun handleFailure(failure: Failure) {
-        screenNavigator.openAlertScreen(failure, "97")
+        navigator.openAlertScreen(failure)
     }
 
     private fun handleSearchSuccess(scanInfoResult: ScanInfoResult) {
@@ -174,7 +171,9 @@ class SearchProductDelegate @Inject constructor(
 
     private fun handlePermissionsSuccess(permissionToWriteoff: PermissionToWriteoffRestInfo) {
         if (permissionToWriteoff.ownr.isEmpty()) {
-            screenNavigator.openWriteOffToProductionConfirmationScreen(requestCodeAddAddToProduction)
+            navigator.showWriteOffToProductionConfirmation {
+                handleSearchResultOrOpenProductScreen()
+            }
         } else searchProduct()
     }
 
@@ -187,39 +186,38 @@ class SearchProductDelegate @Inject constructor(
         scanInfoResult?.let {
             var goodsForTask = false
 
-            processServiceManager.getWriteOffTask()?.taskDescription!!.materialTypes.firstOrNull { taskMatType ->
+            val taskDescription = processServiceManager.getWriteOffTask()?.taskDescription
+
+            taskDescription?.materialTypes?.firstOrNull { taskMatType ->
                 taskMatType == it.productInfo.materialType
             }?.let {
                 goodsForTask = true
             }
 
-
             if (!goodsForTask) {
-                screenNavigator.openAlertGoodsNotForTaskScreen()
+                navigator.openAlertGoodsNotForTaskScreen()
                 return
             }
 
             goodsForTask = false
 
-            if (it.productInfo.type == ProductType.ExciseAlcohol || it.productInfo.type == ProductType.NonExciseAlcohol) {
-                processServiceManager.getWriteOffTask()?.taskDescription!!.gisControls.forEach { gis ->
-                    if (gis == "A") goodsForTask = true
-                }
-
-            } else if (it.productInfo.type == ProductType.General) {
-                processServiceManager.getWriteOffTask()?.taskDescription!!.gisControls.forEach { gis ->
-                    if (gis == "N") goodsForTask = true
+            taskDescription?.gisControls?.let { gisControls ->
+                Logg.d { "--> gisControls = $gisControls" }
+                if (gisControls.contains(it.productInfo.type.code)) {
+                    goodsForTask = true
                 }
             }
 
             if (!goodsForTask) {
-                screenNavigator.openAlertGoodsNotForTaskScreen()
+                navigator.openAlertGoodsNotForTaskScreen()
                 return
             }
 
             it.productInfo.matrixType.let { matrixType ->
                 if (checksEnabled && !matrixType.isNormal()) {
-                    screenNavigator.openMatrixAlertScreen(matrixType = matrixType, codeConfirmation = requestCodeAddProductWithBadStamp)
+                    navigator.openMatrixAlertScreen(matrixType) {
+                        checkPermissions()
+                    }
                     return
                 }
             }
@@ -230,16 +228,17 @@ class SearchProductDelegate @Inject constructor(
 
     fun openProductScreen(productInfo: ProductInfo, quantity: Double) {
         when (productInfo.type) {
-            ProductType.General -> screenNavigator.openGoodInfoScreen(productInfo, quantity)
+            ProductType.General -> navigator.openGoodInfoScreen(productInfo, quantity)
             ProductType.ExciseAlcohol -> {
                 if (productInfo.isSet) {
-                    screenNavigator.openSetsInfoScreen(productInfo, quantity)
+                    navigator.openSetsInfoScreen(productInfo, quantity)
                     return
                 } else {
-                    screenNavigator.openExciseAlcoScreen(productInfo)
+                    navigator.openExciseAlcoScreen(productInfo)
                 }
             }
-            else -> screenNavigator.openGoodInfoScreen(productInfo, quantity)
+            ProductType.Marked -> navigator.openMarkedInfoScreen(productInfo, quantity)
+            else -> navigator.openGoodInfoScreen(productInfo, quantity)
         }
 
         limitsChecker?.check()

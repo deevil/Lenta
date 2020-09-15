@@ -7,7 +7,7 @@
     <data>
         <variable
             name="vm"
-            type="com.lenta.bp9.features.goods_information.non_excise_sets_pge.NonExciseSetsPGEViewModel" />
+            type="com.lenta.bp9.features.goods_information.sets.task_pge.NonExciseSetsPGEViewModel" />
 
     </data>
 
@@ -203,13 +203,9 @@
             <LinearLayout style="@style/BottomIconContainerStyle">
 
                 <TextView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:background="@drawable/bg_white_circle"
-                    android:gravity="center"
+                    style="@style/BottomCircleIconStyle"
                     android:onClick="@{(v) -> vm.screenNavigator.openSectionInfoScreen(vm.productInfo.sectionId)}"
                     android:text='@{"" + vm.productInfo.sectionId}'
-                    android:textSize="12sp"
                     tools:text="02" />
 
             </LinearLayout>

@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import android.widget.CheckBox
 import androidx.databinding.DataBindingUtil
 import com.lenta.bp9.BR
@@ -17,8 +16,6 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.databinding.DataBindingAdapter
-import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
 import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
@@ -31,7 +28,7 @@ class ProductDocumentsReviseFragment : CoreFragment<FragmentProductDocumentsRevi
 
     override fun getLayoutId(): Int = R.layout.fragment_product_documents_revise
 
-    override fun getPageNumber() = "09/10"
+    override fun getPageNumber() = SCREEN_NUMBER
 
     override fun getViewModel(): ProductDocumentsReviseViewModel {
         provideViewModel(ProductDocumentsReviseViewModel::class.java).let {
@@ -59,10 +56,10 @@ class ProductDocumentsReviseFragment : CoreFragment<FragmentProductDocumentsRevi
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
-        return when(position) {
-            0 -> prepareToCheckView(container)
-            1 -> prepareCheckedView(container)
-            2 -> prepareNotificationsView(container)
+        return when (position) {
+            TAB_TO_CHECK -> prepareToCheckView(container)
+            TAB_CHECKED -> prepareCheckedView(container)
+            TAB_INFO -> prepareNotificationsView(container)
             else -> View(context)
         }
     }
@@ -95,30 +92,21 @@ class ProductDocumentsReviseFragment : CoreFragment<FragmentProductDocumentsRevi
                     layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_product_documents,
                             itemId = BR.item,
-                            onAdapterItemBind = { binding: ItemTileProductDocumentsBinding, position: Int ->
+                            onItemBind = { binding: ItemTileProductDocumentsBinding, position: Int ->
                                 binding.tvItemNumber.tag = position
                                 binding.cbChecked.setOnClickListener { view ->
                                     val cb = view as? CheckBox
                                     cb?.let { vm.checkedChanged(position, it.isChecked) }
                                 }
-                                checkedRecyclerViewKeyHandler?.let {
-                                    binding.root.isSelected = it.isSelected(position)
-                                }
                             },
-                            onAdapterItemClicked = {position ->
-                                checkedRecyclerViewKeyHandler?.onItemClicked(position)
-                            }
+                            keyHandlerId = TAB_CHECKED,
+                            recyclerView = layoutBinding.rv,
+                            items = vm.checkedDocs,
+                            onClickHandler = vm::onClickCheckedPosition
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-
-                    checkedRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
-                            recyclerView = layoutBinding.rv,
-                            previousPosInfo = checkedRecyclerViewKeyHandler?.posInfo?.value,
-                            items = vm.checkedDocs,
-                            onClickHandler = vm::onClickCheckedPosition
-                    )
 
                     return layoutBinding.root
                 }
@@ -134,30 +122,21 @@ class ProductDocumentsReviseFragment : CoreFragment<FragmentProductDocumentsRevi
                     layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                             layoutId = R.layout.item_tile_product_documents,
                             itemId = BR.item,
-                            onAdapterItemBind = { binding: ItemTileProductDocumentsBinding, position: Int ->
+                            onItemBind = { binding: ItemTileProductDocumentsBinding, position: Int ->
                                 binding.tvItemNumber.tag = position
                                 binding.cbChecked.setOnClickListener { view ->
                                     val cb = view as? CheckBox
                                     cb?.let { vm.checkedChanged(position, it.isChecked) }
                                 }
-                                toCheckRecyclerViewKeyHandler?.let {
-                                    binding.root.isSelected = it.isSelected(position)
-                                }
                             },
-                            onAdapterItemClicked = {position ->
-                                toCheckRecyclerViewKeyHandler?.onItemClicked(position)
-                            }
+                            keyHandlerId = TAB_TO_CHECK,
+                            recyclerView = layoutBinding.rv,
+                            items = vm.docsToCheck,
+                            onClickHandler = vm::onClickUncheckedPosition
                     )
 
                     layoutBinding.vm = vm
                     layoutBinding.lifecycleOwner = viewLifecycleOwner
-
-                    toCheckRecyclerViewKeyHandler = initRecyclerViewKeyHandler(
-                            recyclerView = layoutBinding.rv,
-                            previousPosInfo = toCheckRecyclerViewKeyHandler?.posInfo?.value,
-                            items = vm.docsToCheck,
-                            onClickHandler = vm::onClickUncheckedPosition
-                    )
 
                     return layoutBinding.root
                 }
@@ -165,15 +144,15 @@ class ProductDocumentsReviseFragment : CoreFragment<FragmentProductDocumentsRevi
 
     override fun getTextTitle(position: Int): String {
         return when (position) {
-            0 -> getString(R.string.to_check)
-            1 -> getString(R.string.checked)
-            2 -> getString(R.string.information)
+            TAB_TO_CHECK -> getString(R.string.to_check)
+            TAB_CHECKED -> getString(R.string.checked)
+            TAB_INFO -> getString(R.string.information)
             else -> ""
         }
     }
 
     override fun countTab(): Int {
-        return 3
+        return TABS
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -193,4 +172,14 @@ class ProductDocumentsReviseFragment : CoreFragment<FragmentProductDocumentsRevi
             R.id.b_5 -> vm.onClickSave()
         }
     }
+
+    companion object {
+        const val SCREEN_NUMBER = "09/10"
+
+        private const val TABS = 3
+        private const val TAB_TO_CHECK = 0
+        private const val TAB_CHECKED = 1
+        private const val TAB_INFO = 2
+    }
+
 }

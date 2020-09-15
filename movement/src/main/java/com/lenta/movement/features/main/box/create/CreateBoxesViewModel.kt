@@ -15,9 +15,9 @@ import com.lenta.movement.requests.network.models.scanInfoNetRequest.ScanInfoPar
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.ProductType
-import com.lenta.shared.platform.constants.Constants.BOX_26
-import com.lenta.shared.platform.constants.Constants.MARK_150
-import com.lenta.shared.platform.constants.Constants.MARK_68
+import com.lenta.shared.platform.constants.Constants.EXCISE_BOX_26
+import com.lenta.shared.platform.constants.Constants.EXCISE_MARK_150
+import com.lenta.shared.platform.constants.Constants.EXCISE_MARK_68
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.utilities.Logg
@@ -56,8 +56,7 @@ class CreateBoxesViewModel : CoreViewModel(),
 
     val selectionsHelper = SelectionItemsHelper()
 
-    val selectedPagePosition = MutableLiveData(0)
-    val selectedPage = MutableLiveData(CreateBoxesPage.FILLING)
+    val selectedPageType = MutableLiveData(CreateBoxesPage.FILLING)
 
     val productInfo: MutableLiveData<ProductInfo> = MutableLiveData()
     val stamps: MutableLiveData<List<ExciseStamp>> = MutableLiveData(emptyList())
@@ -92,8 +91,8 @@ class CreateBoxesViewModel : CoreViewModel(),
             }
 
     override fun onPageSelected(position: Int) {
-        selectedPagePosition.value = position
-        selectedPage.value = CreateBoxesPage.values().getOrNull(position)
+        selectedPage.value = position
+        selectedPageType.value = CreateBoxesPage.values().getOrNull(position)
     }
 
     fun onResume() = updateBoxes()
@@ -112,8 +111,8 @@ class CreateBoxesViewModel : CoreViewModel(),
 
     fun onScanResult(data: String) {
         when (data.length) {
-            MARK_68, MARK_150 -> scanStamp(data)
-            BOX_26 -> scanBox(data)
+            EXCISE_MARK_68, EXCISE_MARK_150 -> scanStamp(data)
+            EXCISE_BOX_26 -> scanBox(data)
             else -> scanGoods(data)
         }
     }

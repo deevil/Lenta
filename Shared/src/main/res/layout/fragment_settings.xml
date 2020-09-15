@@ -79,6 +79,16 @@
                 <Button
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:enabled="@{vm.isMainMenu}"
+                    android:focusable="@{vm.isMainMenu}"
+                    android:onClick="@{(view) -> vm.onClickPrinterLabel()}"
+                    android:text="@string/change_label_printer"
+                    android:textAllCaps="false"
+                    android:visibility="@{vm.changeLabelPrinterVisibility}" />
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:enabled="@{!vm.isMainMenu}"
                     android:focusable="@{!vm.isMainMenu}"
                     android:onClick="@{(view) -> vm.onClickWork()}"

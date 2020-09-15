@@ -24,8 +24,6 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     @Inject
     lateinit var tasksSearchHelper: ITasksSearchHelper
 
-    val selectedPage = MutableLiveData(0)
-
     val searchFieldProcessing by lazy {
         MutableLiveData(sessionInfo.userName.orEmpty())
     }

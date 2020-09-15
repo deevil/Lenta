@@ -1,6 +1,7 @@
 package com.lenta.bp9.features.goods_details
 
 import com.lenta.bp9.model.task.TaskBatchesDiscrepancies
+import com.lenta.bp9.model.task.TaskZBatchesDiscrepancies
 import com.lenta.shared.utilities.databinding.Evenable
 
 data class GoodsDetailsCategoriesItem(
@@ -13,6 +14,7 @@ data class GoodsDetailsCategoriesItem(
         val typeDiscrepancies: String,
         val materialNumber: String,
         val batchDiscrepancies: TaskBatchesDiscrepancies?,
+        val zBatchDiscrepancies: TaskZBatchesDiscrepancies?,
         val even: Boolean
 ) : Evenable {
     override fun isEven() = even

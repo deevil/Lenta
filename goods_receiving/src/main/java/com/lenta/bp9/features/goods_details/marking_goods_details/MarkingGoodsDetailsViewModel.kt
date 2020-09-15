@@ -39,7 +39,6 @@ class MarkingGoodsDetailsViewModel : CoreViewModel(), PageSelectionListener {
 
     private val taskRepository by lazy { taskManager.getReceivingTask()?.taskRepository }
     val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
-    val selectedPage = MutableLiveData(0)
     val goodsDetails: MutableLiveData<List<GoodsDetailsCategoriesItem>> = MutableLiveData()
     val goodsProperties: MutableLiveData<List<GoodsDetailsPropertiesItem>> = MutableLiveData()
     val markingGoodsProperties: MutableLiveData<List<TaskMarkingGoodsProperties>> by lazy {
@@ -151,6 +150,7 @@ class MarkingGoodsDetailsViewModel : CoreViewModel(), PageSelectionListener {
                                     typeDiscrepancies = discrepancy.typeDiscrepancies,
                                     materialNumber = discrepancy.materialNumber,
                                     batchDiscrepancies = null,
+                                    zBatchDiscrepancies = null,
                                     even = index % 2 == 0
                             )
                         }?.reversed()

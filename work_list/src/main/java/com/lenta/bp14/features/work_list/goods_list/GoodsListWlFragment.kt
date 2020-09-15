@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.lenta.bp14.BR
@@ -12,33 +11,25 @@ import com.lenta.bp14.R
 import com.lenta.bp14.databinding.*
 import com.lenta.bp14.di.WorkListComponent
 import com.lenta.bp14.models.data.GoodsListTab
+import com.lenta.bp14.models.ui.ItemWorkListUi
 import com.lenta.shared.di.CoreInjectHelper
-import com.lenta.shared.keys.KeyCode
-import com.lenta.shared.keys.OnKeyDownListener
-import com.lenta.shared.platform.fragment.CoreFragment
+import com.lenta.shared.platform.fragment.KeyDownCoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
-import com.lenta.shared.utilities.databinding.DataBindingAdapter
-import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
-import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
-class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWlViewModel>(),
-        ViewPagerSettings, ToolbarButtonsClickListener, OnKeyDownListener, OnScanResultListener {
-
-    private var processingRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
-    private var processedRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
-    private var searchRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
+class GoodsListWlFragment : KeyDownCoreFragment<FragmentGoodsListWlBinding, GoodsListWlViewModel>(),
+        ViewPagerSettings, ToolbarButtonsClickListener, OnScanResultListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_goods_list_wl
 
-    override fun getPageNumber(): String? = generateScreenNumberFromPostfix("14")
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
 
     override fun getViewModel(): GoodsListWlViewModel {
         provideViewModel(GoodsListWlViewModel::class.java).let {
@@ -73,7 +64,7 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_3 -> {
-                if (vm.getCorrectedPagePosition(vm.selectedPage.value) == GoodsListTab.SEARCH.position) vm.onClickFilter()
+                if (vm.getCorrectedPagePosition(vm.selectedPage.value) == TAB_SEARCH) vm.onClickFilter()
                 else vm.onClickDelete()
             }
             R.id.b_5 -> vm.onClickSave()
@@ -81,138 +72,87 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
-        val correctedPosition = vm.getCorrectedPagePosition(position)
-
-        if (correctedPosition == 0) {
-            DataBindingUtil.inflate<LayoutWlGoodsListProcessingBinding>(LayoutInflater.from(container.context),
-                    R.layout.layout_wl_goods_list_processing,
-                    container,
-                    false).let { layoutBinding ->
-
-                layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                        layoutId = R.layout.item_wl_processing_list,
-                        itemId = BR.good,
-                        realisation = object : DataBindingAdapter<ItemWlProcessingListBinding> {
-                            override fun onCreate(binding: ItemWlProcessingListBinding) {
-                            }
-
-                            override fun onBind(binding: ItemWlProcessingListBinding, position: Int) {
-                                processingRecyclerViewKeyHandler?.let {
-                                    binding.root.isSelected = it.isSelected(position)
-                                }
-                            }
-                        },
-                        onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                            processingRecyclerViewKeyHandler?.let {
-                                if (it.isSelected(position)) {
-                                    vm.onClickItemPosition(position)
-                                } else {
-                                    it.selectPosition(position)
-                                }
-                            }
-                        })
-
-                layoutBinding.vm = vm
-                layoutBinding.lifecycleOwner = viewLifecycleOwner
-                processingRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                        rv = layoutBinding.rv,
-                        items = vm.processingGoods,
-                        lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                        initPosInfo = processingRecyclerViewKeyHandler?.posInfo?.value
-                )
-
-                return layoutBinding.root
-            }
+        return when (vm.getCorrectedPagePosition(position)) {
+            TAB_PROCESSING -> initProcessingGoodList(container)
+            TAB_PROCESSED -> initProcessedGoodList(container)
+            TAB_SEARCH -> initSearchGoodList(container)
+            else -> View(context)
         }
+    }
 
-        if (correctedPosition == 1) {
-            DataBindingUtil.inflate<LayoutWlGoodsListProcessedBinding>(LayoutInflater.from(container.context),
-                    R.layout.layout_wl_goods_list_processed,
-                    container,
-                    false).let { layoutBinding ->
+    private fun initProcessingGoodList(container: ViewGroup): View {
+        DataBindingUtil.inflate<LayoutWlGoodsListProcessingBinding>(LayoutInflater.from(container.context),
+                R.layout.layout_wl_goods_list_processing,
+                container,
+                false).let { layoutBinding ->
 
-                val onClickSelectionListener = View.OnClickListener {
-                    (it!!.tag as Int).let { position ->
-                        vm.processedSelectionsHelper.revert(position = position)
-                        layoutBinding.rv.adapter?.notifyItemChanged(position)
-                    }
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemWorkListUi, ItemWlProcessingListBinding>(
+                    layoutId = R.layout.item_wl_processing_list,
+                    itemId = BR.good,
+                    keyHandlerId = TAB_PROCESSING,
+                    recyclerView = layoutBinding.rv,
+                    items = vm.processingGoods,
+                    onClickHandler = vm::onClickItemPosition
+            )
+
+            layoutBinding.vm = vm
+            layoutBinding.lifecycleOwner = viewLifecycleOwner
+
+            return layoutBinding.root
+        }
+    }
+
+    private fun initProcessedGoodList(container: ViewGroup): View {
+        DataBindingUtil.inflate<LayoutWlGoodsListProcessedBinding>(LayoutInflater.from(container.context),
+                R.layout.layout_wl_goods_list_processed,
+                container,
+                false).let { layoutBinding ->
+
+            val onClickSelectionListener = View.OnClickListener {
+                (it!!.tag as Int).let { position ->
+                    vm.processedSelectionsHelper.revert(position = position)
+                    layoutBinding.rv.adapter?.notifyItemChanged(position)
                 }
-
-                layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
-                        layoutId = R.layout.item_wl_processed_list,
-                        itemId = BR.good,
-                        realisation = object : DataBindingAdapter<ItemWlProcessedListBinding> {
-                            override fun onCreate(binding: ItemWlProcessedListBinding) {
-                            }
-
-                            override fun onBind(binding: ItemWlProcessedListBinding, position: Int) {
-                                binding.tvItemNumber.tag = position
-                                binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                                binding.selectedForDelete = vm.processedSelectionsHelper.isSelected(position)
-                                processedRecyclerViewKeyHandler?.let {
-                                    binding.root.isSelected = it.isSelected(position)
-                                }
-                            }
-                        },
-                        onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                            processedRecyclerViewKeyHandler?.let {
-                                if (it.isSelected(position)) {
-                                    vm.onClickItemPosition(position)
-                                } else {
-                                    it.selectPosition(position)
-                                }
-                            }
-                        })
-
-                layoutBinding.vm = vm
-                layoutBinding.lifecycleOwner = viewLifecycleOwner
-                processedRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                        rv = layoutBinding.rv,
-                        items = vm.processedGoods,
-                        lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                        initPosInfo = processedRecyclerViewKeyHandler?.posInfo?.value
-                )
-
-                return layoutBinding.root
             }
-        }
 
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
+                    layoutId = R.layout.item_wl_processed_list,
+                    itemId = BR.good,
+                    onItemBind = { binding: ItemWlProcessedListBinding, position: Int ->
+                        binding.tvItemNumber.tag = position
+                        binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                        binding.selectedForDelete = vm.processedSelectionsHelper.isSelected(position)
+                    },
+                    keyHandlerId = TAB_PROCESSED,
+                    recyclerView = layoutBinding.rv,
+                    items = vm.processedGoods,
+                    onClickHandler = vm::onClickItemPosition
+            )
+
+            layoutBinding.vm = vm
+            layoutBinding.lifecycleOwner = viewLifecycleOwner
+
+            return layoutBinding.root
+        }
+    }
+
+    private fun initSearchGoodList(container: ViewGroup): View {
         DataBindingUtil.inflate<LayoutWlGoodsListSearchBinding>(LayoutInflater.from(container.context),
                 R.layout.layout_wl_goods_list_search,
                 container,
                 false).let { layoutBinding ->
 
-            layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemWorkListUi, ItemWlSearchListBinding>(
                     layoutId = R.layout.item_wl_search_list,
                     itemId = BR.good,
-                    realisation = object : DataBindingAdapter<ItemWlSearchListBinding> {
-                        override fun onCreate(binding: ItemWlSearchListBinding) {
-                        }
-
-                        override fun onBind(binding: ItemWlSearchListBinding, position: Int) {
-                            searchRecyclerViewKeyHandler?.let {
-                                binding.root.isSelected = it.isSelected(position)
-                            }
-                        }
-                    },
-                    onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                        searchRecyclerViewKeyHandler?.let {
-                            if (it.isSelected(position)) {
-                                vm.onClickItemPosition(position)
-                            } else {
-                                it.selectPosition(position)
-                            }
-                        }
-                    })
+                    keyHandlerId = TAB_SEARCH,
+                    recyclerView = layoutBinding.rv,
+                    items = vm.searchGoods,
+                    onClickHandler = vm::onClickItemPosition
+            )
 
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
-            searchRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                    rv = layoutBinding.rv,
-                    items = vm.searchGoods,
-                    lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                    initPosInfo = searchRecyclerViewKeyHandler?.posInfo?.value
-            )
 
             return layoutBinding.root
         }
@@ -220,9 +160,9 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
 
     override fun getTextTitle(position: Int): String {
         return when (vm.getCorrectedPagePosition(position)) {
-            0 -> getString(R.string.processing)
-            1 -> getString(R.string.processed)
-            2 -> getString(R.string.search)
+            TAB_PROCESSING -> getString(R.string.processing)
+            TAB_PROCESSED -> getString(R.string.processed)
+            TAB_SEARCH -> getString(R.string.search)
             else -> throw IllegalArgumentException("Wrong pager position!")
         }
     }
@@ -236,24 +176,6 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
         binding?.viewPagerSettings = this
     }
 
-    override fun onKeyDown(keyCode: KeyCode): Boolean {
-        when (vm.correctedSelectedPage.value) {
-            1 -> processedRecyclerViewKeyHandler
-            2 -> searchRecyclerViewKeyHandler
-            else -> null
-        }?.let {
-            if (!it.onKeyDown(keyCode)) {
-                keyCode.digit?.let { digit ->
-                    vm.onDigitPressed(digit)
-                    return true
-                }
-                return false
-            }
-            return true
-        }
-        return false
-    }
-
     override fun onScanResult(data: String) {
         vm.onScanResult(data)
     }
@@ -261,6 +183,14 @@ class GoodsListWlFragment : CoreFragment<FragmentGoodsListWlBinding, GoodsListWl
     override fun onResume() {
         super.onResume()
         vm.updateGoodList()
+    }
+
+    companion object {
+        const val SCREEN_NUMBER = "14"
+
+        private const val TAB_PROCESSING = 0
+        private const val TAB_PROCESSED = 1
+        private const val TAB_SEARCH = 2
     }
 
 }

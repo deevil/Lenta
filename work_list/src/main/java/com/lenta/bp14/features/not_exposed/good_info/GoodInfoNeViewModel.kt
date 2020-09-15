@@ -58,8 +58,6 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
         )
     }
 
-    val selectedPage = MutableLiveData(0)
-
     val stocks: MutableLiveData<List<ItemStockUi>> by lazy {
         MutableLiveData<List<ItemStockUi>>(
                 goodInfo.let { goodInfo ->

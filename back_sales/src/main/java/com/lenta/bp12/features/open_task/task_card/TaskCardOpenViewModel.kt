@@ -1,7 +1,7 @@
 package com.lenta.bp12.features.open_task.task_card
 
 import androidx.lifecycle.MutableLiveData
-import com.lenta.bp12.model.IOpenTaskManager
+import com.lenta.bp12.managers.interfaces.IOpenTaskManager
 import com.lenta.bp12.platform.extention.isAlcohol
 import com.lenta.bp12.platform.extention.isCommon
 import com.lenta.bp12.platform.extention.isMark
@@ -60,8 +60,6 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
         manager.currentTask
     }
 
-    val selectedPage = MutableLiveData(0)
-
     val ui by lazy {
         task.map {
             it?.let { task ->
@@ -113,12 +111,14 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
         launchUITryCatch {
             navigator.showProgressLoadingData(::handleFailure)
 
-            taskContentNetRequest(TaskContentParams(
-                    deviceIp = deviceInfo.getDeviceIp(),
-                    taskNumber = task.value?.number.orEmpty(),
-                    mode = 1,
-                    userNumber = appSettings.lastPersonnelNumber.orEmpty()
-            )).also {
+            taskContentNetRequest(
+                    TaskContentParams(
+                            deviceIp = deviceInfo.getDeviceIp(),
+                            taskNumber = task.value?.number.orEmpty(),
+                            mode = GET_GOOD_LIST_MODE,
+                            userNumber = appSettings.lastPersonnelNumber.orEmpty()
+                    )
+            ).also {
                 navigator.hideProgress()
             }.either(::handleFailure, ::handleTaskContentResult)
         }
@@ -193,6 +193,11 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
             manager.clearStartTaskInfo()
             navigator.goBack()
         }
+    }
+
+    companion object {
+        /** Режим работы: 1 - получение состава задания, 2 - получение состава задания с переблокировкой */
+        private const val GET_GOOD_LIST_MODE = 1
     }
 
 }

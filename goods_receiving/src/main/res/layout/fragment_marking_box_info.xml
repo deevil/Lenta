@@ -498,13 +498,9 @@
 
                 <TextView
                     android:id="@+id/tv_product_section_id"
-                    android:layout_width="@dimen/tv_product_section_id_30dp"
-                    android:layout_height="@dimen/tv_product_section_id_30dp"
-                    android:background="@drawable/bg_white_circle"
-                    android:gravity="center"
+                    style="@style/BottomCircleIconStyle"
                     android:onClick="@{(v) -> vm.screenNavigator.openSectionInfoScreen(vm.productInfo.sectionId)}"
                     android:text='@{"" + vm.productInfo.sectionId}'
-                    android:textSize="@dimen/text_size_12sp"
                     tools:text="02" />
 
             </LinearLayout>

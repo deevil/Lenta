@@ -59,30 +59,16 @@ class TaskEOMergeFormedDocsFragment :
             rvConfig = initRecycleAdapterDataBinding(
                     layoutId = R.layout.layout_item_docs_list,
                     itemId = BR.item,
-                    onAdapterItemBind = { binding : LayoutItemDocsListBinding, position ->
+                    onItemBind = { binding: LayoutItemDocsListBinding, position ->
                         binding.counterText.tag = position
                         binding.counterText.setOnClickListener(onClickSelectionListener)
                         vm.docsItemList.value?.let { list ->
                             binding.item = list[position]
                         }
                         binding.selectedToPrint = vm.docsSelectionHelper.isSelected(position)
-                        recyclerViewKeyHandler?.let { handler ->
-                            binding.root.isSelected = handler.isSelected(position)
-                        }
                     },
-                    onAdapterItemClicked = { position ->
-                        recyclerViewKeyHandler?.let { handler ->
-                            if (!handler.isSelected(position)) {
-                                handler.selectPosition(position)
-                            }
-                        }
-                    }
-            )
-
-            recyclerViewKeyHandler = initRecyclerViewKeyHandler(
                     recyclerView = recyclerView,
-                    items = vm.docsItemList,
-                    previousPosInfo = recyclerViewKeyHandler?.posInfo?.value
+                    items = vm.docsItemList
             )
         }
     }

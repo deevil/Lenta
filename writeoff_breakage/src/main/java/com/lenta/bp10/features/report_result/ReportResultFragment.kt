@@ -7,7 +7,7 @@ import com.lenta.bp10.R
 import com.lenta.bp10.databinding.FragmentReportResultBinding
 import com.lenta.bp10.databinding.ItemTaskReportBinding
 import com.lenta.bp10.platform.extentions.getAppComponent
-import com.lenta.bp10.requests.network.WriteOffReportResponse
+import com.lenta.bp10.requests.network.SendWriteOffDataResult
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -21,7 +21,7 @@ import com.lenta.shared.utilities.state.state
 class ReportResultFragment : CoreFragment<FragmentReportResultBinding, ReportResultViewModel>(),
         OnBackPresserListener, ToolbarButtonsClickListener {
 
-    var writeOffReportResponse by state<WriteOffReportResponse?>(null)
+    var writeOffReportResponse by state<SendWriteOffDataResult?>(null)
 
     override fun getLayoutId(): Int = R.layout.fragment_report_result
 
@@ -63,9 +63,9 @@ class ReportResultFragment : CoreFragment<FragmentReportResultBinding, ReportRes
     }
 
     companion object {
-        fun create(writeOffReportResponse: WriteOffReportResponse): ReportResultFragment {
+        fun create(sendWriteOffDataResult: SendWriteOffDataResult): ReportResultFragment {
             return ReportResultFragment().apply {
-                this.writeOffReportResponse = writeOffReportResponse
+                this.writeOffReportResponse = sendWriteOffDataResult
             }
         }
     }

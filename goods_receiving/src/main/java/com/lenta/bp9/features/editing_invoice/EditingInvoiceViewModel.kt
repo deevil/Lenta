@@ -43,7 +43,6 @@ class EditingInvoiceViewModel : CoreViewModel(), PageSelectionListener, OnOkInSo
     @Inject
     lateinit var context: Context
 
-    val selectedPage = MutableLiveData(0)
     val totalSelectionsHelper = SelectionItemsHelper()
     val delSelectionsHelper = SelectionItemsHelper()
     val addSelectionsHelper = SelectionItemsHelper()

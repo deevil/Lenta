@@ -345,5 +345,12 @@
     <string name="marking_box_not_included_delivery">Отсканированная коробка не числится в поставке. Отсканируйте все марки из этого короба</string>
     <string name="marking_perform_rate_control">Сначала произведите контроль нормы путем сканирования МАРОК, а затем добавляйте марки сканированием коробок.</string>
     <string name="marking_block_declared_different_category">Марки данной коробки были заявлены в другую категорию, для добавления оставшихся марок в категорию \"%1$s\" необходимо отсканировать каждую оставшуюся марку.</string>
-
+    <string name="no_manufacturer_selection_required">Выбор производителя не требуется</string>
+    <string name="format_time">чч:мм</string>
+    <string name="label_printing">Печать этикеток</string>
+    <string name="specify_the_number_of_copies">Укажите количество копий</string>
+    <string name="printing_by_goods">Печать по товарам</string>
+    <string name="no_ip_printer_alert">IP адрес принтера не указан</string>
+    <string name="save_counted_quantities_and_go_to_label_printing">Сохранить посчитанные количества в SAP ERP и перейти к печати этикеток?</string>
+    <string name="alert_not_correct_time">Некорректное время</string>
 </resources>
