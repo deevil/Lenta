@@ -39,57 +39,45 @@ fun actionByNumber(
     }
 
     if (isShoesMark(number)) {
-        try {
-            val matchResult = Regex(Constants.SHOES_MARK_PATTERN).find(number)
-            matchResult?.let {
-                val (markWithoutTail, gtin, _, _, _, _) = it.destructured
-                val ean = gtin.getEanFromGtin()
+        val matchResult = Regex(Constants.SHOES_MARK_PATTERN).find(number)
+        matchResult?.let {
+            val (markWithoutTail, gtin, _, _, _, _) = it.destructured
+            val ean = gtin.getEanFromGtin()
 
-                Logg.d { "--> Shoes mark / markWithoutTail = $markWithoutTail / gtin = $gtin / ean = $ean" }
+            Logg.d { "--> Shoes mark / markWithoutTail = $markWithoutTail / gtin = $gtin / ean = $ean" }
 
-                funcForShoes?.invoke(markWithoutTail)
-                        ?: funcForEan?.invoke(ean)
-                        ?: funcForNotValidFormat()
-            } ?: funcForNotValidFormat()
-        } catch (e: Exception) {
-            Logg.e { "e: $e" }
-        }
+            funcForShoes?.invoke(markWithoutTail)
+                    ?: funcForEan?.invoke(ean)
+                    ?: funcForNotValidFormat()
+        } ?: funcForNotValidFormat()
 
         return
     }
 
     if (isCigarettesMark(number)) {
-        try {
-            val matchResult = Regex(Constants.CIGARETTES_MARK_PATTERN).find(number)
-            matchResult?.let {
-                val (markWithoutTail, gtin, _, _, _, _) = it.destructured
-                val ean = gtin.getEanFromGtin()
+        val matchResult = Regex(Constants.CIGARETTES_MARK_PATTERN).find(number)
+        matchResult?.let {
+            val (markWithoutTail, gtin, _, _, _, _) = it.destructured
+            val ean = gtin.getEanFromGtin()
 
-                Logg.d { "--> Cigarette mark / markWithoutTail = $markWithoutTail / gtin = $gtin / ean = $ean" }
+            Logg.d { "--> Cigarette mark / markWithoutTail = $markWithoutTail / gtin = $gtin / ean = $ean" }
 
-                funcForCigarettes?.invoke(markWithoutTail) ?: funcForNotValidFormat()
-            } ?: funcForNotValidFormat()
-        } catch (e: Exception) {
-            Logg.e { "e: $e" }
-        }
+            funcForCigarettes?.invoke(markWithoutTail) ?: funcForNotValidFormat()
+        } ?: funcForNotValidFormat()
 
         return
     }
 
     if (isCigarettesBox(number)) {
-        try {
-            val matchResult = Regex(Constants.CIGARETTES_BOX_PATTERN).find(number)
-            matchResult?.let {
-                val (markWithoutTail, gtin, _, _, _, _) = it.destructured
-                val ean = gtin.getEanFromGtin()
+        val matchResult = Regex(Constants.CIGARETTES_BOX_PATTERN).find(number)
+        matchResult?.let {
+            val (markWithoutTail, gtin, _, _, _, _) = it.destructured
+            val ean = gtin.getEanFromGtin()
 
-                Logg.d { "--> Cigarette box mark / markWithoutTail = $markWithoutTail / gtin = $gtin / ean = $ean" }
+            Logg.d { "--> Cigarette box mark / markWithoutTail = $markWithoutTail / gtin = $gtin / ean = $ean" }
 
-                funcForCigaretteBox?.invoke(markWithoutTail) ?: funcForNotValidFormat()
-            } ?: funcForNotValidFormat()
-        } catch (e: Exception) {
-            Logg.e { "e: $e" }
-        }
+            funcForCigaretteBox?.invoke(markWithoutTail) ?: funcForNotValidFormat()
+        } ?: funcForNotValidFormat()
 
         return
     }
