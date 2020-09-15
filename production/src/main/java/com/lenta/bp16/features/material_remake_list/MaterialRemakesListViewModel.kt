@@ -26,6 +26,7 @@ import com.lenta.bp16.request.ingredients_use_case.set_data.SetZPartDataInfoUseC
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.asyncLiveData
+import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.unsafeLazy
 import javax.inject.Inject
@@ -119,8 +120,8 @@ class MaterialRemakesListViewModel : CoreViewModel() {
                             lgort = materialIngredientDataInfo.lgort,
                             desc = materialIngredientDataInfo.ltxa1,
                             position = (index + 1).toString(),
-                            plan = getFieldWithSuffix(materialIngredientDataInfo.plan_qnt, suffix),
-                            fact = getFieldWithSuffix(materialIngredientDataInfo.done_qnt, suffix)
+                            plan = getFieldWithSuffix(materialIngredientDataInfo.plan_qnt.toDouble().dropZeros(), suffix),
+                            fact = getFieldWithSuffix(materialIngredientDataInfo.done_qnt.toDouble().dropZeros(), suffix)
                     )
                 })
             }
