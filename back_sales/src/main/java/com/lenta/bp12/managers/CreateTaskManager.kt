@@ -410,7 +410,7 @@ class CreateTaskManager @Inject constructor(
                             taskType = task.type.code,
                             tkNumber = tkNumber,
                             storage = task.storage,
-                            reasonCode = task.reason.code,
+                            reasonCode = task.reason?.code.orEmpty(),
                             isNotFinish = false.toSapBooleanString(),
                             positions = positions,
                             exciseMarks = marks,
