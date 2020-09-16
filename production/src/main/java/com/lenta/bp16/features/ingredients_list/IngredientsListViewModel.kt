@@ -215,21 +215,35 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                 else -> null
             }?.let { ingredientUI ->
                 allIngredientsInfo.value?.find { it.code == ingredientUI.code }?.let { selectedIngredient ->
+
                     val positionInList = ingredientUI.position.toInt()
-                    if (selectedIngredient.isByOrder) {
-                        val barcode = allIngredientsEanInfo.value?.getOrNull(positionInList)
-                                .orIfNull {
-                                    OrderByBarcodeUI(
-                                            matnr = FAKE_MATNR,
-                                            ean = FAKE_EAN,
-                                            ean_nom = EAN_NOM,
-                                            ean_umrez = EAN_UMREZ,
-                                            ean_umren = EAN_UMREN
-                                    )
-                                }
-                        navigator.openOrderDetailsScreen(selectedIngredient, barcode)
-                    } else {
-                        navigator.openMaterialRemakesScreen(selectedIngredient)
+                    val barcode = allIngredientsEanInfo.value?.getOrNull(positionInList)
+                            .orIfNull {
+                                OrderByBarcodeUI(
+                                        matnr = FAKE_MATNR,
+                                        ean = FAKE_EAN,
+                                        ean_nom = EAN_NOM,
+                                        ean_umrez = EAN_UMREZ,
+                                        ean_umren = EAN_UMREN
+                                )
+                            }
+
+                    when (selectedIngredient.blockType) {
+                        IngredientInfoUI.BLOCK_BY_MYSELF -> navigator.showAlertBlockedTaskByMe(sessionInfo.userName.orEmpty()) {
+                            if (selectedIngredient.isByOrder) {
+                                navigator.openOrderDetailsScreen(selectedIngredient, barcode)
+                            } else {
+                                navigator.openMaterialRemakesScreen(selectedIngredient)
+                            }
+                        }
+                        IngredientInfoUI.BLOCK_BY_OTHER -> navigator.showAlertBlockedTaskAnotherUser(TEST_ANOTHER_USER)
+                        else -> {
+                            if (selectedIngredient.isByOrder) {
+                                navigator.openOrderDetailsScreen(selectedIngredient, barcode)
+                            } else {
+                                navigator.openMaterialRemakesScreen(selectedIngredient)
+                            }
+                        }
                     }
                 }
             }
@@ -244,4 +258,9 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
         numberField.value = data
         searchByBarcode()
     }
+
+    companion object{
+        const val TEST_ANOTHER_USER = "Тестовый чужой пользователь"
+    }
+
 }
