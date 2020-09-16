@@ -154,11 +154,11 @@
         </LinearLayout>
 
         <View
-            android:visibility="@{vm.dateVisibleCondition ? View.VISIBLE : View.GONE}"
+            android:visibility="@{vm.dateVisibleCondition}"
             style="@style/HorizontalDivider"/>
 
         <LinearLayout
-            android:visibility="@{vm.dateVisibleCondition ? View.VISIBLE : View.GONE}"
+            android:visibility="@{vm.dateVisibleCondition}"
             style="@style/LinearRowStyle">
 
             <LinearLayout
@@ -217,7 +217,7 @@
             app:layout_constraintStart_toStartOf="parent" />
 
         <ImageButton
-            android:visibility="@{vm.vetIconInfoCondition ? View.VISIBLE : View.GONE}"
+            android:visibility="@{vm.vetIconInfoCondition}"
             android:id="@+id/ib_scan_code-128"
             android:layout_margin="@dimen/size_8dp"
             app:layout_constraintBottom_toBottomOf="parent"
