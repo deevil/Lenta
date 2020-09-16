@@ -191,12 +191,13 @@ class OpenTaskManager @Inject constructor(
                         val index = basketList.lastOrNull()?.index?.plus(1) ?: INDEX_OF_FIRST_BASKET
                         Basket(
                                 index = index,
-                                section = good.section.takeIf{ task.type?.isDivBySection == true},
+                                section = good.section.takeIf { task.type?.isDivBySection == true },
                                 volume = basketVolume,
-                                provider = provider.takeIf{ task.type?.isDivByProvider == true},
+                                provider = provider.takeIf { task.type?.isDivByProvider == true },
                                 control = good.control,
-                                goodType = good.type.takeIf{ task.type?.isDivByGoodType == true},
-                                markTypeGroup = good.markTypeGroup
+                                goodType = good.type.takeIf { task.type?.isDivByGoodType == true },
+                                markTypeGroup = good.markTypeGroup,
+                                purchaseGroup = good.purchaseGroup.takeIf { task.type?.isDivByPurchaseGroup == true }
                         ).also {
                             it.maxRetailPrice = good.maxRetailPrice
                             addBasket(it)
@@ -211,7 +212,7 @@ class OpenTaskManager @Inject constructor(
         return currentTask.value?.let { task ->
             currentGood.value?.let { good ->
                 task.type?.let { type ->
-                    with(type){
+                    with(type) {
                         task.baskets.lastOrNull { basket ->
                             //Если в задании есть деление по параметру (task.type), то сравниваем,
                             //Если нет — то просто пропускаем как подходящий для корзины
@@ -356,7 +357,8 @@ class OpenTaskManager @Inject constructor(
                             markType = markType,
                             markTypeGroup = database.getMarkTypeGroupByMarkType(markType),
                             maxRetailPrice = positionInfo.maxRetailPrice?.toDoubleOrNull().dropZeros(),
-                            type = ""
+                            type = "",
+                            purchaseGroup = purchaseGroup
                     )
 
                     factQuantity?.toDoubleOrNull()?.let { factQuantity ->
@@ -395,7 +397,8 @@ class OpenTaskManager @Inject constructor(
                     control = control,
                     provider = taskGoods.firstOrNull()?.provider,
                     volume = basketVolume,
-                    markTypeGroup = markTypeGroup
+                    markTypeGroup = markTypeGroup,
+                    purchaseGroup = restBasket.purchaseGroup
             ).apply {
                 isLocked = restBasket.isClose.isSapTrue()
                 isPrinted = restBasket.isPrint.isSapTrue()

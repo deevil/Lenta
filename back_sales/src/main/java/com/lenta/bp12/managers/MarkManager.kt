@@ -13,6 +13,7 @@ import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.extentions.isAnyAlreadyIn
 import com.lenta.bp12.model.pojo.extentions.mapToMarkList
+import com.lenta.bp12.platform.ZERO_VOLUME
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
 import com.lenta.bp12.platform.extention.getMarkStatus
@@ -344,10 +345,11 @@ class MarkManager @Inject constructor(
                                 ?: 1.0,
                         providers = providers.orEmpty().toMutableList(),
                         producers = producers.orEmpty().toMutableList(),
-                        volume = materialInfo?.volume?.toDoubleOrNull() ?: DEFAULT_VOLUME_VALUE,
+                        volume = materialInfo?.volume?.toDoubleOrNull() ?: ZERO_VOLUME,
                         markType = markType,
                         markTypeGroup = database.getMarkTypeGroupByMarkType(markType),
-                        maxRetailPrice = mrc
+                        maxRetailPrice = mrc,
+                        purchaseGroup = materialInfo?.purchaseGroup.orEmpty()
                 )
 
                 if(createdGood.material != good?.material) {
@@ -395,11 +397,12 @@ class MarkManager @Inject constructor(
                                     ?: DEFAULT_INNER_QUALITY_VALUE,
                             provider = task.provider,
                             producers = producers?.toMutableList().orEmpty().toMutableList(),
-                            volume = materialInfo?.volume?.toDoubleOrNull() ?: DEFAULT_VOLUME_VALUE,
+                            volume = materialInfo?.volume?.toDoubleOrNull() ?: ZERO_VOLUME,
                             markType = markType,
                             markTypeGroup = database.getMarkTypeGroupByMarkType(markType),
                             maxRetailPrice = mrc,
-                            type = materialInfo?.goodType.orEmpty()
+                            type = materialInfo?.goodType.orEmpty(),
+                            purchaseGroup = materialInfo?.purchaseGroup.orEmpty()
                     )
                     if(createdGood.material != good.material) {
                         createdGoodToShowError.value = createdGood
@@ -676,6 +679,5 @@ class MarkManager @Inject constructor(
     companion object {
         private const val DEFAULT_UMREZ = 1.0
         private const val DEFAULT_INNER_QUALITY_VALUE = 1.0
-        private const val DEFAULT_VOLUME_VALUE = 0.0
     }
 }

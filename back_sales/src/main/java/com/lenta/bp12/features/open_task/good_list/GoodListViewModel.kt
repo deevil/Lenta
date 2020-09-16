@@ -12,6 +12,8 @@ import com.lenta.bp12.model.pojo.extentions.getDescription
 import com.lenta.bp12.model.pojo.extentions.getQuantityFromGoodList
 import com.lenta.bp12.model.pojo.extentions.isAnyNotLocked
 import com.lenta.bp12.model.pojo.extentions.isAnyPrinted
+import com.lenta.bp12.platform.DEFAULT_QUANTITY
+import com.lenta.bp12.platform.ZERO_VOLUME
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
 import com.lenta.bp12.platform.extention.getMarkType
@@ -429,19 +431,16 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                     control = getControlType(),
                     commonUnits = database.getUnitsByCode(materialInfo?.commonUnitsCode.orEmpty()),
                     innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
-                    innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull() ?: 0.0,
+                    innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull() ?: DEFAULT_QUANTITY,
                     provider = task.value?.provider ?: ProviderInfo(),
                     producers = producers.orEmpty().toMutableList(),
-                    volume = materialInfo?.volume?.toDoubleOrNull() ?: 0.0,
+                    volume = materialInfo?.volume?.toDoubleOrNull() ?: ZERO_VOLUME,
                     markType = markType,
                     markTypeGroup = database.getMarkTypeGroupByMarkType(markType),
                     maxRetailPrice = "",
-                    type = materialInfo?.goodType.orEmpty()
+                    type = materialInfo?.goodType.orEmpty(),
+                    purchaseGroup = materialInfo?.purchaseGroup.orEmpty()
             )
-
-            if (goodOpen.kind == GoodKind.EXCISE) {
-                navigator.showForExciseGoodNeedScanFirstMark()
-            }
 
             setFoundGood(goodOpen)
         }
