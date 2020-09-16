@@ -62,6 +62,7 @@ import com.lenta.bp9.features.transfer_goods_section.TransferGoodsSectionViewMod
 import com.lenta.bp9.features.transport_marriage.TransportMarriageViewModel
 import com.lenta.bp9.features.transport_marriage.cargo_unit.TransportMarriageCargoUnitViewModel
 import com.lenta.bp9.features.goods_details.transport_marriage_goods_details.TransportMarriageGoodsDetailsViewModel
+import com.lenta.bp9.features.goods_information.marking.taskPGE.PGEMarkingBoxInfoViewModel
 import com.lenta.bp9.features.transport_marriage.goods_info.TransportMarriageGoodsInfoViewModel
 import com.lenta.bp9.features.transportation_number.TransportationNumberViewModel
 import com.lenta.bp9.main.MainActivity
@@ -161,6 +162,7 @@ interface AppComponent : FromParentToCoreProvider {
     fun inject(it: MarkingGoodsDetailsViewModel)
     fun inject(it: MarkingProductFailureViewModel)
     fun inject(it: MarkingBoxInfoViewModel)
+    fun inject(it: PGEMarkingBoxInfoViewModel)
     fun inject(it: ZBatchesInfoPPPViewModel)
     fun inject(it: LabelPrintingViewModel)
     fun inject(it: PrintLabelsCountCopiesViewModel)
