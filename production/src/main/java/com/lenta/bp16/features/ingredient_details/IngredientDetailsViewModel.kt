@@ -296,19 +296,14 @@ class IngredientDetailsViewModel : CoreViewModel(), IZpartVisibleConditions {
         }
     }
 
-    private suspend fun getEntryId(matnr: String): String {
-        return orderIngredient.value?.isVet?.run {
-            val selectedIngredient = withContext(Dispatchers.IO) {
-                mercuryDataInfo.value?.filter { it.matnr == matnr }
-            }
-            selectedIngredient?.getOrNull(0)?.entryId.orEmpty()
+    private fun getEntryId(): String {
+        return orderIngredient.value?.isVet?.let {
+            mercuryDataInfo.value?.getOrNull(0)?.entryId.orEmpty()
         }.orEmpty()
     }
 
-    private suspend fun getZPartInfo(matnr: String): ZPartDataInfoUI? {
-        return withContext(Dispatchers.IO) {
-            zPartDataInfo.value?.filter { it.matnr == matnr }?.getOrNull(0)
-        }
+    private fun getZPartInfo(): ZPartDataInfoUI? {
+        return zPartDataInfo.value?.getOrNull(0)
     }
 
     private suspend fun setBatchNewInfo(): List<BatchNewDataInfoParam>? {
@@ -329,9 +324,8 @@ class IngredientDetailsViewModel : CoreViewModel(), IZpartVisibleConditions {
 
     fun onCompleteClicked() = launchUITryCatch {
         val weight = total.value ?: 0.0
-        val matnr = orderIngredient.value?.matnr.orEmpty()
-        val entryId = getEntryId(matnr)
-        val zPartInfo = getZPartInfo(matnr)
+        val entryId = getEntryId()
+        val zPartInfo = getZPartInfo()
         val batchId = zPartInfo?.batchId.orEmpty()
         val batchNew = if (zPartInfo == null) {
             setBatchNewInfo()
