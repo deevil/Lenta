@@ -393,7 +393,7 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
         }
 
         //блок 6.131
-        if (spinEnteredDateSelectedPosition.value == infoForSpinEnteredDate.value?.indexOfLast { it.code == "001" }) {
+        if (spinEnteredDateSelectedPosition.value == infoForSpinEnteredDate.value?.indexOfLast { it.code == TERM_CONTROL_CODE_SHELF_LIFE }) {
             //блок 6.146
             expirationDate.value?.time = formatterRU.parse(enteredDate.value)
         } else {

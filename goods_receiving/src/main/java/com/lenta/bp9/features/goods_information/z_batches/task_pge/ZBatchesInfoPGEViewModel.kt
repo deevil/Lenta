@@ -6,10 +6,12 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
 import com.lenta.bp9.features.delegates.SearchProductDelegate
 import com.lenta.bp9.features.goods_information.base.BaseGoodsInfo
+import com.lenta.bp9.model.processing.ProcessZBatchesPGEService
 import com.lenta.bp9.model.processing.ProcessZBatchesPPPService
 import com.lenta.bp9.model.task.PartySignsTypeOfZBatches
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
@@ -35,7 +37,7 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
     lateinit var timeMonitor: ITimeMonitor
 
     @Inject
-    lateinit var processZBatchesPPPService: ProcessZBatchesPPPService
+    lateinit var processZBatchesPGEService: ProcessZBatchesPGEService
 
     val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData(false)
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
@@ -50,6 +52,14 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
     val remainingShelfLife: MutableLiveData<String> = MutableLiveData()
     val count: MutableLiveData<String> = MutableLiveData("0")
     val isDiscrepancy: MutableLiveData<Boolean> = MutableLiveData(false)
+
+    val isGoodsAddedAsSurplus: MutableLiveData<Boolean> by lazy {
+        MutableLiveData(productInfo.value?.isGoodsAddedAsSurplus == true )
+    }
+
+    val isEizUnit: MutableLiveData<Boolean> by lazy {
+        MutableLiveData(isDiscrepancy.value == false && isGoodsAddedAsSurplus.value == false)
+    }
 
     private val currentTermControlCode: String
         get() {
@@ -98,6 +108,8 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
     private val addGoods: MutableLiveData<Boolean> = MutableLiveData(false)
     private val isClickApply: MutableLiveData<Boolean> = MutableLiveData(false)
     private val paramGrsGrundNeg: MutableLiveData<String> = MutableLiveData("")
+    private val paramGrwOlGrundcat: MutableLiveData<String> = MutableLiveData("")
+    private val paramGrwUlGrundcat: MutableLiveData<String> = MutableLiveData("")
 
     val enabledApplyButton: MutableLiveData<Boolean> =
             countValue
@@ -180,7 +192,7 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
         launchUITryCatch {
             productInfo.value
                     ?.let {
-                        if (processZBatchesPPPService.newProcessZBatchesPPPService(it) == null) {
+                        if (processZBatchesPGEService.newProcessZBatchesPGEService(it) == null) {
                             screenNavigator.goBackAndShowAlertWrongProductType()
                             return@launchUITryCatch
                         }
@@ -229,6 +241,9 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
             infoForSpinEnteredDate.value = dataBase.getTermControlInfo()
             termControlInfo.value = dataBase.getTermControlInfo()
             spinEnteredDate.value = termControlInfo.value?.map { it.name }.orEmpty()
+
+            paramGrwOlGrundcat.value = dataBase.getParamGrwOlGrundcat() ?: ""
+            paramGrwUlGrundcat.value = dataBase.getParamGrwUlGrundcat() ?: ""
 
             /** Z-партии всегда скоропорт */
             val productGeneralShelfLife = productInfo.value?.generalShelfLife?.toInt() ?: 0
@@ -293,6 +308,14 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
         } catch (e: Exception) {
             false
         }
+    }
+
+    private fun convertEizToBei() : Double {
+        var addNewCount = countValue.value!!.toDouble()
+        if (isEizUnit.value!!) {
+            addNewCount *= productInfo.value?.quantityInvest?.toDouble() ?: 1.0
+        }
+        return addNewCount
     }
 
     fun onClickPositionSpinQuality(position: Int) {
@@ -369,14 +392,30 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
     }
 
     fun onClickAdd() {
-        addPerishable()
+        //todo временно закомичено, т.к. по Добавлению товара, который не числится в задании и не пересчетной ГЕ будет дорабатываться позже
+        /**if (isGoodsAddedAsSurplus.value == true) { //GRZ. ПГЕ. Добавление товара, который не числится в задании https://trello.com/c/im9rJqrU
+            processGeneralProductService.setProcessingUnitNumber(enteredProcessingUnitNumber.value!!)
+            processGeneralProductService.add(convertEizToBei().toString(), qualityInfo.value!![spinQualitySelectedPosition.value!!].code, enteredProcessingUnitNumber.value!!)
+            clickBtnApply()
+        } else if (isNotRecountCargoUnit.value == true) { //не пересчетная ГЕ
+            if ((convertEizToBei() +
+                            acceptTotalCount.value!! +
+                            taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProductPGE(productInfo.value!!)) <= productInfo.value!!.orderQuantity.toDouble()) {
+                processGeneralProductService.addNotRecountPGE(acceptTotalCount.value.toString(), convertEizToBei().toString(), qualityInfo.value!![spinQualitySelectedPosition.value!!].code, spinReasonRejection.value!![spinReasonRejectionSelectedPosition.value!!].substring(5))
+                clickBtnApply()
+            } else {
+                screenNavigator.openAlertUnableSaveNegativeQuantity()
+            }*/
+        //} else {
+            addPerishablePGE()
+        //}
     }
 
-    //Z-партии скоропорт расчитываются как и ППП(обычный товар)-скоропорт. в блок-схеме лист 6 "Карточка товара ППП" блок - 6.3
-    private fun addPerishable() {
-        //блок 6.101
-        if (currentQualityInfoCode != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
-            addOrdinaryGoods()
+    //Z-партии скоропорт расчитываются как и ПГЕ(обычный товар)-скоропорт. в блок-схеме лист 7 "Карточка товара ПГЕ" блок - 7.2
+    private fun addPerishablePGE() {
+        //блок 7.103
+        if (currentQualityInfoCode != TYPE_DISCREPANCIES_QUALITY_NORM) {
+            addOrdinaryGoodsPGE()
             return
         }
 
@@ -390,231 +429,210 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
             return
         }
 
-        //блок 6.131
-        if (spinEnteredDateSelectedPosition.value == infoForSpinEnteredDate.value?.indexOfLast { it.code == "001" }) {
-            //блок 6.146
+        //блок 7.134
+        if (spinEnteredDateSelectedPosition.value == infoForSpinEnteredDate.value?.indexOfLast {it.code == TERM_CONTROL_CODE_SHELF_LIFE}) {
+            //блок 7.154
             expirationDate.value?.time = formatterRU.parse(enteredDate.value)
         } else {
-            //блок 6.144
+            //блок 7.153
             expirationDate.value?.time = formatterRU.parse(enteredDate.value)
             expirationDate.value?.add(Calendar.DATE, generalShelfLife.value?.toInt() ?: 0)
         }
 
-
+        //блок 7.160
+        val currentTypeDiscrepancies =
+                qualityInfo.value
+                        ?.get(spinQualitySelectedPosition.value ?: 0)
+                        ?.code
+                        .orEmpty()
         if (expirationDate.value!!.time <= currentDate.value
-                && currentTypeDiscrepanciesCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
-            //блок 6.158
+                && currentTypeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
+            //блок 7.168
             screenNavigator.openShelfLifeExpiredDialog(
-                    //блок 6.170
+                    //блок 7.180
                     yesCallbackFunc = {
-                        //блок 6.174
-                        spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast { it.code == "7" }
+                        //блок 7.183
+                        spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast {it.code == "5"} //устанавливаем брак складской, Маша Стоян
+                        //spinShelfLifeSelectedPosition.value = shelfLifeInfo.value!!.indexOfLast {it.code == "001"} закомичено, т.к. данное поле активно только при категориях Норма и Излишек
                     }
             )
             return
         }
 
-        //блоки 6.157 и 6.182
-        if (Days.daysBetween(DateTime(currentDate.value), DateTime(expirationDate.value!!.time)).days > remainingShelfLife.value?.toLong() ?: 0) {
-            //блок 6.192
-            addOrdinaryGoods()
+        //блоки 7.167 и 7.190
+        if ( Days.daysBetween(DateTime(currentDate.value), DateTime(expirationDate.value!!.time)).days > remainingShelfLife.value?.toLong() ?: 0 ) {
+            //блок 7.203
+            addOrdinaryGoodsPGE()
             return
         }
 
-        //блок 6.184
+        //блок 7.194
         screenNavigator.openShelfLifeExpiresDialog(
-                //блок 6.189
+                //блок 7.200
                 noCallbackFunc = {
-                    //блок 6.191
-                    spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast { it.code == "7" }
+                    //блок 7.201
+                    spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast {it.code == "5"} //устанавливаем брак складской
                 },
-                //блок 6.188
+                //блок 7.199
                 yesCallbackFunc = {
-                    //блок 6.192
-                    addOrdinaryGoods()
+                    //блок 7.203
+                    addOrdinaryGoodsPGE()
                 },
                 expiresThrough = Days.daysBetween(DateTime(currentDate.value), DateTime(expirationDate.value!!.time)).days.toString()
         )
     }
 
-    //как и ППП-обычный товар. в блок-схеме лист 6 "Карточка товара ППП" блок - 6.8
-    private fun addOrdinaryGoods() {
-        val enteredCount = countValue.value ?: 0.0
-        //блок 6.16
-        if (processZBatchesPPPService.countEqualOrigQuantity(enteredCount)) {//блок 6.16 (да)
-            //блок 6.172
-            saveCategory()
-        } else {//блок 6.16 (нет)
-            //блок 6.22
-            if (processZBatchesPPPService.countMoreOrigQuantity(enteredCount)) {//блок 6.22 (да)
-                //блок 6.58
-                checkParamGrsGrundNeg()
-            } else {//блок 6.22 (нет)
-                //блок 6.26
-                if (productInfo.value!!.uom.code == "G") {//блок 6.26 (да)
-                    //блок 6.49
-                    val roundingQuantity = processZBatchesPPPService.getRoundingQuantity() - enteredCount // "- countValue.value!!" -> этого в блок-схеме нету, но без этого не правильно расчитывается необходимость округления, добавлено при отработке карточки https://trello.com/c/hElr3cn3
-                    //блок 6.90
-                    val productRoundingShortages = productInfo.value?.roundingShortages?.toDoubleOrNull()
-                            ?: 0.0
-                    if (roundingQuantity <= productRoundingShortages) {//блок 6.90 (да)
-                        //блок 6.109
+    //как и в ПГЕ-обычный товар. в блок-схеме лист 7 "Карточка товара ПГЕ" блок - 7.6
+    private fun addOrdinaryGoodsPGE() {
+        //блок 7.15
+        if (processZBatchesPGEService.countEqualOrigQuantityPGE(convertEizToBei())) {//блок 7.15 (да)
+            //блок 7.177
+            saveCategoryPGE(true)
+        } else {//блок 7.15 (нет)
+            //блок 7.21 (processGeneralProductService.getOpenQuantityPGE - блок 7.11)
+            if (processZBatchesPGEService.getQuantityAllCategoryPGE(convertEizToBei()) > processZBatchesPGEService.getOpenQuantityPGE(paramGrwOlGrundcat.value!!, paramGrwUlGrundcat.value!!)) {
+                //блок 7.55
+                checkParamGrwUlGrundcat()
+            } else {
+                //блок 7.43
+                if (productInfo.value!!.uom.code == "G") {
+                    //блок 7.63
+                    val roundingQuantity = processZBatchesPGEService.getRoundingQuantityPGE() - countValue.value!! // "- countValue.value!!" -> этого в блок-схеме нету, но без этого не правильно расчитывается необходимость округления, добавлено при доработке карточки https://trello.com/c/hElr3cn3
+                    //блок 7.110
+                    if (roundingQuantity <= productInfo.value!!.roundingShortages.toDouble()) {//блок 7.110 (да)
+                        //блок 7.156
                         screenNavigator.openRoundingIssueDialog(
-                                //блок 6.148
+                                //блок 7.163
                                 noCallbackFunc = {
-                                    //блок 6.172
-                                    saveCategory()
+                                    //блок 7.177
+                                    saveCategoryPGE(true)
                                 },
-                                //блок 6.149
+                                //блок 7.164
                                 yesCallbackFunc = {
-                                    //блок 6.154
-                                    count.value = (enteredCount + roundingQuantity).toString()
-                                    //блок 6.172
-                                    saveCategory()
+                                    //блок 7.169
+                                    count.value = (countValue.value!! + roundingQuantity).toString()
+                                    //блок 7.177
+                                    saveCategoryPGE(true)
                                 }
                         )
-                    } else {//блок 6.90 (нет)
-                        //блок 6.172
-                        saveCategory()
+                    } else {//блок 7.110 (нет)
+                        //блок 7.177
+                        saveCategoryPGE(true)
                     }
-                } else {//блок 6.26 (нет)
-                    //блок 6.172
-                    saveCategory()
+                } else {
+                    //блок 7.177
+                    saveCategoryPGE(true)
                 }
             }
         }
     }
 
-    //ППП блок 6.58
-    private fun checkParamGrsGrundNeg() {
-        val paramGrsGrundNegValue = paramGrsGrundNeg.value.orEmpty()
-        if (processZBatchesPPPService.checkParam(paramGrsGrundNegValue)) {//блок 6.58 (да)
-            //блок 6.93
-            val countWithoutParamGrsGrundNeg = processZBatchesPPPService.countWithoutParamGrsGrundNeg(paramGrsGrundNegValue)
-            //блок 6.130
-            if (countWithoutParamGrsGrundNeg == 0.0) {//блок 6.130 (да)
-                //блок 6.121
-                processZBatchesPPPService.removeDiscrepancyFromProduct(paramGrsGrundNegValue)
-                //блок 6.172
-                saveCategory()
-            } else {//блок 6.130 (нет)
-                //блок 6.147
-                if (countWithoutParamGrsGrundNeg > 0.0) {//блок 6.147 (да)
-                    //блок 6.145
-                    processZBatchesPPPService.addWithoutUnderload(
-                            typeDiscrepancies = paramGrsGrundNegValue,
-                            count = countWithoutParamGrsGrundNeg.toString(),
-                            manufactureCode = currentManufactureCode,
-                            shelfLifeDate = getShelfLifeDate(),
-                            shelfLifeTime = getShelfLifeTime(),
-                            partySignsType = getPartySignsType()
+    //ПГЕ блок 7.55
+    private fun checkParamGrwUlGrundcat() {
+        if (processZBatchesPGEService.checkParam(paramGrwUlGrundcat.value!!)) {//блок 7.55 (да)
+            //блок 7.96
+            val countWithoutParamGrwUlGrundcat = processZBatchesPGEService.countWithoutParamGrwUlGrundcatPGE(paramGrwOlGrundcat.value!!, paramGrwUlGrundcat.value!!)
+            //блок 7.135
+            if (countWithoutParamGrwUlGrundcat == 0.0) {//блок 7.135 (да)
+                //блок 7.133
+                processZBatchesPGEService.removeDiscrepancyFromProduct(paramGrwUlGrundcat.value!!)
+                //блок 7.177
+                saveCategoryPGE(true)
+            } else {//блок 7.135 (нет)
+                //блок 7.157
+                if (countWithoutParamGrwUlGrundcat > 0.0) {//блок 7.157 (да)
+                    //блок 7.155
+                    processZBatchesPGEService.addWithoutUnderload(
+                            paramGrwUlGrundcat.value!!,
+                            countWithoutParamGrwUlGrundcat.toString(),
+                            spinReasonRejection.value!![spinReasonRejectionSelectedPosition.value!!].substring(5)
                     )
-                    //блок 6.172
-                    saveCategory()
-                } else {//блок 6.147 (нет)
-                    //блок 6.155
-                    processZBatchesPPPService.removeDiscrepancyFromProduct(paramGrsGrundNegValue)
-                    noParamGrsGrundNeg()
+                    //блок 7.177
+                    saveCategoryPGE(true)
+                } else {//блок 7.157 (нет)
+                    //блок 7.165
+                    processZBatchesPGEService.removeDiscrepancyFromProduct(paramGrwUlGrundcat.value!!)
+                    noParamGrwUlGrundcat()
                 }
             }
-        } else {//блок 6.58 (нет)
-            noParamGrsGrundNeg()
+        } else {//блок 7.55 (нет)
+            noParamGrwUlGrundcat()
         }
     }
 
-    //ППП блок 6.163
-    private fun noParamGrsGrundNeg() {
-        if (productInfo.value?.uom?.code == "G") {//блок 6.163 (да)
-            //блок 6.167
-            val enteredCount = countValue.value ?: 0.0
-            val roundingQuantity = processZBatchesPPPService.getRoundingQuantity() - enteredCount // "- enteredCount" -> этого в блок-схеме нету, но без этого не правильно расчитывается необходимость округления, добавлено при доработке карточки https://trello.com/c/hElr3cn3
-            //блок 6.173
-            val productRoundingSurplus = productInfo.value?.roundingSurplus?.toDoubleOrNull() ?: 0.0
-            if (roundingQuantity <= productRoundingSurplus) {//блок 6.173 (да)
-                //блок 6.175
+    //ПГЕ блок 7.174
+    private fun noParamGrwUlGrundcat() {
+        if (productInfo.value!!.uom.code == "G") {//блок 7.174 (да)
+            //блок 7.178
+            val roundingQuantity = processZBatchesPGEService.getRoundingQuantityPGE() - countValue.value!! // "- countValue.value!!" -> этого в блок-схеме нету, но без этого не правильно расчитывается необходимость округления, добавлено при доработке карточки https://trello.com/c/hElr3cn3
+            //блок 7.184
+            if (roundingQuantity <= productInfo.value!!.roundingSurplus.toDouble()) {//блок 7.184 (да)
+                //блок 7.186
                 screenNavigator.openRoundingIssueDialog(
-                        //блок 6.178
+                        //блок 7.195
                         noCallbackFunc = {
-                            //блок 6.187
-                            calculationOverdelivery()
+                            //блок 7.198
+                            checkParamGrwOlGrundcat()
                         },
-                        //блок 6.179
+                        //блок 7.193
                         yesCallbackFunc = {
-                            //блок 6.185
-                            count.value = (enteredCount + roundingQuantity).toString()
-                            //блок 6.172
-                            saveCategory()
+                            //блок 7.196
+                            count.value = (countValue.value!! + roundingQuantity).toString()
+                            //блок 7.177
+                            saveCategoryPGE(true)
                         }
                 )
-            } else {//блок 6.173 (нет)
-                //блок 6.187
-                calculationOverdelivery()
+            } else {//блок 7.184 (нет)
+                //блок  7.198
+                checkParamGrwOlGrundcat()
             }
-        } else {//блок 6.163 (нет)
-            //блок 6.187
-            calculationOverdelivery()
+        } else {//блок 7.174 (нет)
+            //блок 7.198
+            checkParamGrwOlGrundcat()
         }
     }
 
-    //ППП блок 6.187
-    private fun calculationOverdelivery() {
-        val enteredCount = countValue.value ?: 0.0
-        //блок 6.187
-        val productOrderQuantity = productInfo.value?.orderQuantity?.toDoubleOrNull() ?: 0.0
-        val productOverdToleranceLimit = productInfo.value?.overdToleranceLimit?.toDoubleOrNull()
-                ?: 0.0
-        val countOverdelivery = productOrderQuantity + (productOverdToleranceLimit / 100) * productOrderQuantity
-
-        //блок 6.190
-        val quantityAllCategoryAndEnteredCount = processZBatchesPPPService.getQuantityAllCategory() + enteredCount
-        if (quantityAllCategoryAndEnteredCount > countOverdelivery) {//блок 6.190 (да)
-            //блок 6.193
-            screenNavigator.openAlertCountMoreOverdelivery()
-            return
-        }
-
-        //блок 6.190 (нет)
-        val productOrigQuantity = productInfo.value?.origQuantity?.toDoubleOrNull() ?: 0.0
-        if (productOrigQuantity > productOrderQuantity) {
-            val calculationOne = productOrigQuantity - productOrderQuantity
-            val calculationTwo = productOrigQuantity - (processZBatchesPPPService.getQuantityAllCategory() + enteredCount)
-            val calculation = if (calculationOne < calculationTwo) calculationOne else calculationTwo
-            if (calculation > 0.0) {
-                processZBatchesPPPService.add(
-                        count = calculation.toString(),
-                        typeDiscrepancies = TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_REASON_REJECTION_NOT_ORDER,
-                        manufactureCode = currentManufactureCode,
-                        shelfLifeDate = getShelfLifeDate(),
-                        shelfLifeTime = getShelfLifeTime(),
-                        partySignsType = getPartySignsType()
+    //ПГЕ блок 7.198
+    private fun checkParamGrwOlGrundcat() {
+        if (qualityInfo.value!![spinQualitySelectedPosition.value!!].code == "1" || qualityInfo.value!![spinQualitySelectedPosition.value!!].code == paramGrwOlGrundcat.value!!) {//блок 7.198 (да)
+            //блок 7.202
+            val countNormAndParamMoreOrderQuantity = processZBatchesPGEService.countNormAndParamMoreOrderQuantityPGE(paramGrwOlGrundcat.value!!, convertEizToBei())
+            if (countNormAndParamMoreOrderQuantity) {//блок 7.202 (да)
+                //блок 7.205
+                screenNavigator.openAlertCountMoreCargoUnitDialog(
+                        //блок 7.208
+                        yesCallbackFunc = {
+                            //блок 7.209
+                            processZBatchesPGEService.addCountMoreCargoUnit(paramGrwOlGrundcat.value!!, convertEizToBei(), spinReasonRejection.value!![spinReasonRejectionSelectedPosition.value!!].substring(5))
+                            //блок 7.188 (переходим минуя 7.177 и 7.185, т.к. мы уже сохранили данные в блоке 7.209)
+                            clickBtnApply()
+                        }
                 )
+            } else {//блок 7.202 (нет)
+                //блок 7.185
+                saveCategoryPGE(false)
             }
-        }
-
-        //блок 6.196
-        if (currentQualityInfoCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
-            saveCategory()
-        } else {
-            if (processZBatchesPPPService.categNormNotOrderMoreOrigQuantity()) {
-                screenNavigator.openAlertCountMoreOverdelivery()
-            } else {
-                saveCategory()
-            }
+        } else {//блок 7.198 (нет)
+            //блок 7.185
+            saveCategoryPGE(false)
         }
     }
 
-    //ППП блок 6.172
-    private fun saveCategory() {
-        processZBatchesPPPService.add(
-                count = count.value.orEmpty(),
-                typeDiscrepancies = currentTypeDiscrepanciesCode,
-                manufactureCode = currentManufactureCode,
-                shelfLifeDate = getShelfLifeDate(),
-                shelfLifeTime = getShelfLifeTime(),
-                partySignsType = getPartySignsType()
-        )
+    //ПГЕ блоки 7.177 и 7.185
+    private fun saveCategoryPGE(checkCategoryType: Boolean) {
+        //если checkCategoryType==true, значит перед сохранением (блок 7.185) делаем блок 7.177
+        if (checkCategoryType && qualityInfo.value!![spinQualitySelectedPosition.value!!].code == paramGrwOlGrundcat.value) { //блок 7.177 (да)
+            //блоки 7.181 и 7.185
+        } else {
+            //блок 7.185
+            processZBatchesPGEService.add(
+                    convertEizToBei().toString(),
+                    qualityInfo.value!![spinQualitySelectedPosition.value!!].code,
+                    spinReasonRejection.value!![spinReasonRejectionSelectedPosition.value!!].substring(5)
+            )
+        }
 
-        //ППП блок 6.176
+        //ПГЕ блок 7.188
         clickBtnApply()
     }
 
