@@ -231,20 +231,20 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkI
         if (exciseStampInfo == null) {
             screenNavigator.openAlertScannedStampNotFoundScreen() //Отсканированная марка не числится в текущей поставке. Перейдите к коробу, в которой находится эта марка и отсканируйте ее снова.
         } else {
-            isStampBoxSAP(exciseStampInfo)
+            checkStampBoxSAP(exciseStampInfo)
         }
     }
 
-    private fun isStampBoxSAP(exciseStampInfo: TaskExciseStampInfo) {
+    private fun checkStampBoxSAP(exciseStampInfo: TaskExciseStampInfo) {
         if (exciseStampInfo.materialNumber != productInfo.value!!.materialNumber) {
             //Отсканированная марка принадлежит товару <SAP-код> <Название>"
             screenNavigator.openAlertScannedStampBelongsAnotherProductScreen(exciseStampInfo.materialNumber.orEmpty(), zfmpUtz48V001.getProductInfoByMaterial(exciseStampInfo.materialNumber)?.name.orEmpty())
         } else {
-            isAllBoxesProcessed(exciseStampInfo)
+            checkAllBoxesProcessed(exciseStampInfo)
         }
     }
 
-    private fun isAllBoxesProcessed(exciseStampInfo: TaskExciseStampInfo) {
+    private fun checkAllBoxesProcessed(exciseStampInfo: TaskExciseStampInfo) {
         if (processExciseAlcoBoxAccService.getCountBoxOfProductOfDiscrepancies(exciseStampInfo.boxNumber.orEmpty(), "1") >= processExciseAlcoBoxAccService.getCountAccept()) {
             screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
         } else {
@@ -267,11 +267,11 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkI
         if (boxInfo == null) {
             screenNavigator.openAlertScannedBoxNotFoundScreen() //Отсканированная коробка не числится в задании. Отдайте коробку поставщику.
         } else {
-            isBoxSAP(boxInfo)
+            checkBoxSAP(boxInfo)
         }
     }
 
-    private fun isBoxSAP(boxInfo: TaskBoxInfo) {
+    private fun checkBoxSAP(boxInfo: TaskBoxInfo) {
         if (boxInfo.materialNumber != productInfo.value!!.materialNumber) {
             //Отсканированная коробка принадлежит товару <SAP-код> <Название>
             screenNavigator.openAlertScannedBoxBelongsAnotherProductScreen(materialNumber = boxInfo.materialNumber, materialName = zfmpUtz48V001.getProductInfoByMaterial(boxInfo.materialNumber)?.name
@@ -284,13 +284,13 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkI
 
     private fun processBoxInfo(boxInfo: TaskBoxInfo?) {
         if (selectQualityCode.value == "1") {
-            OneQualityCode(boxInfo)
+            oneQualityCode(boxInfo)
         } else {
-            TwoQualityCode(boxInfo)
+            twoQualityCode(boxInfo)
         }
     }
 
-    private fun OneQualityCode(boxInfo: TaskBoxInfo?) {
+    private fun oneQualityCode(boxInfo: TaskBoxInfo?) {
         if (processExciseAlcoBoxAccService.getCountBoxOfProductOfDiscrepancies(boxInfo?.boxNumber.orEmpty(), "1") >= processExciseAlcoBoxAccService.getCountAccept()) {
             screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
         } else {
@@ -307,7 +307,7 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkI
         }
     }
 
-    private fun TwoQualityCode(boxInfo: TaskBoxInfo?) {
+    private fun twoQualityCode(boxInfo: TaskBoxInfo?) {
         if (processExciseAlcoBoxAccService.getCountUntreatedBoxes() == 0) { //см. ExciseAlcoBoxAccInfoViewModel сканирование коробок
             screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
         } else {

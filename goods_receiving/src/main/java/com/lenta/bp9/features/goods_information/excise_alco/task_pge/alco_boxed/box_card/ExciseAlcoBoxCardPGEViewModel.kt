@@ -620,17 +620,6 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
                     isScan = true,
                     isBoxNotIncludedInNetworkLenta = false
             )
-            /**spinQualitySelectedPosition.value?.let { position ->
-            qualityInfo.value?.get(position)?.code
-            }?.let {typeDiscrepancies ->
-            processExciseAlcoBoxAccPGEService.addBoxDiscrepancy(
-            boxNumber = boxInfo.boxNumber,
-            typeDiscrepancies = typeDiscrepancies,
-            isScan = true
-            )
-            //обновляем кол-во отсканированных марок для отображения на экране
-            countExciseStampsScanned.value = countExciseStampsScanned.value?.plus(1)
-            }*/
         }
     }
 
