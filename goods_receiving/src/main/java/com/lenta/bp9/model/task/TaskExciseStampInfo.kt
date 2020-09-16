@@ -4,15 +4,14 @@ import com.google.gson.annotations.SerializedName
 
 //ET_TASK_MARK
 data class TaskExciseStampInfo(
-                      val materialNumber: String, //Номер товара
-                      val code: String, //Код акцизной марки
-                      val processingUnitNumber: String,
-                      val batchNumber: String,
-                      val boxNumber: String,
-                      val setMaterialNumber: String,
-                      val organizationCodeEGAIS: String,
-                      val bottlingDate: String )
-{
+        val materialNumber: String? = "", //Номер товара
+        val code: String? = "", //Код акцизной марки
+        val processingUnitNumber: String? = "",
+        val batchNumber: String? = "",
+        val boxNumber: String? = "",
+        val setMaterialNumber: String? = "",
+        val organizationCodeEGAIS: String? = "",
+        val bottlingDate: String? = "") {
 
     companion object {
         fun from(restData: TaskExciseStampInfoRestData): TaskExciseStampInfo {
@@ -52,14 +51,14 @@ data class TaskExciseStampInfoRestData(
     companion object {
         fun from(data: TaskExciseStampInfo): TaskExciseStampInfoRestData {
             return TaskExciseStampInfoRestData(
-                    materialNumber = data.materialNumber,
-                    code = data.code,
-                    processingUnitNumber = data.processingUnitNumber,
-                    batchNumber = data.batchNumber,
-                    boxNumber = data.boxNumber,
-                    setMaterialNumber = data.setMaterialNumber,
-                    organizationCodeEGAIS = data.organizationCodeEGAIS,
-                    bottlingDate = data.bottlingDate
+                    materialNumber = data.materialNumber.orEmpty(),
+                    code = data.code.orEmpty(),
+                    processingUnitNumber = data.processingUnitNumber.orEmpty(),
+                    batchNumber = data.batchNumber.orEmpty(),
+                    boxNumber = data.boxNumber.orEmpty(),
+                    setMaterialNumber = data.setMaterialNumber.orEmpty(),
+                    organizationCodeEGAIS = data.organizationCodeEGAIS.orEmpty(),
+                    bottlingDate = data.bottlingDate.orEmpty()
             )
         }
     }

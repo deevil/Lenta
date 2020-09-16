@@ -4,10 +4,7 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp9.R
 import com.lenta.bp9.model.processing.ProcessExciseAlcoBoxAccService
-import com.lenta.bp9.model.task.IReceivingTaskManager
-import com.lenta.bp9.model.task.TaskBoxInfo
-import com.lenta.bp9.model.task.TaskProductDiscrepancies
-import com.lenta.bp9.model.task.TaskProductInfo
+import com.lenta.bp9.model.task.*
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
@@ -216,76 +213,93 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkI
 
     fun onScanResult(data: String) {
         when (data.length) {
-            68, 150 -> {
-                val exciseStampInfo = processExciseAlcoBoxAccService.searchExciseStamp(data)
-                if (exciseStampInfo == null) {
-                    screenNavigator.openAlertScannedStampNotFoundScreen() //Отсканированная марка не числится в текущей поставке. Перейдите к коробу, в которой находится эта марка и отсканируйте ее снова.
-                } else {
-                    if (exciseStampInfo.materialNumber != productInfo.value!!.materialNumber) {
-                        //Отсканированная марка принадлежит товару <SAP-код> <Название>"
-                        screenNavigator.openAlertScannedStampBelongsAnotherProductScreen(exciseStampInfo.materialNumber, zfmpUtz48V001.getProductInfoByMaterial(exciseStampInfo.materialNumber)?.name ?: "")
-                    } else {
-                        if (processExciseAlcoBoxAccService.getCountBoxOfProductOfDiscrepancies(exciseStampInfo.boxNumber, "1") >= processExciseAlcoBoxAccService.getCountAccept()) {
-                            screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
-                        } else {
-                            screenNavigator.openExciseAlcoBoxCardScreen(
-                                    productInfo = productInfo.value!!,
-                                    boxInfo = null,
-                                    massProcessingBoxesNumber = null,
-                                    exciseStampInfo = exciseStampInfo,
-                                    selectQualityCode = "1",
-                                    selectReasonRejectionCode = null,
-                                    initialCount = "1",
-                                    isScan = isScan.value!!
-                            )
-                        }
-                    }
-                }
-            }
-            26 -> {
-                val boxInfo = processExciseAlcoBoxAccService.searchBox(boxNumber = data)
-                if (boxInfo == null) {
-                    screenNavigator.openAlertScannedBoxNotFoundScreen() //Отсканированная коробка не числится в задании. Отдайте коробку поставщику.
-                } else {
-                    if (boxInfo.materialNumber != productInfo.value!!.materialNumber) {
-                        //Отсканированная коробка принадлежит товару <SAP-код> <Название>
-                        screenNavigator.openAlertScannedBoxBelongsAnotherProductScreen(materialNumber = boxInfo.materialNumber, materialName = zfmpUtz48V001.getProductInfoByMaterial(boxInfo.materialNumber)?.name ?: "")
-                    } else {
-                        if (selectQualityCode.value == "1") {
-                            if (processExciseAlcoBoxAccService.getCountBoxOfProductOfDiscrepancies(boxInfo.boxNumber, "1") >= processExciseAlcoBoxAccService.getCountAccept()) {
-                                screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
-                            } else {
-                                screenNavigator.openExciseAlcoBoxCardScreen(
-                                        productInfo = productInfo.value!!,
-                                        boxInfo = boxInfo,
-                                        massProcessingBoxesNumber = null,
-                                        exciseStampInfo = null,
-                                        selectQualityCode = selectQualityCode.value!!,
-                                        selectReasonRejectionCode = null,
-                                        initialCount = "1",
-                                        isScan = isScan.value!!
-                                )
-                            }
-                        } else {
-                            if (processExciseAlcoBoxAccService.getCountUntreatedBoxes() == 0) { //см. ExciseAlcoBoxAccInfoViewModel сканирование коробок
-                                screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
-                            } else {
-                                screenNavigator.openExciseAlcoBoxCardScreen(
-                                        productInfo = productInfo.value!!,
-                                        boxInfo = boxInfo,
-                                        massProcessingBoxesNumber = null,
-                                        exciseStampInfo = null,
-                                        selectQualityCode = selectQualityCode.value!!,
-                                        selectReasonRejectionCode = selectReasonRejectionCode.value,
-                                        initialCount = initialCount.value!!,
-                                        isScan = isScan.value!!
-                                )
-                            }
-                        }
-                    }
-                }
-            }
+            68, 150 -> checkScannedExciseStamp(data)
+            26 -> checkScannedBox(data)
             else -> screenNavigator.openAlertInvalidBarcodeFormatScannedScreen()
+        }
+    }
+
+   private fun checkScannedExciseStamp(data: String){
+       val exciseStampInfo = processExciseAlcoBoxAccService.searchExciseStamp(data)
+       if (exciseStampInfo == null) {
+           screenNavigator.openAlertScannedStampNotFoundScreen() //Отсканированная марка не числится в текущей поставке. Перейдите к коробу, в которой находится эта марка и отсканируйте ее снова.
+       } else {
+           isStampBoxSAP(exciseStampInfo)
+       }
+    }
+
+    private fun isStampBoxSAP(exciseStampInfo: TaskExciseStampInfo){
+        if (exciseStampInfo.materialNumber != productInfo.value!!.materialNumber) {
+            //Отсканированная марка принадлежит товару <SAP-код> <Название>"
+            screenNavigator.openAlertScannedStampBelongsAnotherProductScreen(exciseStampInfo.materialNumber.orEmpty(), zfmpUtz48V001.getProductInfoByMaterial(exciseStampInfo.materialNumber)?.name.orEmpty())
+        } else {
+            isAllBoxesProcessed(exciseStampInfo)
+        }
+    }
+
+    private fun isAllBoxesProcessed(exciseStampInfo: TaskExciseStampInfo){
+        if (processExciseAlcoBoxAccService.getCountBoxOfProductOfDiscrepancies(exciseStampInfo.boxNumber.orEmpty(), "1") >= processExciseAlcoBoxAccService.getCountAccept()) {
+            screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
+        } else {
+            screenNavigator.openExciseAlcoBoxCardScreen(
+                    productInfo = productInfo.value!!,
+                    boxInfo = null,
+                    massProcessingBoxesNumber = null,
+                    exciseStampInfo = exciseStampInfo,
+                    selectQualityCode = "1",
+                    selectReasonRejectionCode = null,
+                    initialCount = "1",
+                    isScan = isScan.value!!
+            )
+        }
+
+    }
+
+    private fun checkScannedBox(data:String){
+        val boxInfo = processExciseAlcoBoxAccService.searchBox(boxNumber = data)
+        if (boxInfo == null) {
+            screenNavigator.openAlertScannedBoxNotFoundScreen() //Отсканированная коробка не числится в задании. Отдайте коробку поставщику.
+        } else {
+            isBoxSAP(boxInfo)
+        }
+    }
+
+    private fun isBoxSAP(boxInfo: TaskBoxInfo){
+        if (boxInfo.materialNumber != productInfo.value!!.materialNumber) {
+            //Отсканированная коробка принадлежит товару <SAP-код> <Название>
+            screenNavigator.openAlertScannedBoxBelongsAnotherProductScreen(materialNumber = boxInfo.materialNumber, materialName = zfmpUtz48V001.getProductInfoByMaterial(boxInfo.materialNumber)?.name ?: "")
+        } else {
+            if (selectQualityCode.value == "1") {
+                if (processExciseAlcoBoxAccService.getCountBoxOfProductOfDiscrepancies(boxInfo.boxNumber, "1") >= processExciseAlcoBoxAccService.getCountAccept()) {
+                    screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
+                } else {
+                    screenNavigator.openExciseAlcoBoxCardScreen(
+                            productInfo = productInfo.value!!,
+                            boxInfo = boxInfo,
+                            massProcessingBoxesNumber = null,
+                            exciseStampInfo = null,
+                            selectQualityCode = selectQualityCode.value!!,
+                            selectReasonRejectionCode = null,
+                            initialCount = "1",
+                            isScan = isScan.value!!
+                    )
+                }
+            } else {
+                if (processExciseAlcoBoxAccService.getCountUntreatedBoxes() == 0) { //см. ExciseAlcoBoxAccInfoViewModel сканирование коробок
+                    screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
+                } else {
+                    screenNavigator.openExciseAlcoBoxCardScreen(
+                            productInfo = productInfo.value!!,
+                            boxInfo = boxInfo,
+                            massProcessingBoxesNumber = null,
+                            exciseStampInfo = null,
+                            selectQualityCode = selectQualityCode.value!!,
+                            selectReasonRejectionCode = selectReasonRejectionCode.value,
+                            initialCount = initialCount.value!!,
+                            isScan = isScan.value!!
+                    )
+                }
+            }
         }
     }
 

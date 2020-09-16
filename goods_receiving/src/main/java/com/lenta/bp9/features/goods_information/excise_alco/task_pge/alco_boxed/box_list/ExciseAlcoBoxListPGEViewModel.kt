@@ -238,7 +238,7 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
                         if (exciseStampInfo.materialNumber != productInfo.value!!.materialNumber) {
                             //Отсканированная марка принадлежит товару <SAP-код> <Название>"
                             screenNavigator.openAlertScannedStampBelongsAnotherProductScreen(
-                                    materialNumber = exciseStampInfo.materialNumber,
+                                    materialNumber = exciseStampInfo.materialNumber.orEmpty(),
                                     materialName =zfmpUtz48V001.getProductInfoByMaterial(exciseStampInfo.materialNumber)?.name.orEmpty()
                             )
                         } else {
