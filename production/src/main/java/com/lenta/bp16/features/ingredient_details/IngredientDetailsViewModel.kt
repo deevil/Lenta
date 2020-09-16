@@ -1,8 +1,6 @@
 package com.lenta.bp16.features.ingredient_details
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
 import com.lenta.bp16.data.IScales
 import com.lenta.bp16.model.AddAttributeProdInfo
@@ -213,7 +211,10 @@ class IngredientDetailsViewModel : CoreViewModel(), IZpartVisibleConditions {
             }
             orderIngredientIsVet -> {
                 mercuryDataInfo.value?.let { mercuryDataInfoList ->
-                    val producerNameList = mercuryDataInfoList.map { it.prodName }.toMutableList()
+                    val listWithoutRepeat = mercuryDataInfoList.distinctBy {
+                        Pair(it.prodName, it.zProd)
+                    }
+                    val producerNameList = listWithoutRepeat.map { it.prodName }.toMutableList()
                     if (producerNameList.size > 1) {
                         producerNameList.add(0, Constants.CHOOSE_PRODUCER)
                     }
@@ -222,7 +223,10 @@ class IngredientDetailsViewModel : CoreViewModel(), IZpartVisibleConditions {
             }
             else -> {
                 zPartDataInfo.value?.let { zpartDataInfoList ->
-                    val producerNameList = zpartDataInfoList.map { it.prodName }.toMutableList()
+                    val listWithoutRepeat = zpartDataInfoList.distinctBy {
+                        Pair(it.prodName, it.prodCode)
+                    }
+                    val producerNameList = listWithoutRepeat.map { it.prodName }.toMutableList()
                     if (producerNameList.size > 1) {
                         producerNameList.add(0, Constants.CHOOSE_PRODUCER)
                     }
@@ -245,7 +249,8 @@ class IngredientDetailsViewModel : CoreViewModel(), IZpartVisibleConditions {
             }
             orderIngredientIsVet -> {
                 mercuryDataInfo.value?.let { mercuryDataInfoList ->
-                    val productionDate = mercuryDataInfoList.map { it.prodDate }.toMutableList()
+                    val dateListWithoutRepeat = mercuryDataInfoList.distinctBy { it.prodDate }
+                    val productionDate = dateListWithoutRepeat.map { it.prodDate }.toMutableList()
                     if (productionDate.size > 1) {
                         productionDate.add(0, Constants.CHOOSE_PRODUCTION_DATE)
                     }
@@ -254,7 +259,8 @@ class IngredientDetailsViewModel : CoreViewModel(), IZpartVisibleConditions {
             }
             else -> {
                 zPartDataInfo.value?.let { zpartDataInfoList ->
-                    val productionDate = zpartDataInfoList.map { it.prodDate }.toMutableList()
+                    val dateListWithoutRepeat = zpartDataInfoList.distinctBy { it.prodDate }
+                    val productionDate = dateListWithoutRepeat.map { it.prodDate }.toMutableList()
                     if (productionDate.size > 1) {
                         productionDate.add(0, Constants.CHOOSE_PRODUCTION_DATE)
                     }
