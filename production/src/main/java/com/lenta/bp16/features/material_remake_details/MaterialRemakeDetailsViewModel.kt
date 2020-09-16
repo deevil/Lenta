@@ -9,6 +9,8 @@ import com.lenta.bp16.model.GoodTypeIcon
 import com.lenta.bp16.model.IAttributeManager
 import com.lenta.bp16.model.ingredients.OrderByBarcode
 import com.lenta.bp16.model.ingredients.params.IngredientDataCompleteParams
+import com.lenta.bp16.model.ingredients.params.MaterialDataCompleteParams
+import com.lenta.bp16.model.ingredients.results.MaterialDataCompleteResult
 import com.lenta.bp16.model.ingredients.ui.MaterialIngredientDataInfoUI
 import com.lenta.bp16.model.ingredients.ui.MercuryPartDataInfoUI
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
@@ -331,9 +333,8 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
     fun onCompleteClicked() = launchUITryCatch {
         val weight = total.value ?: 0.0
 
-        val matnr = materialIngredient.value?.name.orEmpty()
-        val entryId = getEntryId(matnr)
-        val zPartInfo = getZPartInfo(matnr)
+        val entryId = getEntryId(parentCode)
+        val zPartInfo = getZPartInfo(parentCode)
         val batchId = zPartInfo?.batchId.orEmpty()
         val batchNew = if (zPartInfo == null) {
             setBatchNewInfo()
@@ -346,15 +347,15 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
         } else {
             navigator.showProgressLoadingData()
             val result = completePackMaterialNetRequest(
-                    params = IngredientDataCompleteParams(
+                    params = MaterialDataCompleteParams(
                             tkMarket = sessionInfo.market.orEmpty(),
                             deviceIP = resourceManager.deviceIp,
+                            ktsch = "",
                             parent = parentCode,
                             matnr = parentCode,
                             fact = weight,
                             mode = IngredientDataCompleteParams.MODE_MATERIAL,
                             personnelNumber = sessionInfo.personnelNumber.orEmpty(),
-                            aufnr = matnr,
                             batchId = batchId,
                             batchNewParam = batchNew.orEmpty(),
                             entryId = entryId

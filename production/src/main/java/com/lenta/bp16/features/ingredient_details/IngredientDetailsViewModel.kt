@@ -350,10 +350,10 @@ class IngredientDetailsViewModel : CoreViewModel(), IZpartVisibleConditions {
                                 deviceIP = resourceManager.deviceIp,
                                 mode = IngredientDataCompleteParams.MODE_INGREDIENT,
                                 parent = parentCode,
-                                matnr = ingredient.matnr.orEmpty(),
+                                matnr = ingredient.matnr,
                                 fact = weight,
                                 personnelNumber = sessionInfo.personnelNumber.orEmpty(),
-                                aufnr = matnr,
+                                aufnr = parentCode,
                                 batchId = batchId,
                                 batchNewParam = batchNew.orEmpty(),
                                 entryId = entryId
