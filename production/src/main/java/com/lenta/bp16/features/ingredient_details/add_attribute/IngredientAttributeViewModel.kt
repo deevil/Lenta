@@ -20,7 +20,10 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.network.ServerTime
 import com.lenta.shared.requests.network.ServerTimeRequest
 import com.lenta.shared.requests.network.ServerTimeRequestParam
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.*
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
 
 class IngredientAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
@@ -100,7 +103,7 @@ class IngredientAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
 
     private suspend fun checkTimeFieldVisibleCondition(): Boolean {
         val visibleCondition: Boolean
-        val timeParams = database.getPerishable()?.div(DIVIDER) ?: 0
+        val timeParams = database.getPerishable()?.div(Constants.HOURS_IN_DAY) ?: 0
         val shelfLife = orderIngredient.value?.shelfLife?.toInt() ?: 0
         visibleCondition = shelfLife < timeParams
         return visibleCondition
@@ -186,17 +189,19 @@ class IngredientAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
     /**Проверка на истечение срока годности*/
     private fun checkShelfLife(): Boolean {
         val date = dateInfoField.value.orEmpty()
-        if (date.isNotEmpty() && date.length == DATE_LENGTH) {
-            val shelfLife = orderIngredient.value?.shelfLife?.toInt() ?: 0
-            val currentDate = timeMonitor.getServerDate().getFormattedDate()
-            val splitCheckDate = date.split(".")
-            val day = splitCheckDate[0].toInt()
-            val month = splitCheckDate[1].toInt()
-            val year = splitCheckDate[2].toInt()
+        return if (date.isNotEmpty() && date.length == DATE_LENGTH) {
+            val shelfLife = orderIngredient.value?.shelfLife?.toLong() ?: 0
+            val currentDate = timeMonitor.getServerDate().getFormattedDateLongYear()
+            val sdf = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy, Locale.US)
+            val shelfLifeToMillSec = shelfLife * Constants.CONVERT_TO_MILLISECOND_VALUE
+            val prodDate = sdf.parse(date).time //Дата производства в миллисекундах
+            val checkCurrentDate = sdf.parse(currentDate) //Дата проверки
+            val expiredDateInString = sdf.format(prodDate + shelfLifeToMillSec) //Дата истечения срока годности в миллисекундах
+            val expiredDate = sdf.parse(expiredDateInString)
+            checkCurrentDate.before(expiredDate)
+        } else {
+            true
         }
-
-
-        return true
     }
 
     fun onClickComplete() = launchUITryCatch {
@@ -208,7 +213,7 @@ class IngredientAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
         when {
             !dateIsCorrect -> navigator.showAlertWrongDate()
             !timeIsCorrect -> navigator.showAlertWrongTime()
-            //!shelfLifeCorrect -> navigator.showAlertShelfLifeExpired()
+            !shelfLifeCorrect -> navigator.showAlertShelfLifeExpired()
             else -> {
                 val producerIndex = selectedProducerPosition.getOrDefaultWithNull()
                 val producerSelected = producerNameList.getOrEmpty(producerIndex)
@@ -229,8 +234,5 @@ class IngredientAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
     companion object {
         const val DATE_LENGTH = 10
         const val TIME_LENGTH = 5
-
-        /** Значение, на которое необходимо поделить параметр GRZ_PERISHABLE_HH */
-        const val DIVIDER = 24
     }
 }

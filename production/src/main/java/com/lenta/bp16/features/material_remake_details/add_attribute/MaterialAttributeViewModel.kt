@@ -2,6 +2,7 @@ package com.lenta.bp16.features.material_remake_details.add_attribute
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.switchMap
+import com.lenta.bp16.features.ingredient_details.add_attribute.IngredientAttributeViewModel
 import com.lenta.bp16.model.AddAttributeProdInfo
 import com.lenta.bp16.model.IAttributeManager
 import com.lenta.bp16.model.ingredients.ui.MaterialIngredientDataInfoUI
@@ -20,7 +21,10 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.network.ServerTime
 import com.lenta.shared.requests.network.ServerTimeRequest
 import com.lenta.shared.requests.network.ServerTimeRequestParam
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.*
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
 import kotlin.properties.Delegates
 
@@ -185,12 +189,37 @@ class MaterialAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
         }
     }
 
-/*    */
-    /**Проверка на истечение срока годности*//*
+
+    /**Проверка на истечение срока годности*/
     private fun checkShelfLife(): Boolean {
         val date = dateInfoField.value.orEmpty()
-        val time = timeField.value.orEmpty()
+        return if (date.isNotEmpty() && date.length == IngredientAttributeViewModel.DATE_LENGTH) {
+            val shelfLife = materialIngredient.value?.shelfLife?.toLong() ?: 0
+            val currentDate = timeMonitor.getServerDate().getFormattedDateLongYear()
+            val sdf = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy, Locale.US)
+            val shelfLifeToMillSec = shelfLife * Constants.CONVERT_TO_MILLISECOND_VALUE
+            val prodDate = sdf.parse(date).time //Дата производства в миллисекундах
+            val checkCurrentDate = sdf.parse(currentDate) //Дата проверки
+            val expiredDateInString = sdf.format(prodDate + shelfLifeToMillSec) //Дата истечения срока годности в миллисекундах
+            val expiredDate = sdf.parse(expiredDateInString)
+            checkCurrentDate.before(expiredDate)
+        } else {
+            true
+        }
+    }
 
+    /** Проверка даты производства, чтоб не была больше сегодняшнего числа*/
+    /*private fun checkCorrectDate(): Boolean{
+        val date = dateInfoField.value.orEmpty()
+        return if (date.isNotEmpty() && date.length == IngredientAttributeViewModel.DATE_LENGTH) {
+            val sdf = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy, Locale.US)
+            val currentDate = timeMonitor.getServerDate().getFormattedDateLongYear()
+            val checkCurrentDate = sdf.parse(currentDate) //Дата проверки
+            val prodDate = sdf.parse(date) //Дата производства
+            prodDate.after(checkCurrentDate)
+        } else {
+            true
+        }
     }*/
 
     fun onClickComplete() = launchUITryCatch {
@@ -198,11 +227,11 @@ class MaterialAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
         setTimeInfo()
         val dateIsCorrect = checkDate()
         val timeIsCorrect = checkTime()
-        //val shelfLifeCorrect = checkShelfLife()
+        val shelfLifeCorrect = checkShelfLife()
         when {
             !dateIsCorrect -> navigator.showAlertWrongDate()
             !timeIsCorrect -> navigator.showAlertWrongTime()
-            //!shelfLifeCorrect -> navigator.showAlertShelfLifeExpired()
+            !shelfLifeCorrect -> navigator.showAlertShelfLifeExpired()
             else -> {
                 val producerIndex = selectedProducerPosition.getOrDefaultWithNull()
                 val producerSelected = producerNameList.getOrEmpty(producerIndex)

@@ -10,6 +10,12 @@ fun Date?.getFormattedDate(): String {
     } else ""
 }
 
+fun Date?.getFormattedDateLongYear(): String {
+    return if (this != null) {
+        DateTimeUtil.formatDate(this, Constants.DATE_FORMAT_dd_mm_yyyy)
+    } else ""
+}
+
 fun Date?.getFormattedTime(): String {
     return if (this != null) {
         DateTimeUtil.formatDate(this, Constants.TIME_FORMAT_HHmm)

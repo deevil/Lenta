@@ -22,6 +22,12 @@ object Constants {
     const val CHOOSE_PRODUCER = "Выберите производителя"
     const val CHOOSE_PRODUCTION_DATE = "Выберите дату производства"
 
+    const val HOURS_IN_DAY = 24
+    const val MINUTES_IN_HOUR = 60
+    const val SECOND_IN_MINUTE = 60
+    const val MILLISECOND_IN_SECOND = 1000
+    const val CONVERT_TO_MILLISECOND_VALUE  = 86_400_000
+
     //Date constants
     const val YEAR_RANGE_START = 2000
     const val YEAR_RANGE_END = 2100
