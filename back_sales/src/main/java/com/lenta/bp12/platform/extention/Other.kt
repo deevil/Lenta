@@ -3,6 +3,7 @@ package com.lenta.bp12.platform.extention
 import com.lenta.bp12.R
 import com.lenta.bp12.model.*
 import com.lenta.bp12.model.pojo.TaskType
+import com.lenta.bp12.platform.DATE_STRING_LENGTH
 import com.lenta.bp12.request.pojo.CreateTaskBasketInfo
 import com.lenta.bp12.request.pojo.TaskInfo
 import com.lenta.bp12.request.pojo.good_info.GoodInfoResult
@@ -126,6 +127,33 @@ fun String.addZerosToStart(targetLength: Int): String {
     }
 
     return value
+}
+
+/** Проверка даты на корректность
+ * если дата в формате dd.mm.yyyy */
+fun String.isDateInFormatDdMmYyyyWithDotsCorrect(): Boolean {
+        return if (this.isNotEmpty() && this.length == DATE_STRING_LENGTH) {
+            try {
+                val splitCheckDate = this.split(".")
+                val day = splitCheckDate[0].toInt()
+                val month = splitCheckDate[1].toInt()
+                val year = splitCheckDate[2].toInt()
+                val monthWith31Days = listOf(1, 3, 5, 7, 8, 10, 12)
+                val monthWith30Days = listOf(4, 6, 9, 11)
+                when {
+                    year < 1 || year > 2100 -> false
+                    monthWith31Days.contains(month) -> day <= 31
+                    monthWith30Days.contains(month) && month != 2 -> day <= 30
+                    year % 4 == 0 -> day <= 29
+                    month == 2 -> day <= 28
+                    else -> false
+                }
+            } catch (e: RuntimeException) {
+                false
+            }
+        } else {
+            false
+        }
 }
 
 fun String.extractAlcoCode(): String {
