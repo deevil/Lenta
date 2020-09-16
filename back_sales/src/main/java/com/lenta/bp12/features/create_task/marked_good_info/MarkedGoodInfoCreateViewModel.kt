@@ -23,10 +23,7 @@ import com.lenta.bp12.request.ScanInfoNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.launchAsyncTryCatch
-import com.lenta.shared.utilities.extentions.launchUITryCatch
-import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.unsafeLazy
+import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.orIfNull
 import javax.inject.Inject
 
@@ -107,6 +104,12 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
                 }
                 emit(items)
             }
+        }
+    }
+
+    val isBasketNumberVisible by unsafeLazy {
+        tempMarks.mapSkipNulls {
+            it.isNotEmpty()
         }
     }
 
