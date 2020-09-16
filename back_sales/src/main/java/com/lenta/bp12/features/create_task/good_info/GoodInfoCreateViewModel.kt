@@ -830,9 +830,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
 
     private fun onInitGoodInfo() {
         launchUITryCatch {
-            good.value?.let {
-                setFoundGood(it)
-            }.orIfNull {
+            good.value?.let(::setFoundGood).orIfNull {
                 Logg.e { "good null" }
                 navigator.showInternalError(resource.goodNotFoundErrorMsg)
             }
