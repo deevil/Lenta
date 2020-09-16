@@ -3,18 +3,19 @@ package com.lenta.bp9.features.label_printing
 import android.content.Context
 import android.os.Bundle
 import androidx.lifecycle.MutableLiveData
-import com.google.gson.annotations.SerializedName
 import com.lenta.bp9.features.loading.tasks.TaskCardMode
 import com.lenta.bp9.model.task.*
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IRepoInMemoryHolder
-import com.lenta.bp9.requests.network.*
+import com.lenta.bp9.requests.network.ZmpUtzGrz45V001NetRequest
+import com.lenta.bp9.requests.network.ZmpUtzGrz45V001Params
+import com.lenta.bp9.requests.network.ZmpUtzGrz45V001Result
 import com.lenta.shared.account.ISessionInfo
-import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.launchUITryCatch
+import com.lenta.shared.utilities.orIfNull
 import com.mobrun.plugin.api.HyperHive
 import javax.inject.Inject
 
@@ -84,39 +85,64 @@ class LabelPrintingViewModel : CoreViewModel() {
     }
 
     private fun updateLabels() {
+        val labelPrintingItems: ArrayList<LabelPrintingItem> = ArrayList()
         val zBatches = taskManager.getReceivingTask()?.getProcessedZBatchesDiscrepancies()
 
         zBatches?.let {
-            labels.value =
-                    it.mapIndexed { index, label ->
-                        val productDiscrepancies =
-                                taskManager
-                                        .getReceivingTask()
-                                        ?.getProcessedProductsDiscrepancies()
-                                        ?.findLast { productDiscr -> productDiscr.materialNumber == label.materialNumber }
+            it.mapIndexed { index, label ->
+                val product = getProductInfoForLabel(label.materialNumber)
+                if (product?.isNeedPrint == true) {
+                    val productDiscrepancies = getProductDiscrepanciesForLabel(label.materialNumber)
+                    val materialLastSix = product.getMaterialLastSix()
+                    val partySignsOfZBatches = getPartySignsForLabel(label)
+                    val partySign = partySignsOfZBatches?.partySign?.partySignsTypeString.orEmpty()
+                    val manufacturerName = getManufacturerName(label.manufactureCode)
+                    val numberDiscrepancies = productDiscrepancies?.numberDiscrepancies.orEmpty()
+                    val unitName = product.uom.name
 
-                        val product =
-                                taskManager
-                                        .getReceivingTask()
-                                        ?.getProcessedProducts()
-                                        ?.findLast { product -> product.materialNumber == label.materialNumber }
-
-                        LabelPrintingItem(
-                                number = index + 1,
-                                productName = "${product?.getMaterialLastSix().orEmpty()} ${product?.description.orEmpty()}",
-                                batchName = "ДП-${label.shelfLifeDate} // ${getManufacturerName(label.manufactureCode)}",
-                                quantityUnit = "${productDiscrepancies?.numberDiscrepancies.orEmpty()} ${product?.uom?.name.orEmpty()}",
-                                isPrinted = false,
-                                productionDate = "",
-                                batchDiscrepancies = label
-                        )
-                    }.reversed()
+                    labelPrintingItems.add(
+                            LabelPrintingItem(
+                                    number = index + 1,
+                                    productName = "$materialLastSix ${product.description}",
+                                    batchName = "${partySign}-${label.shelfLifeDate} // $manufacturerName",
+                                    quantityUnit = "$numberDiscrepancies $unitName",
+                                    isPrinted = false,
+                                    shelfLife = "${partySignsOfZBatches?.shelfLifeDate.orEmpty()} ${partySignsOfZBatches?.shelfLifeTime.orEmpty()}",
+                                    productionDate = "${partySignsOfZBatches?.productionDate.orEmpty()} ${partySignsOfZBatches?.shelfLifeTime.orEmpty()}",
+                                    batchDiscrepancies = label
+                            )
+                    )
+                }
+            }
         }
 
+        labels.value = labelPrintingItems.reversed()
         labelSelectionsHelper.clearPositions()
     }
 
-    private fun getManufacturerName(manufacturerCode: String) : String {
+    private fun getProductDiscrepanciesForLabel(materialNumber: String): TaskProductDiscrepancies? {
+        return taskManager
+                .getReceivingTask()
+                ?.getProcessedProductsDiscrepancies()
+                ?.findLast { productDiscr -> productDiscr.materialNumber == materialNumber }
+    }
+
+    private fun getProductInfoForLabel(materialNumber: String): TaskProductInfo? {
+        return taskManager
+                .getReceivingTask()
+                ?.getProcessedProducts()
+                ?.findLast { product -> product.materialNumber == materialNumber }
+    }
+
+    private fun getPartySignsForLabel(label: TaskZBatchesDiscrepancies): PartySignsOfZBatches? {
+        return taskManager
+                .getReceivingTask()
+                ?.taskRepository
+                ?.getZBatchesDiscrepancies()
+                ?.findPartySignOfZBatch(label)
+    }
+
+    private fun getManufacturerName(manufacturerCode: String): String {
         return repoInMemoryHolder
                 .manufacturersForZBatches.value
                 ?.findLast { it.manufactureCode == manufacturerCode }
@@ -156,13 +182,12 @@ class LabelPrintingViewModel : CoreViewModel() {
         val labelSelectionsHelperSize = labelSelectionsHelper.selectedPositions.value?.size ?: 0
 
         if (labelSelectionsHelperSize <= 0) {
-            labels.value
-                    ?.mapTo(selectedLabels) {it.copy()}
+            labels.value?.mapTo(selectedLabels) { it.copy() }
         } else {
             labelSelectionsHelper
                     .selectedPositions.value
                     ?.map { position -> labels.value?.get(position) }
-                    ?.mapNotNullTo(selectedLabels) {it?.copy()}
+                    ?.mapNotNullTo(selectedLabels) { it?.copy() }
         }
 
         screenNavigator.openPrintLabelsCountCopiesScreen(selectedLabels)
@@ -170,7 +195,8 @@ class LabelPrintingViewModel : CoreViewModel() {
     }
 
     fun onClickNext() {
-        screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
+        screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType
+                ?: TaskType.None)
     }
 
 }
@@ -181,6 +207,7 @@ data class LabelPrintingItem(
         val batchName: String,
         val quantityUnit: String,
         var isPrinted: Boolean,
+        val shelfLife: String,
         val productionDate: String,
         val batchDiscrepancies: TaskZBatchesDiscrepancies?
 )

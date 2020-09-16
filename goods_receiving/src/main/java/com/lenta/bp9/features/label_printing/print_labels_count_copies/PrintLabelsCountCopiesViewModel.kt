@@ -8,6 +8,7 @@ import com.lenta.bp9.features.label_printing.LabelPrintingZBatches
 import com.lenta.bp9.features.label_printing.LabelZBatchesInfo
 import com.lenta.bp9.features.label_printing.LabelPrintingItem
 import com.lenta.bp9.model.task.IReceivingTaskManager
+import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.shared.account.ISessionInfo
@@ -97,45 +98,46 @@ class PrintLabelsCountCopiesViewModel : CoreViewModel() {
 
     fun onClickConfirm() {
         printingLabels()
-        goBackWithArgs()
     }
 
     private fun printingLabels() {
         launchUITryCatch {
             labels.value?.map { labelItem ->
                 try {
-                    val product = taskManager.getReceivingTask()?.taskRepository?.getProducts()?.findProduct(labelItem.batchDiscrepancies?.materialNumber.orEmpty())
-                    val eanInfo = ZmpUtz25V001(hyperHive).getEanInfoByMaterialUnits(product?.materialNumber.orEmpty(), product?.uom?.code.orEmpty())
-                    val weight = eanInfo?.ean?.substring(6, 6)?.toDouble() ?: 0.0
-                    val barCodeText = if (eanInfo?.uom == UNIT_G) {
-                        "(01)${getFormattedEan(eanInfo.ean.orEmpty(), weight)}"
-                    } else {
-                        eanInfo?.ean.orEmpty()
-                    }
-
+                    val batchNumber = labelItem.batchDiscrepancies?.batchNumber.orEmpty()
+                    val materialNumber = labelItem.batchDiscrepancies?.materialNumber.orEmpty()
+                    val product = getProductInfoForLabel(materialNumber)
+                    val eanInfo = ZmpUtz25V001(hyperHive).getEanInfoByMaterialUnits(materialNumber, product?.uom?.code.orEmpty())
+                    val barCodeText = "(01)${eanInfo?.ean.orEmpty()}(10)$batchNumber"
                     val barcode = barCodeText.replace("(", "").replace(")", "")
                     val countCopiesValue = countCopies.value?.toIntOrNull() ?: 1
-                    for (i in 1..countCopiesValue) {
-                        printLabel(LabelZBatchesInfo(
-                                goodsName = product?.description.orEmpty(),
-                                goodsCode = product?.materialNumber.orEmpty(),
-                                shelfLife = labelItem.batchDiscrepancies?.shelfLifeDate.orEmpty(),
-                                productTime = labelItem.batchDiscrepancies?.shelfLifeDate.orEmpty(), //todo должно быть дата, которую ввел пользователь при приемке;
-                                delivery = taskManager.getReceivingTask()?.taskDescription?.deliveryNumber.orEmpty(),
-                                provider = taskManager.getReceivingTask()?.taskDescription?.supplierName.orEmpty(),
-                                batchNumber = labelItem.batchDiscrepancies?.batchNumber.orEmpty(),
-                                manufacturer = getManufacturerName(labelItem.batchDiscrepancies?.manufactureCode.orEmpty()),
-                                weigher = sessionInfo.personnelNumber.orEmpty(),
-                                quantity = labelItem.batchDiscrepancies?.numberDiscrepancies.orEmpty(),
-                                barcode = barcode,
-                                barcodeText = barCodeText
-                        ))
-                    }
+                    printLabel(LabelZBatchesInfo(
+                            goodsName = product?.description.orEmpty(),
+                            goodsCode = product?.materialNumber.orEmpty(),
+                            shelfLife = labelItem.shelfLife,
+                            productTime = labelItem.productionDate,
+                            delivery = taskManager.getReceivingTask()?.taskDescription?.deliveryNumber.orEmpty(),
+                            provider = taskManager.getReceivingTask()?.taskDescription?.supplierName.orEmpty(),
+                            batchNumber = batchNumber,
+                            manufacturer = getManufacturerName(labelItem.batchDiscrepancies?.manufactureCode.orEmpty()),
+                            weigher = sessionInfo.personnelNumber.orEmpty(),
+                            quantity = labelItem.batchDiscrepancies?.numberDiscrepancies.orEmpty(),
+                            barcode = barcode,
+                            barcodeText = barCodeText,
+                            copies = countCopiesValue.toString()
+                    ))
                 } catch (e: Exception) {
                     Logg.e { "Create print label exception: $e" }
                 }
             }
         }
+    }
+
+    private fun getProductInfoForLabel(materialNumber: String): TaskProductInfo? {
+        return taskManager
+                .getReceivingTask()
+                ?.getProcessedProducts()
+                ?.findLast { product -> product.materialNumber == materialNumber }
     }
 
     private fun getManufacturerName(manufacturerCode: String) : String {
@@ -168,8 +170,9 @@ class PrintLabelsCountCopiesViewModel : CoreViewModel() {
                     printer.printLabel(labelInfo, ipAddress)
                             .also {
                                 screenNavigator.hideProgress()
+                                goBackWithArgs()
                             }.either(::handleFailure) {
-                                // Ничего не делаем...
+                                screenNavigator.goBack()
                             }
                 }
             }.also {
@@ -178,47 +181,6 @@ class PrintLabelsCountCopiesViewModel : CoreViewModel() {
                 }
             }
         }
-    }
-
-    private fun getFormattedEan(sourceEan: String, quantity: Double): String {
-        val ean = sourceEan.take(7)
-        var weight = (quantity * 1000).toInt().toString()
-
-        while (weight.length < 5) {
-            weight = "0$weight"
-        }
-        while (weight.length > 5) {
-            weight = weight.dropLast(1)
-        }
-
-        val eanWithWeight = "$ean$weight"
-
-        /*Логика расчета контрольного числа:
-        1. Складываются цифры, находящихся на четных позициях;
-        2. Полученный результат умножается на три;
-        3. Складываются цифры, находящиеся на нечётных позициях;
-        4. Складываются результаты по п.п. 2 и 3;
-        5. Определяется ближайшее наибольшее число к п. 4, кратное десяти;
-        6. Определяется разность между результатами по п.п. 5 и 4;*/
-
-        val nums = eanWithWeight.toCharArray().map { it.toString().toInt() }
-
-        var evenSum = 0
-        var oddSum = 0
-
-        for ((index, num) in nums.withIndex()) {
-            if ((index + 1) % 2 == 0) evenSum += num else oddSum += num
-        }
-
-        val sum = (evenSum * 3) + oddSum
-        var nearestMultipleOfTen = sum
-        while (nearestMultipleOfTen % 10 != 0) {
-            nearestMultipleOfTen += 1
-        }
-
-        val controlNumber = nearestMultipleOfTen - sum
-
-        return "0$eanWithWeight$controlNumber"
     }
 
     companion object {

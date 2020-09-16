@@ -116,7 +116,7 @@ class ProcessZBatchesPPPService
                 )
     }
 
-    fun addWithoutUnderload(typeDiscrepancies: String, count: String, manufactureCode: String, shelfLifeDate: String, shelfLifeTime: String, partySignsType: PartySignsTypeOfZBatches) {
+    fun addWithoutUnderload(typeDiscrepancies: String, count: String, manufactureCode: String, shelfLifeDate: String, shelfLifeTime: String, productionDate: String, partySignsType: PartySignsTypeOfZBatches) {
         val productDiscrepancy =
                 taskRepository
                         ?.getProductsDiscrepancies()
@@ -128,7 +128,7 @@ class ProcessZBatchesPPPService
                     ?.getProductsDiscrepancies()
                     ?.changeProductDiscrepancy(productDiscrepancy.copy(numberDiscrepancies = count))
         } else {
-            add(count, typeDiscrepancies, manufactureCode, shelfLifeDate, shelfLifeTime, partySignsType)
+            add(count, typeDiscrepancies, manufactureCode, shelfLifeDate, shelfLifeTime, productionDate, partySignsType)
         }
     }
 
@@ -142,12 +142,12 @@ class ProcessZBatchesPPPService
         return productInfo.origQuantity.toDouble() < totalCount
     }
 
-    fun add(count: String, typeDiscrepancies: String, manufactureCode: String, shelfLifeDate: String, shelfLifeTime: String, partySignsType: PartySignsTypeOfZBatches) {
+    fun add(count: String, typeDiscrepancies: String, manufactureCode: String, shelfLifeDate: String, shelfLifeTime: String, productionDate: String, partySignsType: PartySignsTypeOfZBatches) {
         changeProductDiscrepancy(count, typeDiscrepancies)
 
         if (typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM) {
             changeZBatchDiscrepancy(count, typeDiscrepancies, manufactureCode, shelfLifeDate, shelfLifeTime)
-            changePartySign(typeDiscrepancies, manufactureCode, shelfLifeDate, shelfLifeTime, partySignsType)
+            changePartySign(typeDiscrepancies, manufactureCode, shelfLifeDate, shelfLifeTime, productionDate, partySignsType)
         }
     }
 
@@ -214,7 +214,7 @@ class ProcessZBatchesPPPService
                 ?.changeZBatchDiscrepancy(foundDiscrepancy)
     }
 
-    private fun changePartySign(typeDiscrepancies: String, manufactureCode: String, shelfLifeDate: String, shelfLifeTime: String, partySignsType: PartySignsTypeOfZBatches) {
+    private fun changePartySign(typeDiscrepancies: String, manufactureCode: String, shelfLifeDate: String, shelfLifeTime: String, productionDate: String, partySignsType: PartySignsTypeOfZBatches) {
 
         var foundDiscrepancy =
                 taskRepository
@@ -223,9 +223,9 @@ class ProcessZBatchesPPPService
                         ?.findLast {
                             it.typeDiscrepancies == typeDiscrepancies
                                     && it.manufactureCode == manufactureCode
-                                    && it.manufactureCode == manufactureCode
                                     && it.shelfLifeDate == shelfLifeDate
                                     && it.shelfLifeTime == shelfLifeTime
+                                    && it.productionDate == productionDate
                         }
 
         foundDiscrepancy =
@@ -239,6 +239,7 @@ class ProcessZBatchesPPPService
                                 manufactureCode = manufactureCode,
                                 shelfLifeDate = shelfLifeDate,
                                 shelfLifeTime = shelfLifeTime,
+                                productionDate = productionDate,
                                 partySign = partySignsType
                         )
 
