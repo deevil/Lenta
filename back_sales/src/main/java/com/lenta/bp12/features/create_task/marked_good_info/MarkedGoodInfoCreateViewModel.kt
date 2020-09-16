@@ -110,6 +110,15 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
         }
     }
 
+    val isBasketNumberVisible by unsafeLazy {
+        tempMarks.switchMap {
+            liveData {
+                val result = it.isNotEmpty()
+                emit(result)
+            }
+        }
+    }
+
     /**
      * Все сканированные марки хранятся в этом списке до нажатия кнопки применить.
      * После нажатия применить все марки обрабатываются менедежером по корзинам и сохраняется в задании.
