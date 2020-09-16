@@ -210,6 +210,8 @@ class CreateTaskManager @Inject constructor(
                         val divByControl = basket.control == good.control
                         val divs = divByMark && divByMrc && divBySection && divByType && divByProviders && divByControl
                         isLastBasketMatches(basket, good, divs)
+                    }?.also {
+                        updateCurrentBasket(it)
                     }
                 }
             }
