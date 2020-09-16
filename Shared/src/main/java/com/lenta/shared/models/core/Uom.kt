@@ -8,6 +8,10 @@ data class Uom(val code: String, val name: String) {
         const val DATA_G = "G"
         const val DATA_KAR = "KAR"
         const val DATA_ST = "ST"
+        const val DATA_KG_RUS = "КГ"
+        const val DATA_G_RUS = "Г"
+        const val DATA_KOR_RUS = "КОР"
+        const val DATA_ST_RUS = "ШТ"
 
         val DEFAULT = Uom(DATA_ST, "шт")
         val ST = Uom(DATA_ST, "шт")
@@ -24,10 +28,10 @@ fun Uom.isOnlyInt(): Boolean {
 
 fun String.toUom(): Uom {
     return when(this) {
-        Uom.DATA_KG -> Uom.KG
-        Uom.DATA_G -> Uom.G
-        Uom.DATA_KAR -> Uom.KAR
-        Uom.DATA_ST -> Uom.ST
+        Uom.DATA_KG, Uom.DATA_KG_RUS -> Uom.KG
+        Uom.DATA_G, Uom.DATA_G_RUS -> Uom.G
+        Uom.DATA_KAR, Uom.DATA_KOR_RUS -> Uom.KAR
+        Uom.DATA_ST, Uom.DATA_ST_RUS -> Uom.ST
         else -> Uom.DEFAULT
     }
 }

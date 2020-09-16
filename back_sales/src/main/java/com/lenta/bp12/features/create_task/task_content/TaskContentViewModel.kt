@@ -126,7 +126,10 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                             basket = basket,
                             position = "$position",
                             name = resource.basket("${basket.index}"),
-                            description = basket.getDescription(task.type.isDivBySection),
+                            description = basket.getDescription(
+                                    isDivBySection = task.type.isDivBySection,
+                                    isWholeSale = false
+                            ),
                             quantity = "${task.getCountByBasket(basket)}"
                     )
                 }
@@ -144,7 +147,10 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                             basket = basket,
                             position = "$position",
                             name = resource.basket("${basket.index}"),
-                            description = basket.getDescription(task.type.isDivBySection),
+                            description = basket.getDescription(
+                                    isDivBySection = task.type.isDivBySection,
+                                    isWholeSale = true
+                            ),
                             quantity = "${task.getCountByBasket(basket)} ${Uom.ST.name}",
                             isPrinted = basket.isPrinted,
                             isLocked = basket.isLocked
@@ -269,7 +275,7 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     private fun setFoundGood(foundGood: Good) {
-        with(navigator){
+        with(navigator) {
             if (manager.isWholesaleTaskType && foundGood.kind == GoodKind.EXCISE) {
                 showCantAddExciseGoodForWholesale()
             } else {
@@ -343,22 +349,20 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                             material = materialInfo?.material.orEmpty(),
                             name = materialInfo?.name.orEmpty(),
                             kind = getGoodKind(),
-                            type = materialInfo?.goodType.takeIf { taskType.isDivByGoodType }.orEmpty(),
+                            type = materialInfo?.goodType.orEmpty(),
                             control = getControlType(),
-                            section = materialInfo?.section.takeIf { taskType.isDivBySection }.orEmpty(),
+                            section = materialInfo?.section.orEmpty(),
                             matrix = getMatrixType(materialInfo?.matrix.orEmpty()),
                             commonUnits = database.getUnitsByCode(materialInfo?.commonUnitsCode.orEmpty()),
                             innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
                             innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull()
                                     ?: 1.0,
-                            providers = providers?.takeIf { taskType.isDivByProvider }.orEmpty().toMutableList(),
+                            providers = providers.orEmpty().toMutableList(),
                             producers = producers.orEmpty().toMutableList(),
                             volume = materialInfo?.volume?.toDoubleOrNull() ?: 0.0,
                             markType = markType,
                             markTypeGroup = database.getMarkTypeGroupByMarkType(markType)
                     )
-
-
 
                     setFoundGood(good)
                 }.orIfNull {
@@ -480,7 +484,7 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
             navigator.showProgressLoadingData()
             val isDivBySection = task.value?.type?.isDivBySection ?: false
             printPalletListNetRequest(
-                    baskets to isDivBySection
+                    Triple(baskets, isDivBySection, manager.isWholesaleTaskType)
             ).either(
                     fnL = ::handleFailure,
                     fnR = {

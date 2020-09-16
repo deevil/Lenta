@@ -2,6 +2,9 @@ package com.lenta.bp12.request.pojo
 
 import com.google.gson.annotations.SerializedName
 
+/**
+ * @see com.lenta.bp12.request.TaskListNetRequest
+ * */
 data class TaskInfo(
         /** Номер задания */
         @SerializedName("TASK_NUM")
