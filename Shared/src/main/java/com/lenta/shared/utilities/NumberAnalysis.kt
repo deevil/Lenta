@@ -11,7 +11,6 @@ fun actionByNumber(
         funcForExcise: ((exciseNumber: String) -> Unit)? = null,
         funcForExciseBox: ((boxNumber: String) -> Unit)? = null,
         funcForPriceQrCode: ((qrCode: String) -> Unit)? = null,
-        funcForMark: ((markNumber: String) -> Unit)? = null,
         funcForShoes: ((markWithoutTail: String) -> Unit)? = null,
         funcForCigarettes: ((markWithoutTail: String) -> Unit)? = null,
         funcForCigaretteBox: ((markWithoutTail: String) -> Unit)? = null,
@@ -91,9 +90,6 @@ fun actionByNumber(
     when (numberLength) {
         Constants.EXCISE_MARK_150, Constants.EXCISE_MARK_68 -> {
             funcForExcise?.invoke(number) ?: funcForNotValidFormat()
-        }
-        Constants.MARK_134, Constants.MARK_39 -> {
-            funcForMark?.invoke(number) ?: funcForNotValidFormat()
         }
         Constants.EXCISE_BOX_26 -> {
             funcForExciseBox?.invoke(number) ?: funcForNotValidFormat()

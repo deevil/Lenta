@@ -167,9 +167,9 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
                 number = data,
                 funcForShoes = ::actionForMark,
                 funcForCigarettes = ::actionForMark,
-                funcForCigaretteBox = { boxNumber ->
+                funcForCigaretteBox = { markWithoutTail ->
                     if (isSpecialMode.value == false) {
-                        actionForCigaretteBox(boxNumber)
+                        actionForCigaretteBox(markWithoutTail)
                     }
                 },
                 funcForNotValidFormat = { searchGood(data) }

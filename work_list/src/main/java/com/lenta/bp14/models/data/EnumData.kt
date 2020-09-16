@@ -47,7 +47,7 @@ fun ProductInfo.getGoodType(): GoodType {
     return when {
         this.isExcise.isSapTrue() -> GoodType.EXCISE
         this.isAlco.isSapTrue() -> GoodType.ALCOHOL
-        this.isMarked.isSapTrue() -> GoodType.MARKED
+        this.isMark.isSapTrue() -> GoodType.MARKED
         this.isRusWine.isSapTrue() -> GoodType.RUS_WINE
         else -> GoodType.COMMON
     }

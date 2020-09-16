@@ -41,7 +41,7 @@ data class ProductInfo(
         val isAlco: String,
         /** Признак – товар маркированный */
         @SerializedName("IS_MARK")
-        val isMarked: String,
+        val isMark: String,
         /** Признак – товар ветеринарный */
         @SerializedName("IS_VET")
         val isVet: String,
