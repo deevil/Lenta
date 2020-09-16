@@ -15,6 +15,7 @@ import com.lenta.bp12.model.pojo.extentions.addMarks
 import com.lenta.bp12.model.pojo.extentions.addPosition
 import com.lenta.bp12.platform.DEFAULT_POSITION
 import com.lenta.bp12.platform.DEFAULT_QUANTITY
+import com.lenta.bp12.platform.ZERO_VOLUME
 import com.lenta.bp12.platform.extention.extractAlcoCode
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
@@ -503,7 +504,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
                                 ?: DEFAULT_QUANTITY,
                         provider = task.value?.provider ?: ProviderInfo(),
                         producers = producers.orEmpty().toMutableList(),
-                        volume = materialInfo?.volume?.toDoubleOrNull() ?: 0.0,
+                        volume = materialInfo?.volume?.toDoubleOrNull() ?: ZERO_VOLUME,
                         type = materialInfo?.goodType.orEmpty(),
                         purchaseGroup = materialInfo?.purchaseGroup.orEmpty()
                 )
@@ -859,7 +860,6 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
             navigator.showProgressLoadingData()
             saveChanges()
             navigator.hideProgress()
-            navigator.goBack()
             navigator.openBasketOpenGoodListScreen()
             manager.isBasketsNeedsToBeClosed = false
         }
@@ -867,9 +867,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
 
     private fun onInitGoodInfo() {
         launchUITryCatch {
-            good.value?.let {
-                setFoundGood(it)
-            }.orIfNull {
+            good.value?.let(::setFoundGood).orIfNull {
                 Logg.e { "good null" }
                 navigator.showInternalError(resource.goodNotFoundErrorMsg)
             }

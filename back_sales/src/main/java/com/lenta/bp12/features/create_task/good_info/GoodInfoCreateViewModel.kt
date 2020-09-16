@@ -774,17 +774,6 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
         }
     }
 
-    private fun onInitGoodInfo() {
-        launchUITryCatch {
-            good.value?.let {
-                setFoundGood(it)
-            }.orIfNull {
-                Logg.e { "good null" }
-                navigator.showInternalError(resource.goodNotFoundErrorMsg)
-            }
-        }
-    }
-
     /**
     Обработка нажатий кнопок
      */
@@ -834,9 +823,17 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
             navigator.showProgressLoadingData()
             saveChanges()
             navigator.hideProgress()
-            navigator.goBack()
             navigator.openBasketCreateGoodListScreen()
             manager.isBasketsNeedsToBeClosed = false
+        }
+    }
+
+    private fun onInitGoodInfo() {
+        launchUITryCatch {
+            good.value?.let(::setFoundGood).orIfNull {
+                Logg.e { "good null" }
+                navigator.showInternalError(resource.goodNotFoundErrorMsg)
+            }
         }
     }
 
