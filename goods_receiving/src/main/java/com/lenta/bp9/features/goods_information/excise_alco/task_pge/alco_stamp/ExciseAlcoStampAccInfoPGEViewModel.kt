@@ -10,7 +10,6 @@ import com.lenta.bp9.model.processing.ProcessExciseAlcoStampAccPGEService
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskExciseStampInfo
 import com.lenta.bp9.model.task.TaskProductInfo
-import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
@@ -23,6 +22,7 @@ import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
@@ -30,6 +30,7 @@ import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import com.mobrun.plugin.api.HyperHive
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import javax.inject.Inject
 

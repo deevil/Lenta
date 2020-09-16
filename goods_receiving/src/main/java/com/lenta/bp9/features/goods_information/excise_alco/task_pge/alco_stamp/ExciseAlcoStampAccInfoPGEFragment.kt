@@ -68,9 +68,9 @@ class ExciseAlcoStampAccInfoPGEFragment : CoreFragment<FragmentExciseAlcoStampAc
 
     override fun onFragmentResult(arguments: Bundle) {
         super.onFragmentResult(arguments)
-        if (arguments.getInt("manufacturerSelectedPosition") != null && arguments.getString("bottlingDate") != null) {
+        if (arguments.getInt(KEY_MANUFACTURER_POSITION) != null && arguments.getString(KEY_BOTTLING_DATE) != null) {
             super.onFragmentResult(arguments)
-            vm.onBatchSignsResult(arguments.getInt("manufacturerSelectedPosition"), arguments.getString("bottlingDate"))
+            vm.onBatchSignsResult(arguments.getInt(KEY_MANUFACTURER_POSITION), arguments.getString(KEY_BOTTLING_DATE))
         } else {
             vm.onBatchSignsResult()
         }
