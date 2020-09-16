@@ -1,5 +1,7 @@
 package com.lenta.bp12.features.open_task.good_info
 
+import android.text.Editable
+import androidx.databinding.adapters.TextViewBindingAdapter
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
@@ -44,7 +46,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
+class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapter.AfterTextChanged {
 
     @Inject
     override lateinit var navigator: IScreenNavigator
@@ -881,4 +883,16 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
         private const val DEFAULT_DATE_LENGTH = 10
     }
 
+    override fun afterTextChanged(s: Editable?) {
+        val regex = Regex("^-?\$|^\\d+\$|^(-?\\d+)\$")
+        val quantity = quantityField.value ?: ""
+        if (s?.matches(regex) == false) {
+            val indexOfLast = quantity.indexOfLast { it == '-' }
+            val newQuantity = buildString {
+                append(quantity.substring(0, indexOfLast))
+                append(quantity.substring(indexOfLast + 1, quantity.length))
+            }
+            quantityField.value = newQuantity
+        }
+    }
 }
