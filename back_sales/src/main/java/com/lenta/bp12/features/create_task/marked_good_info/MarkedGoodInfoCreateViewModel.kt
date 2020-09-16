@@ -403,7 +403,6 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
             navigator.showProgressLoadingData()
             saveChanges()
             navigator.hideProgress()
-            navigator.goBack()
             navigator.openBasketCreateGoodListScreen()
             manager.isBasketsNeedsToBeClosed = false
             markManager.clearData()

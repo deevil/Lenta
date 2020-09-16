@@ -859,7 +859,6 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
             navigator.showProgressLoadingData()
             saveChanges()
             navigator.hideProgress()
-            navigator.goBack()
             navigator.openBasketOpenGoodListScreen()
             manager.isBasketsNeedsToBeClosed = false
         }

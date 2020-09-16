@@ -822,7 +822,6 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
             navigator.showProgressLoadingData()
             saveChanges()
             navigator.hideProgress()
-            navigator.goBack()
             navigator.openBasketCreateGoodListScreen()
             manager.isBasketsNeedsToBeClosed = false
         }
