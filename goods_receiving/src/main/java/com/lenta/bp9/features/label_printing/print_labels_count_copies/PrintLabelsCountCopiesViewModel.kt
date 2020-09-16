@@ -97,7 +97,6 @@ class PrintLabelsCountCopiesViewModel : CoreViewModel() {
 
     fun onClickConfirm() {
         printingLabels()
-        goBackWithArgs()
     }
 
     private fun printingLabels() {
@@ -106,7 +105,7 @@ class PrintLabelsCountCopiesViewModel : CoreViewModel() {
                 try {
                     val product = taskManager.getReceivingTask()?.taskRepository?.getProducts()?.findProduct(labelItem.batchDiscrepancies?.materialNumber.orEmpty())
                     val eanInfo = ZmpUtz25V001(hyperHive).getEanInfoByMaterialUnits(product?.materialNumber.orEmpty(), product?.uom?.code.orEmpty())
-                    val weight = eanInfo?.ean?.substring(6, 6)?.toDouble() ?: 0.0
+                    val weight = eanInfo?.ean?.takeLast(6)?.toDoubleOrNull() ?: 0.0
                     val barCodeText = if (eanInfo?.uom == UNIT_G) {
                         "(01)${getFormattedEan(eanInfo.ean.orEmpty(), weight)}"
                     } else {
@@ -115,9 +114,6 @@ class PrintLabelsCountCopiesViewModel : CoreViewModel() {
 
                     val barcode = barCodeText.replace("(", "").replace(")", "")
                     val countCopiesValue = countCopies.value?.toIntOrNull() ?: 1
-                    /**for (i in 1..countCopiesValue) {
-
-                    }*/
                     printLabel(LabelZBatchesInfo(
                             goodsName = product?.description.orEmpty(),
                             goodsCode = product?.materialNumber.orEmpty(),
@@ -170,8 +166,9 @@ class PrintLabelsCountCopiesViewModel : CoreViewModel() {
                     printer.printLabel(labelInfo, ipAddress)
                             .also {
                                 screenNavigator.hideProgress()
+                                goBackWithArgs()
                             }.either(::handleFailure) {
-                                // Ничего не делаем...
+                                screenNavigator.goBack()
                             }
                 }
             }.also {
