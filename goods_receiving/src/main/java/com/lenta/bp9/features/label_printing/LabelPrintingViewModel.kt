@@ -15,6 +15,7 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.launchUITryCatch
+import com.lenta.shared.utilities.orIfNull
 import com.mobrun.plugin.api.HyperHive
 import javax.inject.Inject
 
@@ -84,33 +85,38 @@ class LabelPrintingViewModel : CoreViewModel() {
     }
 
     private fun updateLabels() {
+        val labelPrintingItems: ArrayList<LabelPrintingItem> = ArrayList()
         val zBatches = taskManager.getReceivingTask()?.getProcessedZBatchesDiscrepancies()
 
         zBatches?.let {
-            labels.value =
-                    it.mapIndexed { index, label ->
-                        val productDiscrepancies = getProductDiscrepanciesForLabel(label.materialNumber)
-                        val product = getProductInfoForLabel(label.materialNumber)
-                        val materialLastSix = product?.getMaterialLastSix().orEmpty()
-                        val partySignsOfZBatches = getPartySignsForLabel(label)
-                        val partySign = partySignsOfZBatches?.partySign?.partySignsTypeString.orEmpty()
-                        val manufacturerName = getManufacturerName(label.manufactureCode)
-                        val numberDiscrepancies = productDiscrepancies?.numberDiscrepancies.orEmpty()
-                        val unitName = product?.uom?.name.orEmpty()
+            it.mapIndexed { index, label ->
+                val product = getProductInfoForLabel(label.materialNumber)
+                if (product?.isNeedPrint == true) {
+                    val productDiscrepancies = getProductDiscrepanciesForLabel(label.materialNumber)
+                    val materialLastSix = product.getMaterialLastSix()
+                    val partySignsOfZBatches = getPartySignsForLabel(label)
+                    val partySign = partySignsOfZBatches?.partySign?.partySignsTypeString.orEmpty()
+                    val manufacturerName = getManufacturerName(label.manufactureCode)
+                    val numberDiscrepancies = productDiscrepancies?.numberDiscrepancies.orEmpty()
+                    val unitName = product.uom.name
 
-                        LabelPrintingItem(
-                                number = index + 1,
-                                productName = "$materialLastSix ${product?.description.orEmpty()}",
-                                batchName = "${partySign}-${label.shelfLifeDate} // $manufacturerName",
-                                quantityUnit = "$numberDiscrepancies $unitName",
-                                isPrinted = false,
-                                shelfLife = "${partySignsOfZBatches?.shelfLifeDate.orEmpty()} ${partySignsOfZBatches?.shelfLifeTime.orEmpty()}",
-                                productionDate = "${partySignsOfZBatches?.productionDate.orEmpty()} ${partySignsOfZBatches?.shelfLifeTime.orEmpty()}",
-                                batchDiscrepancies = label
-                        )
-                    }.reversed()
+                    labelPrintingItems.add(
+                            LabelPrintingItem(
+                                    number = index + 1,
+                                    productName = "$materialLastSix ${product.description}",
+                                    batchName = "${partySign}-${label.shelfLifeDate} // $manufacturerName",
+                                    quantityUnit = "$numberDiscrepancies $unitName",
+                                    isPrinted = false,
+                                    shelfLife = "${partySignsOfZBatches?.shelfLifeDate.orEmpty()} ${partySignsOfZBatches?.shelfLifeTime.orEmpty()}",
+                                    productionDate = "${partySignsOfZBatches?.productionDate.orEmpty()} ${partySignsOfZBatches?.shelfLifeTime.orEmpty()}",
+                                    batchDiscrepancies = label
+                            )
+                    )
+                }
+            }
         }
 
+        labels.value = labelPrintingItems.reversed()
         labelSelectionsHelper.clearPositions()
     }
 
