@@ -487,8 +487,8 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
     }
 
     fun onBatchSignsResult(_manufacturerSelectedPosition: Int, _bottlingDate: String) {
-        val manufacturerCode = _manufacturerSelectedPosition.let { repoInMemoryHolder.manufacturers.value?.get(it)?.code }
-        val bottlingDate = "${_bottlingDate.substring(6, 10)}-${_bottlingDate.substring(3, 5)}-${_bottlingDate.substring(0, 2)}"
+        val manufacturerCode = repoInMemoryHolder.manufacturers.value?.get(_manufacturerSelectedPosition)?.code.orEmpty()
+        val bottlingDate= _bottlingDate.takeIf {it.length >= 10 }?.run {"${this.substring(6, 10)}-${this.substring(3, 5)}-${this.substring(0, 2)}"}.orEmpty()
         exciseStampInfo.value = TaskExciseStampInfo(
                 materialNumber = productInfo.value!!.materialNumber,
                 code = scannedStampCode.value.orEmpty(),
