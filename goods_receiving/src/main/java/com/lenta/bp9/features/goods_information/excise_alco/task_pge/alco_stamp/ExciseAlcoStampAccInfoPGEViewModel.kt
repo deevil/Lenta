@@ -23,7 +23,6 @@ import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
@@ -31,7 +30,6 @@ import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import com.mobrun.plugin.api.HyperHive
-import java.text.ParseException
 import java.text.SimpleDateFormat
 import javax.inject.Inject
 
@@ -78,15 +76,15 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
     val spinBottlingDateSelectedPosition: MutableLiveData<Int> = MutableLiveData(0)
     val suffix: MutableLiveData<String> = MutableLiveData()
     val exciseStampInfo: MutableLiveData<TaskExciseStampInfo> = MutableLiveData()
-    val taskType: MutableLiveData<TaskType> = MutableLiveData()
 
     val tvBottlingDate: MutableLiveData<String> by lazy {
         if (productInfo.value?.isRus == true && !(productInfo.value?.origQuantity.isNullOrEmpty())) {
             MutableLiveData(context.getString(R.string.batch_with_bottling_date, productInfo.value?.origQuantity))
         } else if (productInfo.value?.isRus == true && productInfo.value?.origQuantity.isNullOrEmpty()) {
             MutableLiveData(context.getString(R.string.bottling_date))
-        } else
+        } else {
             MutableLiveData(context.getString(R.string.date_of_entry))
+        }
     }
 
     private val qualityInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
@@ -103,7 +101,7 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
         it != 0
     }
     val isGoodsAddedAsSurplus: MutableLiveData<Boolean> by lazy { //https://trello.com/c/WQg659Ww
-        MutableLiveData(productInfo.value?.isGoodsAddedAsSurplus == true)
+        MutableLiveData(productInfo.value?.isGoodsAddedAsSurplus == true )
     }
     val isEizUnit: MutableLiveData<Boolean> by lazy {
         MutableLiveData(productInfo.value?.purchaseOrderUnits?.code != productInfo.value?.uom?.code && isGoodsAddedAsSurplus.value == false)
@@ -168,8 +166,7 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
     }
 
     val checkStampControl: MutableLiveData<Boolean> = checkStampControlVisibility.map {
-        (countExciseStampsScanned.value ?: 0) >= (productInfo.value?.numberStampsControl?.toDouble()
-                ?: 0.0)
+        (countExciseStampsScanned.value ?: 0) >= (productInfo.value?.numberStampsControl?.toDouble() ?: 0.0)
     }
 
     val checkSurplusControlVisibility: MutableLiveData<Boolean> = MutableLiveData()
@@ -187,9 +184,7 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
     }
 
     val checkBoxSurplusControl: MutableLiveData<Boolean> = checkSurplusControlVisibility.map {
-        (countValue.value
-                ?: 0.0) > 0.0 && processExciseAlcoStampAccPGEService.getCountExciseStampsSurplusScanned() >= (countValue.value
-                ?: 0.0)
+        (countValue.value ?: 0.0) > 0.0 && processExciseAlcoStampAccPGEService.getCountExciseStampsSurplusScanned() >= (countValue.value ?: 0.0)
     }
 
     val checkStampListVisibility: MutableLiveData<Boolean> = MutableLiveData()
@@ -211,10 +206,8 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
         }
     }
 
-
     val checkBoxStampList: MutableLiveData<Boolean> = checkStampListVisibility.map {
-        (countValue.value ?: 0.0) > 0.0 && (countExciseStampsScanned.value
-                ?: 0) >= (countValue.value ?: 0.0)
+        (countValue.value ?: 0.0) > 0.0 && (countExciseStampsScanned.value ?: 0) >= (countValue.value ?: 0.0)
     }
 
     val enabledRollbackBtn: MutableLiveData<Boolean> = countExciseStampsScanned.map {
@@ -249,7 +242,6 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
 
     @SuppressLint("SimpleDateFormat")
     private val formatterRU = SimpleDateFormat("dd.MM.yyyy")
-
     @SuppressLint("SimpleDateFormat")
     private val formatterEN = SimpleDateFormat("yyyy-MM-dd")
 
@@ -301,16 +293,14 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
         }?.egais ?: ""
         val manufacturerName = repoInMemoryHolder.manufacturers.value?.findLast {
             it.code == manufacturerCode
-        }?.name
-                ?: repoInMemoryHolder.manufacturers.value?.findLast { manufacture -> //это в случае излишка
-                    manufacture.code == lastExciseStampInfo?.organizationCodeEGAIS
-                }?.name ?: ""
+        }?.name ?: repoInMemoryHolder.manufacturers.value?.findLast {manufacture -> //это в случае излишка
+            manufacture.code == lastExciseStampInfo?.organizationCodeEGAIS
+        }?.name ?: ""
         spinManufacturers.value = listOf(manufacturerName)
 
         val dateOfPour = taskManager.getReceivingTask()?.taskRepository?.getBatches()?.getBatches()?.findLast {
             it.batchNumber == lastExciseStampInfo?.batchNumber
-        }?.bottlingDate
-                ?: lastExciseStampInfo?.bottlingDate //exciseStampInfo.value!!.bottlingDate это в случае излишка
+        }?.bottlingDate ?: lastExciseStampInfo?.bottlingDate //exciseStampInfo.value!!.bottlingDate это в случае излишка
         if (!dateOfPour.isNullOrEmpty()) {
             spinBottlingDate.value = listOf(formatterRU.format(formatterEN.parse(dateOfPour)))
         } else {
@@ -527,8 +517,6 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
         val dateOfPour = taskManager.getReceivingTask()?.taskRepository?.getBatches()?.getBatches()?.findLast {
             it.batchNumber == exciseStampInfo.value?.batchNumber.orEmpty()
         }?.bottlingDate.orEmpty()
-
-
         try {
             dateOfPour
                     .takeIf { it.isNotEmpty() }
@@ -539,11 +527,12 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
         } catch (e: ParseException) {
             Logg.e("Parse formatter in onBatchSignsResult()")
         }
-
     }
 
+
     fun onBackPressed() {
-        if (processExciseAlcoStampAccPGEService.modifications()) {
+        val count = count.value?.toInt()
+        if (processExciseAlcoStampAccPGEService.modifications() || count != 0) {
             screenNavigator.openUnsavedDataDialog(
                     yesCallbackFunc = {
                         processExciseAlcoStampAccPGEService.clearModifications()
@@ -552,9 +541,7 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
             )
             return
         }
-        val taskTypeValue = taskType.value
-        if (taskTypeValue != null) {
-            screenNavigator.openGoodsListScreen(taskTypeValue)
-        }
+        screenNavigator.goBack()
     }
+
 }
