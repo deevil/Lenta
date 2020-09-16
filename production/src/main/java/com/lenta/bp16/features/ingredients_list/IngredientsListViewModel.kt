@@ -236,7 +236,7 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                                 navigator.openMaterialRemakesScreen(selectedIngredient)
                             }
                         }
-                        IngredientInfoUI.BLOCK_BY_OTHER -> navigator.showAlertBlockedTaskAnotherUser(TEST_ANOTHER_USER)
+                        IngredientInfoUI.BLOCK_BY_OTHER -> navigator.showAlertBlockedTaskAnotherUser(selectedIngredient.lockUser, selectedIngredient.lockIp)
                         else -> {
                             if (selectedIngredient.isByOrder) {
                                 navigator.openOrderDetailsScreen(selectedIngredient, barcode)
@@ -258,9 +258,4 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
         numberField.value = data
         searchByBarcode()
     }
-
-    companion object{
-        const val TEST_ANOTHER_USER = "Тестовый чужой пользователь"
-    }
-
 }
