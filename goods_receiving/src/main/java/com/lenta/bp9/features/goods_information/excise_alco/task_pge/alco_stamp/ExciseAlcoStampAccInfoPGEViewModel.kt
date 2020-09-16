@@ -5,8 +5,6 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
-import com.lenta.bp9.features.goods_list.GoodsListFragment
-import com.lenta.bp9.features.goods_list.SearchProductDelegate
 import com.lenta.bp9.features.delegates.SearchProductDelegate
 import com.lenta.bp9.model.processing.ProcessExciseAlcoStampAccPGEService
 import com.lenta.bp9.model.task.IReceivingTaskManager
