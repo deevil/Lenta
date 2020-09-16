@@ -252,7 +252,7 @@ class GoodsDetailsViewModel : CoreViewModel() {
                     itemsZBatchesDiscrepancies.add(
                             getItemsZBatchesDiscrepanciesOfBatch(index, discrepancy)
                     )
-                    quantityItem += quantityItem
+                    quantityItem = index + 1
                 }
 
         taskRepository
@@ -405,7 +405,7 @@ class GoodsDetailsViewModel : CoreViewModel() {
                                                 ?.deleteProductDiscrepancyByBatch(materialNumber, typeDiscrepancies, it.numberDiscrepancies.toDouble())
                                     }
                         }
-                        isZBatch.value == true -> {
+                        isZBatch.value == true && typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM -> {
                             goodsDetailsItem
                                     ?.zBatchDiscrepancies
                                     ?.let {
