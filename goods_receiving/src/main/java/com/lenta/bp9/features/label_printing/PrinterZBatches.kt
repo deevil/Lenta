@@ -93,6 +93,7 @@ class LabelPrintingZBatches @Inject constructor(
             put("QIANTITY", labelInfo.quantity)
             put("BARCODE", labelInfo.barcode)
             put("TEXTBARCODE", labelInfo.barcodeText)
+            put("COPIES", labelInfo.copies)
         }.forEach {
             res = res.replace("@${it.key}", it.value)
         }
@@ -153,5 +154,7 @@ data class LabelZBatchesInfo(
         /** Штрихкод */
         val barcode: String,
         /** Штрихкод для отображения в текстовом виде */
-        val barcodeText: String
+        val barcodeText: String,
+        /** Кол-во копий */
+        val copies: String
 )

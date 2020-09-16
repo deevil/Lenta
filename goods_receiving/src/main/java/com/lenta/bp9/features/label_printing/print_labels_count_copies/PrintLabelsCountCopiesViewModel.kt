@@ -115,22 +115,24 @@ class PrintLabelsCountCopiesViewModel : CoreViewModel() {
 
                     val barcode = barCodeText.replace("(", "").replace(")", "")
                     val countCopiesValue = countCopies.value?.toIntOrNull() ?: 1
-                    for (i in 1..countCopiesValue) {
-                        printLabel(LabelZBatchesInfo(
-                                goodsName = product?.description.orEmpty(),
-                                goodsCode = product?.materialNumber.orEmpty(),
-                                shelfLife = labelItem.batchDiscrepancies?.shelfLifeDate.orEmpty(),
-                                productTime = labelItem.batchDiscrepancies?.shelfLifeDate.orEmpty(), //todo должно быть дата, которую ввел пользователь при приемке;
-                                delivery = taskManager.getReceivingTask()?.taskDescription?.deliveryNumber.orEmpty(),
-                                provider = taskManager.getReceivingTask()?.taskDescription?.supplierName.orEmpty(),
-                                batchNumber = labelItem.batchDiscrepancies?.batchNumber.orEmpty(),
-                                manufacturer = getManufacturerName(labelItem.batchDiscrepancies?.manufactureCode.orEmpty()),
-                                weigher = sessionInfo.personnelNumber.orEmpty(),
-                                quantity = labelItem.batchDiscrepancies?.numberDiscrepancies.orEmpty(),
-                                barcode = barcode,
-                                barcodeText = barCodeText
-                        ))
-                    }
+                    /**for (i in 1..countCopiesValue) {
+
+                    }*/
+                    printLabel(LabelZBatchesInfo(
+                            goodsName = product?.description.orEmpty(),
+                            goodsCode = product?.materialNumber.orEmpty(),
+                            shelfLife = labelItem.batchDiscrepancies?.shelfLifeDate.orEmpty(),
+                            productTime = labelItem.batchDiscrepancies?.shelfLifeDate.orEmpty(), //todo должно быть дата, которую ввел пользователь при приемке;
+                            delivery = taskManager.getReceivingTask()?.taskDescription?.deliveryNumber.orEmpty(),
+                            provider = taskManager.getReceivingTask()?.taskDescription?.supplierName.orEmpty(),
+                            batchNumber = labelItem.batchDiscrepancies?.batchNumber.orEmpty(),
+                            manufacturer = getManufacturerName(labelItem.batchDiscrepancies?.manufactureCode.orEmpty()),
+                            weigher = sessionInfo.personnelNumber.orEmpty(),
+                            quantity = labelItem.batchDiscrepancies?.numberDiscrepancies.orEmpty(),
+                            barcode = barcode,
+                            barcodeText = barCodeText,
+                            copies = countCopiesValue.toString()
+                    ))
                 } catch (e: Exception) {
                     Logg.e { "Create print label exception: $e" }
                 }
