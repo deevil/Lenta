@@ -21,6 +21,20 @@ object Constants {
 
     const val CHOOSE_PRODUCER = "Выберите производителя"
     const val CHOOSE_PRODUCTION_DATE = "Выберите дату производства"
+
+    //Date constants
+    const val YEAR_RANGE_START = 2000
+    const val YEAR_RANGE_END = 2100
+    const val MONTH_WITH_31_DAY = 31
+    const val MONTH_WITH_30_DAY = 30
+    const val MONTH_WITH_29_DAY = 29
+    const val MONTH_WITH_28_DAY = 28
+
+    //Time constants
+    const val HOUR_RANGE_START = 0
+    const val HOUR_RANGE_END = 23
+    const val MINUTES_RANGE_START = 0
+    const val MINUTES_RANGE_END = 59
 }
 
 

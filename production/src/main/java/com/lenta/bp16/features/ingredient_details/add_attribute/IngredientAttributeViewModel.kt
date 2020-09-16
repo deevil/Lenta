@@ -7,6 +7,7 @@ import com.lenta.bp16.model.IAttributeManager
 import com.lenta.bp16.model.ingredients.ui.OrderIngredientDataInfoUI
 import com.lenta.bp16.model.ingredients.ui.ProducerDataInfoUI
 import com.lenta.bp16.model.ingredients.ui.ZPartDataInfoUI
+import com.lenta.bp16.platform.Constants
 import com.lenta.bp16.platform.base.IZpartVisibleConditions
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.repository.IDatabaseRepository
@@ -151,10 +152,11 @@ class IngredientAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
             val monthWith31Days = listOf(1, 3, 5, 7, 8, 10, 12)
             val monthWith30Days = listOf(4, 6, 9, 11)
             when {
-                monthWith31Days.contains(month) -> day <= 31
-                monthWith30Days.contains(month) && month != 2 -> day <= 30
-                year % 4 == 0 -> day <= 29
-                month == 2 -> day <= 28
+                year < Constants.YEAR_RANGE_START || year > Constants.YEAR_RANGE_END -> false
+                monthWith31Days.contains(month) -> day <= Constants.MONTH_WITH_31_DAY
+                monthWith30Days.contains(month) && month != 2 -> day <= Constants.MONTH_WITH_30_DAY
+                year % 4 == 0 -> day <= Constants.MONTH_WITH_29_DAY
+                month == 2 -> day <= Constants.MONTH_WITH_28_DAY
                 else -> false
             }
         } else {
@@ -171,7 +173,7 @@ class IngredientAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
                 val splitCheckTime = checkTime.split(":")
                 val hours = splitCheckTime[0].toInt()
                 val minutes = splitCheckTime[1].toInt()
-                hours in 0..23 && minutes in 0..59
+                hours in Constants.HOUR_RANGE_START..Constants.HOUR_RANGE_END && minutes in Constants.MINUTES_RANGE_START..Constants.MINUTES_RANGE_END
             } else {
                 false
             }
@@ -180,20 +182,29 @@ class IngredientAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
         }
     }
 
-/*    */
-    /**Проверка на истечение срока годности*//*
+
+    /**Проверка на истечение срока годности*/
     private fun checkShelfLife(): Boolean {
         val date = dateInfoField.value.orEmpty()
-        val time = timeField.value.orEmpty()
+        if (date.isNotEmpty() && date.length == DATE_LENGTH) {
+            val shelfLife = orderIngredient.value?.shelfLife?.toInt() ?: 0
+            val currentDate = timeMonitor.getServerDate().getFormattedDate()
+            val splitCheckDate = date.split(".")
+            val day = splitCheckDate[0].toInt()
+            val month = splitCheckDate[1].toInt()
+            val year = splitCheckDate[2].toInt()
+        }
 
-    }*/
+
+        return true
+    }
 
     fun onClickComplete() = launchUITryCatch {
         setDateInfo()
         setTimeInfo()
         val dateIsCorrect = checkDate()
         val timeIsCorrect = checkTime()
-        //val shelfLifeCorrect = checkShelfLife()
+        val shelfLifeCorrect = checkShelfLife()
         when {
             !dateIsCorrect -> navigator.showAlertWrongDate()
             !timeIsCorrect -> navigator.showAlertWrongTime()
