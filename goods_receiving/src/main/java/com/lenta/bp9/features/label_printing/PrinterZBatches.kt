@@ -82,7 +82,7 @@ class LabelPrintingZBatches @Inject constructor(
 
         mutableMapOf<String, String>().apply {
             put("GOODSNAME", labelInfo.goodsName)
-            put("GOODSCODE", labelInfo.goodsName)
+            put("GOODSCODE", labelInfo.goodsCode)
             put("DATEEXPIR", labelInfo.shelfLife)
             put("PRODUCTTIME", labelInfo.productTime)
             put("DELIVERY", labelInfo.delivery)

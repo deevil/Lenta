@@ -24,6 +24,7 @@ import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.utilities.orIfNull
+import java.lang.Exception
 import java.text.SimpleDateFormat
 import javax.inject.Inject
 
@@ -199,13 +200,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                                 addBatchProduct = productInfo.materialNumber
                                 val zBatchesInfoOfProduct = task.taskRepository.getZBatchesDiscrepancies().findZBatchDiscrepanciesOfProduct(productInfo.materialNumber)
                                 zBatchesInfoOfProduct.map { zBatch ->
-                                    val shelfLifeDate =
-                                            zBatch
-                                                    .shelfLifeDate
-                                                    .takeIf { it.isNotEmpty() }
-                                                    ?.let { formatterRU.format(formatterERP.parse(it)) }
-                                                    .orEmpty()
-
+                                    val shelfLifeOrProductionDate = getShelfLifeOrProductionDate(zBatch)
                                     val partySign =
                                             task.taskRepository
                                                     .getZBatchesDiscrepancies()
@@ -219,7 +214,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                                                     number = index + 1,
                                                     name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
                                                     nameMaxLines = 1,
-                                                    nameBatch = "$partySign-$shelfLifeDate // ${getManufacturerNameZBatch(zBatch.manufactureCode)}",
+                                                    nameBatch = "$partySign-$shelfLifeOrProductionDate // ${getManufacturerNameZBatch(zBatch.manufactureCode)}",
                                                     visibilityNameBatch = true,
                                                     countAcceptWithUom = getAcceptTotalCountWithUomZBatch(zBatch, uom),
                                                     countRefusalWithUom = "",
@@ -255,6 +250,37 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
 
         listCounted.value = arrayCounted.reversed()
         countedSelectionsHelper.clearPositions()
+    }
+
+    private fun getShelfLifeOrProductionDate(zBatchesDiscrepancies: TaskZBatchesDiscrepancies): String {
+        return try {
+            val partySignOfZBatch =
+                    taskRepository
+                            ?.getZBatchesDiscrepancies()
+                            ?.findPartySignOfZBatch(zBatchesDiscrepancies)
+
+            when(partySignOfZBatch?.partySign ?: PartySignsTypeOfZBatches.None) {
+                PartySignsTypeOfZBatches.ProductionDate -> {
+                    partySignOfZBatch
+                            ?.productionDate
+                            ?.takeIf { it.isNotEmpty() }
+                            ?.let { formatterRU.format(formatterERP.parse(it)) }
+                            .orEmpty()
+                }
+                PartySignsTypeOfZBatches.ShelfLife -> {
+                    partySignOfZBatch
+                            ?.shelfLifeDate
+                            ?.takeIf { it.isNotEmpty() }
+                            ?.let { formatterRU.format(formatterERP.parse(it)) }
+                            .orEmpty()
+                }
+                else -> ""
+            }
+        }
+        catch (e: Exception) {
+            Logg.e { "e: $e" }
+            ""
+        }
     }
 
     private fun updateListWithoutBarcode() {

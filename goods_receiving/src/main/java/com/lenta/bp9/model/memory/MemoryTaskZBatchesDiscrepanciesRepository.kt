@@ -157,7 +157,8 @@ class MemoryTaskZBatchesDiscrepanciesRepository : ITaskZBatchesDiscrepanciesRepo
                     && partySign.processingUnit == partySignsOfZBatches[i].processingUnit
                     && partySign.manufactureCode == partySignsOfZBatches[i].manufactureCode
                     && partySign.shelfLifeDate == partySignsOfZBatches[i].shelfLifeDate
-                    && partySign.shelfLifeTime == partySignsOfZBatches[i].shelfLifeTime) {
+                    && partySign.shelfLifeTime == partySignsOfZBatches[i].shelfLifeTime
+                    && partySign.productionDate == partySignsOfZBatches[i].productionDate) {
                 index = i
             }
         }
@@ -182,6 +183,7 @@ class MemoryTaskZBatchesDiscrepanciesRepository : ITaskZBatchesDiscrepanciesRepo
                     && it.manufactureCode == partySign.manufactureCode
                     && it.shelfLifeDate == partySign.shelfLifeDate
                     && it.shelfLifeTime == partySign.shelfLifeTime
+                    && it.productionDate == partySign.productionDate
         }
     }
 
