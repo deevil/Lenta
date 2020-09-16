@@ -4,6 +4,8 @@ import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.extentions.getQuantityOfGood
+import com.lenta.bp12.platform.DEFAULT_POSITION
+import com.lenta.bp12.platform.DEFAULT_QUANTITY
 import com.lenta.bp12.platform.extention.isWholesaleType
 import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -141,12 +143,12 @@ abstract class BaseGoodInfoCreateViewModel : CoreViewModel(), IBaseGoodInfoCreat
         }
     }
 
-    override val providerPosition = MutableLiveData(0)
+    override val providerPosition = MutableLiveData(DEFAULT_POSITION)
 
     override val isProviderSelected by unsafeLazy {
         providerEnabled.combineLatest(providerPosition).map {
             val isEnabled = it?.first ?: false
-            val position = it?.second ?: 0
+            val position = it?.second ?: DEFAULT_POSITION
 
             isProviderEnabledAndPositionChanged(isEnabled, position) or
                     isProviderNotEnabledAndPositionDidntChanged(isEnabled, position)
@@ -234,11 +236,6 @@ abstract class BaseGoodInfoCreateViewModel : CoreViewModel(), IBaseGoodInfoCreat
     private fun handleYesOnClickCloseCallback() {
         manager.isBasketsNeedsToBeClosed = true
         saveChangesAndExit()
-    }
-
-    companion object {
-        private const val DEFAULT_POSITION = 0
-        private const val DEFAULT_QUANTITY = 0.0
     }
 }
 

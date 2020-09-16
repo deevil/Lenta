@@ -13,6 +13,7 @@ import com.lenta.bp12.model.actionByNumber
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.extentions.addMarks
+import com.lenta.bp12.platform.DEFAULT_QUANTITY
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -133,7 +134,7 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
     }
 
     override val quantity = quantityField.map {
-        it?.toDoubleOrNull() ?: 0.0
+        it?.toDoubleOrNull() ?: DEFAULT_QUANTITY
     }
 
     /**
@@ -487,9 +488,5 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
                 navigator.showInternalError(resource.goodNotFoundErrorMsg)
             }
         }
-    }
-
-    companion object{
-        private const val DEFAULT_QUANTITY = 0.0
     }
 }
