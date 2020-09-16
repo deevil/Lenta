@@ -12,11 +12,14 @@
     <dimen name="text_button">12sp</dimen>
     <dimen name="text_big">21sp</dimen>
 
+    <dimen name="size_1dp">1dp</dimen>
+    <dimen name="size_2dp">2dp</dimen>
     <dimen name="size_6dp">6dp</dimen>
     <dimen name="size_8dp">8dp</dimen>
     <dimen name="size_10dp">10dp</dimen>
     <dimen name="size_12dp">12dp</dimen>
     <dimen name="size_16dp">16dp</dimen>
+    <dimen name="size_30dp">30dp</dimen>
     <dimen name="size_32dp">32dp</dimen>
     <dimen name="size_36dp">36dp</dimen>
     <dimen name="size_98dp">98dp</dimen>
@@ -47,5 +50,8 @@
     // Табы
     <dimen name="tab_height">32dp</dimen>
     <dimen name="tab_indicator_height">3dp</dimen>
+
+    //Разделитель
+    <dimen name="divider_default_height">1dp</dimen>
 
 </resources>

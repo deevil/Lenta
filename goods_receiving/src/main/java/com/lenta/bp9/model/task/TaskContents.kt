@@ -2,14 +2,17 @@ package com.lenta.bp9.model.task
 
 import android.annotation.SuppressLint
 import android.content.Context
+import androidx.lifecycle.MutableLiveData
 import com.lenta.bp9.model.processing.ProcessExciseAlcoBoxAccService
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.requests.network.*
+import com.lenta.shared.fmp.resources.dao_ext.getEanInfoFromMaterial
 import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.fmp.resources.dao_ext.getUomInfo
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
+import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.models.core.getProductType
@@ -29,20 +32,6 @@ class TaskContents
 
     @Inject
     lateinit var hyperHive: HyperHive
-
-    @Inject
-    lateinit var taskManager: IReceivingTaskManager
-
-    @Inject
-    lateinit var repoInMemoryHolder: IRepoInMemoryHolder
-
-    private val zmpUtz07V001: ZmpUtz07V001 by lazy {
-        ZmpUtz07V001(hyperHive)
-    }
-
-    private val zfmpUtz48V001: ZfmpUtz48V001 by lazy {
-        ZfmpUtz48V001(hyperHive)
-    }
 
     @SuppressLint("SimpleDateFormat")
     private val formatterEN = SimpleDateFormat(DATE_FORMAT_yyyy_mm_dd)
@@ -92,7 +81,10 @@ class TaskContents
                 },
                 startRecountRestInfo.taskBlocksDiscrepancies.map {
                     TaskBlockDiscrepancies.from(it)
-                }
+                },
+                startRecountRestInfo.taskZBatchesDiscrepancies
+                        ?.map { TaskZBatchesDiscrepancies.from(hyperHive, it) }
+                        .orEmpty()
         )
     }
 
@@ -138,7 +130,10 @@ class TaskContents
                 },
                 startRecountRestInfo.taskBlocksDiscrepancies.map {
                     TaskBlockDiscrepancies.from(it)
-                }
+                },
+                startRecountRestInfo.taskZBatchesDiscrepancies
+                        ?.map { TaskZBatchesDiscrepancies.from(hyperHive, it) }
+                        .orEmpty()
         )
     }
 
@@ -184,7 +179,10 @@ class TaskContents
                 },
                 startRecountRestInfo.taskBlocksDiscrepancies.map {
                     TaskBlockDiscrepancies.from(it)
-                }
+                },
+                startRecountRestInfo.taskZBatchesDiscrepancies
+                        ?.map { TaskZBatchesDiscrepancies.from(hyperHive, it) }
+                        .orEmpty()
         )
     }
 
@@ -230,15 +228,19 @@ class TaskContents
                 },
                 startRecountRestInfo.taskBlocksDiscrepancies.map {
                     TaskBlockDiscrepancies.from(it)
-                }
+                },
+                startRecountRestInfo.taskZBatchesDiscrepancies
+                        ?.map { TaskZBatchesDiscrepancies.from(hyperHive, it) }
+                        .orEmpty()
         )
     }
 
     private fun conversionToProductInfo(taskComposition: List<TaskComposition>) : List<TaskProductInfo> {
         return taskComposition.map {
-            val materialInfo = zfmpUtz48V001.getProductInfoByMaterial(it.materialNumber)
-            val uomInfo = zmpUtz07V001.getUomInfo(it.uom)
-            val purchaseOrderUnitUomInfo = zmpUtz07V001.getUomInfo(it.purchaseOrderUnits)
+            val materialInfo = ZfmpUtz48V001(hyperHive).getProductInfoByMaterial(it.materialNumber)
+            val uomInfo = ZmpUtz07V001(hyperHive).getUomInfo(it.uom)
+            val purchaseOrderUnitUomInfo = ZmpUtz07V001(hyperHive).getUomInfo(it.purchaseOrderUnits)
+            val eanInfo = ZmpUtz25V001(hyperHive).getEanInfoFromMaterial(it.materialNumber)
             TaskProductInfo(
                     materialNumber = materialInfo?.material.orEmpty(),
                     description = materialInfo?.name.orEmpty(),
@@ -279,7 +281,11 @@ class TaskContents
                     nestingInOneBlock = it.nestingInOneBlock ?: "0.0",
                     isControlGTIN = it.isControlGTIN == "X",
                     isGrayZone = it.isGrayZone == "X",
-                    countPiecesBox = it.countPiecesBox
+                    countPiecesBox = it.countPiecesBox,
+                    numeratorConvertBaseUnitMeasure = eanInfo?.umrez?.toDouble() ?: 0.0,
+                    denominatorConvertBaseUnitMeasure = eanInfo?.umren?.toDouble() ?: 0.0,
+                    isZBatches = it.isZBatches == "X",
+                    isNeedPrint = it.isNeedPrint == "X"
             )
         }
     }
@@ -295,7 +301,7 @@ class TaskContents
         return batch
                 ?.bottlingDate
                 ?.takeIf { it.isNotEmpty() }
-                ?.run { formatterERP.format(formatterEN.parse(this)) }
+                ?.let { formatterERP.format(formatterEN.parse(it)) }
                 .orEmpty()
     }
 }
@@ -312,5 +318,6 @@ data class TaskContentsInfo(
         val taskBoxes: List<TaskBoxInfo>,
         val taskBoxesDiscrepancies: List<TaskBoxDiscrepancies>,
         val taskBlock: List<TaskBlockInfo>,
-        val taskBlockDiscrepancies: List<TaskBlockDiscrepancies>
+        val taskBlockDiscrepancies: List<TaskBlockDiscrepancies>,
+        val taskZBatchesDiscrepancies: List<TaskZBatchesDiscrepancies>
 )

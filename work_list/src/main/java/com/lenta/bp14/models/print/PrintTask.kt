@@ -6,6 +6,7 @@ import com.lenta.bp14.models.check_price.ActualPriceInfo
 import com.lenta.bp14.models.check_price.GoodOptions
 import com.lenta.bp14.models.data.getGoodType
 import com.lenta.bp14.models.print.PriceTagType.Companion.emptyPriceTag
+import com.lenta.bp14.platform.Constants
 import com.lenta.bp14.repos.IRepoInMemoryHolder
 import com.lenta.bp14.requests.ProductInfoResult
 import com.lenta.shared.account.ISessionInfo
@@ -113,7 +114,8 @@ class PrintTask @Inject constructor(
                             goodType = getGoodType(
                                     alcohol = productInfo.isAlco,
                                     excise = productInfo.isExcise,
-                                    marked = productInfo.isMarked),
+                                    marked = productInfo.isMarked,
+                                    rusWine = productInfo.isRusWine),
                             healthFood = productInfo.isHealthyFood.isSapTrue(),
                             novelty = productInfo.isNew.isSapTrue()
                     )
@@ -122,16 +124,25 @@ class PrintTask @Inject constructor(
             val price2 = if (isRegular) actualPriceInfo.price2
                     ?: actualPriceInfo.price1!! else actualPriceInfo.getDiscountCardPrice() ?: 0.0
 
+            /**Измерение длины EAN для выбора шаблона*/
+            val eanLength = productInfo.ean.length
+
+            /**Условие использования EAN8*/
+            val isEan8Length = eanLength == Constants.EAN_8_LENGTH
+
+            /**Если EAN8, то выбираем короткий шаблон, иначе 6*6*/
             val printTemplate = when (printerType.id) {
-                "01" -> if (isRegular) {
-                    PrintTemplate.Zebra_Yellow_6_6
-                } else {
-                    PrintTemplate.Zebra_Red_6_6
+                "01" -> when {
+                    isRegular && isEan8Length -> PrintTemplate.ZEBRA_YELLOW_SMALL
+                    isRegular && !isEan8Length -> PrintTemplate.ZEBRA_YELLOW_6_6
+                    !isRegular && isEan8Length -> PrintTemplate.ZEBRA_RED_SMALL
+                    else -> PrintTemplate.ZEBRA_RED_6_6
                 }
-                "02" -> if (isRegular) {
-                    PrintTemplate.Datamax_Yellow_6_6
-                } else {
-                    PrintTemplate.Datamax_Red_6_6
+                "02" -> when {
+                    isRegular && isEan8Length -> PrintTemplate.DATAMAX_YELLOW_SMALL
+                    isRegular && !isEan8Length -> PrintTemplate.DATAMAX_YELLOW_6_6
+                    !isRegular && isEan8Length -> PrintTemplate.DATAMAX_RED_SMALL
+                    else -> PrintTemplate.DATAMAX_RED_6_6
                 }
                 else -> null
 
@@ -144,7 +155,7 @@ class PrintTask @Inject constructor(
                             goodsName = productInfo.name,
                             price1 = actualPriceInfo.getPrice() ?: 0.0,
                             price2 = price2,
-                            productNumber = productInfo.matNr.takeLast(6),
+                            productNumber = productInfo.matKL + productInfo.matNr.takeLast(6),  //Формируем код
                             ean = productInfo.ean,
                             date = timeMonitor.getServerDate(),
                             address = repoInMemoryHolder.storesRequestResult?.markets?.firstOrNull { it.tkNumber == sessionInfo.market }?.address.orEmpty(),

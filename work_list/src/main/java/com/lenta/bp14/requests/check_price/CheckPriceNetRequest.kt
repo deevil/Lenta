@@ -37,7 +37,8 @@ class CheckPriceNetRequest
                             goodType = getGoodType(
                                     alcohol = productInfo.isAlco,
                                     excise = productInfo.isExcise,
-                                    marked = productInfo.isMarked),
+                                    marked = productInfo.isMarked,
+                                    rusWine = productInfo.isRusWine),
                             healthFood = productInfo.isHealthyFood.isSapTrue(),
                             novelty = productInfo.isNew.isSapTrue()
                     )

@@ -420,6 +420,18 @@ data class ButtonDecorationInfo(
         val partialFailureMarking: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_partial_failure_marking, R.string.partial_failure)
         }
+
+        val damaged: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_barcode_white_24dp, R.string.damaged)
+        }
+
+        val close: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_close_lock_white_24dp, R.string.to_close)
+        }
+
+        val open: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_open_lock_white_24dp, R.string.open)
+        }
     }
 
 }

@@ -53,8 +53,6 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
     lateinit var resourceManager: IResourceManager
 
 
-    val selectedPage = MutableLiveData(0)
-
     val loadingIndicatorVisibility = MutableLiveData<Boolean>(true)
 
     val dataLoadingErrorVisibility = MutableLiveData<Boolean>(false)

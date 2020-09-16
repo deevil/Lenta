@@ -1,8 +1,8 @@
 package com.lenta.bp12.features.open_task.task_list
 
 import androidx.lifecycle.MutableLiveData
+import com.lenta.bp12.managers.interfaces.IOpenTaskManager
 import com.lenta.bp12.model.BlockType
-import com.lenta.bp12.model.IOpenTaskManager
 import com.lenta.bp12.model.TaskSearchMode
 import com.lenta.bp12.model.pojo.open_task.TaskOpen
 import com.lenta.bp12.platform.navigation.IScreenNavigator
@@ -11,7 +11,6 @@ import com.lenta.bp12.request.TaskListNetRequest
 import com.lenta.bp12.request.TaskListParams
 import com.lenta.bp12.request.TaskListResult
 import com.lenta.shared.account.ISessionInfo
-import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
@@ -49,8 +48,6 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     val title by lazy {
         resource.tk(sessionInfo.market.orEmpty())
     }
-
-    val selectedPage = MutableLiveData(0)
 
     val processingNumberField by lazy {
         MutableLiveData(sessionInfo.userName)
@@ -134,7 +131,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     init {
         launchUITryCatch {
-            onClickUpdate()
+            updateProcessingTaskList()
         }
     }
 
@@ -170,9 +167,10 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     private fun handleTaskListResult(result: TaskListResult) {
         launchUITryCatch {
-            manager.addTasks(result.tasks)
+            result.tasks?.let { manager.addTasks(it) }
         }
     }
+
 
     private fun loadSearchTaskList(value: String = "") {
         manager.searchParams?.let { params ->
@@ -195,7 +193,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     private fun handleTaskListResultWithParams(result: TaskListResult) {
         launchUITryCatch {
-            manager.addFoundTasks(result.tasks)
+            manager.addFoundTasks(result.tasks.orEmpty())
         }
     }
 

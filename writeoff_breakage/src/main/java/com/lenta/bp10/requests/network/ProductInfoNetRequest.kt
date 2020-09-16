@@ -82,7 +82,7 @@ class ProductInfoNetRequest
                 materialNumber = material.material,
                 description = material.name,
                 uom = Uom(code = uomInfo.uom, name = uomInfo.name),
-                type = getProductType(isAlco = material.isAlco.isNotEmpty(), isExcise = material.isExcise.isNotEmpty()),
+                type = getProductType(isAlco = material.isAlco.isNotEmpty(), isExcise = material.isExcise.isNotEmpty(), isMarkedGood = material.isMark.isNotEmpty()),
                 isSet = !set.isNullOrEmpty(),
                 sectionId = material.abtnr,
                 matrixType = getMatrixType(material.matrixType),
@@ -128,6 +128,8 @@ data class Material(
         val isAlco: String,
         @SerializedName("IS_EXC")
         val isExcise: String,
+        @SerializedName("IS_MARK")
+        val isMark: String,
         @SerializedName("IS_RETURN")
         val isReturn: String,
         @SerializedName("MATERIAL")

@@ -73,7 +73,13 @@ data class DirectSupplierStartRecountRestInfo(
         @SerializedName("ET_PACK_DIFF")//Список обработанных блоков для маркированного товара
         val taskBlocksDiscrepancies: List<TaskBlockDiscrepanciesRestData>,
         @SerializedName("ET_PROPERTIES")//таблица свойств для маркированного товара
-        val markingGoodsProperties: List<TaskMarkingGoodsPropertiesRestData>,
+        val markingGoodsProperties: List<TaskMarkingGoodsPropertiesRestData>?,
+        @SerializedName("ET_ZPRODUCERS")//Таблица данных производителей для Z-партий
+        val manufacturersForZBatches: List<TaskManufacturersForZBatchesRestData>?,
+        @SerializedName("ET_TASK_ZPARTS")//Таблица Z-партий задания
+        val taskZBatchInfo: List<TaskZBatchInfoRestData>?,
+        @SerializedName("ET_ZPARTS_DIFF")//Таблица расхождений по Z-партиям
+        val taskZBatchesDiscrepancies: List<TaskZBatchesDiscrepanciesRestData>?,
         @SerializedName("EV_RETCODE")
         override val retCode: Int,
         @SerializedName("EV_ERROR_TEXT")
@@ -150,5 +156,9 @@ data class TaskComposition(
         @SerializedName("IS_GRAYZONE")
         val isGrayZone: String, //маркированный товар
         @SerializedName("QNTINCL_ALT_BSTME")
-        val countPiecesBox: String //маркированный товар, сколько пачек (штук) в одной коробке
+        val countPiecesBox: String, //маркированный товар, сколько пачек (штук) в одной коробке
+        @SerializedName("IS_ZPARTS")
+        val isZBatches: String?, // Z-партии
+        @SerializedName("IS_NEEDPRINT")
+        val isNeedPrint: String? // Z-партии, печать этикеток
 )

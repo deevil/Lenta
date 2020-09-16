@@ -132,12 +132,16 @@ class GoodInfoViewModel : CoreViewModel() {
                 val fillWarehouseSender = it?.first?.first?.second
                 val fillWarehouseReceiver = it?.first?.second
                 val fillContainerField = it?.second
-                if (!proFillCond.value.isNullOrBlank()) {
-                    !(fillQuantity.isNullOrBlank() || fillWarehouseReceiver.isNullOrEmpty() || fillWarehouseSender.isNullOrEmpty() || fillContainerField.isNullOrEmpty() || fillDate?.length != DATE_LENGTH)
-                } else if (zPartFlag.value == true) {
-                    !(fillQuantity.isNullOrBlank() || fillWarehouseReceiver.isNullOrEmpty() || fillWarehouseSender.isNullOrEmpty() || fillDate?.length != DATE_LENGTH)
-                } else {
-                    !(fillQuantity.isNullOrBlank() || fillWarehouseReceiver.isNullOrEmpty() || fillWarehouseSender.isNullOrEmpty())
+                when {
+                    proFillCond.value.isSapTrue() -> {
+                        !(fillQuantity.isNullOrBlank() || fillWarehouseReceiver.isNullOrEmpty() || fillWarehouseSender.isNullOrEmpty() || fillContainerField.isNullOrEmpty() || fillDate?.length != DATE_LENGTH)
+                    }
+                    zPartFlag.value == true -> {
+                        !(fillQuantity.isNullOrBlank() || fillWarehouseReceiver.isNullOrEmpty() || fillWarehouseSender.isNullOrEmpty() || fillDate?.length != DATE_LENGTH)
+                    }
+                    else -> {
+                        !(fillQuantity.isNullOrBlank() || fillWarehouseReceiver.isNullOrEmpty() || fillWarehouseSender.isNullOrEmpty())
+                    }
                 }
             }
 
@@ -195,7 +199,7 @@ class GoodInfoViewModel : CoreViewModel() {
 
     private fun setContainerInfo() = launchUITryCatch {
         val includeCond = database.getIncludeCondition()
-        proIncludeCond.value = !includeCond.isNullOrBlank()
+        proIncludeCond.value = includeCond.isSapTrue()
         proFillCond.value = database.getProFillCondition()
     }
 
@@ -213,18 +217,12 @@ class GoodInfoViewModel : CoreViewModel() {
         val year = splitCheckDate[2].toInt()
         val monthWith31Days = listOf(1, 3, 5, 7, 8, 10, 12)
         val monthWith30Days = listOf(4, 6, 9, 11)
-        return if (year in 2000..2100 && month in 1..12 && day in 1..31) {
-            if (monthWith31Days.contains(month)) {
-                day <= 31
-            } else if (monthWith30Days.contains(month) && month != 2) {
-                day <= 30
-            } else if (year % 4 == 0) {
-                day <= 29
-            } else {
-                day <= 28
-            }
-        } else {
-            false
+        return when {
+            monthWith31Days.contains(month) -> day <= 31
+            monthWith30Days.contains(month) && month != 2 -> day <= 30
+            year % 4 == 0 -> day <= 29
+            month == 2 -> day <= 28
+            else -> false
         }
     }
 

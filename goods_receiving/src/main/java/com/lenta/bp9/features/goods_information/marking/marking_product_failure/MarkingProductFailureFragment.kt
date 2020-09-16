@@ -3,7 +3,6 @@ package com.lenta.bp9.features.goods_information.marking.marking_product_failure
 import android.view.View
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentMarkingProductFailureBinding
-import com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_box_acc.excise_alco_box_product_failure.ExciseAlcoBoxProductFailureFragment
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment

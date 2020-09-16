@@ -1,82 +1,86 @@
 package com.lenta.bp12.features.create_task.good_info
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.liveData
+import androidx.lifecycle.switchMap
+import com.lenta.bp12.features.create_task.base_good_info.BaseGoodInfoCreateViewModel
+import com.lenta.bp12.managers.interfaces.ICreateTaskManager
 import com.lenta.bp12.model.*
+import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.Part
 import com.lenta.bp12.model.pojo.Position
-import com.lenta.bp12.model.pojo.create_task.Basket
-import com.lenta.bp12.model.pojo.create_task.GoodCreate
+import com.lenta.bp12.model.pojo.extentions.addMark
+import com.lenta.bp12.model.pojo.extentions.addMarks
+import com.lenta.bp12.model.pojo.extentions.addPosition
+import com.lenta.bp12.platform.DEFAULT_POSITION
+import com.lenta.bp12.platform.DEFAULT_QUANTITY
+import com.lenta.bp12.platform.ZERO_VOLUME
 import com.lenta.bp12.platform.extention.extractAlcoCode
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
-import com.lenta.bp12.request.*
+import com.lenta.bp12.request.GoodInfoNetRequest
+import com.lenta.bp12.request.ScanInfoNetRequest
+import com.lenta.bp12.request.ScanInfoParams
+import com.lenta.bp12.request.ScanInfoResult
 import com.lenta.bp12.request.pojo.ProducerInfo
-import com.lenta.bp12.request.pojo.ProviderInfo
+import com.lenta.bp12.request.pojo.good_info.GoodInfoParams
+import com.lenta.bp12.request.pojo.good_info.GoodInfoResult
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.platform.constants.Constants
-import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.getDateFromString
 import com.lenta.shared.utilities.getFormattedDate
-import com.lenta.shared.view.OnPositionClickListener
+import com.lenta.shared.utilities.orIfNull
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.util.*
 import javax.inject.Inject
 
-class GoodInfoCreateViewModel : CoreViewModel() {
+class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
 
     @Inject
-    lateinit var navigator: IScreenNavigator
+    override lateinit var navigator: IScreenNavigator
 
     @Inject
-    lateinit var manager: ICreateTaskManager
+    override lateinit var manager: ICreateTaskManager
 
     @Inject
-    lateinit var sessionInfo: ISessionInfo
+    override lateinit var sessionInfo: ISessionInfo
 
+    /** Получение данных товара по ШК\SAP-коду
+     * "ZMP_UTZ_BKS_05_V001" */
     @Inject
     lateinit var goodInfoNetRequest: GoodInfoNetRequest
 
+    /** Получение данных по акцизному товару
+     * "ZMP_UTZ_100_V001" */
     @Inject
-    lateinit var scanInfoNetRequest: ScanInfoNetRequest
+    override lateinit var scanInfoNetRequest: ScanInfoNetRequest
 
     @Inject
-    lateinit var database: IDatabaseRepository
+    override lateinit var database: IDatabaseRepository
 
     @Inject
-    lateinit var resource: IResourceManager
-
+    override lateinit var resource: IResourceManager
 
     /**
     Переменные
      */
 
-    val task by lazy {
-        manager.currentTask
-    }
-
-    val good by lazy {
-        manager.currentGood
-    }
-
-    val title by lazy {
-        good.map { good ->
-            good?.getNameWithMaterial() ?: task.value?.getFormattedName()
-        }
-    }
-
     private var originalSearchNumber = ""
 
     private var lastSuccessSearchNumber = ""
 
-    val isCompactMode by lazy {
+    val isCommonGood by lazy {
         good.map { good ->
             good?.kind == GoodKind.COMMON
         }
@@ -84,7 +88,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private val screenStatus = MutableLiveData(ScreenStatus.DEFAULT)
 
-    val accountingType by lazy {
+    val accountingType by unsafeLazy {
         screenStatus.map { status ->
             when (status) {
                 ScreenStatus.MARK_150, ScreenStatus.MARK_68 -> resource.typeMark()
@@ -94,7 +98,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         }
     }
 
-    val markScanEnabled by lazy {
+    val markScanEnabled by unsafeLazy {
         good.map { good ->
             good?.kind == GoodKind.EXCISE
         }
@@ -114,137 +118,17 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     val quantityField = MutableLiveData("0")
 
-    val quantity = quantityField.map {
-        it?.toDoubleOrNull() ?: 0.0
+    override val quantity = quantityField.map {
+        it?.toDoubleOrNull() ?: DEFAULT_QUANTITY
     }
 
-    val quantityFieldEnabled by lazy {
+    override val quantityFieldEnabled by unsafeLazy {
         screenStatus.map { status ->
             when (status) {
                 ScreenStatus.COMMON, ScreenStatus.ALCOHOL, ScreenStatus.PART -> true
                 else -> false
             }
         }
-    }
-
-    /**
-    Количество товара итого
-     */
-
-    val totalTitle by lazy {
-        good.map { good ->
-            resource.totalWithConvertingInfo(good?.getConvertingInfo().orEmpty())
-        }
-    }
-
-    private val totalQuantity by lazy {
-        good.combineLatest(quantity).map {
-            it?.let {
-                val total = it.first.getTotalQuantity()
-                val current = it.second
-
-                total.sumWith(current)
-            }
-        }
-    }
-
-    val totalWithUnits by lazy {
-        totalQuantity.map { quantity ->
-            "${quantity.dropZeros()} ${good.value?.commonUnits?.name}"
-        }
-    }
-
-    /**
-    Количество товара по корзинам
-     */
-
-    val basketTitle by lazy {
-        MutableLiveData(resource.byBasket())
-    }
-
-    val basketNumber by lazy {
-        good.combineLatest(quantity).combineLatest(isProviderSelected).map {
-            it?.let {
-                val isProviderSelected = it.second
-
-                if (isProviderSelected) {
-                    task.value?.let { task ->
-                        getBasket()?.let { basket ->
-                            "${task.baskets.indexOf(basket) + 1}"
-                        } ?: "${task.baskets.size + 1}"
-                    }.orEmpty()
-                } else ""
-            }
-        }
-    }
-
-    val basketQuantity by lazy {
-        good.combineLatest(quantity).combineLatest(isProviderSelected).map {
-            it?.let {
-                val good = it.first.first
-                val enteredQuantity = it.first.second
-                val isProviderSelected = it.second
-
-                if (isProviderSelected) {
-                    getBasket()?.let { basket ->
-                        good.getQuantityByProvider(basket.provider.code).sumWith(enteredQuantity)
-                    } ?: enteredQuantity
-                } else 0.0
-            }
-        }
-    }
-
-    val basketQuantityWithUnits by lazy {
-        good.combineLatest(basketQuantity).map {
-            it?.let {
-                val (good, quantity) = it
-                "${quantity.dropZeros()} ${good.commonUnits.name}"
-            }
-        }
-    }
-
-    /**
-    Список поставщиков
-     */
-
-    private val sourceProviders = MutableLiveData(mutableListOf<ProviderInfo>())
-
-    private val providers = sourceProviders.map {
-        it?.let { providers ->
-            val list = providers.toMutableList()
-            if (list.size > 1) {
-                list.add(0, ProviderInfo(name = resource.chooseProvider()))
-            }
-
-            list.toList()
-        }
-    }
-
-    val providerList by lazy {
-        providers.map { list ->
-            list?.map { it.name }
-        }
-    }
-
-    val providerEnabled by lazy {
-        providerList.map { providers ->
-            providers?.size ?: 0 > 1
-        }
-    }
-
-    val providerPosition = MutableLiveData(0)
-
-    val onSelectProvider = object : OnPositionClickListener {
-        override fun onClickPosition(position: Int) {
-            providerPosition.value = position
-        }
-    }
-
-    private val isProviderSelected = providerEnabled.combineLatest(providerPosition).map {
-        val isEnabled = it?.first ?: false
-        val position = it?.second ?: 0
-
-        isEnabled && position > 0 || !isEnabled && position == 0
     }
 
     /**
@@ -276,19 +160,13 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         }
     }
 
-    val producerPosition = MutableLiveData(0)
-
-    val onSelectProducer = object : OnPositionClickListener {
-        override fun onClickPosition(position: Int) {
-            producerPosition.value = position
-        }
-    }
+    val producerPosition = MutableLiveData(DEFAULT_POSITION)
 
     private val isProducerSelected = producerEnabled.combineLatest(producerPosition).map {
         val isEnabled = it?.first ?: false
-        val position = it?.second ?: 0
+        val position = it?.second ?: DEFAULT_POSITION
 
-        isEnabled && position > 0 || !isEnabled && position == 0
+        (isEnabled && position > DEFAULT_POSITION) || (!isEnabled && position == DEFAULT_POSITION)
     }
 
     /**
@@ -298,52 +176,54 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     val date = MutableLiveData("")
 
     private val isCorrectDate = date.map { date ->
-        date?.length ?: 0 == 10
+        (date?.length ?: 0) == DATE_STRING_LENGTH
     }
 
     val dateEnabled = screenStatus.map { status ->
-        when (status) {
-            ScreenStatus.ALCOHOL, ScreenStatus.PART -> true
-            else -> false
-        }
+        (status == ScreenStatus.ALCOHOL || status == ScreenStatus.PART)
     }
 
     /**
     Кнопки нижнего тулбара
      */
+    override val applyEnabled by lazy {
+        screenStatus.switchMap { status ->
+            quantity.switchMap { enteredQuantity ->
+                totalQuantity.switchMap { totalQuantity ->
+                    basketQuantity.switchMap { basketQuantity ->
+                        isProviderSelected.switchMap { isProviderSelected ->
+                            isProducerSelected.switchMap { isProducerSelected ->
+                                isCorrectDate.switchMap { isDateEntered ->
+                                    liveData {
+                                        val isEnteredMoreThanZero = enteredQuantity > DEFAULT_QUANTITY
+                                        val isEnteredMoreThanZeroAndProviderSelected = isEnteredMoreThanZero && isProviderSelected
 
-    val applyEnabled by lazy {
-        screenStatus.combineLatest(quantity).combineLatest(totalQuantity).combineLatest(basketQuantity)
-                .combineLatest(isProviderSelected).combineLatest(isProducerSelected).combineLatest(isCorrectDate).map {
-                    it?.let {
-                        val status = it.first.first.first.first.first.first
-                        val enteredQuantity = it.first.first.first.first.first.second
-                        val totalQuantity = it.first.first.first.first.second
-                        val basketQuantity = it.first.first.first.second
-                        val isProviderSelected = it.first.first.second
-                        val isProducerSelected = it.first.second
-                        val isDateEntered = it.second
-
-                        val isEnteredMoreThenZero = enteredQuantity > 0.0
-
-                        when (status) {
-                            ScreenStatus.COMMON -> enteredQuantity != 0.0 && totalQuantity > 0.0 && basketQuantity > 0.0 && isProviderSelected
-                            ScreenStatus.ALCOHOL -> isEnteredMoreThenZero && isProviderSelected && isProducerSelected && isDateEntered
-                            ScreenStatus.MARK_150 -> isEnteredMoreThenZero && isProviderSelected
-                            ScreenStatus.MARK_68 -> isEnteredMoreThenZero && isProviderSelected && isProducerSelected
-                            ScreenStatus.PART -> isEnteredMoreThenZero && isProviderSelected && isProducerSelected && isDateEntered
-                            ScreenStatus.BOX -> isEnteredMoreThenZero && isProviderSelected && isProducerSelected
-                            else -> false
+                                        val result = when (status) {
+                                            ScreenStatus.COMMON ->
+                                                enteredQuantity != DEFAULT_QUANTITY &&
+                                                        totalQuantity > DEFAULT_QUANTITY &&
+                                                        basketQuantity > DEFAULT_QUANTITY &&
+                                                        isProviderSelected
+                                            ScreenStatus.ALCOHOL -> isEnteredMoreThanZeroAndProviderSelected && isProducerSelected && isDateEntered
+                                            ScreenStatus.MARK_150 -> isEnteredMoreThanZeroAndProviderSelected
+                                            ScreenStatus.MARK_68 -> isEnteredMoreThanZeroAndProviderSelected && isProducerSelected
+                                            ScreenStatus.PART -> isEnteredMoreThanZeroAndProviderSelected && isProducerSelected && isDateEntered
+                                            ScreenStatus.BOX -> isEnteredMoreThanZeroAndProviderSelected && isProducerSelected
+                                            else -> false
+                                        }
+                                        emit(result)
+                                    }
+                                }
+                            }
                         }
-                    } ?: false
+                    }
                 }
+            }
+        }
     }
 
-    val rollbackVisibility = screenStatus.map { status ->
-        when (status) {
-            ScreenStatus.MARK_150, ScreenStatus.MARK_68, ScreenStatus.BOX -> true
-            else -> false
-        }
+    override val rollbackVisibility = screenStatus.map { status ->
+        isStatusForRollback(status)
     }
 
     val rollbackEnabled = scanInfoResult.map { info ->
@@ -355,73 +235,118 @@ class GoodInfoCreateViewModel : CoreViewModel() {
      */
 
     init {
-        launchUITryCatch {
-            manager.clearCurrentGood()
-            checkSearchNumber(manager.searchNumber)
-        }
+        onInitGoodInfo()
     }
 
     /**
     Методы
      */
+    override fun onScanResult(number: String) {
+        good.value?.let {
+            launchUITryCatch {
+                if (isApplyEnabled()) {
+                    savePreviousScannedExcise()
+                }
+                checkSearchNumber(number)
+            }
+        }.orIfNull {
+            Logg.e { "good is null" }
+            navigator.showInternalError(resource.goodNotFoundErrorMsg)
+        }
+    }
 
-    fun onScanResult(number: String) {
-        good.value?.let { good ->
-            if (applyEnabled.value == true || (good.kind == GoodKind.EXCISE && isExciseNumber(number))) {
-                if (!thereWasRollback) {
+    private suspend fun savePreviousScannedExcise() {
+        if (!thereWasRollback) {
+            when (screenStatus.value) {
+                ScreenStatus.ALCOHOL, ScreenStatus.PART -> {
+                    checkPart().either(
+                            fnL = ::handleCheckPartFailure,
+                            fnR = ::handleCheckPartSuccessResult
+                    )
+                }
+                else -> saveChanges()
+            }
+        } else {
+            thereWasRollback = false
+        }
+    }
+
+    private fun isStatusForRollback(status: ScreenStatus?): Boolean {
+        return (status == ScreenStatus.MARK_150 || status == ScreenStatus.MARK_68 || status == ScreenStatus.BOX)
+    }
+
+    private fun handleCheckPartSuccessResult(result: ScanInfoResult) {
+        launchUITryCatch {
+            result.status.let { status ->
+                if (status == PartStatus.FOUND.code) {
                     saveChanges()
                 } else {
-                    thereWasRollback = false
+                    navigator.openAlertScreen(result.statusDescription)
                 }
-
-                manager.clearSearchFromListParams()
-                checkSearchNumber(number)
             }
         }
     }
 
-    private fun isExciseNumber(number: String): Boolean {
-        return when (number.length) {
-            Constants.MARK_150, Constants.MARK_68, Constants.BOX_26 -> true
-            else -> false
-        }
-    }
+    private fun isApplyEnabled() = applyEnabled.value == true
 
-    private fun checkSearchNumber(number: String) {
+    override fun checkSearchNumber(number: String) {
         originalSearchNumber = number
-
         actionByNumber(
                 number = number,
                 funcForEan = ::getGoodByEan,
                 funcForMaterial = ::getGoodByMaterial,
                 funcForSapOrBar = navigator::showTwelveCharactersEntered,
-                funcForExcise = ::loadMarkInfo,
+                funcForExcise = ::loadExciseMarkInfo,
                 funcForBox = ::loadBoxInfo,
-                funcForNotValidFormat = {
-                    goBackIfSearchFromList()
+                funcForNotValidBarFormat = {
                     navigator.showIncorrectEanFormat()
                 }
         )
     }
 
+    /**
+     * Метод ищет есть ли уже товар в задании по EAN,
+     * если есть то отправляет на его карточку
+     * если нет то создает товар
+     * */
     private fun getGoodByEan(ean: String) {
-        manager.findGoodByEan(ean)?.let { foundGood ->
-            lastSuccessSearchNumber = ean
-            isEanLastScanned = true
-            setFoundGood(foundGood)
-        } ?: loadGoodInfoByEan(ean)
+        launchUITryCatch {
+            navigator.showProgressLoadingData()
+            val foundGood = withContext(Dispatchers.IO) { manager.findGoodByEan(ean) }
+            navigator.hideProgress()
+            foundGood?.let {
+                lastSuccessSearchNumber = ean
+                isEanLastScanned = true
+                setFoundGood(it)
+            }.orIfNull { loadGoodInfoByEan(ean) }
+        }
     }
 
+    /**
+     * Метод ищет есть ли уже товар в задании по Sap коду,
+     * если есть то отправляет на его карточку
+     * если нет то создает товар
+     * */
     private fun getGoodByMaterial(material: String) {
-        manager.findGoodByMaterial(material)?.let { foundGood ->
-            lastSuccessSearchNumber = material
-            isEanLastScanned = false
-            setFoundGood(foundGood)
-        } ?: loadGoodInfoByMaterial(material)
+        launchUITryCatch {
+            navigator.showProgressLoadingData()
+            val foundGood = withContext(Dispatchers.IO) { manager.findGoodByMaterial(material) }
+            navigator.hideProgress()
+            foundGood?.let {
+                lastSuccessSearchNumber = material
+                isEanLastScanned = false
+                setFoundGood(it)
+            }.orIfNull { loadGoodInfoByMaterial(material) }
+        }
     }
 
-    private fun setFoundGood(foundGood: GoodCreate) {
+    private fun setFoundGood(foundGood: Good) {
         manager.updateCurrentGood(foundGood)
+
+        if (foundGood.isExciseAlco()) {
+            navigator.showForExciseGoodNeedScanFirstMark()
+        }
+
         setScreenStatus(foundGood)
         updateProviders(foundGood.providers)
         updateProducers(foundGood.producers)
@@ -431,157 +356,150 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         Logg.d { "--> found good: $foundGood" }
     }
 
-    private fun setDefaultQuantity(good: GoodCreate) {
+    private fun setDefaultQuantity(good: Good) {
         quantityField.value = if (good.kind == GoodKind.COMMON) {
             if (good.isDifferentUnits()) {
                 with(ScanCodeInfo(originalSearchNumber)) {
-                    val converted = if (weight > 0.0) getConvertedQuantity(good.innerQuantity) else 0.0
+                    val converted =
+                            if (weight > 0.0) getConvertedQuantity(good.innerQuantity)
+                            else DEFAULT_QUANTITY
                     converted.dropZeros()
                 }
             } else {
-                if (isEanLastScanned) "1" else "0"
+                if (isEanLastScanned) "1"
+                else DEFAULT_QUANTITY_FIELD
             }
-        } else "0"
+        } else DEFAULT_QUANTITY_FIELD
     }
 
-    private fun setScreenStatus(good: GoodCreate) {
+    private fun setScreenStatus(good: Good) {
         screenStatus.value = when (good.kind) {
             GoodKind.COMMON -> ScreenStatus.COMMON
             GoodKind.ALCOHOL -> ScreenStatus.ALCOHOL
             GoodKind.EXCISE -> ScreenStatus.EXCISE
+            GoodKind.MARK -> ScreenStatus.MARK
+            else -> ScreenStatus.VET
         }
     }
 
     private fun clearSpinnerPositions() {
-        providerPosition.value = 0
-        producerPosition.value = 0
+        providerPosition.value = DEFAULT_POSITION
+        producerPosition.value = DEFAULT_POSITION
     }
 
-    private fun loadGoodInfoByEan(ean: String) {
-        launchUITryCatch {
-            navigator.showProgressLoadingData(::handleFailure)
-            goodInfoNetRequest(GoodInfoParams(
-                    tkNumber = sessionInfo.market.orEmpty(),
-                    ean = ean,
-                    taskType = task.value?.type?.code.orEmpty()
-            )).also {
-                navigator.hideProgress()
-            }.either(::handleFailure) { result ->
-                isEanLastScanned = true
-                handleLoadGoodInfoResult(result, ean)
-            }
+    private suspend fun loadGoodInfoByEan(ean: String) {
+        navigator.showProgressLoadingData(::handleFailure)
+        goodInfoNetRequest(
+                GoodInfoParams(
+                        tkNumber = sessionInfo.market.orEmpty(),
+                        ean = ean,
+                        taskType = task.value?.type?.code.orEmpty()
+                )
+        ).also {
+            navigator.hideProgress()
+        }.either(::handleFailure) { result ->
+            isEanLastScanned = true
+            handleLoadGoodInfoResult(result, ean)
         }
     }
 
-    private fun loadGoodInfoByMaterial(material: String) {
-        launchUITryCatch {
-            navigator.showProgressLoadingData(::handleFailure)
-            goodInfoNetRequest(GoodInfoParams(
-                    tkNumber = sessionInfo.market.orEmpty(),
-                    material = material,
-                    taskType = task.value?.type?.code.orEmpty()
-            )).also {
-                navigator.hideProgress()
-            }.either(::handleFailure) { result ->
-                isEanLastScanned = false
-                handleLoadGoodInfoResult(result, material)
-            }
+    private suspend fun loadGoodInfoByMaterial(material: String) {
+        navigator.showProgressLoadingData(::handleFailure)
+        goodInfoNetRequest(
+                GoodInfoParams(
+                        tkNumber = sessionInfo.market.orEmpty(),
+                        material = material,
+                        taskType = task.value?.type?.code.orEmpty()
+                )
+        ).also {
+            navigator.hideProgress()
+        }.either(::handleFailure) { result ->
+            isEanLastScanned = false
+            handleLoadGoodInfoResult(result, material)
         }
     }
 
     private fun handleLoadGoodInfoResult(result: GoodInfoResult, number: String) {
         launchUITryCatch {
-            if (manager.isGoodCanBeAdded(result)) {
-                isExistUnsavedData = true
-                setGood(result, number)
-            } else {
-                goBackIfSearchFromList()
-                navigator.showGoodCannotBeAdded()
+            val isGoodCanBeAdded = manager.isGoodCanBeAdded(result)
+            val isWholesaleTask = manager.isWholesaleTaskType
+            val goodKind = result.getGoodKind()
+            val isGoodVet = goodKind == GoodKind.VET
+            val isGoodExcise = goodKind == GoodKind.EXCISE
+            with(navigator) {
+                when {
+                    isWholesaleTask && isGoodVet -> showCantAddVetToWholeSale()
+                    isWholesaleTask && isGoodExcise -> showCantAddExciseGoodForWholesale()
+                    isGoodCanBeAdded -> {
+                        isExistUnsavedData = true
+                        setGood(result, number)
+                    }
+                    else -> showGoodCannotBeAdded()
+                }
             }
-        }
-    }
-
-    override fun handleFailure(failure: Failure) {
-        super.handleFailure(failure)
-        goBackIfSearchFromList()
-        navigator.openAlertScreen(failure)
-    }
-
-    private fun goBackIfSearchFromList() {
-        if (manager.isSearchFromList) {
-            manager.clearSearchFromListParams()
-            navigator.goBack()
         }
     }
 
     private fun setGood(result: GoodInfoResult, number: String) {
         launchUITryCatch {
             with(result) {
-                good.value = GoodCreate(
-                        ean = eanInfo.ean,
-                        eans = database.getEanListByMaterialUnits(materialInfo.material, materialInfo.commonUnitsCode),
-                        material = materialInfo.material,
-                        name = materialInfo.name,
+                val good = Good(
+                        ean = eanInfo?.ean.orEmpty(),
+                        eans = database.getEanListByMaterialUnits(
+                                material = materialInfo?.material.orEmpty(),
+                                unitsCode = materialInfo?.commonUnitsCode.orEmpty()
+                        ),
+                        material = materialInfo?.material.orEmpty(),
+                        name = materialInfo?.name.orEmpty(),
                         kind = getGoodKind(),
-                        type = materialInfo.goodType,
+                        type = materialInfo?.goodType.orEmpty(),
                         control = getControlType(),
-                        section = materialInfo.section,
-                        matrix = getMatrixType(materialInfo.matrix),
-                        commonUnits = database.getUnitsByCode(materialInfo.commonUnitsCode),
-                        innerUnits = database.getUnitsByCode(materialInfo.innerUnitsCode),
-                        innerQuantity = materialInfo.innerQuantity.toDoubleOrNull() ?: 1.0,
-                        providers = providers.toMutableList(),
-                        producers = producers.toMutableList()
+                        section = materialInfo?.section.orEmpty(),
+                        matrix = getMatrixType(materialInfo?.matrix.orEmpty()),
+                        commonUnits = database.getUnitsByCode(materialInfo?.commonUnitsCode.orEmpty()),
+                        innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
+                        innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull() ?: 1.0,
+                        providers = providers.orEmpty().toMutableList(),
+                        producers = producers.orEmpty().toMutableList(),
+                        volume = materialInfo?.volume?.toDoubleOrNull() ?: ZERO_VOLUME
                 )
-            }
 
-            good.value?.let { good ->
                 lastSuccessSearchNumber = number
-                updateProviders(good.providers)
-                updateProducers(good.producers)
-                clearSpinnerPositions()
-                setScreenStatus(good)
-                setDefaultQuantity(good)
-
-                if (good.kind == GoodKind.EXCISE) {
-                    navigator.showForExciseGoodNeedScanFirstMark()
-                }
-
-                Logg.d { "--> added good: $good" }
+                setFoundGood(good)
             }
-
-            manager.clearSearchFromListParams()
         }
     }
 
-    private fun loadMarkInfo(number: String) {
+    private fun loadExciseMarkInfo(number: String) {
         launchUITryCatch {
             navigator.showProgressLoadingData(::handleFailure)
 
-            scanInfoNetRequest(ScanInfoParams(
-                    tkNumber = sessionInfo.market.orEmpty(),
-                    material = good.value!!.material,
-                    markNumber = number,
-                    mode = ScanInfoMode.MARK.mode,
-                    quantity = 0.0
-            )).also {
+            scanInfoNetRequest(
+                    ScanInfoParams(
+                            tkNumber = sessionInfo.market.orEmpty(),
+                            material = good.value?.material.orEmpty(),
+                            markNumber = number,
+                            mode = ScanInfoMode.MARK.mode,
+                            quantity = DEFAULT_QUANTITY
+                    )
+            ).also {
                 navigator.hideProgress()
             }.either(::handleFailure) { result ->
-                handleLoadMarkInfoResult(result, number)
+                handleLoadExciseMarkInfoResult(result, number)
             }
         }
     }
 
-    private fun handleLoadMarkInfoResult(result: ScanInfoResult, number: String) {
+    private fun handleLoadExciseMarkInfoResult(result: ScanInfoResult, number: String) {
         launchUITryCatch {
             result.status.let { status ->
                 when (status) {
-                    MarkStatus.OK.code -> addMarkInfo(result)
-                    MarkStatus.BAD.code -> {
-                        addMarkInfo(result)
+                    ExciseMarkStatus.OK.code -> addMarkExciseInfo(result)
+                    ExciseMarkStatus.BAD.code -> {
+                        addMarkExciseInfo(result)
                         navigator.openAlertScreen(result.statusDescription)
                     }
-                    MarkStatus.UNKNOWN.code -> handleUnknownMark(number, result)
+                    ExciseMarkStatus.UNKNOWN.code -> handleUnknownMark(number, result)
                     else -> navigator.openAlertScreen(result.statusDescription)
                 }
             }
@@ -590,8 +508,8 @@ class GoodInfoCreateViewModel : CoreViewModel() {
 
     private suspend fun handleUnknownMark(number: String, result: ScanInfoResult) {
         when (number.length) {
-            Constants.MARK_150 -> navigator.openAlertScreen(result.statusDescription)
-            Constants.MARK_68 -> {
+            Constants.EXCISE_MARK_150 -> navigator.openAlertScreen(result.statusDescription)
+            Constants.EXCISE_MARK_68 -> {
                 val alcoCodeInfoList = database.getAlcoCodeInfoList(number.extractAlcoCode())
 
                 if (alcoCodeInfoList.isEmpty()) {
@@ -608,20 +526,19 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         }
     }
 
-    private fun addMarkInfo(result: ScanInfoResult) {
-        manager.clearSearchFromListParams()
+    private fun addMarkExciseInfo(result: ScanInfoResult) {
         lastSuccessSearchNumber = originalSearchNumber
         isExistUnsavedData = true
         scanInfoResult.value = result
         quantityField.value = "1"
 
         when (originalSearchNumber.length) {
-            Constants.MARK_150 -> {
+            Constants.EXCISE_MARK_150 -> {
                 screenStatus.value = ScreenStatus.MARK_150
                 updateProducers(result.producers.toMutableList())
                 date.value = getFormattedDate(result.producedDate, Constants.DATE_FORMAT_yyyy_mm_dd, Constants.DATE_FORMAT_dd_mm_yyyy)
             }
-            Constants.MARK_68 -> {
+            Constants.EXCISE_MARK_68 -> {
                 screenStatus.value = ScreenStatus.MARK_68
             }
         }
@@ -633,23 +550,21 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         isExistUnsavedData = true
         scanInfoResult.value = result
         quantityField.value = "1"
-
-        // todo Возможно ошибка в логике
-        // потому что тогда непонятно зачем приходит новый список при запросе по марке
-        //updateProducers(result.producers.toMutableList())
     }
 
-    private fun loadBoxInfo(number: String) {
+    override fun loadBoxInfo(number: String) {
         launchUITryCatch {
             navigator.showProgressLoadingData(::handleFailure)
 
-            scanInfoNetRequest(ScanInfoParams(
-                    tkNumber = sessionInfo.market.orEmpty(),
-                    material = good.value!!.material,
-                    boxNumber = number,
-                    mode = ScanInfoMode.BOX.mode,
-                    quantity = 0.0
-            )).also {
+            scanInfoNetRequest(
+                    ScanInfoParams(
+                            tkNumber = sessionInfo.market.orEmpty(),
+                            material = good.value?.material.orEmpty(),
+                            boxNumber = number,
+                            mode = ScanInfoMode.BOX.mode,
+                            quantity = DEFAULT_QUANTITY
+                    )
+            ).also {
                 navigator.hideProgress()
             }.either(::handleFailure, ::handleLoadBoxInfoResult)
         }
@@ -669,7 +584,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         lastSuccessSearchNumber = originalSearchNumber
         isExistUnsavedData = true
         scanInfoResult.value = result
-        quantityField.value = result.marks.size.toString()
+        quantityField.value = result.exciseMarks.size.toString()
         date.value = getFormattedDate(result.producedDate, Constants.DATE_FORMAT_yyyy_mm_dd, Constants.DATE_FORMAT_dd_mm_yyyy)
         updateProducers(result.producers.toMutableList())
     }
@@ -677,14 +592,30 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     private suspend fun checkPart(): Either<Failure, ScanInfoResult> {
         navigator.showProgressLoadingData(::handleFailure)
 
-        return scanInfoNetRequest(ScanInfoParams(
-                tkNumber = sessionInfo.market.orEmpty(),
-                material = good.value?.material.orEmpty(),
+        val formattedDate = getFormattedDate(
+                date = date.value.orEmpty(),
+                sourcePattern = Constants.DATE_FORMAT_dd_mm_yyyy,
+                targetPattern = Constants.DATE_FORMAT_yyyy_mm_dd
+        )
+
+        val quantityFromField = quantity.value ?: DEFAULT_QUANTITY
+
+        val allPartsQuantity = good.value?.getPartQuantityByDateAndProducer(
+                date = date.value.orEmpty(),
                 producerCode = getProducerCode(),
-                bottledDate = getFormattedDate(date.value.orEmpty(), Constants.DATE_FORMAT_dd_mm_yyyy, Constants.DATE_FORMAT_yyyy_mm_dd),
-                mode = ScanInfoMode.PART.mode,
-                quantity = quantity.value ?: 0.0
-        )).also {
+                quantityFromField = quantityFromField
+        ) ?: quantityFromField
+
+        return scanInfoNetRequest(
+                ScanInfoParams(
+                        tkNumber = sessionInfo.market.orEmpty(),
+                        material = good.value?.material.orEmpty(),
+                        producerCode = getProducerCode(),
+                        bottledDate = formattedDate,
+                        mode = ScanInfoMode.PART.mode,
+                        quantity = allPartsQuantity
+                )
+        ).also {
             navigator.hideProgress()
         }
     }
@@ -711,7 +642,7 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         if (isProducerSelected.value == true) {
             producers.value?.let { producers ->
                 producerPosition.value?.let { position ->
-                    producerCode = producers[position].code
+                    producerCode = producers.getOrNull(position)?.code.orEmpty()
                 }
             }
         }
@@ -719,155 +650,137 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         return producerCode
     }
 
-    private fun getProvider(): ProviderInfo {
-        var provider = ProviderInfo()
-        if (isProviderSelected.value == true) {
-            providers.value?.let { providers ->
-                providerPosition.value?.let { position ->
-                    provider = providers[position]
-                }
-            }
-        }
-
-        return provider
-    }
-
-    private fun getBasket(): Basket? {
-        return task.value?.let { task ->
-            good.value?.let { good ->
-                task.baskets.find { basket ->
-                    basket.section == good.section && basket.goodType == good.type && basket.control == good.control && basket.provider.code == getProviderCode()
-                }
-            }
-        }
-    }
-
-    private fun updateProviders(providers: MutableList<ProviderInfo>) {
-        sourceProviders.value = providers
-    }
-
     private fun updateProducers(producers: MutableList<ProducerInfo>) {
         sourceProducers.value = producers
     }
 
-    private fun saveChanges() {
+    override suspend fun saveChanges() {
         screenStatus.value?.let { status ->
+            good.value?.let { good ->
+                manager.saveGoodInTask(good)
+                isExistUnsavedData = false
+            }.orIfNull {
+                Logg.e { "good null" }
+                navigator.showInternalError(resource.goodNotFoundErrorMsg)
+            }
+
             when (status) {
                 ScreenStatus.COMMON -> addPosition()
                 ScreenStatus.MARK_150, ScreenStatus.MARK_68 -> addMark()
                 ScreenStatus.ALCOHOL, ScreenStatus.PART -> addPart()
                 ScreenStatus.BOX -> addBox()
-            }
-
-            good.value?.let { good ->
-                manager.saveGoodInTask(good)
-                isExistUnsavedData = false
+                else -> Unit
             }
         }
     }
 
-    private fun addPosition() {
+    private suspend fun addPosition() {
         good.value?.let { changedGood ->
+            val quantityValue = quantity.value ?: DEFAULT_QUANTITY
             val position = Position(
-                    quantity = quantity.value ?: 0.0,
+                    quantity = quantityValue,
                     provider = getProvider()
             )
-            Logg.d { "--> add position = $position" }
+            position.materialNumber = changedGood.material
             changedGood.addPosition(position)
-
-            createBasket(changedGood)
+            manager.addGoodToBasket(
+                    good = changedGood,
+                    provider = getProvider(),
+                    count = quantityValue
+            )
             manager.updateCurrentGood(changedGood)
+        }.orIfNull {
+            Logg.e { "good null" }
+            navigator.showInternalError(resource.goodNotFoundErrorMsg)
         }
     }
 
-    private fun addMark() {
+    private suspend fun addMark() {
         good.value?.let { changedGood ->
-            addEmptyPosition(changedGood)
-
             val mark = Mark(
                     number = lastSuccessSearchNumber,
-                    isBadMark = scanInfoResult.value?.status == MarkStatus.BAD.code,
+                    isBadMark = scanInfoResult.value?.status == ExciseMarkStatus.BAD.code,
                     providerCode = getProviderCode()
             )
-            Logg.d { "--> add mark = $mark" }
             changedGood.addMark(mark)
-
-            createBasket(changedGood)
-            manager.updateCurrentGood(changedGood)
+            manager.addGoodToBasketWithMark(
+                    good = changedGood,
+                    mark = mark,
+                    provider = getProvider()
+            )
+        }.orIfNull {
+            Logg.e { "good null" }
+            navigator.showInternalError(resource.goodNotFoundErrorMsg)
         }
     }
 
-    private fun addPart() {
+    private suspend fun addPart() {
         good.value?.let { changedGood ->
-            addEmptyPosition(changedGood)
+            val quantityValue = quantity.value ?: DEFAULT_QUANTITY
+
+            val localDate = date.value?.let {
+                try {
+                    getDateFromString(it, Constants.DATE_FORMAT_dd_mm_yyyy)
+                } catch (e: RuntimeException) {
+                    Date()
+                }
+            } ?: Date()
 
             val part = Part(
                     number = lastSuccessSearchNumber,
                     material = changedGood.material,
-                    quantity = quantity.value ?: 0.0,
                     providerCode = getProviderCode(),
                     producerCode = getProducerCode(),
-                    date = getDateFromString(date.value.orEmpty(), Constants.DATE_FORMAT_dd_mm_yyyy)
+                    date = localDate
             )
-            Logg.d { "--> add part = $part" }
-            changedGood.addPart(part)
-
-            createBasket(changedGood)
-            manager.updateCurrentGood(changedGood)
+            manager.addGoodToBasket(
+                    good = changedGood,
+                    part = part,
+                    provider = getProvider(),
+                    count = quantityValue
+            )
+        }.orIfNull {
+            Logg.e { "good null" }
+            navigator.showInternalError(resource.goodNotFoundErrorMsg)
         }
     }
 
-    private fun addBox() {
+    private suspend fun addBox() {
         good.value?.let { changedGood ->
-            addEmptyPosition(changedGood)
+            scanInfoResult.value?.exciseMarks?.let { marks ->
 
-            scanInfoResult.value?.marks?.let { marks ->
-                marks.forEach { mark ->
-                    val markFromBox = Mark(
-                            number = mark.number,
+                val mappedMarks = marks.map { mark ->
+                    Mark(
+                            number = mark.number.orEmpty(),
                             boxNumber = lastSuccessSearchNumber,
                             providerCode = getProviderCode()
                     )
+                }
+                changedGood.addMarks(mappedMarks)
+                mappedMarks.forEach { markFromBox ->
                     Logg.d { "--> add mark from box = $markFromBox" }
-                    changedGood.addMark(markFromBox)
+                    manager.addGoodToBasketWithMark(
+                            good = changedGood,
+                            mark = markFromBox,
+                            provider = getProvider()
+                    )
                 }
             }
-
-            createBasket(changedGood)
             manager.updateCurrentGood(changedGood)
+        }.orIfNull {
+            Logg.e { "good null" }
+            navigator.showInternalError(resource.goodNotFoundErrorMsg)
         }
     }
 
-    private fun addEmptyPosition(changedGood: GoodCreate) {
-        val position = Position(
-                quantity = 0.0,
-                provider = getProvider()
-        )
-        Logg.d { "--> add position = $position" }
-        changedGood.addPosition(position)
-    }
-
-    private fun createBasket(changedGood: GoodCreate) {
-        var basket = getBasket()
-        if (basket == null) {
-            basket = Basket(
-                    section = changedGood.section,
-                    goodType = changedGood.type,
-                    control = changedGood.control,
-                    provider = getProvider()
-            )
-            Logg.d { "--> add basket = $basket" }
-            manager.addBasket(basket)
-        } else {
-            manager.updateCurrentBasket(basket)
-        }
-    }
-
-    fun updateData() {
-        if (manager.isWasAddedProvider) {
-            updateProviders(good.value!!.providers)
-            providerPosition.value = 1
-            manager.isWasAddedProvider = false
+    private fun onInitGoodInfo() {
+        launchUITryCatch {
+            good.value?.let {
+                setFoundGood(it)
+            }.orIfNull {
+                Logg.e { "good null" }
+                navigator.showInternalError(resource.goodNotFoundErrorMsg)
+            }
         }
     }
 
@@ -875,14 +788,10 @@ class GoodInfoCreateViewModel : CoreViewModel() {
     Обработка нажатий кнопок
      */
 
-    fun addProvider() {
-        navigator.openAddProviderScreen()
-    }
 
-    fun onBackPressed() {
+    override fun onBackPressed() {
         if (isExistUnsavedData) {
             navigator.showUnsavedDataWillBeLost {
-                manager.clearSearchFromListParams()
                 navigator.goBack()
             }
         } else {
@@ -890,22 +799,17 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         }
     }
 
-    fun onClickRollback() {
+    override fun onClickRollback() {
         good.value?.let { good ->
             thereWasRollback = true
             updateProducers(good.producers)
             scanInfoResult.value = null
-            quantityField.value = "0"
+            quantityField.value = DEFAULT_QUANTITY_FIELD
             date.value = ""
         }
     }
 
-    fun onClickDetails() {
-        manager.updateCurrentGood(good.value)
-        navigator.openGoodDetailsCreateScreen()
-    }
-
-    fun onClickApply() {
+    override fun onClickApply() {
         when (screenStatus.value) {
             ScreenStatus.ALCOHOL, ScreenStatus.PART -> {
                 launchUITryCatch {
@@ -924,10 +828,19 @@ class GoodInfoCreateViewModel : CoreViewModel() {
         }
     }
 
-    private fun saveChangesAndExit() {
-        saveChanges()
-        navigator.goBack()
-        navigator.openBasketGoodListScreen()
+    override fun saveChangesAndExit() {
+        launchUITryCatch {
+            navigator.showProgressLoadingData()
+            saveChanges()
+            navigator.hideProgress()
+            navigator.goBack()
+            navigator.openBasketCreateGoodListScreen()
+            manager.isBasketsNeedsToBeClosed = false
+        }
     }
 
+    companion object {
+        private const val DEFAULT_QUANTITY_FIELD = "0"
+        private const val DATE_STRING_LENGTH = 10
+    }
 }

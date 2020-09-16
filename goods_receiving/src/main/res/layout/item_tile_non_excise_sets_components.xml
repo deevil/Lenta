@@ -7,7 +7,7 @@
 
         <variable
             name="item"
-            type="com.lenta.bp9.features.goods_information.non_excise_sets_pge.ListComponentsItem" />
+            type="com.lenta.bp9.features.goods_information.sets.task_pge.ListComponentsItem" />
 
         <variable
             name="selectedForDelete"

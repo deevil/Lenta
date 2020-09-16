@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        tools:context="com.lenta.bp14.features.work_list.goods_list.GoodsListWlFragment">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.lenta.bp16.features.external_supply_task_list.ExternalSupplyTaskListViewModel" />
+
+        <variable
+            name="rvConfig"
+            type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig" />
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- Наименования колонок -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout style="@style/FirstRowStyle">
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="@integer/four_one_1">
+
+                    <TextView
+                        style="@style/FirstRowTextStyle"
+                        android:layout_width="wrap_content"
+                        android:text="@string/number" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="@integer/four_one_2">
+
+                    <TextView
+                        style="@style/FirstRowTextStyle"
+                        android:text="@string/es" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="@integer/four_one_3">
+
+                    <TextView
+                        style="@style/FirstRowTextStyle"
+                        android:text="@string/sign" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="@integer/four_one_4">
+
+                    <TextView
+                        style="@style/FirstRowTextStyle"
+                        android:text="@string/sku" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View style="@style/HorizontalDivider" />
+
+        </LinearLayout>
+
+        <!-- Список товаров -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv"
+            style="@style/RecyclerWithSomethingBellowStyle"
+            app:items="@{vm.processing}"
+            app:rv_config="@{rvConfig}"
+            tools:listitem="@layout/item_es_task" />
+
+    </LinearLayout>
+
+</layout>

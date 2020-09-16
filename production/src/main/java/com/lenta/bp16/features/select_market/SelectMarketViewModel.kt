@@ -80,7 +80,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
 
     fun onClickNext() {
         launchUITryCatch {
-            markets.value?.getOrNull(selectedPosition.value ?: -1)?.number?.let { tkNumber ->
+            markets.value?.getOrNull(selectedPosition.value ?: 0)?.number?.let { tkNumber ->
                 if (appSettings.lastTK != tkNumber) {
                     printerManager.setDefaultPrinterForTk(tkNumber)
                 }

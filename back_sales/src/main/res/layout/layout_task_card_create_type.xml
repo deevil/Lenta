@@ -20,17 +20,14 @@
         <!-- Тип задания -->
         <LinearLayout style="@style/LinearRowStyle">
 
-            <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="1">
+            <LinearLayout style="@style/LinearCellStyle">
 
                 <com.lenta.shared.view.ClickableSpinner
                     android:id="@+id/spin_task_type"
                     style="@style/CellSpinnerStyle"
                     android:layout_height="match_parent"
                     app:items="@{vm.taskTypeList}"
-                    app:onPositionClickListener="@{vm.onSelectTaskType}"
-                    app:position="@{vm.taskTypePosition}"
+                    app:position="@={vm.taskTypePosition}"
                     tools:entries="@array/test_list" />
 
             </LinearLayout>
@@ -42,12 +39,11 @@
         <!-- Наименование задания -->
         <LinearLayout style="@style/LinearRowStyle">
 
-            <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="1">
+            <LinearLayout style="@style/LinearCellStyle">
 
                 <EditText
                     style="@style/CellEditTextStyle"
+                    android:inputType="textNoSuggestions"
                     android:text="@={vm.taskName}"
                     tools:text="Возврат от 05.08.2020 15:16" />
 
@@ -60,14 +56,13 @@
         <!-- Все поставщики -->
         <LinearLayout style="@style/LinearRowStyle">
 
-            <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="1">
+            <LinearLayout style="@style/LinearCellStyle">
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@string/all_suppliers"
-                    android:textColor="@color/color_text_title_header" />
+                    android:text="@{vm.provider}"
+                    android:textColor="@color/color_text_title_header"
+                    tools:text="@string/all_suppliers" />
 
             </LinearLayout>
 
@@ -78,35 +73,26 @@
         <!-- Склад -->
         <LinearLayout style="@style/LinearRowStyle">
 
-            <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="1">
+            <LinearLayout style="@style/LinearCellStyle">
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@string/storage"
-                    android:textColor="@color/color_text_title_header" />
-
-                <TextView
-                    style="@style/CellTextStyle"
-                    android:text="@string/from"
+                    android:singleLine="false"
+                    android:text="@string/picking_warehouse"
                     android:textColor="@color/color_text_title_header" />
 
             </LinearLayout>
 
             <View style="@style/VerticalDivider" />
 
-            <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="1">
+            <LinearLayout style="@style/LinearCellStyle">
 
                 <com.lenta.shared.view.ClickableSpinner
                     android:id="@+id/spin_storage"
                     style="@style/CellSpinnerStyle"
                     android:layout_height="match_parent"
                     app:items="@{vm.storage}"
-                    app:onPositionClickListener="@{vm.onSelectStorage}"
-                    app:position="@{vm.storagePosition}"
+                    app:position="@={vm.storagePosition}"
                     tools:entries="@array/test_list" />
 
             </LinearLayout>
@@ -116,19 +102,19 @@
         <View style="@style/HorizontalDivider" />
 
         <!-- Поставщик -->
-        <LinearLayout style="@style/LinearRowStyle">
+        <LinearLayout
+            style="@style/LinearRowStyle"
+            android:visibility="@{!vm.isWholeSaleTask}"
+            >
 
-            <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="1">
+            <LinearLayout style="@style/LinearCellStyle">
 
                 <com.lenta.shared.view.ClickableSpinner
                     android:id="@+id/spin_reason_for_return"
                     style="@style/CellSpinnerStyle"
                     android:layout_height="match_parent"
                     app:items="@{vm.returnReasonList}"
-                    app:onPositionClickListener="@{vm.onSelectReturnReason}"
-                    app:position="@{vm.returnReasonPosition}"
+                    app:position="@={vm.returnReasonPosition}"
                     tools:entries="@array/test_list" />
 
             </LinearLayout>

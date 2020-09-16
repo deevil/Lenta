@@ -12,7 +12,10 @@ import androidx.annotation.NonNull
 import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
-import androidx.lifecycle.*
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.lenta.shared.keys.KeyCode
@@ -169,33 +172,37 @@ interface Evenable {
     fun isEven(): Boolean
 }
 
-class RecyclerViewKeyHandler<T>(private val rv: RecyclerView,
-                                private val items: LiveData<List<T>>,
-                                lifecycleOwner: LifecycleOwner,
-                                initPosInfo: PosInfo? = null,
-                                var onClickPositionFunc: ((Int) -> Unit)? = null
+class RecyclerViewKeyHandler<T>(
+        private var rv: RecyclerView?,
+        private var items: LiveData<List<T>>?,
+        lifecycleOwner: LifecycleOwner?,
+        initPosInfo: PosInfo? = null,
+        var onClickPositionFunc: ((Int) -> Unit)? = null
 ) {
 
     val posInfo = MutableLiveData(initPosInfo?.copy(isManualClick = false) ?: PosInfo(0, -1))
 
     init {
-        posInfo.observe(lifecycleOwner) { info ->
-            Logg.d { "new pos: $info" }
-            //rv.adapter?.notifyItemChanged(info.lastPos)
-            //rv.adapter?.notifyItemChanged(info.currentPos)
-            rv.adapter?.notifyDataSetChanged()
-            if (!info.isManualClick && isCorrectPosition(info.currentPos)) {
-                rv.post { rv.scrollToPosition(info.currentPos) }
-            }
+        rv?.let { recyclerView ->
+            lifecycleOwner?.let { lco ->
+                posInfo.observe(lco) { info ->
+                    Logg.d { "new pos: $info" }
+                    recyclerView.adapter?.notifyDataSetChanged()
 
-        }
-        items.observe(lifecycleOwner) {
-            resendPositions()
+                    if (!info.isManualClick && isCorrectPosition(info.currentPos)) {
+                        recyclerView.post { recyclerView.scrollToPosition(info.currentPos) }
+                    }
+                }
+
+                items?.observe(lco) {
+                    resendPositions()
+                }
+            }
         }
     }
 
     fun onKeyDown(keyCode: KeyCode): Boolean {
-        if (!rv.isFocused) {
+        if (rv?.isFocused == false) {
             return false
         }
 
@@ -213,7 +220,7 @@ class RecyclerViewKeyHandler<T>(private val rv: RecyclerView,
 
                 if (isCorrectPosition(currentPos)) {
                     posInfo.value = PosInfo(currentPos = currentPos, lastPos = lastPos)
-                    rv.requestFocus()
+                    rv?.requestFocus()
                     return true
                 }
             }
@@ -234,12 +241,12 @@ class RecyclerViewKeyHandler<T>(private val rv: RecyclerView,
     }
 
     private fun isCorrectPosition(position: Int): Boolean {
-        return position > -1 && position < items.value?.size ?: 0
+        return position > -1 && position < items?.value?.size ?: 0
     }
 
     fun selectPosition(position: Int) {
         posInfo.value = PosInfo(currentPos = position, lastPos = posInfo.value!!.currentPos, isManualClick = true)
-        rv.requestFocus()
+        rv?.requestFocus()
     }
 
     fun isSelected(pos: Int): Boolean {
@@ -257,6 +264,13 @@ class RecyclerViewKeyHandler<T>(private val rv: RecyclerView,
             this.selectPosition(position)
         }
     }
+
+    fun clear() {
+        rv = null
+        items = null
+        onClickPositionFunc = null
+    }
+
 }
 
 abstract class DoubleClickListener : View.OnClickListener {

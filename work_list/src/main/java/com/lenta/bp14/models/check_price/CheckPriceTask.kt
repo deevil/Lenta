@@ -92,7 +92,8 @@ class CheckPriceTask @Inject constructor(
                                     goodType = getGoodType(
                                             alcohol = productInfo?.isAlco.orEmpty(),
                                             excise = productInfo?.isExcise.orEmpty(),
-                                            marked = productInfo?.isMarked.orEmpty()),
+                                            marked = productInfo?.isMarked.orEmpty(),
+                                            rusWine = productInfo?.isRusWine.orEmpty()),
                                     healthFood = productInfo?.isHealthyFood.isSapTrue(),
                                     novelty = productInfo?.isNew.isSapTrue()
                             )
@@ -221,7 +222,8 @@ class CheckPriceTask @Inject constructor(
                                 goodType = getGoodType(
                                         alcohol = productInfo?.isAlco.orEmpty(),
                                         excise = productInfo?.isExcise.orEmpty(),
-                                        marked = productInfo?.isMarked.orEmpty()),
+                                        marked = productInfo?.isMarked.orEmpty(),
+                                        rusWine = productInfo?.isRusWine.orEmpty()),
                                 healthFood = productInfo?.isHealthyFood.isSapTrue(),
                                 novelty = productInfo?.isNew.isSapTrue()
                         )

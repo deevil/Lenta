@@ -7,7 +7,8 @@ enum class PackageName(val path: String) {
     PRO("com.lenta.bp16"),
     INV("com.lenta.inventory"),
     SHA("com.lenta.shared"),
-    OPP("com.lenta.bp18")
+    OPP("com.lenta.bp18"),
+    GRZ("com.lenta.bp9")
 }
 
 enum class TabIndicatorColor {

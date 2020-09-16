@@ -22,8 +22,6 @@ class GoodDetailsViewModel : CoreViewModel(), PageSelectionListener {
     val shelfLifeSelectionsHelper = SelectionItemsHelper()
     val commentSelectionsHelper = SelectionItemsHelper()
 
-    val selectedPage = MutableLiveData(0)
-
     val title = MutableLiveData<String>("")
 
     val good by lazy { task.currentGood }

@@ -110,7 +110,7 @@ class TaskGoodsInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     val applyEnabled: LiveData<Boolean> by lazy {
         quantity.mapSkipNulls { quantity ->
-            (quantity.toIntOrNull() ?: DEFAULT_ZERO_PRODUCTS) > 0
+            (quantity.toIntOrNull() ?: DEFAULT_ZERO_PRODUCTS) > DEFAULT_ZERO_PRODUCTS
         }
     }
 

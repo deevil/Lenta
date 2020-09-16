@@ -2,13 +2,15 @@ package com.lenta.bp12.di
 
 import com.lenta.bp12.ExceptionHandler
 import com.lenta.bp12.features.auth.AuthViewModel
+import com.lenta.bp12.features.basket.basket_good_list.BasketCreateGoodListViewModel
+import com.lenta.bp12.features.basket.basket_good_list.BasketOpenGoodListViewModel
+import com.lenta.bp12.features.basket.basket_properties.BasketPropertiesViewModel
 import com.lenta.bp12.features.create_task.add_provider.AddProviderViewModel
-import com.lenta.bp12.features.create_task.basket_good_list.BasketGoodListViewModel
-import com.lenta.bp12.features.create_task.basket_properties.BasketPropertiesViewModel
 import com.lenta.bp12.features.create_task.good_details.GoodDetailsCreateViewModel
 import com.lenta.bp12.features.create_task.good_info.GoodInfoCreateViewModel
+import com.lenta.bp12.features.create_task.marked_good_info.MarkedGoodInfoCreateViewModel
 import com.lenta.bp12.features.create_task.task_card.TaskCardCreateViewModel
-import com.lenta.bp12.features.create_task.task_composition.TaskCompositionViewModel
+import com.lenta.bp12.features.create_task.task_content.TaskContentViewModel
 import com.lenta.bp12.features.enter_employee_number.EnterEmployeeNumberViewModel
 import com.lenta.bp12.features.loading.fast.FastLoadingViewModel
 import com.lenta.bp12.features.main_menu.MainMenuViewModel
@@ -16,6 +18,7 @@ import com.lenta.bp12.features.open_task.discrepancy_list.DiscrepancyListViewMod
 import com.lenta.bp12.features.open_task.good_details.GoodDetailsOpenViewModel
 import com.lenta.bp12.features.open_task.good_info.GoodInfoOpenViewModel
 import com.lenta.bp12.features.open_task.good_list.GoodListViewModel
+import com.lenta.bp12.features.open_task.marked_good_info.MarkedGoodInfoOpenViewModel
 import com.lenta.bp12.features.open_task.task_card.TaskCardOpenViewModel
 import com.lenta.bp12.features.open_task.task_list.TaskListViewModel
 import com.lenta.bp12.features.open_task.task_search.TaskSearchViewModel
@@ -23,8 +26,9 @@ import com.lenta.bp12.features.save_data.SaveDataViewModel
 import com.lenta.bp12.features.select_market.SelectMarketViewModel
 import com.lenta.bp12.main.MainActivity
 import com.lenta.bp12.main.MainViewModel
-import com.lenta.bp12.model.ICreateTaskManager
-import com.lenta.bp12.model.IOpenTaskManager
+import com.lenta.bp12.managers.interfaces.ICreateTaskManager
+import com.lenta.bp12.managers.interfaces.IMarkManager
+import com.lenta.bp12.managers.interfaces.IOpenTaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -41,6 +45,7 @@ interface AppComponent : CoreComponent {
     fun getResourceManager(): IResourceManager
     fun getCreateTaskManager(): ICreateTaskManager
     fun getOpenTaskManager(): IOpenTaskManager
+    fun getMarkManager(): IMarkManager
 
     fun inject(mainActivity: MainActivity)
     fun inject(mainViewModel: MainViewModel)
@@ -52,8 +57,9 @@ interface AppComponent : CoreComponent {
     fun inject(it: EnterEmployeeNumberViewModel)
     fun inject(it: MainMenuViewModel)
 
-    fun inject(it: TaskCompositionViewModel)
-    fun inject(it: BasketGoodListViewModel)
+    fun inject(it: TaskContentViewModel)
+    fun inject(it: BasketCreateGoodListViewModel)
+    fun inject(it: BasketOpenGoodListViewModel)
     fun inject(it: GoodDetailsCreateViewModel)
     fun inject(it: GoodDetailsOpenViewModel)
     fun inject(it: SaveDataViewModel)
@@ -67,5 +73,6 @@ interface AppComponent : CoreComponent {
     fun inject(it: GoodInfoCreateViewModel)
     fun inject(it: AddProviderViewModel)
     fun inject(it: GoodInfoOpenViewModel)
-
+    fun inject(it: MarkedGoodInfoOpenViewModel)
+    fun inject(it: MarkedGoodInfoCreateViewModel)
 }

@@ -1,6 +1,13 @@
 package com.lenta.bp12.di
 
-import com.lenta.bp12.model.*
+import com.lenta.bp12.managers.CreateTaskManager
+import com.lenta.bp12.managers.GeneralTaskManager
+import com.lenta.bp12.managers.MarkManager
+import com.lenta.bp12.managers.OpenTaskManager
+import com.lenta.bp12.managers.interfaces.ICreateTaskManager
+import com.lenta.bp12.managers.interfaces.IGeneralTaskManager
+import com.lenta.bp12.managers.interfaces.IMarkManager
+import com.lenta.bp12.managers.interfaces.IOpenTaskManager
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.navigation.ScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
@@ -9,7 +16,6 @@ import com.lenta.bp12.repository.DatabaseRepository
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.repository.IRepoInMemoryHolder
 import com.lenta.bp12.repository.RepoInMemoryHolder
-
 import com.lenta.shared.di.AppScope
 import dagger.Binds
 import dagger.Module
@@ -47,6 +53,10 @@ class AppModule {
         @Binds
         @AppScope
         fun bindGeneralTaskManager(realisation: GeneralTaskManager): IGeneralTaskManager
+
+        @Binds
+        @AppScope
+        fun bindMarkManager(realisation: MarkManager): IMarkManager
 
     }
 

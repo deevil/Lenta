@@ -1,10 +1,7 @@
 package com.lenta.bp9.repos
 
 import androidx.lifecycle.MutableLiveData
-import com.lenta.bp9.model.task.TaskList
-import com.lenta.bp9.model.task.TaskMarkingGoodsProperties
-import com.lenta.bp9.model.task.TaskProcessOrderDataInfo
-import com.lenta.bp9.model.task.TaskSetsInfo
+import com.lenta.bp9.model.task.*
 import com.lenta.bp9.model.task.revise.InvoiceContentEntry
 import com.lenta.bp9.requests.network.PermissionsGrzResult
 import com.lenta.shared.models.core.Manufacturer
@@ -18,6 +15,8 @@ class RepoInMemoryHolder : IRepoInMemoryHolder {
     override var processOrderData: MutableLiveData<List<TaskProcessOrderDataInfo>> = MutableLiveData()
     override var sets: MutableLiveData<List<TaskSetsInfo>> = MutableLiveData()
     override var markingGoodsProperties: MutableLiveData<List<TaskMarkingGoodsProperties>> = MutableLiveData()
+    override var manufacturersForZBatches: MutableLiveData<List<TaskManufacturersForZBatches>> = MutableLiveData()
+    override var taskZBatchInfo: MutableLiveData<List<TaskZBatchInfo>> = MutableLiveData()
 }
 
 interface IRepoInMemoryHolder {
@@ -29,4 +28,6 @@ interface IRepoInMemoryHolder {
     var processOrderData: MutableLiveData<List<TaskProcessOrderDataInfo>>
     var sets: MutableLiveData<List<TaskSetsInfo>>
     var markingGoodsProperties: MutableLiveData<List<TaskMarkingGoodsProperties>>
+    var manufacturersForZBatches: MutableLiveData<List<TaskManufacturersForZBatches>>
+    var taskZBatchInfo: MutableLiveData<List<TaskZBatchInfo>>
 }
