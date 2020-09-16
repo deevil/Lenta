@@ -6,6 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.features.delegates.ISaveProductDelegate
 import com.lenta.bp9.features.delegates.SearchProductDelegate
+import com.lenta.bp9.features.goods_list.GoodsListViewPages.GOODS_LIST_VIEW_PAGE_COUNTED_OR_TO_PROCESSING
+import com.lenta.bp9.features.goods_list.GoodsListViewPages.GOODS_LIST_VIEW_PAGE_WITHOUT_BARCODE_OR_PROCESSED
 import com.lenta.bp9.model.task.*
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IRepoInMemoryHolder
@@ -676,19 +678,19 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
 
     private fun setEanCode() {
         eanCode.value = when (selectedPage.value) {
-            GoodsListViewPages.GOODS_LIST_VIEW_PAGE_COUNTED_OR_TO_PROCESSING -> eanCodeCountedOrToProcessing.value
-            GoodsListViewPages.GOODS_LIST_VIEW_PAGE_WITHOUT_BARCODE_OR_PROCESSED -> eanCodeWithoutBarcodeOrProcessed.value
+            GOODS_LIST_VIEW_PAGE_COUNTED_OR_TO_PROCESSING -> eanCodeCountedOrToProcessing.value
+            GOODS_LIST_VIEW_PAGE_WITHOUT_BARCODE_OR_PROCESSED -> eanCodeWithoutBarcodeOrProcessed.value
             else -> null
         }
     }
 
     private fun setRequestFocus() {
         when (selectedPage.value) {
-            GoodsListViewPages.GOODS_LIST_VIEW_PAGE_COUNTED_OR_TO_PROCESSING -> {
+            GOODS_LIST_VIEW_PAGE_COUNTED_OR_TO_PROCESSING -> {
                 requestFocusWithoutBarcodeOrProcessed.value = false
                 requestFocusCountedOrToProcessing.value = true
             }
-            GoodsListViewPages.GOODS_LIST_VIEW_PAGE_WITHOUT_BARCODE_OR_PROCESSED -> {
+            GOODS_LIST_VIEW_PAGE_WITHOUT_BARCODE_OR_PROCESSED -> {
                 requestFocusCountedOrToProcessing.value = false
                 requestFocusWithoutBarcodeOrProcessed.value = true
             }
