@@ -8,10 +8,12 @@ import com.lenta.bp16.model.data_storage.IIngredientDataPersistStorage
 import com.lenta.bp16.model.ingredients.IngredientInfo
 import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
 import com.lenta.bp16.model.ingredients.MercuryPartDataInfo
+import com.lenta.bp16.model.ingredients.TechOrderDataInfo
 import com.lenta.bp16.model.ingredients.params.GetIngredientDataParams
 import com.lenta.bp16.model.ingredients.params.UnblockIngredientsParams
 import com.lenta.bp16.model.ingredients.params.WarehouseParam
 import com.lenta.bp16.model.ingredients.ui.*
+import com.lenta.bp16.model.managers.ITechOrderManager
 import com.lenta.bp16.model.warehouse.IWarehousePersistStorage
 import com.lenta.bp16.platform.extention.getFieldWithSuffix
 import com.lenta.bp16.platform.extention.getModeType
@@ -43,6 +45,9 @@ class MaterialRemakesListViewModel : CoreViewModel() {
     lateinit var resourceManager: IResourceManager
 
     @Inject
+    lateinit var techOrderManager: ITechOrderManager
+
+    @Inject
     lateinit var getIngredientDataList: GetIngredientsDataListNetRequest
 
     @Inject
@@ -71,6 +76,7 @@ class MaterialRemakesListViewModel : CoreViewModel() {
     private val allProducersList = MutableLiveData<List<ProducerDataInfoUI>>()
     private val allMercuryPartDataInfoList = MutableLiveData<List<MercuryPartDataInfoUI>>()
     private val zPartDataInfoList = MutableLiveData<List<ZPartDataInfoUI>>()
+    private val techOrdersDataInfoList = MutableLiveData<List<TechOrderDataInfoUI>>()
 
     // суффикс
     val suffix: String by unsafeLazy {
@@ -108,6 +114,7 @@ class MaterialRemakesListViewModel : CoreViewModel() {
             allProducersList.value = ingredientsDataListResult.producerDataInfoList
             allMercuryPartDataInfoList.value = ingredientsDataListResult.mercuryPartDataInfoList
             zPartDataInfoList.value = ingredientsDataListResult.zPartDataInfoList
+            techOrdersDataInfoList.value = ingredientsDataListResult.techOrdersDataInfoList
             Unit
         }
     }
@@ -164,6 +171,8 @@ class MaterialRemakesListViewModel : CoreViewModel() {
                 val warehouse = ingredient.value?.lgort.orEmpty()
                 setWarehouseForSelectedItemUseCase(listOf(warehouse))
                 allEanMaterialIngredients.value?.getOrNull(0)?.let { barcode ->
+                    val techOrder = techOrdersDataInfoList.value.orEmpty()
+                    techOrderManager.updateCurrentTechOrder(techOrder)
                     navigator.openMaterialRemakeDetailsScreen(selectedMaterial, code, name, barcode)
                 }
             }

@@ -6,7 +6,7 @@ import com.lenta.bp16.data.IScales
 import com.lenta.bp16.model.AddAttributeProdInfo
 import com.lenta.bp16.model.BatchNewDataInfoParam
 import com.lenta.bp16.model.GoodTypeIcon
-import com.lenta.bp16.model.IAttributeManager
+import com.lenta.bp16.model.managers.IAttributeManager
 import com.lenta.bp16.model.ingredients.params.IngredientDataCompleteParams
 import com.lenta.bp16.model.ingredients.ui.MercuryPartDataInfoUI
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI

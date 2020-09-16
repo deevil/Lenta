@@ -4,7 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.switchMap
 import com.lenta.bp16.features.ingredient_details.add_attribute.IngredientAttributeViewModel
 import com.lenta.bp16.model.AddAttributeProdInfo
-import com.lenta.bp16.model.IAttributeManager
+import com.lenta.bp16.model.managers.IAttributeManager
 import com.lenta.bp16.model.ingredients.ui.MaterialIngredientDataInfoUI
 import com.lenta.bp16.model.ingredients.ui.ProducerDataInfoUI
 import com.lenta.bp16.model.ingredients.ui.ZPartDataInfoUI
@@ -21,7 +21,6 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.network.ServerTime
 import com.lenta.shared.requests.network.ServerTimeRequest
 import com.lenta.shared.requests.network.ServerTimeRequestParam
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.*
 import java.text.SimpleDateFormat
 import java.util.*
