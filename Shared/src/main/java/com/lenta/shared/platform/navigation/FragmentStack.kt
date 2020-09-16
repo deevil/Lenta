@@ -108,7 +108,7 @@ class FragmentStack(
     }
 
     fun popAll() {
-        for (i in 0 .. manager.backStackEntryCount) {
+        for (i in 0..manager.backStackEntryCount) {
             manager.popBackStack()
         }
         executePendingTransactions()
