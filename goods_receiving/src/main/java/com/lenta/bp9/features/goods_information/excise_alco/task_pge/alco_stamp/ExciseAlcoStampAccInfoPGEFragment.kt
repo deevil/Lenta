@@ -68,8 +68,6 @@ class ExciseAlcoStampAccInfoPGEFragment : CoreFragment<FragmentExciseAlcoStampAc
     }
 
     override fun onFragmentResult(arguments: Bundle) {
-        super.onFragmentResult(arguments)
-        vm.onBatchSignsResult(arguments.getInt("manufacturerSelectedPosition"), arguments.getString("bottlingDate"))
         if (arguments.getInt("KEY_MANUFACTURER_POSITION") != 0 && arguments.getString("KEY_BOTTLING_DATE") != null) {
             super.onFragmentResult(arguments)
             vm.onBatchSignsResult(arguments.getInt("KEY_MANUFACTURER_POSITION"), arguments.getString("KEY_BOTTLING_DATE"))
@@ -83,17 +81,14 @@ class ExciseAlcoStampAccInfoPGEFragment : CoreFragment<FragmentExciseAlcoStampAc
     }
 
     companion object {
+        private const val KEY_MANUFACTURER_POSITION = "manufacturerSelectedPosition"
+        private const val KEY_BOTTLING_DATE = "bottlingDate"
+
         fun create(productInfo: TaskProductInfo): ExciseAlcoStampAccInfoPGEFragment {
             ExciseAlcoStampAccInfoPGEFragment().let {
                 it.productInfo = productInfo
                 return it
             }
-            private const val KEY_MANUFACTURER_POSITION = "manufacturerSelectedPosition"
-            private const val KEY_BOTTLING_DATE = "bottlingDate"
-        }
-
-        override fun onResume() {
-            super.onResume()
-            vm.requestFocusToCount.value = true
         }
     }
+}
