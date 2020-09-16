@@ -102,7 +102,8 @@ class CoreNavigator @Inject constructor(
     override fun goBackTo(fragmentName: String?) {
         runOrPostpone {
             analyticsHelper.onGoBack()
-            getFragmentStack()?.pop(fragmentName)
+                getFragmentStack()?.pop(fragmentName)
+
         }
     }
 
