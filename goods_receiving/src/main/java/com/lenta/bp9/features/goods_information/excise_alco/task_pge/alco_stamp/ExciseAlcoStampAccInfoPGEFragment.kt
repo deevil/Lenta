@@ -71,8 +71,9 @@ class ExciseAlcoStampAccInfoPGEFragment : CoreFragment<FragmentExciseAlcoStampAc
         if (arguments.getInt("KEY_MANUFACTURER_POSITION") != 0 && arguments.getString("KEY_BOTTLING_DATE") != null) {
             super.onFragmentResult(arguments)
             vm.onBatchSignsResult(arguments.getInt("KEY_MANUFACTURER_POSITION"), arguments.getString("KEY_BOTTLING_DATE"))
-        } else
+        } else {
             vm.onBatchSignsResult()
+        }
     }
 
     override fun onBackPressed(): Boolean {

@@ -455,19 +455,28 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
             1. Марка присутствует в задании – выводить экран с сообщением «Марка присутствует в задании, добавление излишка недоступно».
             2. Марка отсутствует в задании – добавлять марку в список.
              */
-            if (scannedExciseStamp == null) {
-                screenNavigator.openAlertExciseStampPresentInTask()
-            } else {
-                addExciseStampDiscrepancy(scannedExciseStamp)
-            }
+            boxSurplus(scannedExciseStamp)
         } else { //https://trello.com/c/iOmIb6N7 Карточка короба
-            if (scannedExciseStamp == null) {
-                isSurplusMark(data)
-            } else {
-                isNotSurplusMark(data, scannedExciseStamp)
-            }
+            markSurplus(data, scannedExciseStamp)
         }
     }
+
+    private fun boxSurplus(scannedExciseStamp: TaskExciseStampInfo?) {
+        if (scannedExciseStamp == null) {
+            screenNavigator.openAlertExciseStampPresentInTask()
+        } else {
+            addExciseStampDiscrepancy(scannedExciseStamp)
+        }
+    }
+
+    private fun markSurplus(data: String, scannedExciseStamp: TaskExciseStampInfo?) {
+        if (scannedExciseStamp == null) {
+            isSurplusMark(data)
+        } else {
+            isNotSurplusMark(data, scannedExciseStamp)
+        }
+    }
+
 
     private fun isSurplusMark(data: String) {
         screenNavigator.openScannedStampBoxPGENotFoundDialog( //Отсканированная марка не найдена. Пометить ее как излишек? В случае согласия необходимо будет отсканировать все марки в текущей коробке.
@@ -512,18 +521,21 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
         if (processExciseAlcoBoxAccPGEService.exciseStampIsAlreadyProcessed(data)) {
             screenNavigator.openAlertScannedStampIsAlreadyProcessedScreen() //АМ уже обработана
         } else {
-            if (scannedExciseStamp.materialNumber != productInfo.value!!.materialNumber) {
-                //Отсканированная марка принадлежит товару <SAP-код> <Название>"
-                screenNavigator.openAlertScannedStampBelongsAnotherProductScreen(
-                        materialNumber = scannedExciseStamp.materialNumber.orEmpty(),
-                        materialName = zfmpUtz48V001.getProductInfoByMaterial(scannedExciseStamp.materialNumber)?.name.orEmpty()
-                )
-            } else {
-                stampFromAnotherBox(scannedExciseStamp)
-            }
+            SAPMark(scannedExciseStamp)
         }
     }
 
+    private fun SAPMark(scannedExciseStamp: TaskExciseStampInfo) {
+        if (scannedExciseStamp.materialNumber != productInfo.value!!.materialNumber) {
+            //Отсканированная марка принадлежит товару <SAP-код> <Название>"
+            screenNavigator.openAlertScannedStampBelongsAnotherProductScreen(
+                    materialNumber = scannedExciseStamp.materialNumber.orEmpty(),
+                    materialName = zfmpUtz48V001.getProductInfoByMaterial(scannedExciseStamp.materialNumber)?.name.orEmpty()
+            )
+        } else {
+            stampFromAnotherBox(scannedExciseStamp)
+        }
+    }
 
     private fun stampFromAnotherBox(scannedExciseStamp: TaskExciseStampInfo) {
         if (scannedExciseStamp.boxNumber == (boxInfo.value?.boxNumber.orEmpty())) {
@@ -546,11 +558,9 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
                         isEizUnit.value = false
                         screenNavigator.openAlertAmountNormWillBeReduced()
                     },
-                    realBoxNumber = if (realBoxNumber?.length in 4..10) {
-                        "${realBoxNumber?.substring(0, 4)}...${realBoxNumber?.substring(realBoxNumber.length - 10)}"
-                    } else {
-                        ""
-                    }
+                    realBoxNumber = realBoxNumber?.takeIf { it.length >= 10 }?.run {
+                        "${this.substring(0, 4)}...${this.substring(this.length - 10)}"
+                    }.orEmpty()
             )
         }
     }
@@ -565,13 +575,17 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
         if (processExciseAlcoBoxAccPGEService.getCountBoxOfProductOfDiscrepancies(data) >= processExciseAlcoBoxAccPGEService.getCountAcceptRefusal()) {
             screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
         } else {
-            val boxInfo = processExciseAlcoBoxAccPGEService.searchBox(boxNumber = data)
-            if (boxInfo == null) {
-                scannedBoxNumber.value = data
-                scannedBoxNotFound(data)
-            } else {
-                isBoxSAP(boxInfo)
-            }
+            boxInfo(data)
+        }
+    }
+
+    private fun boxInfo (data: String) {
+        val boxInfo = processExciseAlcoBoxAccPGEService.searchBox(boxNumber = data)
+        if (boxInfo == null) {
+            scannedBoxNumber.value = data
+            scannedBoxNotFound(data)
+        } else {
+            isBoxSAP(boxInfo)
         }
     }
 
