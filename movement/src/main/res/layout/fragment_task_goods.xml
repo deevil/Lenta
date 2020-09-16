@@ -24,7 +24,7 @@
             android:layout_height="0dp"
             android:layout_marginBottom="@dimen/size_16dp"
             app:pageSelectionListener="@{vm}"
-            app:tabPosition="@{vm.selectedPagePosition}"
+            app:tabPosition="@{vm.selectedPage}"
             app:viewPagerSettings="@{viewPagerSettings}"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/b_scan">

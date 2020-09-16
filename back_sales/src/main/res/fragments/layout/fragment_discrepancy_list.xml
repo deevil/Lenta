@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".features.open_task.discrepancy_list.DiscrepancyListFragment">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.lenta.bp12.features.open_task.discrepancy_list.DiscrepancyListViewModel" />
+
+        <variable
+            name="rvConfig"
+            type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig" />
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <include layout="@layout/layout_header_discrepancy_list"/>
+
+        <!-- Список товаров -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv"
+            style="@style/RecyclerWithSomethingBellowStyle"
+            app:items="@{vm.goods}"
+            app:rv_config="@{rvConfig}"
+            tools:listitem="@layout/item_discrepancy_list" />
+
+    </LinearLayout>
+
+</layout>

@@ -99,7 +99,7 @@ class CoreNavigator @Inject constructor(
         }
     }
 
-    override fun goBackTo(fragmentName: String) {
+    override fun goBackTo(fragmentName: String?) {
         runOrPostpone {
             analyticsHelper.onGoBack()
             getFragmentStack()?.pop(fragmentName)
@@ -504,6 +504,29 @@ class CoreNavigator @Inject constructor(
         }
     }
 
+    override fun showTwelveCharactersEntered(sapCallback: () -> Unit, barCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "68",
+                    message = context.getString(R.string.twelve_characters_entered),
+                    codeConfirmForLeft = backFragmentResultHelper.setFuncForResult(sapCallback),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(barCallback),
+                    leftButtonDecorationInfo = ButtonDecorationInfo.sap,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.barcode
+            ))
+        }
+    }
+
+    override fun showIncorrectEanFormat() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "119",
+                    message = context.getString(R.string.incorrect_ean_format),
+                    iconRes = R.drawable.ic_warning_red_80dp
+            ))
+        }
+    }
+
 }
 
 fun ICoreNavigator.runOrPostpone(function: () -> Unit) {
@@ -517,7 +540,7 @@ interface ICoreNavigator {
     fun goBackWithArgs(args: Bundle)
     fun goBackWithResultCode(code: Int?)
     fun goBack()
-    fun goBackTo(fragmentName: String)
+    fun goBackTo(fragmentName: String?)
     fun finishApp(restart: Boolean = false)
     fun openAlertScreen(message: String,
                         iconRes: Int = 0,
@@ -570,6 +593,8 @@ interface ICoreNavigator {
     fun openUpdateAppScreen()
     fun openMarkingGoodsInfoScreen()
     fun openExceptionsShelfLifeScreen()
+    fun showTwelveCharactersEntered(sapCallback: () -> Unit, barCallback: () -> Unit)
+    fun showIncorrectEanFormat()
 }
 
 class FunctionsCollector(private val needCollectLiveData: LiveData<Boolean>) {

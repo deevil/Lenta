@@ -53,7 +53,6 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     @Inject
     lateinit var hyperHive: HyperHive
 
-    val selectedPage = MutableLiveData(0)
 
     var mode: TaskCardMode = TaskCardMode.None
 

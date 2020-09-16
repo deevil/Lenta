@@ -115,7 +115,9 @@ class MercuryListIrrelevantViewModel : CoreViewModel() {
     private fun handleSuccessRecountStart(result: DirectSupplierStartRecountRestInfo) {
         launchUITryCatch {
             repoInMemoryHolder.manufacturers.value = result.manufacturers
-            repoInMemoryHolder.markingGoodsProperties.value = result.markingGoodsProperties.map { TaskMarkingGoodsProperties.from(it) }
+            repoInMemoryHolder.manufacturersForZBatches.value = result.manufacturersForZBatches?.map { TaskManufacturersForZBatches.from(it) }
+            repoInMemoryHolder.taskZBatchInfo.value = result.taskZBatchInfo?.map { TaskZBatchInfo.from(it) }
+            repoInMemoryHolder.markingGoodsProperties.value = result.markingGoodsProperties?.map { TaskMarkingGoodsProperties.from(it) }
             //todo закомичено, т.к. на проде этот фунционал пока не реализован repoInMemoryHolder.processOrderData.value = result.processOrderData.map { TaskProcessOrderDataInfo.from( it) }
             repoInMemoryHolder.sets.value = result.setsInfo.map { TaskSetsInfo.from(hyperHive, it) }
             taskManager.updateTaskDescription(TaskDescription.from(result.taskDescription))

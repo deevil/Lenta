@@ -32,5 +32,4 @@ class CheckData @Inject constructor(
     fun clearSaveData() {
         persistCheckResult.clearSavedData()
     }
-
 }

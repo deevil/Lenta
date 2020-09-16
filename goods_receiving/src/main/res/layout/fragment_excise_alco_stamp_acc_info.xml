@@ -2,13 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".features.goods_information.excise_alco_receiving.excise_alco_stamp_acc.ExciseAlcoStampAccInfoFragment">
+    tools:context=".features.goods_information.excise_alco.task_ppp.alco_stamp.ExciseAlcoStampAccInfoFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp9.features.goods_information.excise_alco_receiving.excise_alco_stamp_acc.ExciseAlcoStampAccInfoViewModel" />
+            type="com.lenta.bp9.features.goods_information.excise_alco.task_ppp.alco_stamp.ExciseAlcoStampAccInfoViewModel" />
 
     </data>
 

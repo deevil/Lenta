@@ -45,6 +45,9 @@ data class ProductInfo(
         /** Признак – товар ветеринарный */
         @SerializedName("IS_VET")
         val isVet: String,
+        /**Признак - "Вино России"*/
+        @SerializedName("IS_VRUS")
+        val isRusWine: String,
         /** Признак – товар здоровое питание */
         @SerializedName("IS_HF")
         val isHealthyFood: String,

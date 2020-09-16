@@ -1,6 +1,7 @@
 package com.lenta.bp9.features.goods_list
 
 import com.lenta.bp9.model.task.TaskProductInfo
+import com.lenta.bp9.model.task.TaskZBatchesDiscrepancies
 import com.lenta.shared.utilities.databinding.Evenable
 
 data class ListCountedItem(
@@ -13,6 +14,7 @@ data class ListCountedItem(
         val countRefusalWithUom: String,
         val isNotEdit: Boolean,
         val productInfo: TaskProductInfo?,
+        val zBatchDiscrepancies: TaskZBatchesDiscrepancies?,
         val even: Boolean
 ) : Evenable {
     override fun isEven() = even

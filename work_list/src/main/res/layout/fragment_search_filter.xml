@@ -19,9 +19,7 @@
         <!-- Секция -->
         <LinearLayout style="@style/LinearRowStyle">
 
-            <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="1">
+            <LinearLayout style="@style/LinearCellStyle">
 
                 <TextView
                     style="@style/CellTextStyle"
@@ -51,9 +49,7 @@
         <!-- Группа товаров -->
         <LinearLayout style="@style/LinearRowStyle">
 
-            <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="1">
+            <LinearLayout style="@style/LinearCellStyle">
 
                 <TextView
                     style="@style/CellTextStyle"
@@ -84,9 +80,7 @@
             style="@style/LinearRowStyle"
             android:visibility="@{vm.placeStorageVisibility}">
 
-            <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="1">
+            <LinearLayout style="@style/LinearCellStyle">
 
                 <TextView
                     style="@style/CellTextStyle"
@@ -117,9 +111,7 @@
             style="@style/LinearRowStyle"
             android:visibility="@{vm.commentVisibility}">
 
-            <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="1">
+            <LinearLayout style="@style/LinearCellStyle">
 
                 <TextView
                     style="@style/CellTextStyle"

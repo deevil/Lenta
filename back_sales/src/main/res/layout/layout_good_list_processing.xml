@@ -31,7 +31,7 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/number_name_column_1">
+                    android:layout_weight="@integer/three_one_1">
 
                     <TextView
                         style="@style/FirstRowTextStyle"
@@ -42,11 +42,21 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/number_name_column_2">
+                    android:layout_weight="@integer/three_one_2">
 
                     <TextView
                         style="@style/FirstRowTextStyle"
                         android:text="@string/good" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="@integer/three_one_3">
+
+                    <TextView
+                        style="@style/FirstRowTextStyle"
+                        android:text="@string/plan" />
 
                 </LinearLayout>
 
@@ -59,10 +69,7 @@
         <!-- Список товаров -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginBottom="8dp"
-            android:layout_weight="1"
+            style="@style/RecyclerWithSomethingBellowStyle"
             app:items="@{vm.processing}"
             app:rv_config="@{rvConfig}"
             tools:listitem="@layout/item_good_list_processing" />

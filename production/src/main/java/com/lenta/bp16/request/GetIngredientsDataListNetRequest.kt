@@ -1,9 +1,6 @@
 package com.lenta.bp16.request
 
-import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
-import com.lenta.bp16.model.ingredients.OrderIngredientDataInfo
 import com.lenta.bp16.model.ingredients.params.GetIngredientDataParams
-import com.lenta.bp16.model.ingredients.results.IngredientsDataListResult
 import com.lenta.bp16.model.ingredients.ui.IngredientsDataListResultUI
 import com.lenta.bp16.repository.IIngredientsRepository
 import com.lenta.shared.exception.Failure

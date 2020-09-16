@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".features.ingredient_details.IngredientDetailsFragment">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="vm"
+            type="com.lenta.bp16.features.ingredient_details.IngredientDetailsViewModel" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:orientation="vertical">
+
+        <!-- Текущее количество -->
+        <LinearLayout style="@style/LinearRowStyle">
+
+            <LinearLayout style="@style/LinearCellStyle">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@string/column_name_fact" />
+
+            </LinearLayout>
+
+            <View style="@style/VerticalDivider" />
+
+            <LinearLayout style="@style/LinearCellStyle">
+
+                <com.lenta.shared.view.EditTextWithSuffix
+                    style="@style/CellEditTextStyle"
+                    android:inputType="numberDecimal"
+                    android:maxLines="1"
+                    android:text="@={vm.weightField}"
+                    app:suffix="@{vm.suffix}"
+                    app:cursorToLastPos="@{false}"
+                    app:requestFocus="@{vm.requestFocusToNumberField}"
+                    tools:text="0 кг" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View style="@style/HorizontalDivider" />
+
+        <!-- Общее количество -->
+        <LinearLayout style="@style/LinearRowStyle">
+
+            <LinearLayout style="@style/LinearCellStyle">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@string/column_name_amount" />
+
+            </LinearLayout>
+
+            <View style="@style/VerticalDivider" />
+
+            <LinearLayout style="@style/LinearCellStyle">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:singleLine="false"
+                    android:maxLines="2"
+                    android:text="@{vm.totalWithUnits}"
+                    tools:text="10 кг" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View style="@style/HorizontalDivider" />
+
+        <!-- Общее количество брака -->
+        <LinearLayout
+            style="@style/LinearRowStyle">
+
+            <LinearLayout style="@style/LinearCellStyle">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@string/column_name_plan" />
+
+            </LinearLayout>
+
+            <View style="@style/VerticalDivider" />
+
+            <LinearLayout style="@style/LinearCellStyle">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@{vm.orderIngredient.planCount}"
+                    tools:text="70 кг" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View
+            style="@style/HorizontalDivider"/>
+
+        <!-- Плановое количество -->
+        <LinearLayout style="@style/LinearRowStyle">
+
+            <LinearLayout style="@style/LinearCellStyle">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@string/text_already" />
+
+            </LinearLayout>
+
+            <View style="@style/VerticalDivider" />
+
+            <LinearLayout style="@style/LinearCellStyle">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@{vm.orderIngredient.doneCount}"
+                    tools:text="25 кг" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View style="@style/HorizontalDivider"
+            android:visibility="@{vm.producerVisibleCondition ? View.VISIBLE : View.GONE}"/>
+
+        <LinearLayout style="@style/LinearRowStyle"
+            android:visibility="@{vm.producerVisibleCondition ? View.VISIBLE : View.GONE}">
+
+            <com.lenta.shared.view.ClickableSpinner
+                style="@style/CellSpinnerStyle"
+                android:enabled="@{vm.disableSpinner}"
+                app:items="@{vm.producerNameField}"
+                app:position="@={vm.selectedProducerPosition}"
+                tools:entries="@array/manufacturer_list" />
+
+        </LinearLayout>
+
+        <View
+            android:visibility="@{vm.dateVisibleCondition ? View.VISIBLE : View.GONE}"
+            style="@style/HorizontalDivider"/>
+
+        <LinearLayout
+            android:visibility="@{vm.dateVisibleCondition ? View.VISIBLE : View.GONE}"
+            style="@style/LinearRowStyle">
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="1">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@string/text_production_date" />
+
+            </LinearLayout>
+
+            <View style="@style/VerticalDivider" />
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:orientation="horizontal"
+                android:layout_weight="1">
+
+                <com.lenta.shared.view.ClickableSpinner
+                    style="@style/CellSpinnerStyle"
+                    android:enabled="@{vm.disableSpinner}"
+                    android:layout_margin="@dimen/margin_small"
+                    android:layout_weight="1"
+                    app:items="@{vm.productionDateField}"
+                    app:position="@={vm.selectedDateProductionPosition}"
+                    tools:entries="@array/date_list" />
+
+                <ImageButton
+                    android:enabled="@{vm.addPartAttributeEnable}"
+                    android:layout_width="@dimen/size_32dp"
+                    android:layout_height="@dimen/size_32dp"
+                    android:layout_marginEnd="@dimen/margin_small"
+                    android:onClick="@{(v) -> vm.onClickAddAttributeButton()}"
+                    android:background="@drawable/bg_border_rectangle"
+                    android:foreground="?selectableItemBackground"
+                    android:src="@drawable/ic_add_white_24dp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View
+            style="@style/HorizontalDivider"/>
+
+    </LinearLayout>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/size_8dp"
+            android:layout_marginStart="@dimen/size_8dp"
+            android:src="@drawable/ic_mercury_white_32dp"
+            app:goodTypeIcon="@{vm.goodTypeIcon}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <ImageButton
+            android:visibility="@{vm.vetIconInfoCondition ? View.VISIBLE : View.GONE}"
+            android:id="@+id/ib_scan"
+            android:layout_margin="@dimen/size_8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/ib_scan_barcode_vet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/size_8dp"
+            android:background="?selectableItemBackground"
+            android:src="@drawable/ic_barcode_white_32dp" />
+
+        <ImageButton
+            android:id="@+id/ib_scan_barcode_vet"
+            android:layout_margin="@dimen/size_8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/ib_scan_barcode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/size_8dp"
+            android:onClick="@{(v) -> vm.navigator.openGS128InfoScreen()}"
+            android:background="?selectableItemBackground"
+            android:src="@drawable/ic_scan_barcode_vet_white_32dp" />
+
+        <ImageButton
+            android:id="@+id/ib_scan_barcode"
+            android:layout_margin="@dimen/size_8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/size_8dp"
+            android:onClick="@{(v) -> vm.navigator.openEanInfoScreen()}"
+            android:background="?selectableItemBackground"
+            android:src="@drawable/ic_scan_barcode_white_32dp" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</layout>

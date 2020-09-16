@@ -11,13 +11,19 @@ import com.lenta.shared.requests.FmpRequestsHelper
 import com.lenta.shared.requests.SapResponse
 import javax.inject.Inject
 
+/**
+ * Загрузка списка заданий "ZMP_UTZ_BKS_02_V001"
+ */
 class TaskListNetRequest @Inject constructor(
         private val fmpRequestsHelper: FmpRequestsHelper
 ) : UseCase<TaskListResult, TaskListParams> {
 
     override suspend fun run(params: TaskListParams): Either<Failure, TaskListResult> {
-        return fmpRequestsHelper.restRequest("ZMP_UTZ_BKS_02_V001", params, TaskListStatus::class.java)
+        return fmpRequestsHelper.restRequest(RESOURCE_NAME, params, TaskListStatus::class.java)
     }
+        companion object {
+                private const val RESOURCE_NAME = "ZMP_UTZ_BKS_02_V001"
+        }
 
 }
 
@@ -44,11 +50,11 @@ class TaskListStatus : ObjectRawStatus<TaskListResult>()
 data class TaskListResult(
         /** Список заданий */
         @SerializedName("ET_TASK_LIST")
-        val tasks: List<TaskInfo>,
+        val tasks: List<TaskInfo>?,
         /** Код возврата */
         @SerializedName("EV_RETCODE")
-        override val retCode: Int,
+        override val retCode: Int?,
         /** Текст ошибки */
         @SerializedName("EV_ERROR_TEXT")
-        override val errorText: String
+        override val errorText: String?
 ) : SapResponse

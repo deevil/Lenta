@@ -6,6 +6,12 @@ enum class IngredientStatusWork {
     COMMON
 }
 
+enum class GoodTypeIcon{
+    PLAN,
+    FACT,
+    VET
+}
+
 enum class IngredientStatusBlock{
     SELF_LOCK,
     LOCK,
@@ -17,6 +23,12 @@ enum class TaskStatus {
     STARTED,
     SELF_LOCK,
     LOCK
+}
+
+enum class ProducerDataStatus{
+    VISIBLE,
+    GONE,
+    ALERT
 }
 
 enum class TaskType(val abbreviation: String, val numberLength: Int) {

@@ -1,12 +1,15 @@
 package com.lenta.bp12.features.create_task.good_details
 
-import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.features.other.ItemBasketUi
 import com.lenta.bp12.features.other.ItemCategory
 import com.lenta.bp12.features.other.ItemCategoryUi
+import com.lenta.bp12.managers.interfaces.ICreateTaskManager
 import com.lenta.bp12.model.CategoryType
-import com.lenta.bp12.model.ICreateTaskManager
-import com.lenta.bp12.model.pojo.create_task.Basket
+import com.lenta.bp12.model.pojo.Basket
+import com.lenta.bp12.model.pojo.extentions.getDescription
+import com.lenta.bp12.model.pojo.extentions.getPosition
+import com.lenta.bp12.model.pojo.extentions.removeAllMark
+import com.lenta.bp12.model.pojo.extentions.removeAllPart
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -47,8 +50,6 @@ class GoodDetailsCreateViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
-    val selectedPage = MutableLiveData(0)
-
     val baskets by lazy {
         task.combineLatest(good).map {
             it?.let {
@@ -60,8 +61,11 @@ class GoodDetailsCreateViewModel : CoreViewModel(), PageSelectionListener {
                     ItemBasketUi(
                             basket = basket,
                             position = "${baskets.size - index}",
-                            name = resource.basket("${manager.getBasketPosition(basket)}"),
-                            description = basket.getDescription(task.type.isDivBySection),
+                            name = resource.basket("${basket.getPosition()}"),
+                            description = basket.getDescription(
+                                    isDivBySection = task.type.isDivBySection,
+                                    isWholeSale = manager.isWholesaleTaskType
+                            ),
                             quantity = "${task.getCountByBasket(basket)}"
                     )
                 }

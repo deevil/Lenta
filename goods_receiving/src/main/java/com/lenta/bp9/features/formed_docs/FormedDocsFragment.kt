@@ -23,7 +23,7 @@ class FormedDocsFragment : CoreFragment<FragmentFormedDocsBinding, FormedDocsVie
     override fun getPageNumber(): String = "09/23"
 
     override fun getViewModel(): FormedDocsViewModel {
-        provideViewModel(FormedDocsViewModel::class.java).let {vm ->
+        provideViewModel(FormedDocsViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)
             return vm
         }
@@ -65,7 +65,7 @@ class FormedDocsFragment : CoreFragment<FragmentFormedDocsBinding, FormedDocsVie
             layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                     layoutId = R.layout.item_tile_formed_docs,
                     itemId = BR.item,
-                    onAdapterItemBind = { binding: ItemTileFormedDocsBinding, position: Int ->
+                    onItemBind = { binding: ItemTileFormedDocsBinding, position: Int ->
                         binding.tvItemNumber.tag = position
                         binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                         binding.selectedForDelete = vm.docsSelectionsHelper.isSelected(position)

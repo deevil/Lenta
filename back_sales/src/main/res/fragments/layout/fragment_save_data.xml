@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".features.save_data.SaveDataFragment">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.lenta.bp12.features.save_data.SaveDataViewModel" />
+
+        <variable
+            name="rvConfig"
+            type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig" />
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- Наименования колонок -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout style="@style/FirstRowStyle">
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="@integer/two_two_1">
+
+                    <TextView
+                        style="@style/FirstRowTextStyle"
+                        android:layout_width="wrap_content"
+                        android:text="@string/number" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="@integer/two_two_2">
+
+                    <TextView
+                        style="@style/FirstRowTextStyle"
+                        android:text="@string/task" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View style="@style/HorizontalDivider" />
+
+        </LinearLayout>
+
+        <!-- Список товаров -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv"
+            style="@style/RecyclerWithSomethingBellowStyle"
+            app:items="@{vm.tasks}"
+            app:rv_config="@{rvConfig}"
+            tools:listitem="@layout/item_save_data" />
+
+    </LinearLayout>
+
+</layout>

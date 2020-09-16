@@ -15,6 +15,8 @@ data class PartInfo(
         /** Дата производства */
         @SerializedName("DATEOFPOUR")
         var productionDate: String,
+        @SerializedName("PLAN_QNT")
+        var plannedQuantity: String? = "",
         /** Фактическое количество */
         @SerializedName("FACT_QNT")
         var quantity: String,

@@ -15,6 +15,7 @@
  */
 package com.lenta.shared.functional
 
+import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either.Left
 import com.lenta.shared.functional.Either.Right
 import com.lenta.shared.utilities.Logg
@@ -56,23 +57,25 @@ fun <A, B, C> ((A) -> B).c(f: (B) -> C): (A) -> C = {
 
 fun <T, L, R> Either<L, R>.flatMap(fn: (R) -> Either<L, T>): Either<L, T> =
         when (this) {
-            is Either.Left -> Either.Left(a)
-            is Either.Right -> fn(b)
+            is Left -> Left(a)
+            is Right -> fn(b)
         }
 
 fun <T, L, R> Either<L, R>.map(fn: (R) -> (T)): Either<L, T> = this.flatMap(fn.c(::right))
 
 fun <L, R> Either<L, R>.rightToLeft(fnRtoL: (R) -> (L?)): Either<L, R> =
         when (this) {
-            is Either.Left -> Either.Left(a)
-            is Either.Right -> {
+            is Left -> Left(a)
+            is Right -> {
                 fnRtoL(b).let { result ->
                     Logg.d { "result: $result" }
                     when (result) {
-                        null -> Either.Right(b)
-                        else -> Either.Left(result)
+                        null -> Right(b)
+                        else -> Left(result)
                     }
                 }
             }
         }
 
+fun <T> T.toRight(): Either<Failure, T> = Right(this)
+fun <T : Failure> T.toLeft(): Either<Failure, Nothing> = Left(this)

@@ -8,7 +8,8 @@ open class ProductInfo(
         val isSet: Boolean,
         val sectionId: String,
         val matrixType: MatrixType,
-        val materialType: String
+        val materialType: String,
+        val markedGoodType:  String = ""
 ) : IProduct {
 
 

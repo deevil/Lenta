@@ -3,14 +3,19 @@ package com.lenta.bp12.features.open_task.good_details
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.features.other.ItemCategory
 import com.lenta.bp12.features.other.ItemCategoryUi
+import com.lenta.bp12.managers.interfaces.IOpenTaskManager
 import com.lenta.bp12.model.CategoryType
-import com.lenta.bp12.model.IOpenTaskManager
+import com.lenta.bp12.model.pojo.extentions.removeAllMark
+import com.lenta.bp12.model.pojo.extentions.removeAllPart
 import com.lenta.bp12.platform.navigation.IScreenNavigator
+import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.orIfNull
 import javax.inject.Inject
 
 class GoodDetailsOpenViewModel : CoreViewModel(), PageSelectionListener {
@@ -21,10 +26,10 @@ class GoodDetailsOpenViewModel : CoreViewModel(), PageSelectionListener {
     @Inject
     lateinit var manager: IOpenTaskManager
 
+    @Inject
+    lateinit var resource: IResourceManager
 
     val selectionsHelper = SelectionItemsHelper()
-
-    val selectedPage = MutableLiveData(0)
 
     val task by lazy {
         manager.currentTask
@@ -94,6 +99,9 @@ class GoodDetailsOpenViewModel : CoreViewModel(), PageSelectionListener {
 
             selectionsHelper.clearPositions()
             manager.updateCurrentGood(changedGood)
+        }.orIfNull {
+            Logg.e { "good null" }
+            navigator.showInternalError(resource.goodNotFoundErrorMsg)
         }
     }
 

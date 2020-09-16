@@ -91,10 +91,6 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
         return taskManager.getTaskSettings(taskType, movementType)
     }
 
-    val selectedPagePosition by unsafeLazy {
-        MutableLiveData(0)
-    }
-
     val currentStatusText by unsafeLazy { formatter.getTaskStatusName(currentStatus) }
     val nextStatusText by unsafeLazy { formatter.getTaskStatusName(nextStatus) }
 
@@ -242,12 +238,12 @@ class TaskViewModel : CoreViewModel(), PageSelectionListener {
         !(currentStatus == Task.Status.Created(CREATED) || currentStatus == Task.Status.Published(PUBLISHED))
     }
 
-    fun onResume() = task.value?.let(taskManager::setTask).orIfNull{ selectedPagePosition.value = 1 }
+    fun onResume() = task.value?.let(taskManager::setTask).orIfNull{ selectedPage.value = 1 }
 
     fun getTitle() = formatter.formatMarketName(sessionInfo.market.orEmpty())
 
     override fun onPageSelected(position: Int) {
-        selectedPagePosition.value = position
+        selectedPage.value = position
     }
 
     fun onNextClick() {
