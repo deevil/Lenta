@@ -288,7 +288,7 @@ class ProcessZBatchesPGEService
         return countNormAndParam > productInfo.orderQuantity.toDouble()
     }
 
-    fun addCountMoreCargoUnit(paramGrwOlGrundcat: String, count: Double, processingUnit: String) {
+    fun addCountMoreCargoUnit(paramGrwOlGrundcat: String, count: Double, processingUnit: String, manufactureCode: String, shelfLifeDate: String, shelfLifeTime: String, partySignsType: PartySignsTypeOfZBatches) {
         var countNormAndParam = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo)?.filter {
             it.typeDiscrepancies == "1" || it.typeDiscrepancies == paramGrwOlGrundcat
         }?.sumByDouble {
@@ -296,9 +296,9 @@ class ProcessZBatchesPGEService
         } ?: 0.0
         countNormAndParam += count
         taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.deleteProductDiscrepancy(materialNumber =  productInfo.materialNumber, typeDiscrepancies = "1")
-        add(productInfo.orderQuantity, "1", processingUnit)
+        add(productInfo.orderQuantity, "1", manufactureCode, shelfLifeDate, shelfLifeTime, partySignsType, processingUnit)
         taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.deleteProductDiscrepancy(materialNumber =  productInfo.materialNumber, typeDiscrepancies = paramGrwOlGrundcat)
-        add((countNormAndParam - productInfo.orderQuantity.toDouble()).toString(), paramGrwOlGrundcat, processingUnit)
+        add((countNormAndParam - productInfo.orderQuantity.toDouble()).toString(), paramGrwOlGrundcat, manufactureCode, shelfLifeDate, shelfLifeTime, partySignsType, processingUnit)
     }
 
 }

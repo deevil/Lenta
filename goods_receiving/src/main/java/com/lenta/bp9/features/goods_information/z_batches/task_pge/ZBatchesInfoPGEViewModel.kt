@@ -529,6 +529,7 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
 
     //ПГЕ блок 7.55
     private fun checkParamGrwUlGrundcat() {
+        val paramGrwUlGrundcatValue = paramGrwUlGrundcat.value.orEmpty()
         if (processZBatchesPGEService.checkParam(paramGrwUlGrundcat.value!!)) {//блок 7.55 (да)
             //блок 7.96
             val countWithoutParamGrwUlGrundcat = processZBatchesPGEService.countWithoutParamGrwUlGrundcatPGE(paramGrwOlGrundcat.value!!, paramGrwUlGrundcat.value!!)
@@ -543,15 +544,19 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
                 if (countWithoutParamGrwUlGrundcat > 0.0) {//блок 7.157 (да)
                     //блок 7.155
                     processZBatchesPGEService.addWithoutUnderload(
-                            paramGrwUlGrundcat.value!!,
-                            countWithoutParamGrwUlGrundcat.toString(),
-                            spinReasonRejection.value!![spinReasonRejectionSelectedPosition.value!!].substring(5)
+                            typeDiscrepancies = paramGrwUlGrundcatValue,
+                            count = countWithoutParamGrwUlGrundcat.toString(),
+                            manufactureCode = currentManufactureCode,
+                            shelfLifeDate = getShelfLifeDate(),
+                            shelfLifeTime = getShelfLifeTime(),
+                            partySignsType = getPartySignsType(),
+                            processingUnit = spinReasonRejection.value!![spinReasonRejectionSelectedPosition.value!!].substring(5)
                     )
                     //блок 7.177
                     saveCategoryPGE(true)
                 } else {//блок 7.157 (нет)
                     //блок 7.165
-                    processZBatchesPGEService.removeDiscrepancyFromProduct(paramGrwUlGrundcat.value!!)
+                    processZBatchesPGEService.removeDiscrepancyFromProduct(paramGrwUlGrundcatValue)
                     noParamGrwUlGrundcat()
                 }
             }
@@ -603,7 +608,15 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
                         //блок 7.208
                         yesCallbackFunc = {
                             //блок 7.209
-                            processZBatchesPGEService.addCountMoreCargoUnit(paramGrwOlGrundcat.value!!, convertEizToBei(), spinReasonRejection.value!![spinReasonRejectionSelectedPosition.value!!].substring(5))
+                            processZBatchesPGEService.addCountMoreCargoUnit(
+                                    paramGrwOlGrundcat = paramGrwOlGrundcat.value!!,
+                                    count = convertEizToBei(),
+                                    processingUnit = spinReasonRejection.value!![spinReasonRejectionSelectedPosition.value!!].substring(5),
+                                    manufactureCode = currentManufactureCode,
+                                    shelfLifeDate = getShelfLifeDate(),
+                                    shelfLifeTime = getShelfLifeTime(),
+                                    partySignsType = getPartySignsType()
+                            )
                             //блок 7.188 (переходим минуя 7.177 и 7.185, т.к. мы уже сохранили данные в блоке 7.209)
                             clickBtnApply()
                         }
@@ -626,9 +639,13 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
         } else {
             //блок 7.185
             processZBatchesPGEService.add(
-                    convertEizToBei().toString(),
-                    qualityInfo.value!![spinQualitySelectedPosition.value!!].code,
-                    spinReasonRejection.value!![spinReasonRejectionSelectedPosition.value!!].substring(5)
+                    count = convertEizToBei().toString(),
+                    typeDiscrepancies = currentTypeDiscrepanciesCodeByTaskType,
+                    manufactureCode = currentManufactureCode,
+                    shelfLifeDate = getShelfLifeDate(),
+                    shelfLifeTime = getShelfLifeTime(),
+                    partySignsType = getPartySignsType(),
+                    processingUnit = spinReasonRejection.value!![spinReasonRejectionSelectedPosition.value!!].substring(5)
             )
         }
 

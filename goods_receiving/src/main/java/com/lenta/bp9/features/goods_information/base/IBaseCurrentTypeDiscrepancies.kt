@@ -1,12 +1,18 @@
 package com.lenta.bp9.features.goods_information.base
 
-import com.lenta.bp9.platform.TypeDiscrepanciesConstants
+import com.lenta.bp9.features.base.IBaseTaskManager
+import com.lenta.bp9.model.task.TaskType
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
 
-interface IBaseCurrentTypeDiscrepancies : IBaseVariables, IBaseQualityInfo, IBaseReasonRejectionInfo {
-    val currentTypeDiscrepanciesCode: String
+interface IBaseCurrentTypeDiscrepancies : IBaseVariables, IBaseTaskManager, IBaseQualityInfo, IBaseReasonRejectionInfo {
+    val currentTypeDiscrepanciesCodeByTaskType: String
         get() {
-            return currentQualityInfoCode
-                    .takeIf { it == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM }
-                    ?: currentReasonRejectionInfoCode
+            return if (taskType == TaskType.RecalculationCargoUnit) {
+                currentQualityInfoCode
+            } else {
+                currentQualityInfoCode
+                        .takeIf { it == TYPE_DISCREPANCIES_QUALITY_NORM }
+                        ?: currentReasonRejectionInfoCode
+            }
         }
 }

@@ -404,7 +404,7 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
 
 
         if (expirationDate.value!!.time <= currentDate.value
-                && currentTypeDiscrepanciesCode == TYPE_DISCREPANCIES_QUALITY_NORM) {
+                && currentTypeDiscrepanciesCodeByTaskType == TYPE_DISCREPANCIES_QUALITY_NORM) {
             //блок 6.158
             screenNavigator.openShelfLifeExpiredDialog(
                     //блок 6.170
@@ -609,7 +609,7 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
     private fun saveCategory() {
         processZBatchesPPPService.add(
                 count = count.value.orEmpty(),
-                typeDiscrepancies = currentTypeDiscrepanciesCode,
+                typeDiscrepancies = currentTypeDiscrepanciesCodeByTaskType,
                 manufactureCode = currentManufactureCode,
                 shelfLifeDate = getShelfLifeDate(),
                 shelfLifeTime = getShelfLifeTime(),

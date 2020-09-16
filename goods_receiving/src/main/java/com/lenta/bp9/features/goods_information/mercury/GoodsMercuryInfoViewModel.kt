@@ -94,24 +94,6 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
                     .orEmpty()
         }
 
-
-
-    override val currentTypeDiscrepanciesCode: String
-        get() {
-            return if (isTaskPGE.value == true) {
-                currentQualityInfoCode
-                        .takeIf {
-                            it == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
-                                    || it == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS
-                        }
-                        ?: currentReasonRejectionInfoCode
-            } else {
-                currentQualityInfoCode
-                        .takeIf { it == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM }
-                        ?: currentReasonRejectionInfoCode
-            }
-    }
-
     val suffix: MutableLiveData<String> = MutableLiveData()
     val generalShelfLife: MutableLiveData<String> = MutableLiveData()
     val remainingShelfLife: MutableLiveData<String> = MutableLiveData()
@@ -530,14 +512,14 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
         processingAddProductDiscrepancies(
                 processing = processMercuryProductService.checkConditionsOfPreservationOfProduct(
                                 count = count.value ?: "0",
-                                typeDiscrepancies = currentTypeDiscrepanciesCode,
+                                typeDiscrepancies = currentTypeDiscrepanciesCodeByTaskType,
                                 manufacturer = currentManufactureName,
                                 productionDate = currentProductionDateFormatterEN,
                                 paramGrzRoundLackRatio = paramGrzRoundLackRatio.value?.replace(",", ".")?.toDouble() ?: 0.0,
                                 paramGrzRoundLackUnit = paramGrzRoundLackUnit.value?.replace(",", ".")?.toDouble() ?: 0.0,
                                 paramGrzRoundHeapRatio = paramGrzRoundHeapRatio.value?.replace(",", ".")?.toDouble() ?: 0.0),
                 addCount = count.value ?: "0",
-                typeDiscrepancies = currentTypeDiscrepanciesCode
+                typeDiscrepancies = currentTypeDiscrepanciesCodeByTaskType
         )
     }
 
