@@ -3,6 +3,7 @@ package com.lenta.bp12.features.basket.basket_good_list
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
+import com.lenta.bp12.features.create_task.task_content.TaskContentFragment
 import com.lenta.bp12.managers.interfaces.ICreateTaskManager
 import com.lenta.bp12.managers.interfaces.IMarkManager
 import com.lenta.bp12.model.*
@@ -299,7 +300,8 @@ class BasketCreateGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
                         producers = producers.orEmpty().toMutableList(),
                         volume = materialInfo?.volume?.toDoubleOrNull() ?: ZERO_VOLUME,
                         markType = markType,
-                        markTypeGroup = database.getMarkTypeGroupByMarkType(markType)
+                        markTypeGroup = database.getMarkTypeGroupByMarkType(markType),
+                        purchaseGroup = materialInfo?.purchaseGroup.orEmpty()
                 )
 
                 setFoundGood(good)
@@ -323,7 +325,7 @@ class BasketCreateGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
     }
 
     fun onClickNext() {
-        navigator.goBack()
+        navigator.goBackTo(TaskContentFragment::class.simpleName)
     }
 
     fun onClickProperties() {
