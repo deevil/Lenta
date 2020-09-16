@@ -23,6 +23,7 @@ import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
@@ -31,6 +32,7 @@ import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.launch
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import javax.inject.Inject
 
@@ -487,24 +489,42 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
     }
 
     fun onBatchSignsResult(_manufacturerSelectedPosition: Int, _bottlingDate: String) {
-        val manufacturerCode = repoInMemoryHolder.manufacturers.value?.get(_manufacturerSelectedPosition)?.code
+        val manufacturerCode = _manufacturerSelectedPosition.let { repoInMemoryHolder.manufacturers.value?.get(it)?.code }
         val bottlingDate = "${_bottlingDate.substring(6, 10)}-${_bottlingDate.substring(3, 5)}-${_bottlingDate.substring(0, 2)}"
         exciseStampInfo.value = TaskExciseStampInfo(
                 materialNumber = productInfo.value!!.materialNumber,
-                code = scannedStampCode.value ?: "",
-                processingUnitNumber = enteredProcessingUnitNumber.value ?: "",
+                code = scannedStampCode.value.orEmpty(),
+                processingUnitNumber = enteredProcessingUnitNumber.value.orEmpty(),
                 batchNumber = "",
                 boxNumber = "",
                 setMaterialNumber = "",
-                organizationCodeEGAIS = manufacturerCode ?: "",
+                organizationCodeEGAIS = manufacturerCode.orEmpty(),
                 bottlingDate = bottlingDate
         )
         addExciseStampDiscrepancy()
     }
 
+    fun onBatchSignsResult() {
+        setSurplusSearchMode()
+        val dateOfPour = taskManager.getReceivingTask()?.taskRepository?.getBatches()?.getBatches()?.findLast {
+            it.batchNumber == exciseStampInfo.value?.batchNumber.orEmpty()
+        }?.bottlingDate.orEmpty()
+        try {
+            dateOfPour
+                    .takeIf { it.isNotEmpty() }
+                    ?.let {
+                        val formatter = listOf(formatterRU.format(formatterEN.parse(it)))
+                        spinBottlingDate.value = formatter
+                    }
+        } catch (e: ParseException) {
+            Logg.e("Parse formatter in onBatchSignsResult()")
+        }
+    }
+
 
     fun onBackPressed() {
-        if (processExciseAlcoStampAccPGEService.modifications()) {
+        val count = count.value?.toInt()
+        if (processExciseAlcoStampAccPGEService.modifications() || count != 0) {
             screenNavigator.openUnsavedDataDialog(
                     yesCallbackFunc = {
                         processExciseAlcoStampAccPGEService.clearModifications()
@@ -513,10 +533,6 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
             )
             return
         }
-        val fragment = GoodsListFragment::class.simpleName
-        if (!fragment.isNullOrEmpty()) {
-            screenNavigator.goBackTo(fragment)
-        }
+        screenNavigator.goBack()
     }
-
 }
