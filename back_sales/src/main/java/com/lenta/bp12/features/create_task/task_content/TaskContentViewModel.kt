@@ -372,7 +372,8 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                         producers = producers.orEmpty().toMutableList(),
                         volume = materialInfo?.volume?.toDoubleOrNull() ?: ZERO_VOLUME,
                         markType = markType,
-                        markTypeGroup = database.getMarkTypeGroupByMarkType(markType)
+                        markTypeGroup = database.getMarkTypeGroupByMarkType(markType),
+                        purchaseGroup = materialInfo?.purchaseGroup.orEmpty()
                 )
 
                 setFoundGood(good)

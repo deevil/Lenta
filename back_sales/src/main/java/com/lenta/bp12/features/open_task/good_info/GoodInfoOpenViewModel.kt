@@ -505,7 +505,8 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
                         provider = task.value?.provider ?: ProviderInfo(),
                         producers = producers.orEmpty().toMutableList(),
                         volume = materialInfo?.volume?.toDoubleOrNull() ?: ZERO_VOLUME,
-                        type = materialInfo?.goodType.orEmpty()
+                        type = materialInfo?.goodType.orEmpty(),
+                        purchaseGroup = materialInfo?.purchaseGroup.orEmpty()
                 )
 
                 setFoundGood(foundGood)

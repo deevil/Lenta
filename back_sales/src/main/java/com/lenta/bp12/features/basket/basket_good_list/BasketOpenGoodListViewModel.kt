@@ -295,7 +295,8 @@ class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener 
                     volume = materialInfo?.volume?.toDoubleOrNull() ?: ZERO_VOLUME,
                     markType = markType,
                     markTypeGroup = database.getMarkTypeGroupByMarkType(markType),
-                    type = materialInfo?.goodType.orEmpty()
+                    type = materialInfo?.goodType.orEmpty(),
+                    purchaseGroup = materialInfo?.purchaseGroup.orEmpty()
             )
 
             setFoundGood(goodOpen)

@@ -461,7 +461,8 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
                         innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull() ?: 1.0,
                         providers = providers.orEmpty().toMutableList(),
                         producers = producers.orEmpty().toMutableList(),
-                        volume = materialInfo?.volume?.toDoubleOrNull() ?: ZERO_VOLUME
+                        volume = materialInfo?.volume?.toDoubleOrNull() ?: ZERO_VOLUME,
+                        purchaseGroup = materialInfo?.purchaseGroup.orEmpty()
                 )
 
                 lastSuccessSearchNumber = number
