@@ -2,6 +2,8 @@ package com.lenta.bp12.features.open_task.base_good_info
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.extentions.getQuantityOfGood
+import com.lenta.bp12.platform.DEFAULT_POSITION
+import com.lenta.bp12.platform.DEFAULT_QUANTITY
 import com.lenta.bp12.platform.extention.isWholesaleType
 import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -112,7 +114,7 @@ abstract class BaseGoodInfoOpenViewModel : CoreViewModel(), IBaseGoodInfoOpenVie
                 if (isProviderSelected) {
                     getBasket()?.getQuantityOfGood(good)?.sumWith(enteredQuantity)
                             ?: enteredQuantity
-                } else DEFAULT_QUANTITY_VALUE
+                } else DEFAULT_QUANTITY
             }
         }
     }
@@ -198,7 +200,7 @@ abstract class BaseGoodInfoOpenViewModel : CoreViewModel(), IBaseGoodInfoOpenVie
      * */
 
     val plannedQuantity by unsafeLazy {
-        good.value?.planQuantity ?: DEFAULT_QUANTITY_VALUE
+        good.value?.planQuantity ?: DEFAULT_QUANTITY
     }
 
     val isPlannedQuantityMoreThanZero by unsafeLazy {
@@ -266,8 +268,6 @@ abstract class BaseGoodInfoOpenViewModel : CoreViewModel(), IBaseGoodInfoOpenVie
 
     companion object {
         private const val FROM_STRING = "из"
-        private const val DEFAULT_QUANTITY_VALUE = 0.0
-        private const val DEFAULT_POSITION = 0
     }
 }
 

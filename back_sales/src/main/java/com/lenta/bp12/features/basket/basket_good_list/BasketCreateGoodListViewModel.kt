@@ -10,6 +10,7 @@ import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.create_task.TaskCreate
 import com.lenta.bp12.model.pojo.extentions.*
+import com.lenta.bp12.platform.ZERO_VOLUME
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
 import com.lenta.bp12.platform.extention.getMarkType
@@ -88,7 +89,6 @@ class BasketCreateGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
     val numberField: MutableLiveData<String> = MutableLiveData("")
 
     val goods by unsafeLazy {
-        Logg.e { basket.value.toString() }
         basket.map {
             it?.let { basket ->
                 val list = basket.getGoodList()
@@ -96,7 +96,7 @@ class BasketCreateGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
                     val units = good.commonUnits.name
                     val quantity = basket.goods[good]
 
-                    Logg.e { "freeVolume: ${basket.freeVolume}, isPrinted: ${basket.isPrinted}, isLocked: ${basket.isLocked} goods: ${basket.goods}" }
+                    Logg.d { "freeVolume: ${basket.freeVolume}, isPrinted: ${basket.isPrinted}, isLocked: ${basket.isLocked} goods: ${basket.goods}" }
 
                     ItemGoodUi(
                             position = "${index + 1}",
@@ -143,8 +143,6 @@ class BasketCreateGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
     val isOpenBtnVisible by unsafeLazy {
         MutableLiveData(isWholesaleBasket)
     }
-
-    // -----------------------------
 
     fun onScanResult(data: String) {
         checkEnteredNumber(data)
@@ -299,7 +297,7 @@ class BasketCreateGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
                                 ?: 1.0,
                         providers = providers.orEmpty().toMutableList(),
                         producers = producers.orEmpty().toMutableList(),
-                        volume = materialInfo?.volume?.toDoubleOrNull() ?: 0.0,
+                        volume = materialInfo?.volume?.toDoubleOrNull() ?: ZERO_VOLUME,
                         markType = markType,
                         markTypeGroup = database.getMarkTypeGroupByMarkType(markType)
                 )

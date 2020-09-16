@@ -6,6 +6,8 @@ import com.lenta.bp12.managers.interfaces.IOpenTaskManager
 import com.lenta.bp12.model.pojo.*
 import com.lenta.bp12.model.pojo.extentions.*
 import com.lenta.bp12.model.pojo.open_task.TaskOpen
+import com.lenta.bp12.platform.DEFAULT_QUANTITY
+import com.lenta.bp12.platform.ZERO_VOLUME
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.isAlcohol
 import com.lenta.bp12.platform.extention.isCommon
@@ -689,7 +691,5 @@ class OpenTaskManager @Inject constructor(
     companion object {
         private const val NULL_BASKET_VOLUME = "Объем корзины отсутствует"
         private const val INDEX_OF_FIRST_BASKET = 1
-        private const val DEFAULT_QUANTITY = 0.0
-        private const val ZERO_VOLUME = 0.0
     }
 }

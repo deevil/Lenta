@@ -11,6 +11,8 @@ import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.extentions.*
 import com.lenta.bp12.model.pojo.open_task.TaskOpen
+import com.lenta.bp12.platform.DEFAULT_QUANTITY
+import com.lenta.bp12.platform.ZERO_VOLUME
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
 import com.lenta.bp12.platform.extention.getMarkType
@@ -244,7 +246,7 @@ class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener 
             val goodKind = result.getGoodKind()
             val isGoodVet = goodKind == GoodKind.VET
             val isGoodExcise = goodKind == GoodKind.EXCISE
-            with(navigator){
+            with(navigator) {
                 when {
                     isWholesaleTask && isGoodVet -> showCantAddVetToWholeSale()
                     isWholesaleTask && isGoodExcise -> showCantAddExciseGoodForWholesale()
@@ -274,7 +276,6 @@ class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener 
     }
 
     private suspend fun setGood(result: GoodInfoResult) {
-
         with(result) {
             val markType = getMarkType()
             val goodOpen = Good(
@@ -287,19 +288,14 @@ class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener 
                     control = getControlType(),
                     commonUnits = database.getUnitsByCode(materialInfo?.commonUnitsCode.orEmpty()),
                     innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
-                    innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull() ?: 0.0,
-                    provider = task.value?.provider ?: ProviderInfo(),
+                    innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull() ?: DEFAULT_QUANTITY,
+                    provider = task.value?.provider ?: ProviderInfo.getEmptyProvider(),
                     producers = producers.orEmpty().toMutableList(),
-                    volume = materialInfo?.volume?.toDoubleOrNull() ?: 0.0,
+                    volume = materialInfo?.volume?.toDoubleOrNull() ?: ZERO_VOLUME,
                     markType = markType,
                     markTypeGroup = database.getMarkTypeGroupByMarkType(markType),
-                    maxRetailPrice = "",
                     type = materialInfo?.goodType.orEmpty()
             )
-
-            if (goodOpen.kind == GoodKind.EXCISE) {
-                navigator.showForExciseGoodNeedScanFirstMark()
-            }
 
             setFoundGood(goodOpen)
         }
@@ -308,12 +304,11 @@ class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener 
     private fun setFoundGood(foundGood: Good) {
         with(navigator) {
             manager.updateCurrentGood(foundGood)
-            when {
-                foundGood.isMarked() -> {
-                    openMarkedGoodInfoCreateScreen()
-                    showForGoodNeedScanFirstMark()
-                }
-                else -> openGoodInfoCreateScreen()
+            if (foundGood.isMarked()) {
+                openMarkedGoodInfoCreateScreen()
+                showForGoodNeedScanFirstMark()
+            } else {
+                openGoodInfoCreateScreen()
             }
         }
     }
