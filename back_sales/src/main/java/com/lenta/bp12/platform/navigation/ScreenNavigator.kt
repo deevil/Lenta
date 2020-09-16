@@ -612,6 +612,16 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showCantAddVetToWholeSale() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "98",
+                    message = context.getString(R.string.cant_scan_vet_for_wholesale_task),
+                    iconRes = R.drawable.ic_warning_red_80dp
+            ))
+        }
+    }
+
     override fun showChooseProviderFirst() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
@@ -705,4 +715,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun showChooseProviderFirst()
 
     fun showCantAddExciseGoodForWholesale()
+    fun showCantAddVetToWholeSale()
 }

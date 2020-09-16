@@ -13,6 +13,9 @@ import com.lenta.bp12.model.pojo.Position
 import com.lenta.bp12.model.pojo.extentions.addMark
 import com.lenta.bp12.model.pojo.extentions.addMarks
 import com.lenta.bp12.model.pojo.extentions.addPosition
+import com.lenta.bp12.platform.DEFAULT_POSITION
+import com.lenta.bp12.platform.DEFAULT_QUANTITY
+import com.lenta.bp12.platform.ZERO_VOLUME
 import com.lenta.bp12.platform.extention.extractAlcoCode
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
@@ -157,13 +160,13 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
         }
     }
 
-    val producerPosition = MutableLiveData(0)
+    val producerPosition = MutableLiveData(DEFAULT_POSITION)
 
     private val isProducerSelected = producerEnabled.combineLatest(producerPosition).map {
         val isEnabled = it?.first ?: false
         val position = it?.second ?: DEFAULT_POSITION
 
-        (isEnabled && position > DEFAULT_POSITION) || (!isEnabled && position == 0)
+        (isEnabled && position > DEFAULT_POSITION) || (!isEnabled && position == DEFAULT_POSITION)
     }
 
     /**
@@ -173,7 +176,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
     val date = MutableLiveData("")
 
     private val isCorrectDate = date.map { date ->
-        (date?.length ?: 0) == DATE_STRING_LENGHT
+        (date?.length ?: 0) == DATE_STRING_LENGTH
     }
 
     val dateEnabled = screenStatus.map { status ->
@@ -340,7 +343,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
     private fun setFoundGood(foundGood: Good) {
         manager.updateCurrentGood(foundGood)
 
-        if (foundGood.kind == GoodKind.EXCISE) {
+        if (foundGood.isExciseAlco()) {
             navigator.showForExciseGoodNeedScanFirstMark()
         }
 
@@ -375,6 +378,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
             GoodKind.ALCOHOL -> ScreenStatus.ALCOHOL
             GoodKind.EXCISE -> ScreenStatus.EXCISE
             GoodKind.MARK -> ScreenStatus.MARK
+            else -> ScreenStatus.VET
         }
     }
 
@@ -417,11 +421,21 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
 
     private fun handleLoadGoodInfoResult(result: GoodInfoResult, number: String) {
         launchUITryCatch {
-            if (manager.isGoodCanBeAdded(result)) {
-                isExistUnsavedData = true
-                setGood(result, number)
-            } else {
-                navigator.showGoodCannotBeAdded()
+            val isGoodCanBeAdded = manager.isGoodCanBeAdded(result)
+            val isWholesaleTask = manager.isWholesaleTaskType
+            val goodKind = result.getGoodKind()
+            val isGoodVet = goodKind == GoodKind.VET
+            val isGoodExcise = goodKind == GoodKind.EXCISE
+            with(navigator) {
+                when {
+                    isWholesaleTask && isGoodVet -> showCantAddVetToWholeSale()
+                    isWholesaleTask && isGoodExcise -> showCantAddExciseGoodForWholesale()
+                    isGoodCanBeAdded -> {
+                        isExistUnsavedData = true
+                        setGood(result, number)
+                    }
+                    else -> showGoodCannotBeAdded()
+                }
             }
         }
     }
@@ -447,7 +461,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
                         innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull() ?: 1.0,
                         providers = providers.orEmpty().toMutableList(),
                         producers = producers.orEmpty().toMutableList(),
-                        volume = materialInfo?.volume?.toDoubleOrNull() ?: 0.0
+                        volume = materialInfo?.volume?.toDoubleOrNull() ?: ZERO_VOLUME
                 )
 
                 lastSuccessSearchNumber = number
@@ -466,7 +480,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
                             material = good.value?.material.orEmpty(),
                             markNumber = number,
                             mode = ScanInfoMode.MARK.mode,
-                            quantity = 0.0
+                            quantity = DEFAULT_QUANTITY
                     )
             ).also {
                 navigator.hideProgress()
@@ -662,7 +676,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
 
     private suspend fun addPosition() {
         good.value?.let { changedGood ->
-            val quantityValue = quantity.value ?: 0.0
+            val quantityValue = quantity.value ?: DEFAULT_QUANTITY
             val position = Position(
                     quantity = quantityValue,
                     provider = getProvider()
@@ -702,7 +716,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
 
     private suspend fun addPart() {
         good.value?.let { changedGood ->
-            val quantityValue = quantity.value ?: 0.0
+            val quantityValue = quantity.value ?: DEFAULT_QUANTITY
 
             val localDate = date.value?.let {
                 try {
@@ -826,9 +840,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
     }
 
     companion object {
-        private const val DEFAULT_POSITION = 0
-        private const val DEFAULT_QUANTITY = 0.0
         private const val DEFAULT_QUANTITY_FIELD = "0"
-        private const val DATE_STRING_LENGHT = 10
+        private const val DATE_STRING_LENGTH = 10
     }
 }

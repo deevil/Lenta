@@ -96,6 +96,7 @@ class Good(
     }
 
     fun isTobacco() = this.markType == MarkType.TOBACCO
+
     fun isTobaccoAndFoundGoodHasDifferentMrc(other: Good) =
             this.isTobacco() && maxRetailPrice.isNotEmpty() && maxRetailPrice != other.maxRetailPrice
 
@@ -106,6 +107,9 @@ class Good(
             this.getTotalQuantity() > 0.0
         }
     }
+
+    fun isExciseAlco() = kind == GoodKind.EXCISE
+    fun isMarked() = markType != MarkType.UNKNOWN
 
     fun isNotDeletedAndQuantityNotActual() = !this.isDeleted && !isQuantityActual()
 
