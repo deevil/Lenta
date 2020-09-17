@@ -19,6 +19,7 @@ import com.lenta.bp12.platform.ZERO_VOLUME
 import com.lenta.bp12.platform.extention.extractAlcoCode
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
+import com.lenta.bp12.platform.extention.isDateCorrectAndNotAfterToday
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -178,11 +179,10 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
     /**
     Дата производства
      */
-
     val date = MutableLiveData("")
 
-    private val isCorrectDate = date.map { date ->
-        date?.length ?: 0 == DEFAULT_DATE_LENGTH
+    private val isCorrectDate = date.mapSkipNulls { dateValue ->
+        dateValue.isDateCorrectAndNotAfterToday() //this extention works correctly only for date in format dd.mm.yyyy
     }
 
     val dateEnabled = screenStatus.map { status ->
