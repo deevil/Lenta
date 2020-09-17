@@ -91,7 +91,7 @@ class FragmentStack(
     fun pop(fragmentName: String?): Boolean {
         if (fragmentName == null || manager.backStackEntryCount == 0)
             return false
-        manager.popBackStack(fragmentName, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+        manager.popBackStack(fragmentName, 0)
         return true
     }
 
@@ -108,7 +108,7 @@ class FragmentStack(
     }
 
     fun popAll() {
-        for (i in 0 .. manager.backStackEntryCount) {
+        for (i in 0..manager.backStackEntryCount) {
             manager.popBackStack()
         }
         executePendingTransactions()

@@ -30,6 +30,7 @@ class Good(
         val matrix: MatrixType,
         val volume: Double,
         val control: ControlType = ControlType.COMMON,
+        val purchaseGroup: String,
 
         val commonUnits: Uom,
         private val innerUnits: Uom,

@@ -383,8 +383,9 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
 
     override fun saveChangesAndExit() {
         launchUITryCatch {
+            navigator.showProgressLoadingData()
             saveChanges()
-            navigator.goBack()
+            navigator.hideProgress()
             navigator.openBasketCreateGoodListScreen()
             manager.isBasketsNeedsToBeClosed = false
             markManager.clearData()
