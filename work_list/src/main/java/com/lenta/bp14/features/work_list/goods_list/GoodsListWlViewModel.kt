@@ -12,7 +12,6 @@ import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.requests.work_list.WorkListSendReportNetRequest
 import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.requests.combined.scan_info.analyseCode
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
@@ -220,11 +219,6 @@ class GoodsListWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     fun getCorrectedPagePosition(position: Int?): Int {
         return if (getPagesCount() == 3) position ?: 0 else (position ?: 0) + 1
-    }
-
-    fun onDigitPressed(digit: Int) {
-        numberField.postValue(numberField.value.orEmpty() + digit)
-        requestFocusToNumberField.value = true
     }
 
     fun onScanResult(data: String) {

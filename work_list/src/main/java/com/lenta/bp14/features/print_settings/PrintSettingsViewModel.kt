@@ -12,8 +12,8 @@ import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.requests.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.requests.combined.scan_info.analyseCode
 import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.actionByNumber
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.view.OnPositionClickListener
@@ -24,16 +24,22 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
 
     @Inject
     lateinit var navigator: IScreenNavigator
+
     @Inject
     lateinit var productInfoNetRequest: ProductInfoNetRequest
+
     @Inject
     lateinit var sessionInfo: ISessionInfo
+
     @Inject
     lateinit var task: IPrintTask
+
     @Inject
     lateinit var priceInfoParser: IPriceInfoParser
+
     @Inject
     lateinit var printSettings: PrintSettings
+
     @Inject
     lateinit var generalManager: IGeneralTaskManager
 
@@ -218,20 +224,14 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
     }
 
     private fun checkCode(code: String?) {
-        analyseCode(
-                code = code.orEmpty(),
-                funcForEan = { eanCode ->
-                    searchCode(eanCode = eanCode)
-                },
-                funcForMatNr = { matNr ->
-                    searchCode(matNr = matNr)
-                },
+        actionByNumber(
+                number = code.orEmpty(),
+                funcForEan = { ean -> searchCode(ean) },
+                funcForMaterial = { material -> searchCode(material) },
                 funcForPriceQrCode = { qrCode ->
                     priceInfoParser.getPriceInfoFromRawCode(qrCode)?.let {
-                        searchCode(eanCode = it.eanCode)
-                        return@analyseCode
-                    }
-                    navigator.showGoodNotFound()
+                        searchCode(it.eanCode)
+                    } ?: navigator.showGoodNotFound()
                 },
                 funcForSapOrBar = navigator::showTwelveCharactersEntered,
                 funcForNotValidFormat = navigator::showGoodNotFound
@@ -315,7 +315,7 @@ class PrintSettingsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInS
 
     private fun setPrintedProductForCheckPriceTask() {
         generalManager.getProcessedTask()?.let { iTask ->
-            productInfoResult.value?.productsInfo?.getOrNull(0) ?.let {
+            productInfoResult.value?.productsInfo?.getOrNull(0)?.let {
                 if (iTask is ICheckPriceTask) {
                     iTask.markPrinted(listOf(it.matNr))
                 }
