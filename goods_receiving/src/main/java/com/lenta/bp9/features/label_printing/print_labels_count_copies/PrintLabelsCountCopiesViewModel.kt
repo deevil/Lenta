@@ -113,7 +113,7 @@ class PrintLabelsCountCopiesViewModel : CoreViewModel() {
                     val countCopiesValue = countCopies.value?.toIntOrNull() ?: 1
                     printLabel(LabelZBatchesInfo(
                             goodsName = product?.description.orEmpty(),
-                            goodsCode = product?.materialNumber.orEmpty(),
+                            goodsCode = product?.getMaterialLastSix().toString(),
                             shelfLife = labelItem.shelfLife,
                             productTime = labelItem.productionDate,
                             delivery = taskManager.getReceivingTask()?.taskDescription?.deliveryNumber.orEmpty(),
@@ -121,7 +121,7 @@ class PrintLabelsCountCopiesViewModel : CoreViewModel() {
                             batchNumber = batchNumber,
                             manufacturer = getManufacturerName(labelItem.batchDiscrepancies?.manufactureCode.orEmpty()),
                             weigher = sessionInfo.personnelNumber.orEmpty(),
-                            quantity = labelItem.batchDiscrepancies?.numberDiscrepancies.orEmpty(),
+                            quantity = labelItem.quantityUnit,
                             barcode = barcode,
                             barcodeText = barCodeText,
                             copies = countCopiesValue.toString()
