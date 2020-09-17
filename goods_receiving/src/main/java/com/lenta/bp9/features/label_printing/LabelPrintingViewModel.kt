@@ -12,12 +12,16 @@ import com.lenta.bp9.requests.network.ZmpUtzGrz45V001NetRequest
 import com.lenta.bp9.requests.network.ZmpUtzGrz45V001Params
 import com.lenta.bp9.requests.network.ZmpUtzGrz45V001Result
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.fmp.resources.dao_ext.getUomInfo
+import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
+import com.lenta.shared.utilities.date_time.DateTimeUtil
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.launchUITryCatch
+import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.utilities.orIfNull
 import com.mobrun.plugin.api.HyperHive
 import java.lang.Exception
@@ -52,6 +56,9 @@ class LabelPrintingViewModel : CoreViewModel() {
 
     @SuppressLint("SimpleDateFormat")
     val formatterRU = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy)
+
+    @SuppressLint("SimpleDateFormat")
+    private val formatterEN = SimpleDateFormat(Constants.DATE_FORMAT_yyyy_mm_dd)
 
     @SuppressLint("SimpleDateFormat")
     val formatterERP = SimpleDateFormat(Constants.DATE_FORMAT_yyyyMMdd)
@@ -103,14 +110,13 @@ class LabelPrintingViewModel : CoreViewModel() {
             it.mapIndexed { index, label ->
                 val product = getProductInfoForLabel(label.materialNumber)
                 if (product?.isNeedPrint == true) {
-                    val productDiscrepancies = getProductDiscrepanciesForLabel(label.materialNumber)
                     val materialLastSix = product.getMaterialLastSix()
                     val partySignsOfZBatches = getPartySignsForLabel(label)
                     val partySign = partySignsOfZBatches?.partySign?.partySignsTypeString.orEmpty()
                     val manufacturerName = getManufacturerName(label.manufactureCode)
-                    val numberDiscrepancies = productDiscrepancies?.numberDiscrepancies.orEmpty()
-                    val unitName = product.uom.name
-                    val shelfLifeOrProductionDate = getShelfLifeOrProductionDate(label)
+                    val numberDiscrepancies = label.numberDiscrepancies.toDoubleOrNull().toStringFormatted()
+                    val unitName = ZmpUtz07V001(hyperHive).getUomInfo(label.uom.code)?.name.orEmpty()
+                    val shelfLifeOrProductionDate = partySignsOfZBatches?.let { unit -> getShelfLifeOrProductionDate(unit) }.orEmpty()
 
                     labelPrintingItems.add(
                             LabelPrintingItem(
@@ -132,13 +138,6 @@ class LabelPrintingViewModel : CoreViewModel() {
         labelSelectionsHelper.clearPositions()
     }
 
-    private fun getProductDiscrepanciesForLabel(materialNumber: String): TaskProductDiscrepancies? {
-        return taskManager
-                .getReceivingTask()
-                ?.getProcessedProductsDiscrepancies()
-                ?.findLast { productDiscr -> productDiscr.materialNumber == materialNumber }
-    }
-
     private fun getProductInfoForLabel(materialNumber: String): TaskProductInfo? {
         return taskManager
                 .getReceivingTask()
@@ -146,35 +145,48 @@ class LabelPrintingViewModel : CoreViewModel() {
                 ?.findLast { product -> product.materialNumber == materialNumber }
     }
 
+    @SuppressLint("SimpleDateFormat")
     private fun getPartySignsForLabel(label: TaskZBatchesDiscrepancies): PartySignsOfZBatches? {
-        return taskManager
-                .getReceivingTask()
-                ?.taskRepository
-                ?.getZBatchesDiscrepancies()
-                ?.findPartySignOfZBatch(label)
+        return try {
+            taskManager
+                    .getReceivingTask()
+                    ?.taskRepository
+                    ?.getZBatchesDiscrepancies()
+                    ?.findPartySignsOfProduct(label.materialNumber)
+                    ?.findLast { partySign ->
+                        var partySignTime = if (partySign.shelfLifeTime.isEmpty()) {
+                            "000000"
+                        } else {
+                            partySign.shelfLifeTime
+                        }
+                        val formatterTime = SimpleDateFormat("HH:mm:ss")
+                        val formatterTimeERP = SimpleDateFormat("HHmmss")
+                        partySignTime = formatterTime.format(formatterTimeERP.parse(partySignTime))
+                        partySign.processingUnit == label.processingUnit
+                                && partySign.manufactureCode == label.manufactureCode
+                                && partySign.shelfLifeDate == formatterERP.format(formatterEN.parse(label.shelfLifeDate))
+                                && partySignTime == label.shelfLifeTime
+                    }
+        } catch (e: Exception){
+            Logg.e { "e: $e" }
+            null
+        }
     }
 
-    private fun getShelfLifeOrProductionDate(zBatchesDiscrepancies: TaskZBatchesDiscrepancies): String {
+    private fun getShelfLifeOrProductionDate(partySignOfZBatch: PartySignsOfZBatches): String {
         return try {
-            val partySignOfZBatch =
-                    taskManager
-                            .getReceivingTask()
-                            ?.taskRepository
-                            ?.getZBatchesDiscrepancies()
-                            ?.findPartySignOfZBatch(zBatchesDiscrepancies)
-
-            when(partySignOfZBatch?.partySign ?: PartySignsTypeOfZBatches.None) {
+            when(partySignOfZBatch.partySign) {
                 PartySignsTypeOfZBatches.ProductionDate -> {
                     partySignOfZBatch
-                            ?.productionDate
-                            ?.takeIf { it.isNotEmpty() }
+                            .productionDate
+                            .takeIf { it.isNotEmpty() }
                             ?.let { formatterRU.format(formatterERP.parse(it)) }
                             .orEmpty()
                 }
                 PartySignsTypeOfZBatches.ShelfLife -> {
                     partySignOfZBatch
-                            ?.shelfLifeDate
-                            ?.takeIf { it.isNotEmpty() }
+                            .shelfLifeDate
+                            .takeIf { it.isNotEmpty() }
                             ?.let { formatterRU.format(formatterERP.parse(it)) }
                             .orEmpty()
                 }
