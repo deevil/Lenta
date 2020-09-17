@@ -21,6 +21,7 @@ import com.lenta.bp12.platform.ZERO_VOLUME
 import com.lenta.bp12.platform.extention.extractAlcoCode
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
+import com.lenta.bp12.platform.extention.isDateCorrectAndNotAfterToday
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -177,8 +178,8 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
 
     val date = MutableLiveData("")
 
-    private val isCorrectDate = date.map { date ->
-        (date?.length ?: 0) == DATE_STRING_LENGTH
+    private val isCorrectDate = date.mapSkipNulls { dateValue ->
+        dateValue.isDateCorrectAndNotAfterToday() //this extention works correctly only for date in format dd.mm.yyyy
     }
 
     val dateEnabled = screenStatus.map { status ->
@@ -463,7 +464,8 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
                         innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull() ?: 1.0,
                         providers = providers.orEmpty().toMutableList(),
                         producers = producers.orEmpty().toMutableList(),
-                        volume = materialInfo?.volume?.toDoubleOrNull() ?: ZERO_VOLUME
+                        volume = materialInfo?.volume?.toDoubleOrNull() ?: ZERO_VOLUME,
+                        purchaseGroup = materialInfo?.purchaseGroup.orEmpty()
                 )
 
                 lastSuccessSearchNumber = number
@@ -775,17 +777,6 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
         }
     }
 
-    private fun onInitGoodInfo() {
-        launchUITryCatch {
-            good.value?.let {
-                setFoundGood(it)
-            }.orIfNull {
-                Logg.e { "good null" }
-                navigator.showInternalError(resource.goodNotFoundErrorMsg)
-            }
-        }
-    }
-
     /**
     Обработка нажатий кнопок
      */
@@ -835,15 +826,22 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
             navigator.showProgressLoadingData()
             saveChanges()
             navigator.hideProgress()
-            navigator.goBack()
             navigator.openBasketCreateGoodListScreen()
             manager.isBasketsNeedsToBeClosed = false
         }
     }
 
+    private fun onInitGoodInfo() {
+        launchUITryCatch {
+            good.value?.let(::setFoundGood).orIfNull {
+                Logg.e { "good null" }
+                navigator.showInternalError(resource.goodNotFoundErrorMsg)
+            }
+        }
+    }
+
     companion object {
         private const val DEFAULT_QUANTITY_FIELD = "0"
-        private const val DATE_STRING_LENGTH = 10
     }
 
     override fun afterTextChanged(s: Editable?) {

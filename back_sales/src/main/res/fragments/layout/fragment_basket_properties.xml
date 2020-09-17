@@ -16,6 +16,35 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <!-- ГИС-контроль -->
+        <LinearLayout style="@style/LinearRowStyle">
+
+            <LinearLayout style="@style/LinearCellStyle">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:textColor="@color/color_text_title_header"
+                    android:text="@string/gis_control" />
+
+            </LinearLayout>
+
+            <View style="@style/VerticalDivider" />
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="2">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@{vm.properties.gisControl}"
+                    tools:text="Обычный товар" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View style="@style/HorizontalDivider" />
+
         <!-- Секция -->
         <LinearLayout style="@style/LinearRowStyle"
             android:visibility="@{vm.isSectionVisible}">
@@ -45,7 +74,40 @@
 
         </LinearLayout>
 
-        <View style="@style/HorizontalDivider" />
+        <View style="@style/HorizontalDivider"
+            android:visibility="@{vm.isSectionVisible}"/>
+        
+        <!-- Группа закупок -->
+        <LinearLayout style="@style/LinearRowStyle"
+            android:visibility="@{vm.isPurchaseGroupVisible}">
+
+            <LinearLayout style="@style/LinearCellStyle">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:textColor="@color/color_text_title_header"
+                    android:text="@string/purchase_group" />
+
+            </LinearLayout>
+
+            <View style="@style/VerticalDivider" />
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="2">
+
+                <TextView
+                    android:id="@+id/tv_purchase_group"
+                    style="@style/CellTextStyle"
+                    android:text="@{vm.properties.section}"
+                    tools:text="123456" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View style="@style/HorizontalDivider"
+            android:visibility="@{vm.isPurchaseGroupVisible}"/>
 
         <!-- Вид товара -->
         <LinearLayout style="@style/LinearRowStyle"
@@ -76,36 +138,8 @@
 
         </LinearLayout>
 
-        <View style="@style/HorizontalDivider" />
-
-        <!-- ГИС-контроль -->
-        <LinearLayout style="@style/LinearRowStyle">
-
-            <LinearLayout style="@style/LinearCellStyle">
-
-                <TextView
-                    style="@style/CellTextStyle"
-                    android:textColor="@color/color_text_title_header"
-                    android:text="@string/gis_control" />
-
-            </LinearLayout>
-
-            <View style="@style/VerticalDivider" />
-
-            <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="2">
-
-                <TextView
-                    style="@style/CellTextStyle"
-                    android:text="@{vm.properties.gisControl}"
-                    tools:text="Обычный товар" />
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <View style="@style/HorizontalDivider" />
+        <View style="@style/HorizontalDivider"
+            android:visibility="@{vm.isGoodTypeVisible}"/>
 
         <!-- Поставщик -->
         <LinearLayout style="@style/LinearRowStyle"
@@ -136,11 +170,12 @@
 
         </LinearLayout>
 
-        <View style="@style/HorizontalDivider" />
+        <View style="@style/HorizontalDivider"
+            android:visibility="@{vm.isProviderVisible}"/>
 
-        <!-- Поставщик -->
+        <!-- Группа маркировки -->
         <LinearLayout style="@style/LinearRowStyle"
-            android:visibility="@{vm.isMarkTypeVisible}">
+            android:visibility="@{vm.isMarkTypeGroupVisible}">
 
             <LinearLayout
                 style="@style/LinearCellStyle"
@@ -162,14 +197,16 @@
                 <TextView
                     android:id="@+id/tv_markType"
                     style="@style/CellTextStyle"
-                    android:text="@{vm.properties.markType}"
-                    tools:text="Сигареты" />
+                    android:singleLine="false"
+                    android:text="@{vm.properties.markTypeGroup}"
+                    tools:text="Сигареты\nМРЦ-150р." />
 
             </LinearLayout>
 
         </LinearLayout>
 
-        <View style="@style/HorizontalDivider" />
+        <View style="@style/HorizontalDivider"
+            android:visibility="@{vm.isMarkTypeGroupVisible}"/>
 
     </LinearLayout>
 

@@ -176,14 +176,16 @@ class CreateTaskManager @Inject constructor(
                     .orIfNull {
                         //Если корзина не найдена - создадим ее
                         val index = basketList.lastOrNull()?.index?.plus(1) ?: INDEX_OF_FIRST_BASKET
+                        val taskType = task.type
                         Basket(
                                 index = index,
-                                section = good.section.takeIf { task.type.isDivBySection },
+                                section = good.section.takeIf { taskType.isDivBySection },
                                 volume = basketVolume,
-                                provider = provider.takeIf { task.type.isDivByProvider },
+                                provider = provider.takeIf { taskType.isDivByProvider },
                                 control = good.control,
-                                goodType = good.type.takeIf { task.type.isDivByGoodType },
-                                markTypeGroup = good.markTypeGroup
+                                goodType = good.type.takeIf { taskType.isDivByGoodType },
+                                markTypeGroup = good.markTypeGroup,
+                                purchaseGroup = good.purchaseGroup.takeIf { taskType.isDivByPurchaseGroup }
                         ).also {
                             it.maxRetailPrice = good.maxRetailPrice
                             addBasket(it)
@@ -210,6 +212,8 @@ class CreateTaskManager @Inject constructor(
                         val divByControl = basket.control == good.control
                         val divs = divByMark && divByMrc && divBySection && divByType && divByProviders && divByControl
                         isLastBasketMatches(basket, good, divs)
+                    }?.also {
+                        updateCurrentBasket(it)
                     }
                 }
             }

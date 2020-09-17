@@ -17,7 +17,6 @@ class SendTaskDataNetRequest @Inject constructor(
     override suspend fun run(params: SendTaskDataParams): Either<Failure, SendTaskDataResult> {
         return fmpRequestsHelper.restRequest("ZMP_UTZ_BKS_04_V001", params, SendTaskDataStatus::class.java)
     }
-
 }
 
 data class SendTaskDataParams(
@@ -70,11 +69,11 @@ class SendTaskDataStatus : ObjectRawStatus<SendTaskDataResult>()
 data class SendTaskDataResult(
         /** Список созданных заданий */
         @SerializedName("ET_TASK_LIST")
-        val sentTasks: List<SentTaskInfo>,
+        val sentTasks: List<SentTaskInfo>?,
         /** Код возврата */
         @SerializedName("EV_RETCODE")
-        override val retCode: Int,
+        override val retCode: Int?,
         /** Текст ошибки */
         @SerializedName("EV_ERROR_TEXT")
-        override val errorText: String
+        override val errorText: String?
 ) : SapResponse
