@@ -69,16 +69,14 @@ fun MarkCartonBoxGoodInfoNetRequestResult.getMarkStatus(): MarkStatus {
         MarkRequestStatus.CARTON_NOT_FOUND,
         MarkRequestStatus.CARTON_NOT_FOUND_IN_TASK,
         MarkRequestStatus.CARTON_OF_DIFFERENT_GOOD,
-        MarkRequestStatus.CARTON_OLD
-        -> MarkStatus.BAD_CARTON
+        MarkRequestStatus.CARTON_OLD -> MarkStatus.BAD_CARTON
 
         MarkRequestStatus.BOX_FOUND -> MarkStatus.GOOD_BOX
 
         MarkRequestStatus.BOX_NOT_FOUND,
         MarkRequestStatus.BOX_OF_DIFFERENT_GOOD,
         MarkRequestStatus.BOX_INCOMPLETE,
-        MarkRequestStatus.BOX_NOT_FOUND_IN_TASK
-        -> MarkStatus.BAD_BOX
+        MarkRequestStatus.BOX_NOT_FOUND_IN_TASK -> MarkStatus.BAD_BOX
 
         else -> MarkStatus.UNKNOWN
     }
@@ -210,7 +208,9 @@ private fun String.deleteSecondMinus(): String {
             append(newString.substring(0, indexOfLast))
             append(newString.substring(indexOfLast + 1, newString.length))
         }
-    } else newString
+    } else {
+        newString
+    }
 }
 
 fun String.extractAlcoCode(): String {
