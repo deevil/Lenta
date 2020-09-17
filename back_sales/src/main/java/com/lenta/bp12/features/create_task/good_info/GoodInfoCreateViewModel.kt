@@ -19,7 +19,7 @@ import com.lenta.bp12.platform.ZERO_VOLUME
 import com.lenta.bp12.platform.extention.extractAlcoCode
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
-import com.lenta.bp12.platform.extention.isDateInFormatDdMmYyyyWithDotsCorrect
+import com.lenta.bp12.platform.extention.isDateCorrectAndNotAfterToday
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -35,7 +35,6 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.platform.constants.Constants
-import com.lenta.shared.platform.constants.Constants.DATE_FORMAT_dd_mm_yyyy
 import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.*
@@ -44,7 +43,6 @@ import com.lenta.shared.utilities.getFormattedDate
 import com.lenta.shared.utilities.orIfNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 
@@ -179,16 +177,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
     val date = MutableLiveData("")
 
     private val isCorrectDate = date.mapSkipNulls { dateValue ->
-        if (dateValue.isDateInFormatDdMmYyyyWithDotsCorrect()){
-            try{
-                val date = SimpleDateFormat(DATE_FORMAT_dd_mm_yyyy, Locale.getDefault()).parse(dateValue)
-                date <= Date()
-            } catch (e: RuntimeException){
-                false
-            }
-        } else {
-            false
-        }
+        dateValue.isDateCorrectAndNotAfterToday() //this extention works correctly only for date in format dd.mm.yyyy
     }
 
     val dateEnabled = screenStatus.map { status ->

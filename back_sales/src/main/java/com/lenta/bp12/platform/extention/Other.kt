@@ -10,10 +10,13 @@ import com.lenta.bp12.request.pojo.good_info.GoodInfoResult
 import com.lenta.bp12.request.pojo.markCartonBoxGoodInfoNetRequest.MarkCartonBoxGoodInfoNetRequestResult
 import com.lenta.bp12.request.pojo.markCartonBoxGoodInfoNetRequest.MarkRequestStatus
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
+import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.utilities.enumValueOrNull
 import com.lenta.shared.utilities.extentions.isSapTrue
 import com.lenta.shared.utilities.orIfNull
 import java.math.BigInteger
+import java.text.SimpleDateFormat
+import java.util.*
 
 fun GoodKind.getDescriptionResId(): Int {
     return when (this) {
@@ -131,7 +134,7 @@ fun String.addZerosToStart(targetLength: Int): String {
 
 /** Проверка даты на корректность
  * если дата в формате dd.mm.yyyy */
-fun String.isDateInFormatDdMmYyyyWithDotsCorrect(): Boolean {
+private fun String.isDateInFormatDdMmYyyyWithDotsCorrect(): Boolean {
         return if (this.isNotEmpty() && this.length == DATE_STRING_LENGTH) {
             try {
                 val splitCheckDate = this.split(".")
@@ -154,6 +157,21 @@ fun String.isDateInFormatDdMmYyyyWithDotsCorrect(): Boolean {
         } else {
             false
         }
+}
+
+/** Проверка даты на корректность и что она не позже сегодняшней даты
+ * если дата в формате dd.mm.yyyy */
+fun String.isDateCorrectAndNotAfterToday(): Boolean {
+    return if (this.isDateInFormatDdMmYyyyWithDotsCorrect()){
+        try{
+            val date = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy, Locale.getDefault()).parse(this)
+            date <= Date()
+        } catch (e: RuntimeException){
+            false
+        }
+    } else {
+        false
+    }
 }
 
 fun String.extractAlcoCode(): String {
