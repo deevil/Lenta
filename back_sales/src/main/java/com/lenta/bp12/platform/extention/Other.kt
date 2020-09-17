@@ -4,6 +4,7 @@ import com.lenta.bp12.R
 import com.lenta.bp12.model.*
 import com.lenta.bp12.model.pojo.TaskType
 import com.lenta.bp12.request.pojo.CreateTaskBasketInfo
+import com.lenta.bp12.request.pojo.TaskInfo
 import com.lenta.bp12.request.pojo.good_info.GoodInfoResult
 import com.lenta.bp12.request.pojo.markCartonBoxGoodInfoNetRequest.MarkCartonBoxGoodInfoNetRequestResult
 import com.lenta.bp12.request.pojo.markCartonBoxGoodInfoNetRequest.MarkRequestStatus
@@ -19,18 +20,21 @@ fun GoodKind.getDescriptionResId(): Int {
         GoodKind.ALCOHOL -> R.string.alcohol
         GoodKind.EXCISE -> R.string.excise_alcohol
         GoodKind.MARK -> R.string.marked_good
+        GoodKind.VET -> R.string.vet_good
     }
 }
 
 fun GoodInfoResult.getGoodKind(): GoodKind {
     val isAlcohol = this.materialInfo?.isAlcohol.isSapTrue()
     val isExcise = this.materialInfo?.isExcise.isSapTrue()
+    val isVet = this.materialInfo?.isVet.isSapTrue()
     val isMark = this.materialInfo?.markType.orEmpty().isNotEmpty()
 
     return when {
         isExcise -> GoodKind.EXCISE
         isAlcohol -> GoodKind.ALCOHOL
         isMark -> GoodKind.MARK
+        isVet -> GoodKind.VET
         else -> GoodKind.COMMON
     }
 }
@@ -88,10 +92,29 @@ fun ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST.getGoodKind(): GoodKind {
 fun GoodInfoResult.getControlType(): ControlType {
     val isVet = this.materialInfo?.isVet.isSapTrue()
     val isAlcohol = this.materialInfo?.isAlcohol.isSapTrue()
+    val isMark = this.getMarkType() != MarkType.UNKNOWN
 
     return when {
+        isMark -> ControlType.MARK
         !isAlcohol && !isVet -> ControlType.COMMON
         isAlcohol && !isVet -> ControlType.ALCOHOL
+        !isAlcohol && isVet -> ControlType.VET
+        isMark -> ControlType.MARK
+        else -> ControlType.UNKNOWN
+    }
+}
+
+fun TaskInfo.getControlType(): ControlType {
+    val isVet = this.isVet.isSapTrue()
+    val isAlcohol = this.isAlco.isSapTrue()
+    val isUsual = this.isUsual.isSapTrue()
+    val isMark = this.isMark.isSapTrue()
+
+    return when {
+        isUsual -> ControlType.COMMON
+        isAlcohol -> ControlType.ALCOHOL
+        isVet -> ControlType.VET
+        isMark -> ControlType.MARK
         else -> ControlType.UNKNOWN
     }
 }

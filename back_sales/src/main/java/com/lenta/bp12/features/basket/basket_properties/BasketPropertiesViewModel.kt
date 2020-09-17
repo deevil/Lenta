@@ -1,6 +1,7 @@
 package com.lenta.bp12.features.basket.basket_properties
 
 import com.lenta.bp12.managers.interfaces.ICreateTaskManager
+import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.extentions.getDescription
 import com.lenta.bp12.model.pojo.extentions.getPosition
 import com.lenta.bp12.platform.navigation.IScreenNavigator
@@ -34,7 +35,10 @@ class BasketPropertiesViewModel : CoreViewModel() {
     val title by lazy {
         basket.map { basket ->
             val position = basket.getPosition()
-            val description = basket?.getDescription(task.value?.type?.isDivBySection ?: false)
+            val description = basket?.getDescription(
+                    isDivBySection = task.value?.type?.isDivBySection ?: false,
+                    isWholeSale = manager.isWholesaleTaskType
+            )
             resource.basket("$position: $description")
         }
     }
@@ -46,8 +50,21 @@ class BasketPropertiesViewModel : CoreViewModel() {
                     goodType = basket?.goodType.orEmpty(),
                     gisControl = basket?.control?.description.orEmpty(),
                     provider = "${basket?.provider?.code} ${basket?.provider?.name}",
-                    markType = basket?.markTypeGroup?.name.orEmpty()
+                    markTypeGroup = buildMarkTypeString(basket),
+                    purchaseGroup = basket?.purchaseGroup.orEmpty()
             )
+        }
+    }
+
+    private fun buildMarkTypeString(basket: Basket?) = buildString {
+        val group = basket?.markTypeGroup?.name.orEmpty()
+        append(group)
+        val mrc = basket?.maxRetailPrice
+        if (mrc.isNullOrEmpty().not()) {
+            append("\n")
+            append("МРЦ-")
+            append(mrc)
+            append(" руб")
         }
     }
 
@@ -69,9 +86,15 @@ class BasketPropertiesViewModel : CoreViewModel() {
         }
     }
 
-    val isMarkTypeVisible by unsafeLazy {
+    val isMarkTypeGroupVisible by unsafeLazy {
         basket.mapSkipNulls {
             it.markTypeGroup != null
+        }
+    }
+
+    val isPurchaseGroupVisible by unsafeLazy {
+        basket.map{
+            it?.purchaseGroup.isNullOrEmpty().not()
         }
     }
 
@@ -82,5 +105,6 @@ data class BasketPropertiesUi(
         val goodType: String,
         val gisControl: String,
         val provider: String,
-        val markType: String
+        val markTypeGroup: String,
+        val purchaseGroup: String
 )

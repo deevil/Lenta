@@ -43,7 +43,6 @@ class MarkedGoodInfoCreateFragment : CoreFragment<FragmentMarkedGoodInfoCreateBi
             vm.setupData(marks, properties)
         }
         return vm
-
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
@@ -146,6 +145,7 @@ class MarkedGoodInfoCreateFragment : CoreFragment<FragmentMarkedGoodInfoCreateBi
         super.onViewCreated(view, savedInstanceState)
         binding?.viewPagerSettings = this
     }
+
 // FOR TESTING: press digit to scan barcode
 //    override fun onKeyDown(keyCode: KeyCode): Boolean {
 //        return when (keyCode) {

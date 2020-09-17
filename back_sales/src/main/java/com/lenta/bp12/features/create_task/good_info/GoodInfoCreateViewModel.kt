@@ -1,6 +1,8 @@
 package com.lenta.bp12.features.create_task.good_info
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.liveData
+import androidx.lifecycle.switchMap
 import com.lenta.bp12.features.create_task.base_good_info.BaseGoodInfoCreateViewModel
 import com.lenta.bp12.managers.interfaces.ICreateTaskManager
 import com.lenta.bp12.model.*
@@ -11,6 +13,9 @@ import com.lenta.bp12.model.pojo.Position
 import com.lenta.bp12.model.pojo.extentions.addMark
 import com.lenta.bp12.model.pojo.extentions.addMarks
 import com.lenta.bp12.model.pojo.extentions.addPosition
+import com.lenta.bp12.platform.DEFAULT_POSITION
+import com.lenta.bp12.platform.DEFAULT_QUANTITY
+import com.lenta.bp12.platform.ZERO_VOLUME
 import com.lenta.bp12.platform.extention.extractAlcoCode
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
@@ -155,13 +160,13 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
         }
     }
 
-    val producerPosition = MutableLiveData(0)
+    val producerPosition = MutableLiveData(DEFAULT_POSITION)
 
     private val isProducerSelected = producerEnabled.combineLatest(producerPosition).map {
         val isEnabled = it?.first ?: false
         val position = it?.second ?: DEFAULT_POSITION
 
-        (isEnabled && position > DEFAULT_POSITION) || (!isEnabled && position == 0)
+        (isEnabled && position > DEFAULT_POSITION) || (!isEnabled && position == DEFAULT_POSITION)
     }
 
     /**
@@ -171,7 +176,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
     val date = MutableLiveData("")
 
     private val isCorrectDate = date.map { date ->
-        (date?.length ?: 0) == DATE_STRING_LENGHT
+        (date?.length ?: 0) == DATE_STRING_LENGTH
     }
 
     val dateEnabled = screenStatus.map { status ->
@@ -181,37 +186,40 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
     /**
     Кнопки нижнего тулбара
      */
-
     override val applyEnabled by lazy {
-        screenStatus.combineLatest(quantity)
-                .combineLatest(totalQuantity)
-                .combineLatest(basketQuantity)
-                .combineLatest(isProviderSelected)
-                .combineLatest(isProducerSelected)
-                .combineLatest(isCorrectDate)
-                .map {
-                    it?.let {
-                        val status = it.first.first.first.first.first.first
-                        val enteredQuantity = it.first.first.first.first.first.second
-                        val totalQuantity = it.first.first.first.first.second
-                        val basketQuantity = it.first.first.first.second
-                        val isProviderSelected = it.first.first.second
-                        val isProducerSelected = it.first.second
-                        val isDateEntered = it.second
+        screenStatus.switchMap { status ->
+            quantity.switchMap { enteredQuantity ->
+                totalQuantity.switchMap { totalQuantity ->
+                    basketQuantity.switchMap { basketQuantity ->
+                        isProviderSelected.switchMap { isProviderSelected ->
+                            isProducerSelected.switchMap { isProducerSelected ->
+                                isCorrectDate.switchMap { isDateEntered ->
+                                    liveData {
+                                        val isEnteredMoreThanZero = enteredQuantity > DEFAULT_QUANTITY
+                                        val isEnteredMoreThanZeroAndProviderSelected = isEnteredMoreThanZero && isProviderSelected
 
-                        val isEnteredMoreThenZero = enteredQuantity > 0.0
-
-                        when (status) {
-                            ScreenStatus.COMMON -> enteredQuantity != 0.0 && totalQuantity > 0.0 && basketQuantity > 0.0 && isProviderSelected
-                            ScreenStatus.ALCOHOL -> isEnteredMoreThenZero && isProviderSelected && isProducerSelected && isDateEntered
-                            ScreenStatus.MARK_150 -> isEnteredMoreThenZero && isProviderSelected
-                            ScreenStatus.MARK_68 -> isEnteredMoreThenZero && isProviderSelected && isProducerSelected
-                            ScreenStatus.PART -> isEnteredMoreThenZero && isProviderSelected && isProducerSelected && isDateEntered
-                            ScreenStatus.BOX -> isEnteredMoreThenZero && isProviderSelected && isProducerSelected
-                            else -> false
+                                        val result = when (status) {
+                                            ScreenStatus.COMMON ->
+                                                enteredQuantity != DEFAULT_QUANTITY &&
+                                                        totalQuantity > DEFAULT_QUANTITY &&
+                                                        basketQuantity > DEFAULT_QUANTITY &&
+                                                        isProviderSelected
+                                            ScreenStatus.ALCOHOL -> isEnteredMoreThanZeroAndProviderSelected && isProducerSelected && isDateEntered
+                                            ScreenStatus.MARK_150 -> isEnteredMoreThanZeroAndProviderSelected
+                                            ScreenStatus.MARK_68 -> isEnteredMoreThanZeroAndProviderSelected && isProducerSelected
+                                            ScreenStatus.PART -> isEnteredMoreThanZeroAndProviderSelected && isProducerSelected && isDateEntered
+                                            ScreenStatus.BOX -> isEnteredMoreThanZeroAndProviderSelected && isProducerSelected
+                                            else -> false
+                                        }
+                                        emit(result)
+                                    }
+                                }
+                            }
                         }
-                    } ?: false
+                    }
                 }
+            }
+        }
     }
 
     override val rollbackVisibility = screenStatus.map { status ->
@@ -335,7 +343,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
     private fun setFoundGood(foundGood: Good) {
         manager.updateCurrentGood(foundGood)
 
-        if (foundGood.kind == GoodKind.EXCISE) {
+        if (foundGood.isExciseAlco()) {
             navigator.showForExciseGoodNeedScanFirstMark()
         }
 
@@ -344,7 +352,6 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
         updateProducers(foundGood.producers)
         clearSpinnerPositions()
         setDefaultQuantity(foundGood)
-
 
         Logg.d { "--> found good: $foundGood" }
     }
@@ -371,6 +378,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
             GoodKind.ALCOHOL -> ScreenStatus.ALCOHOL
             GoodKind.EXCISE -> ScreenStatus.EXCISE
             GoodKind.MARK -> ScreenStatus.MARK
+            else -> ScreenStatus.VET
         }
     }
 
@@ -413,11 +421,21 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
 
     private fun handleLoadGoodInfoResult(result: GoodInfoResult, number: String) {
         launchUITryCatch {
-            if (manager.isGoodCanBeAdded(result)) {
-                isExistUnsavedData = true
-                setGood(result, number)
-            } else {
-                navigator.showGoodCannotBeAdded()
+            val isGoodCanBeAdded = manager.isGoodCanBeAdded(result)
+            val isWholesaleTask = manager.isWholesaleTaskType
+            val goodKind = result.getGoodKind()
+            val isGoodVet = goodKind == GoodKind.VET
+            val isGoodExcise = goodKind == GoodKind.EXCISE
+            with(navigator) {
+                when {
+                    isWholesaleTask && isGoodVet -> showCantAddVetToWholeSale()
+                    isWholesaleTask && isGoodExcise -> showCantAddExciseGoodForWholesale()
+                    isGoodCanBeAdded -> {
+                        isExistUnsavedData = true
+                        setGood(result, number)
+                    }
+                    else -> showGoodCannotBeAdded()
+                }
             }
         }
     }
@@ -425,50 +443,30 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
     private fun setGood(result: GoodInfoResult, number: String) {
         launchUITryCatch {
             with(result) {
-                task.value?.let { task ->
-                    val taskType = task.type
-                    good.value = Good(
-                            ean = eanInfo?.ean.orEmpty(),
-                            eans = database.getEanListByMaterialUnits(
-                                    material = materialInfo?.material.orEmpty(),
-                                    unitsCode = materialInfo?.commonUnitsCode.orEmpty()
-                            ),
-                            material = materialInfo?.material.orEmpty(),
-                            name = materialInfo?.name.orEmpty(),
-                            kind = getGoodKind(),
-                            type = materialInfo?.goodType.takeIf { taskType.isDivByGoodType }.orEmpty(),
-                            control = getControlType(),
-                            section = materialInfo?.section.takeIf { taskType.isDivBySection }.orEmpty(),
-                            matrix = getMatrixType(materialInfo?.matrix.orEmpty()),
-                            commonUnits = database.getUnitsByCode(materialInfo?.commonUnitsCode.orEmpty()),
-                            innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
-                            innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull() ?: 1.0,
-                            providers = providers?.takeIf { taskType.isDivByProvider }.orEmpty().toMutableList(),
-                            producers = producers.orEmpty().toMutableList(),
-                            volume = materialInfo?.volume?.toDoubleOrNull() ?: 0.0
-                    )
-                }.orIfNull {
-                    Logg.e { "task null" }
-                    navigator.showInternalError(resource.taskNotFoundErrorMsg)
-                }
-            }
+                val good = Good(
+                        ean = eanInfo?.ean.orEmpty(),
+                        eans = database.getEanListByMaterialUnits(
+                                material = materialInfo?.material.orEmpty(),
+                                unitsCode = materialInfo?.commonUnitsCode.orEmpty()
+                        ),
+                        material = materialInfo?.material.orEmpty(),
+                        name = materialInfo?.name.orEmpty(),
+                        kind = getGoodKind(),
+                        type = materialInfo?.goodType.orEmpty(),
+                        control = getControlType(),
+                        section = materialInfo?.section.orEmpty(),
+                        matrix = getMatrixType(materialInfo?.matrix.orEmpty()),
+                        commonUnits = database.getUnitsByCode(materialInfo?.commonUnitsCode.orEmpty()),
+                        innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
+                        innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull() ?: 1.0,
+                        providers = providers.orEmpty().toMutableList(),
+                        producers = producers.orEmpty().toMutableList(),
+                        volume = materialInfo?.volume?.toDoubleOrNull() ?: ZERO_VOLUME,
+                        purchaseGroup = materialInfo?.purchaseGroup.orEmpty()
+                )
 
-            good.value?.let { good ->
                 lastSuccessSearchNumber = number
-                updateProviders(good.providers)
-                updateProducers(good.producers)
-                clearSpinnerPositions()
-                setScreenStatus(good)
-                setDefaultQuantity(good)
-
-                if (good.kind == GoodKind.EXCISE) {
-                    navigator.showForExciseGoodNeedScanFirstMark()
-                }
-
-                Logg.d { "--> added good: $good" }
-            }.orIfNull {
-                Logg.e { "good null" }
-                navigator.showInternalError(resource.goodNotFoundErrorMsg)
+                setFoundGood(good)
             }
         }
     }
@@ -483,7 +481,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
                             material = good.value?.material.orEmpty(),
                             markNumber = number,
                             mode = ScanInfoMode.MARK.mode,
-                            quantity = 0.0
+                            quantity = DEFAULT_QUANTITY
                     )
             ).also {
                 navigator.hideProgress()
@@ -679,7 +677,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
 
     private suspend fun addPosition() {
         good.value?.let { changedGood ->
-            val quantityValue = quantity.value ?: 0.0
+            val quantityValue = quantity.value ?: DEFAULT_QUANTITY
             val position = Position(
                     quantity = quantityValue,
                     provider = getProvider()
@@ -719,7 +717,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
 
     private suspend fun addPart() {
         good.value?.let { changedGood ->
-            val quantityValue = quantity.value ?: 0.0
+            val quantityValue = quantity.value ?: DEFAULT_QUANTITY
 
             val localDate = date.value?.let {
                 try {
@@ -776,17 +774,6 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
         }
     }
 
-    private fun onInitGoodInfo() {
-        launchUITryCatch {
-            good.value?.let {
-                setFoundGood(it)
-            }.orIfNull {
-                Logg.e { "good null" }
-                navigator.showInternalError(resource.goodNotFoundErrorMsg)
-            }
-        }
-    }
-
     /**
     Обработка нажатий кнопок
      */
@@ -836,16 +823,22 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
             navigator.showProgressLoadingData()
             saveChanges()
             navigator.hideProgress()
-            navigator.goBack()
             navigator.openBasketCreateGoodListScreen()
             manager.isBasketsNeedsToBeClosed = false
         }
     }
 
+    private fun onInitGoodInfo() {
+        launchUITryCatch {
+            good.value?.let(::setFoundGood).orIfNull {
+                Logg.e { "good null" }
+                navigator.showInternalError(resource.goodNotFoundErrorMsg)
+            }
+        }
+    }
+
     companion object {
-        private const val DEFAULT_POSITION = 0
-        private const val DEFAULT_QUANTITY = 0.0
         private const val DEFAULT_QUANTITY_FIELD = "0"
-        private const val DATE_STRING_LENGHT = 10
+        private const val DATE_STRING_LENGTH = 10
     }
 }

@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
+import com.lenta.bp12.features.open_task.good_list.GoodListFragment
 import com.lenta.bp12.managers.interfaces.IMarkManager
 import com.lenta.bp12.managers.interfaces.IOpenTaskManager
 import com.lenta.bp12.model.*
@@ -11,6 +12,8 @@ import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.extentions.*
 import com.lenta.bp12.model.pojo.open_task.TaskOpen
+import com.lenta.bp12.platform.DEFAULT_QUANTITY
+import com.lenta.bp12.platform.ZERO_VOLUME
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
 import com.lenta.bp12.platform.extention.getMarkType
@@ -42,7 +45,7 @@ class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener 
     lateinit var navigator: IScreenNavigator
 
     @Inject
-    lateinit var openTaskManager: IOpenTaskManager
+    lateinit var manager: IOpenTaskManager
 
     @Inject
     lateinit var sessionInfo: ISessionInfo
@@ -65,23 +68,26 @@ class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener 
     val selectionsHelper = SelectionItemsHelper()
 
     private val task by lazy {
-        openTaskManager.currentTask
+        manager.currentTask
     }
 
     val basket: LiveData<Basket> by lazy {
-        openTaskManager.currentBasket
+        manager.currentBasket
     }
 
     val title by lazy {
         basket.map { basket ->
             val position = basket?.index ?: 1
-            val description = basket?.getDescription(task.value?.type?.isDivBySection ?: false)
+            val description = basket?.getDescription(
+                    isDivBySection = task.value?.type?.isDivBySection ?: false,
+                    isWholeSale = manager.isWholesaleTaskType
+            )
             resource.basket("$position: $description")
         }
     }
 
     private val isWholesaleBasket by unsafeLazy {
-        openTaskManager.isWholesaleTaskType
+        manager.isWholesaleTaskType
     }
 
     val numberField: MutableLiveData<String> = MutableLiveData("")
@@ -174,7 +180,7 @@ class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener 
     private fun getGoodByEan(ean: String) {
         launchUITryCatch {
             navigator.showProgressLoadingData()
-            val foundGood = withContext(Dispatchers.IO) { openTaskManager.findGoodByEan(ean) }
+            val foundGood = withContext(Dispatchers.IO) { manager.findGoodByEan(ean) }
             navigator.hideProgress()
             foundGood?.let(::setFoundGood).orIfNull {
                 if (task.value?.isStrict == false) {
@@ -207,7 +213,7 @@ class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener 
     private fun getGoodByMaterial(material: String) {
         launchUITryCatch {
             navigator.showProgressLoadingData()
-            val foundGood = withContext(Dispatchers.IO) { openTaskManager.findGoodByMaterial(material) }
+            val foundGood = withContext(Dispatchers.IO) { manager.findGoodByMaterial(material) }
             navigator.hideProgress()
             foundGood?.let(::setFoundGood).orIfNull {
                 if (task.value?.isStrict == false) {
@@ -235,14 +241,20 @@ class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener 
 
     private fun handleLoadGoodInfoResult(result: GoodInfoResult) {
         launchUITryCatch {
-            if (openTaskManager.isGoodCorrespondToTask(result)) {
-                if (openTaskManager.isGoodCanBeAdded(result)) {
-                    setGood(result)
-                } else {
-                    navigator.showGoodCannotBeAdded()
+            val isGoodCorrespondToTask = manager.isGoodCorrespondToTask(result)
+            val isGoodCanBeAdded = manager.isGoodCanBeAdded(result)
+            val isWholesaleTask = manager.isWholesaleTaskType
+            val goodKind = result.getGoodKind()
+            val isGoodVet = goodKind == GoodKind.VET
+            val isGoodExcise = goodKind == GoodKind.EXCISE
+            with(navigator) {
+                when {
+                    isWholesaleTask && isGoodVet -> showCantAddVetToWholeSale()
+                    isWholesaleTask && isGoodExcise -> showCantAddExciseGoodForWholesale()
+                    isGoodCorrespondToTask && isGoodCanBeAdded -> setGood(result)
+                    isGoodCorrespondToTask -> showGoodCannotBeAdded()
+                    else -> showNotMatchTaskSettingsAddingNotPossible()
                 }
-            } else {
-                navigator.showNotMatchTaskSettingsAddingNotPossible()
             }
         }
     }
@@ -265,7 +277,6 @@ class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener 
     }
 
     private suspend fun setGood(result: GoodInfoResult) {
-
         with(result) {
             val markType = getMarkType()
             val goodOpen = Good(
@@ -278,43 +289,36 @@ class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener 
                     control = getControlType(),
                     commonUnits = database.getUnitsByCode(materialInfo?.commonUnitsCode.orEmpty()),
                     innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
-                    innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull() ?: 0.0,
-                    provider = task.value?.provider ?: ProviderInfo(),
+                    innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull() ?: DEFAULT_QUANTITY,
+                    provider = task.value?.provider ?: ProviderInfo.getEmptyProvider(),
                     producers = producers.orEmpty().toMutableList(),
-                    volume = materialInfo?.volume?.toDoubleOrNull() ?: 0.0,
+                    volume = materialInfo?.volume?.toDoubleOrNull() ?: ZERO_VOLUME,
                     markType = markType,
                     markTypeGroup = database.getMarkTypeGroupByMarkType(markType),
-                    maxRetailPrice = "",
-                    type = materialInfo?.goodType.orEmpty()
+                    type = materialInfo?.goodType.orEmpty(),
+                    purchaseGroup = materialInfo?.purchaseGroup.orEmpty()
             )
-
-            if (goodOpen.kind == GoodKind.EXCISE) {
-                navigator.showForExciseGoodNeedScanFirstMark()
-            }
 
             setFoundGood(goodOpen)
         }
     }
 
     private fun setFoundGood(foundGood: Good) {
-        openTaskManager.updateCurrentGood(foundGood)
-
         with(navigator) {
-            if (foundGood.markType != MarkType.UNKNOWN) {
+            manager.updateCurrentGood(foundGood)
+            if (foundGood.isMarked()) {
                 openMarkedGoodInfoCreateScreen()
                 showForGoodNeedScanFirstMark()
             } else {
                 openGoodInfoCreateScreen()
             }
         }
-
-        Logg.d { "--> found good: $foundGood" }
     }
 
     fun onClickItemPosition(position: Int) {
         goods.value?.let {
             it.getOrNull(position)?.let { item ->
-                openTaskManager.updateCurrentGood(item.good)
+                manager.updateCurrentGood(item.good)
                 navigator.goBack()
                 if (item.good.markType == MarkType.UNKNOWN)
                     navigator.openGoodInfoCreateScreen()
@@ -327,7 +331,7 @@ class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener 
     }
 
     fun onClickNext() {
-        navigator.goBack()
+        navigator.goBackTo(GoodListFragment::class.simpleName)
     }
 
     fun onClickProperties() {
@@ -365,7 +369,7 @@ class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener 
                     basket.deleteGood(goodFromBasket)
                 }
                 removeEmptyBasketsAndGoods(task, basket)
-                openTaskManager.updateBasketAndTask(task, basket)
+                manager.updateBasketAndTask(task, basket)
             }.orIfNull {
                 Logg.e { "basket null" }
                 navigator.showInternalError(resource.basketNotFoundErrorMsg)
@@ -408,7 +412,7 @@ class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener 
         if (taskValue != null && basketValue != null) {
             basketValue.isLocked = isNeedLock
             taskValue.updateBasket(basketValue)
-            with(openTaskManager) {
+            with(manager) {
                 updateCurrentBasket(basketValue)
                 updateCurrentTask(taskValue)
             }

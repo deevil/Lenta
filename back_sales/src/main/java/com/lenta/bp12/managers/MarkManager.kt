@@ -13,6 +13,7 @@ import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.extentions.isAnyAlreadyIn
 import com.lenta.bp12.model.pojo.extentions.mapToMarkList
+import com.lenta.bp12.platform.ZERO_VOLUME
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
 import com.lenta.bp12.platform.extention.getMarkStatus
@@ -137,7 +138,7 @@ class MarkManager @Inject constructor(
      * Метод вычленяет регулярным выражением шк(barcode), гтин и мрц из марки блока
      * */
     private suspend fun openMarkedGoodWithCarton(number: String): MarkScreenStatus {
-        val regex = Regex(Constants.CIGARETTES_MARK_PATTERN).find(number)
+        val regex = Regex(Constants.CIGARETTES_BOX_PATTERN).find(number)
         return regex?.let {
             val (blocBarcode, gtin, _, mrc, _, _) = it.destructured // blockBarcode, gtin, serial, mrc, verificationKey, other
             val container = Pair(blocBarcode, Mark.Container.CARTON)
@@ -323,8 +324,6 @@ class MarkManager @Inject constructor(
         val goodFromManager = createManager.currentGood
         val good = goodFromManager.value
         return with(result) {
-            taskFromManager.value?.let { task ->
-                val taskType = task.type
                 val goodEan = eanInfo?.ean.orEmpty()
                 val markType = getMarkType()
                 val createdGood = Good(
@@ -336,20 +335,21 @@ class MarkManager @Inject constructor(
                         material = materialInfo?.material.orEmpty(),
                         name = materialInfo?.name.orEmpty(),
                         kind = getGoodKind(),
-                        type = materialInfo?.goodType.takeIf { taskType.isDivByGoodType }.orEmpty(),
+                        type = materialInfo?.goodType.orEmpty(),
                         control = getControlType(),
-                        section = materialInfo?.section.takeIf { taskType.isDivBySection }.orEmpty(),
+                        section = materialInfo?.section.orEmpty(),
                         matrix = getMatrixType(materialInfo?.matrix.orEmpty()),
                         commonUnits = database.getUnitsByCode(materialInfo?.commonUnitsCode.orEmpty()),
                         innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
                         innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull()
                                 ?: 1.0,
-                        providers = providers?.takeIf { taskType.isDivByProvider }.orEmpty().toMutableList(),
+                        providers = providers.orEmpty().toMutableList(),
                         producers = producers.orEmpty().toMutableList(),
-                        volume = materialInfo?.volume?.toDoubleOrNull() ?: DEFAULT_VOLUME_VALUE,
+                        volume = materialInfo?.volume?.toDoubleOrNull() ?: ZERO_VOLUME,
                         markType = markType,
                         markTypeGroup = database.getMarkTypeGroupByMarkType(markType),
-                        maxRetailPrice = mrc
+                        maxRetailPrice = mrc,
+                        purchaseGroup = materialInfo?.purchaseGroup.orEmpty()
                 )
 
                 if(createdGood.material != good?.material) {
@@ -366,11 +366,6 @@ class MarkManager @Inject constructor(
                 } else {
                     MarkScreenStatus.NO_MARKTYPE_IN_SETTINGS
                 }
-            }.orIfNull {
-                internalErrorMessage = resource.taskNotFoundErrorMsg
-                Logg.e { internalErrorMessage }
-                MarkScreenStatus.INTERNAL_ERROR
-            }
         }
     }
 
@@ -402,11 +397,12 @@ class MarkManager @Inject constructor(
                                     ?: DEFAULT_INNER_QUALITY_VALUE,
                             provider = task.provider,
                             producers = producers?.toMutableList().orEmpty().toMutableList(),
-                            volume = materialInfo?.volume?.toDoubleOrNull() ?: DEFAULT_VOLUME_VALUE,
+                            volume = materialInfo?.volume?.toDoubleOrNull() ?: ZERO_VOLUME,
                             markType = markType,
                             markTypeGroup = database.getMarkTypeGroupByMarkType(markType),
                             maxRetailPrice = mrc,
-                            type = materialInfo?.goodType.orEmpty()
+                            type = materialInfo?.goodType.orEmpty(),
+                            purchaseGroup = materialInfo?.purchaseGroup.orEmpty()
                     )
                     if(createdGood.material != good.material) {
                         createdGoodToShowError.value = createdGood
@@ -683,6 +679,5 @@ class MarkManager @Inject constructor(
     companion object {
         private const val DEFAULT_UMREZ = 1.0
         private const val DEFAULT_INNER_QUALITY_VALUE = 1.0
-        private const val DEFAULT_VOLUME_VALUE = 0.0
     }
 }
