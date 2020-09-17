@@ -1,6 +1,8 @@
 package com.lenta.bp12.features.open_task.good_info
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.liveData
+import androidx.lifecycle.switchMap
 import com.lenta.bp12.features.open_task.base_good_info.BaseGoodInfoOpenViewModel
 import com.lenta.bp12.managers.interfaces.IOpenTaskManager
 import com.lenta.bp12.model.*
@@ -11,9 +13,13 @@ import com.lenta.bp12.model.pojo.Position
 import com.lenta.bp12.model.pojo.extentions.addMark
 import com.lenta.bp12.model.pojo.extentions.addMarks
 import com.lenta.bp12.model.pojo.extentions.addPosition
+import com.lenta.bp12.platform.DEFAULT_POSITION
+import com.lenta.bp12.platform.DEFAULT_QUANTITY
+import com.lenta.bp12.platform.ZERO_VOLUME
 import com.lenta.bp12.platform.extention.extractAlcoCode
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
+import com.lenta.bp12.platform.extention.isDateCorrectAndNotAfterToday
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -116,7 +122,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
     val quantityField = MutableLiveData("0")
 
     override val quantity = quantityField.map {
-        it?.toDoubleOrNull() ?: DEFAULT_QUANTITY_VALUE
+        it?.toDoubleOrNull() ?: DEFAULT_QUANTITY
     }
 
     override val quantityFieldEnabled by unsafeLazy {
@@ -173,11 +179,10 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
     /**
     Дата производства
      */
-
     val date = MutableLiveData("")
 
-    private val isCorrectDate = date.map { date ->
-        date?.length ?: 0 == DEFAULT_DATE_LENGTH
+    private val isCorrectDate = date.mapSkipNulls { dateValue ->
+        dateValue.isDateCorrectAndNotAfterToday() //this extention works correctly only for date in format dd.mm.yyyy
     }
 
     val dateEnabled = screenStatus.map { status ->
@@ -191,33 +196,31 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
     /**
     Кнопки нижнего тулбара
      */
-
     override val applyEnabled by lazy {
-        screenStatus.combineLatest(quantity)
-                .combineLatest(totalQuantity)
-                .combineLatest(isProducerSelected)
-                .combineLatest(isCorrectDate)
-                .map {
-                    it?.let {
-                        val status = it.first.first.first.first
-                        val enteredQuantity = it.first.first.first.second
-                        val totalQuantity = it.first.first.second
-                        val isProducerSelected = it.first.second
-                        val isDateEntered = it.second
+        screenStatus.switchMap { status ->
+            quantity.switchMap { enteredQuantity ->
+                totalQuantity.switchMap { totalQuantity ->
+                    isProducerSelected.switchMap { isProducerSelected ->
+                        isCorrectDate.switchMap { isDateEntered ->
+                            liveData {
+                                val isEnteredMoreThenZero = enteredQuantity > DEFAULT_QUANTITY
 
-                        val isEnteredMoreThenZero = enteredQuantity > DEFAULT_QUANTITY_VALUE
-
-                        when (status) {
-                            ScreenStatus.COMMON -> enteredQuantity != DEFAULT_QUANTITY_VALUE && totalQuantity > 0.0
-                            ScreenStatus.ALCOHOL -> isEnteredMoreThenZero && isProducerSelected && isDateEntered
-                            ScreenStatus.MARK_150 -> isEnteredMoreThenZero && isProducerSelected
-                            ScreenStatus.MARK_68 -> isEnteredMoreThenZero && isProducerSelected
-                            ScreenStatus.PART -> isEnteredMoreThenZero && isProducerSelected && isDateEntered
-                            ScreenStatus.BOX -> isEnteredMoreThenZero && isProducerSelected
-                            else -> false
+                                val result = when (status) {
+                                    ScreenStatus.COMMON -> enteredQuantity != DEFAULT_QUANTITY && totalQuantity > 0.0
+                                    ScreenStatus.ALCOHOL -> isEnteredMoreThenZero && isProducerSelected && isDateEntered
+                                    ScreenStatus.MARK_150 -> isEnteredMoreThenZero && isProducerSelected
+                                    ScreenStatus.MARK_68 -> isEnteredMoreThenZero && isProducerSelected
+                                    ScreenStatus.PART -> isEnteredMoreThenZero && isProducerSelected && isDateEntered
+                                    ScreenStatus.BOX -> isEnteredMoreThenZero && isProducerSelected
+                                    else -> false
+                                }
+                                emit(result)
+                            }
                         }
-                    } ?: false
+                    }
                 }
+            }
+        }
     }
 
     val detailsVisibility = screenStatus.map { status ->
@@ -247,7 +250,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
 
     val missingEnabled by lazy {
         quantity.map {
-            it ?: DEFAULT_QUANTITY_VALUE == DEFAULT_QUANTITY_VALUE
+            it ?: DEFAULT_QUANTITY == DEFAULT_QUANTITY
         }
     }
 
@@ -373,6 +376,11 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
 
     private fun setFoundGood(foundGood: Good) {
         manager.updateCurrentGood(foundGood)
+
+        if (foundGood.isExciseAlco()) {
+            navigator.showForExciseGoodNeedScanFirstMark()
+        }
+
         setScreenStatus(foundGood)
         setProducerList(foundGood)
         clearSpinnerPositions()
@@ -395,7 +403,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
                 with(ScanCodeInfo(originalSearchNumber)) {
                     val converted =
                             if (weight > 0.0) getConvertedQuantity(good.innerQuantity)
-                            else DEFAULT_QUANTITY_VALUE
+                            else DEFAULT_QUANTITY
                     converted.dropZeros()
                 }
             } else {
@@ -410,6 +418,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
             GoodKind.ALCOHOL -> ScreenStatus.ALCOHOL
             GoodKind.EXCISE -> ScreenStatus.EXCISE
             GoodKind.MARK -> ScreenStatus.MARK
+            GoodKind.VET -> ScreenStatus.VET
         }
     }
 
@@ -452,15 +461,23 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
 
     private fun handleLoadGoodInfoResult(result: GoodInfoResult, number: String) {
         launchUITryCatch {
-            if (manager.isGoodCorrespondToTask(result)) {
-                if (manager.isGoodCanBeAdded(result)) {
-                    isExistUnsavedData = true
-                    setGood(result, number)
-                } else {
-                    navigator.showGoodCannotBeAdded()
+            val isGoodCorrespondToTask = manager.isGoodCorrespondToTask(result)
+            val isGoodCanBeAdded = manager.isGoodCanBeAdded(result)
+            val isWholesaleTask = manager.isWholesaleTaskType
+            val goodKind = result.getGoodKind()
+            val isGoodVet = goodKind == GoodKind.VET
+            val isGoodExcise = goodKind == GoodKind.EXCISE
+            with(navigator) {
+                when {
+                    isWholesaleTask && isGoodVet -> showCantAddVetToWholeSale()
+                    isWholesaleTask && isGoodExcise -> showCantAddExciseGoodForWholesale()
+                    isGoodCorrespondToTask && isGoodCanBeAdded -> {
+                        isExistUnsavedData = true
+                        setGood(result, number)
+                    }
+                    isGoodCorrespondToTask -> showGoodCannotBeAdded()
+                    else -> showNotMatchTaskSettingsAddingNotPossible()
                 }
-            } else {
-                navigator.showNotMatchTaskSettingsAddingNotPossible()
             }
         }
     }
@@ -473,7 +490,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
     private fun setGood(result: GoodInfoResult, number: String) {
         launchUITryCatch {
             with(result) {
-                good.value = Good(
+                val foundGood = Good(
                         ean = eanInfo?.ean.orEmpty(),
                         material = materialInfo?.material.orEmpty(),
                         name = materialInfo?.name.orEmpty(),
@@ -484,29 +501,16 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
                         commonUnits = database.getUnitsByCode(materialInfo?.commonUnitsCode.orEmpty()),
                         innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
                         innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull()
-                                ?: DEFAULT_QUANTITY_VALUE,
+                                ?: DEFAULT_QUANTITY,
                         provider = task.value?.provider ?: ProviderInfo(),
                         producers = producers.orEmpty().toMutableList(),
-                        volume = materialInfo?.volume?.toDoubleOrNull() ?: 0.0,
-                        type = materialInfo?.goodType.orEmpty()
+                        volume = materialInfo?.volume?.toDoubleOrNull() ?: ZERO_VOLUME,
+                        type = materialInfo?.goodType.orEmpty(),
+                        purchaseGroup = materialInfo?.purchaseGroup.orEmpty()
                 )
-            }
 
-            good.value?.let { good ->
+                setFoundGood(foundGood)
                 lastSuccessSearchNumber = number
-                setProducerList(good)
-                clearSpinnerPositions()
-                setScreenStatus(good)
-                setDefaultQuantity(good)
-
-                if (good.kind == GoodKind.EXCISE) {
-                    navigator.showForExciseGoodNeedScanFirstMark()
-                }
-
-                Logg.d { "--> added good: $good" }
-            }.orIfNull {
-                Logg.e { "good null" }
-                navigator.showInternalError(resource.goodNotFoundErrorMsg)
             }
         }
     }
@@ -520,7 +524,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
                     material = good.value?.material.orEmpty(),
                     markNumber = number,
                     mode = ScanInfoMode.MARK.mode,
-                    quantity = DEFAULT_QUANTITY_VALUE
+                    quantity = DEFAULT_QUANTITY
             )).also {
                 navigator.hideProgress()
             }.either(::handleFailure) { result ->
@@ -601,7 +605,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
                             material = good.value?.material.orEmpty(),
                             boxNumber = number,
                             mode = ScanInfoMode.BOX.mode,
-                            quantity = DEFAULT_QUANTITY_VALUE
+                            quantity = DEFAULT_QUANTITY
                     )
             ).also {
                 navigator.hideProgress()
@@ -631,7 +635,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
     private suspend fun checkPart(): Either<Failure, ScanInfoResult> {
         navigator.showProgressLoadingData(::handleFailure)
 
-        val quantityFromField = quantity.value ?: DEFAULT_QUANTITY_VALUE
+        val quantityFromField = quantity.value ?: DEFAULT_QUANTITY
 
         val allPartsQuantity = good.value?.getPartQuantityByDateAndProducer(
                 date = date.value.orEmpty(),
@@ -697,7 +701,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
     private suspend fun addPosition() {
         good.value?.let { changedGood ->
             changedGood.isCounted = true
-            val quantityValue = quantity.value ?: DEFAULT_QUANTITY_VALUE
+            val quantityValue = quantity.value ?: DEFAULT_QUANTITY
             val position = Position(
                     quantity = quantityValue,
                     provider = changedGood.provider
@@ -738,7 +742,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
 
     private suspend fun addPart() {
         good.value?.let { changedGood ->
-            val quantityValue = quantity.value ?: DEFAULT_QUANTITY_VALUE
+            val quantityValue = quantity.value ?: DEFAULT_QUANTITY
             val part = Part(
                     number = lastSuccessSearchNumber,
                     material = changedGood.material,
@@ -790,8 +794,8 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
     Обработка нажатий кнопок
      */
     override fun onBackPressed() {
-        val enteredQuantity = quantity.value ?: DEFAULT_QUANTITY_VALUE
-        if (isExistUnsavedData || enteredQuantity != DEFAULT_QUANTITY_VALUE) {
+        val enteredQuantity = quantity.value ?: DEFAULT_QUANTITY
+        if (isExistUnsavedData || enteredQuantity != DEFAULT_QUANTITY) {
             navigator.showUnsavedDataWillBeLost {
                 navigator.goBack()
             }
@@ -856,7 +860,6 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
             navigator.showProgressLoadingData()
             saveChanges()
             navigator.hideProgress()
-            navigator.goBack()
             navigator.openBasketOpenGoodListScreen()
             manager.isBasketsNeedsToBeClosed = false
         }
@@ -864,9 +867,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
 
     private fun onInitGoodInfo() {
         launchUITryCatch {
-            good.value?.let {
-                setFoundGood(it)
-            }.orIfNull {
+            good.value?.let(::setFoundGood).orIfNull {
                 Logg.e { "good null" }
                 navigator.showInternalError(resource.goodNotFoundErrorMsg)
             }
@@ -874,10 +875,8 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
     }
 
     companion object {
-        private const val DEFAULT_QUANTITY_VALUE = 0.0
         private const val DEFAULT_QUANTITY_STRING_FOR_EAN = "1"
         private const val DEFAULT_QUANTITY_STRING = "0"
-        private const val DEFAULT_POSITION = 0
         private const val DEFAULT_DATE_LENGTH = 10
     }
 

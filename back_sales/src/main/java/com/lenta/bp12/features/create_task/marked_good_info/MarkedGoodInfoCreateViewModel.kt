@@ -13,6 +13,7 @@ import com.lenta.bp12.model.actionByNumber
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.extentions.addMarks
+import com.lenta.bp12.platform.DEFAULT_QUANTITY
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -106,6 +107,12 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
         }
     }
 
+    val isBasketNumberVisible by unsafeLazy {
+        tempMarks.mapSkipNulls {
+            it.isNotEmpty()
+        }
+    }
+
     /**
      * Все сканированные марки хранятся в этом списке до нажатия кнопки применить.
      * После нажатия применить все марки обрабатываются менедежером по корзинам и сохраняется в задании.
@@ -130,7 +137,7 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
     }
 
     override val quantity = quantityField.map {
-        it?.toDoubleOrNull() ?: 0.0
+        it?.toDoubleOrNull() ?: DEFAULT_QUANTITY
     }
 
     /**
@@ -156,26 +163,21 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
     /**
     Кнопки нижнего тулбара
      */
-
     override val applyEnabled by lazy {
-        isProviderSelected
-                .combineLatest(good)
-                .combineLatest(quantity)
-                .combineLatest(totalQuantity)
-                .combineLatest(basketQuantity)
-                .map {
-                    it?.let {
-                        val isProviderSelected = it.first.first.first.first
-                        val enteredQuantity = it.first.first.second
-                        val totalQuantity = it.first.second
-                        val basketQuantity = it.second
-
-                        val isEnteredQuantityNotZero = enteredQuantity != 0.0
-                        val isTotalQuantityMoreThenZero = totalQuantity > 0.0
-
-                        isProviderSelected && isEnteredQuantityNotZero && isTotalQuantityMoreThenZero && basketQuantity > 0.0
-                    } ?: false
+        isProviderSelected.switchMap {isProviderSelected ->
+            quantity.switchMap { enteredQuantity ->
+                totalQuantity.switchMap { totalQuantity ->
+                    basketQuantity.switchMap { basketQuantity ->
+                        liveData {
+                            val isEnteredQuantityNotZero = enteredQuantity != DEFAULT_QUANTITY
+                            val isTotalQuantityMoreThenZero = totalQuantity > DEFAULT_QUANTITY
+                            val result = isProviderSelected && isEnteredQuantityNotZero && isTotalQuantityMoreThenZero && basketQuantity > DEFAULT_QUANTITY
+                            emit(result)
+                        }
+                    }
                 }
+            }
+        }
     }
 
 
@@ -404,7 +406,6 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
             navigator.showProgressLoadingData()
             saveChanges()
             navigator.hideProgress()
-            navigator.goBack()
             navigator.openBasketCreateGoodListScreen()
             manager.isBasketsNeedsToBeClosed = false
             markManager.clearData()

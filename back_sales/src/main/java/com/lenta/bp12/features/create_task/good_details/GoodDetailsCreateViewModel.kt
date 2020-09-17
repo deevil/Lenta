@@ -1,6 +1,5 @@
 package com.lenta.bp12.features.create_task.good_details
 
-import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.features.other.ItemBasketUi
 import com.lenta.bp12.features.other.ItemCategory
 import com.lenta.bp12.features.other.ItemCategoryUi
@@ -63,7 +62,10 @@ class GoodDetailsCreateViewModel : CoreViewModel(), PageSelectionListener {
                             basket = basket,
                             position = "${baskets.size - index}",
                             name = resource.basket("${basket.getPosition()}"),
-                            description = basket.getDescription(task.type.isDivBySection),
+                            description = basket.getDescription(
+                                    isDivBySection = task.type.isDivBySection,
+                                    isWholeSale = manager.isWholesaleTaskType
+                            ),
                             quantity = "${task.getCountByBasket(basket)}"
                     )
                 }

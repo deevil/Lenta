@@ -1,22 +1,37 @@
 package com.lenta.bp16.features.material_remake_details
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.switchMap
 import com.lenta.bp16.data.IScales
-import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
-import com.lenta.bp16.model.ingredients.params.IngredientDataCompleteParams
+import com.lenta.bp16.model.AddAttributeProdInfo
+import com.lenta.bp16.model.BatchNewDataInfoParam
+import com.lenta.bp16.model.GoodTypeIcon
+import com.lenta.bp16.model.IAttributeManager
 import com.lenta.bp16.model.ingredients.OrderByBarcode
+import com.lenta.bp16.model.ingredients.params.IngredientDataCompleteParams
+import com.lenta.bp16.model.ingredients.ui.MaterialIngredientDataInfoUI
+import com.lenta.bp16.model.ingredients.ui.MercuryPartDataInfoUI
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
+import com.lenta.bp16.model.ingredients.ui.ZPartDataInfoUI
+import com.lenta.bp16.platform.Constants
+import com.lenta.bp16.platform.base.IZpartVisibleConditions
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.platform.resource.IResourceManager
 import com.lenta.bp16.request.CompleteIngredientByMaterialNetRequest
+import com.lenta.bp16.request.ingredients_use_case.get_data.GetMercuryPartDataInfoUseCase
+import com.lenta.bp16.request.ingredients_use_case.get_data.GetWarehouseForSelectedItemUseCase
+import com.lenta.bp16.request.ingredients_use_case.get_data.GetZPartDataInfoUseCase
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.orIfNull
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.properties.Delegates
 
-class MaterialRemakeDetailsViewModel : CoreViewModel() {
+class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions {
 
     @Inject
     lateinit var navigator: IScreenNavigator
@@ -31,20 +46,28 @@ class MaterialRemakeDetailsViewModel : CoreViewModel() {
     lateinit var scales: IScales
 
     @Inject
+    lateinit var attributeManager: IAttributeManager
+
+    @Inject
     lateinit var completePackMaterialNetRequest: CompleteIngredientByMaterialNetRequest
+
+    @Inject
+    lateinit var getMercuryPartDataInfoUseCase: GetMercuryPartDataInfoUseCase
+
+    @Inject
+    lateinit var getZPartDataInfoUseCase: GetZPartDataInfoUseCase
+
+    @Inject
+    lateinit var warehouseForSelectedItemUseCase: GetWarehouseForSelectedItemUseCase
 
     // значение параметра OBJ_CODE из родительского компонента заказа
     var parentCode: String by Delegates.notNull()
 
     // выбранный ингредиент
-    val materialIngredient by unsafeLazy {
-        MutableLiveData<MaterialIngredientDataInfo>()
-    }
+    val materialIngredient = MutableLiveData<MaterialIngredientDataInfoUI>()
 
     //Список параметров EAN для ингредиента
-    val eanInfo by unsafeLazy {
-        MutableLiveData<OrderByBarcodeUI>()
-    }
+    val eanInfo = MutableLiveData<OrderByBarcodeUI>()
 
     // Комплектация
     val weightField: MutableLiveData<String> = MutableLiveData(DEFAULT_WEIGHT)
@@ -54,7 +77,83 @@ class MaterialRemakeDetailsViewModel : CoreViewModel() {
         resourceManager.kgSuffix()
     }
 
-    /**Для проверки весового ШК*/
+    private val mercuryDataInfo = MutableLiveData<List<MercuryPartDataInfoUI>>()
+    override val zPartDataInfo = MutableLiveData<List<ZPartDataInfoUI>>()
+    private val addedAttribute = MutableLiveData<AddAttributeProdInfo>()
+    private val warehouseSelected = MutableLiveData<List<String>>()
+
+    val producerNameField by unsafeLazy {
+        MutableLiveData<List<String>>()
+    }
+
+    val selectedProducerPosition = MutableLiveData(0)
+
+    val productionDateField by unsafeLazy {
+        MutableLiveData<List<String>>()
+    }
+
+    val selectedDateProductionPosition = MutableLiveData(0)
+
+    /** Определение типа товара */
+    val goodTypeIcon by unsafeLazy {
+        materialIngredient.mapSkipNulls {
+            getGoodTypeIcon(it)
+        }
+    }
+
+    /** Условие отображения ошибки, если лист производителей заполнен с пробелами */
+    private val alertNotFoundProducerName = MutableLiveData<Boolean>()
+
+    /** Условие отображения производителя */
+    val producerVisibleCondition by unsafeLazy {
+        materialIngredient.switchMap { ingredient ->
+            asyncLiveData<Boolean> {
+                val isVet = ingredient.isVet.isSapTrue()
+                val isZPart = ingredient.isZpart.isSapTrue()
+                val cond = producerConditions
+                val condition = when {
+                    isVet -> true
+                    !isVet && isZPart -> cond.first
+                    else -> false
+                }
+                alertNotFoundProducerName.postValue(cond.second)
+                emit(condition)
+            }
+        }
+    }
+
+    /** Условие отображения даты производства */
+    val dateVisibleCondition = materialIngredient.mapSkipNulls {
+        it.isVet.isSapTrue() || it.isZpart.isSapTrue()
+    }
+
+    /** Условие отображения кнопки для показа информации о меркурианском товаре*/
+    val vetIconInfoCondition = materialIngredient.mapSkipNulls {
+        it.isVet.isSapTrue()
+    }
+
+    /** Условие активности кнопки добавления партии*/
+    val addPartAttributeEnable = materialIngredient.mapSkipNulls {
+        !it.isVet.isSapTrue()
+    }
+
+    /** Условие блокировки спиннеров производителя и даты*/
+    val disableSpinner = MutableLiveData<Boolean>()
+
+    /** Условие разблокировки кнопок добавить и завершить */
+    val nextAndAddButtonEnabled: MutableLiveData<Boolean> = producerNameField
+            .combineLatest(productionDateField)
+            .map {
+                val producerName = it?.first
+                val productionDate = it?.second
+                if (!materialIngredient.value?.isVet.isNullOrBlank()) {
+                    !(producerName.isNullOrEmpty() || productionDate.isNullOrEmpty())
+                } else {
+                    !productionDate.isNullOrEmpty()
+                }
+            }
+
+    /** Для проверки весового ШК */
     private val weightValue = listOf(VALUE_23, VALUE_24, VALUE_27, VALUE_28)
 
     val ean = MutableLiveData("")
@@ -77,19 +176,162 @@ class MaterialRemakeDetailsViewModel : CoreViewModel() {
     }
 
     val planQntWithSuffix by unsafeLazy {
-        materialIngredient.combineLatest(eanInfo).map {
-            val uom: String? =
+        materialIngredient.combineLatest(eanInfo).mapSkipNulls {
+            val uom: String =
                     when (eanInfo.value?.ean_nom.orEmpty()) {
-                        OrderByBarcode.KAR -> Uom.KAR.name
-                        OrderByBarcode.ST -> Uom.ST.name
+                        OrderByBarcode.KAR, OrderByBarcode.KOR_RUS -> Uom.KAR.name
+                        OrderByBarcode.ST, OrderByBarcode.ST_RUS -> Uom.ST.name
                         else -> Uom.KG.name
                     }
-            MutableLiveData("${materialIngredient.value?.plan_qnt} $uom")
+            MutableLiveData("${materialIngredient.value?.plan_qnt?.toDouble().dropZeros()} $uom")
         }
     }
 
+    val doneQtnWithSuffix by unsafeLazy {
+        materialIngredient.combineLatest(eanInfo).mapSkipNulls {
+            val uom: String = when (eanInfo.value?.ean_nom.orEmpty()) {
+                OrderByBarcode.KAR, OrderByBarcode.KOR_RUS -> Uom.KAR.name
+                OrderByBarcode.ST, OrderByBarcode.ST_RUS -> Uom.ST.name
+                else -> Uom.KG.name
+            }
+            MutableLiveData("${materialIngredient.value?.done_qnt?.toDouble().dropZeros()} $uom")
+        }
+    }
+
+    private fun getGoodTypeIcon(materialIngredientDataInfo: MaterialIngredientDataInfoUI): GoodTypeIcon {
+        return when {
+            materialIngredientDataInfo.isVet.isSapTrue() -> GoodTypeIcon.VET
+            materialIngredientDataInfo.isFact.isSapTrue() -> GoodTypeIcon.FACT
+            else -> GoodTypeIcon.PLAN
+        }
+    }
+
+    fun updateData() {
+        launchUITryCatch {
+            mercuryDataInfo.value = getMercuryPartDataInfoUseCase()
+            zPartDataInfo.value = getZPartDataInfoUseCase()
+            addedAttribute.value = attributeManager.currentAttribute.value
+            warehouseSelected.value = warehouseForSelectedItemUseCase()
+            if (alertNotFoundProducerName.value == true) {
+                navigator.goBack()
+                navigator.showAlertProducerCodeNotFound()
+            } else {
+                disableSpinner.value = addedAttribute.value?.let { false }.orIfNull { true }
+                checkProducerInfo()
+                checkDataInfo()
+            }
+        }
+    }
+
+    private fun checkProducerInfo() {
+        /** Если был передан производитель из AddAttributeFragment, то заполнять данными из нее*/
+        val addedAttributeIsNotEmpty = !addedAttribute.value?.name.isNullOrBlank()
+        val orderIngredientIsVet = materialIngredient.value?.isVet.isSapTrue()
+        when {
+            addedAttributeIsNotEmpty -> {
+                addedAttribute.value?.let { addAttributeDataInfoList ->
+                    val producerName = addAttributeDataInfoList.name
+                    producerNameField.value = listOf(producerName)
+                }
+            }
+            orderIngredientIsVet -> {
+                mercuryDataInfo.value?.let { mercuryDataInfoList ->
+                    val producerNameList = mercuryDataInfoList.map { it.prodName }.toMutableList()
+                    if (producerNameList.size > 1) {
+                        producerNameList.add(0, Constants.CHOOSE_PRODUCER)
+                    }
+                    producerNameField.value = producerNameList
+                }
+            }
+            else -> {
+                zPartDataInfo.value?.let { zpartDataInfoList ->
+                    val producerNameList = zpartDataInfoList.map { it.prodName }.toMutableList()
+                    if (producerNameList.size > 1) {
+                        producerNameList.add(0, Constants.CHOOSE_PRODUCER)
+                    }
+                    producerNameField.value = producerNameList
+                }
+            }
+        }
+    }
+
+    private fun checkDataInfo() {
+        /** Если была передана дата из AddAttributeFragment, то заполнять данными из нее*/
+        val addedAttributeIsNotEmpty = !addedAttribute.value?.date.isNullOrBlank()
+        val orderIngredientIsVet = materialIngredient.value?.isVet.isSapTrue()
+        when {
+            addedAttributeIsNotEmpty -> {
+                addedAttribute.value?.let { addAttributeDataInfoList ->
+                    val productionDate = addAttributeDataInfoList.date
+                    productionDateField.value = listOf(productionDate)
+                }
+            }
+            orderIngredientIsVet -> {
+                mercuryDataInfo.value?.let { mercuryDataInfoList ->
+                    val productionDate = mercuryDataInfoList.map { it.prodDate }.toMutableList()
+                    if (productionDate.size > 1) {
+                        productionDate.add(0, Constants.CHOOSE_PRODUCTION_DATE)
+                    }
+                    productionDateField.value = productionDate
+                }
+            }
+            else -> {
+                zPartDataInfo.value?.let { zpartDataInfoList ->
+                    val productionDate = zpartDataInfoList.map { it.prodDate }.toMutableList()
+                    if (productionDate.size > 1) {
+                        productionDate.add(0, Constants.CHOOSE_PRODUCTION_DATE)
+                    }
+                    productionDateField.value = productionDate
+                }
+            }
+        }
+    }
+
+    private suspend fun getEntryId(matnr: String): String {
+        return materialIngredient.value?.isVet?.run {
+            val selectedIngredient = withContext(Dispatchers.IO) {
+                mercuryDataInfo.value?.filter { it.matnr == matnr }
+            }
+            selectedIngredient?.getOrNull(0)?.entryId.orEmpty()
+        }.orEmpty()
+    }
+
+    private suspend fun getZPartInfo(matnr: String): ZPartDataInfoUI? {
+        return withContext(Dispatchers.IO) {
+            zPartDataInfo.value?.filter { it.matnr == matnr }?.getOrNull(0)
+        }
+    }
+
+    private suspend fun setBatchNewInfo(): List<BatchNewDataInfoParam>? {
+        return withContext(Dispatchers.IO) {
+            /** Если не удалось определить партию*/
+            val addedAttributeInfo = addedAttribute.value
+            val selectedWarehouse = warehouseSelected.value?.getOrNull(0).orEmpty()
+            addedAttributeInfo?.let {
+                listOf(BatchNewDataInfoParam(
+                        prodCode = addedAttributeInfo.code,
+                        prodDate = addedAttributeInfo.date,
+                        prodTime = addedAttributeInfo.time,
+                        lgort = selectedWarehouse
+                ))
+            }
+        }
+    }
+
+
     fun onCompleteClicked() = launchUITryCatch {
         val weight = total.value ?: 0.0
+
+        val matnr = materialIngredient.value?.name.orEmpty()
+        val entryId = getEntryId(matnr)
+        val zPartInfo = getZPartInfo(matnr)
+        val batchId = zPartInfo?.batchId.orEmpty()
+        val batchNew = if (zPartInfo == null) {
+            setBatchNewInfo()
+        } else {
+            emptyList()
+        }
+
         if (weight == 0.0) {
             navigator.showAlertWeightNotSet()
         } else {
@@ -102,7 +344,11 @@ class MaterialRemakeDetailsViewModel : CoreViewModel() {
                             matnr = parentCode,
                             fact = weight,
                             mode = IngredientDataCompleteParams.MODE_MATERIAL,
-                            personnelNumber = sessionInfo.personnelNumber.orEmpty()
+                            personnelNumber = sessionInfo.personnelNumber.orEmpty(),
+                            aufnr = matnr,
+                            batchId = batchId,
+                            batchNewParam = batchNew.orEmpty(),
+                            entryId = entryId
                     )
             )
             result.also {
@@ -110,6 +356,15 @@ class MaterialRemakeDetailsViewModel : CoreViewModel() {
             }.either(::handleFailure) {
                 navigator.goBack()
             }
+        }
+    }
+
+    fun onClickAddAttributeButton() {
+        val materialIngredient = materialIngredient.value
+        materialIngredient?.let {
+            navigator.openMaterialAttributeScreen(materialIngredient, parentCode)
+        }.orIfNull {
+            navigator.showOrderIngredientErrorScreen()
         }
     }
 
@@ -154,6 +409,7 @@ class MaterialRemakeDetailsViewModel : CoreViewModel() {
     }
 
     fun onBackPressed() {
+        attributeManager.currentAttribute.value = null
         navigator.showNotSavedDataWillBeLost {
             navigator.goBack()
         }

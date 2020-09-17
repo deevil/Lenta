@@ -1,7 +1,18 @@
 package com.lenta.bp12.request.pojo
 
 import com.google.gson.annotations.SerializedName
+import com.lenta.bp12.model.BlockType
+import com.lenta.bp12.model.pojo.Block
+import com.lenta.bp12.model.pojo.ReturnReason
+import com.lenta.bp12.model.pojo.TaskType
+import com.lenta.bp12.model.pojo.open_task.TaskOpen
+import com.lenta.bp12.platform.extention.getControlType
+import com.lenta.shared.utilities.extentions.isSapTrue
 
+/**
+ * Задание приходящее с сервера, при работе с заданиями
+ * @see com.lenta.bp12.request.TaskListNetRequest
+ * */
 data class TaskInfo(
         /** Номер задания */
         @SerializedName("TASK_NUM")
@@ -30,9 +41,18 @@ data class TaskInfo(
         /** Обработка задания не закончена */
         @SerializedName("NOT_FINISH")
         val isNotFinish: String?,
-        /** Гис-контроль задания */
-        @SerializedName("TASK_CNTRL")
-        val control: String?,
+        /** Флаг – задание вет. контроля */
+        @SerializedName("IS_VET")
+        val isVet: String?,
+        /** Флаг – алкогольное задание */
+        @SerializedName("IS_ALCO")
+        val isAlco: String?,
+        /** Флаг – маркированное задание */
+        @SerializedName("IS_MARK>")
+        val isMark: String?,
+        /** Флаг – задание вет. контроля */
+        @SerializedName("IS_USUAL")
+        val isUsual: String?,
         /** Текстовый комментарий */
         @SerializedName("TASK_COMMENT")
         val comment: String?,
@@ -63,4 +83,32 @@ data class TaskInfo(
         /** УТЗ ТСД, Наименование клиента */
         @SerializedName("KUNNR_NAME")
         val kunnrName: String?
-)
+) {
+        fun convertToTaskOpen(type: TaskType?, reason: ReturnReason?) : TaskOpen {
+                return TaskOpen(
+                        number = number.orEmpty(),
+                        name = name.orEmpty(),
+                        type = type,
+                        block = Block(
+                                type = BlockType.from(blockType.orEmpty()),
+                                user = blockUser.orEmpty(),
+                                ip = blockIp.orEmpty()
+                        ),
+                        storage = storage.orEmpty(),
+                        control = getControlType(),
+                        provider = ProviderInfo(
+                                code = providerCode.orEmpty(),
+                                name = providerName.orEmpty()
+                        ),
+                        reason = reason,
+                        comment = comment.orEmpty(),
+                        section = section.orEmpty(),
+                        goodType = goodType.orEmpty(),
+                        purchaseGroup = purchaseGroup.orEmpty(),
+                        goodGroup = goodType.orEmpty(),
+                        numberOfGoods = quantity?.toIntOrNull() ?: 0,
+                        isStrict = isStrict.isSapTrue(),
+                        isFinished = !isNotFinish.isSapTrue()
+                )
+        }
+}

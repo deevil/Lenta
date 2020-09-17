@@ -20,14 +20,25 @@ enum class GoodKind {
     COMMON,
     ALCOHOL,
     EXCISE,
-    MARK
+    MARK,
+    VET
 }
 
 enum class ControlType(val code: String, val description: String) {
     UNKNOWN("", "Неизвестный"),
     COMMON("N", "Обычный"),
     ALCOHOL("A", "Алкоголь"),
-    MARK("M", "Маркированный");
+    MARK("M", "Маркированный"),
+    VET("V", "Животного происхождения");
+
+    fun codeInRus(): String {
+        return when (this) {
+            COMMON -> "О"
+            ALCOHOL -> "А"
+            MARK -> "М"
+            else -> ""
+        }
+    }
 
     companion object {
         fun from(code: String): ControlType {
@@ -35,6 +46,7 @@ enum class ControlType(val code: String, val description: String) {
                 "N" -> COMMON
                 "A" -> ALCOHOL
                 "M" -> MARK
+                "V" -> VET
                 else -> UNKNOWN
             }
         }
@@ -79,7 +91,8 @@ enum class ScreenStatus(val description: String) {
     MARK_68("Марка 68 символов"),
     PART("Партия"),
     BOX("Коробка"),
-    MARK("Марка")
+    MARK("Марка"),
+    VET("Животного происхождения")
 }
 
 enum class ScanInfoMode(val mode: Int){

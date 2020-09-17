@@ -15,6 +15,7 @@ import com.lenta.bp12.model.actionByNumber
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.extentions.addMarks
+import com.lenta.bp12.platform.DEFAULT_QUANTITY
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -24,7 +25,10 @@ import com.lenta.bp12.request.ScanInfoNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.extentions.launchAsyncTryCatch
+import com.lenta.shared.utilities.extentions.launchUITryCatch
+import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.unsafeLazy
 import com.lenta.shared.utilities.orIfNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -124,7 +128,7 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
     }
 
     override val quantity = quantityField.map {
-        it?.toDoubleOrNull() ?: DEFAULT_QUANTITY_VALUE
+        it?.toDoubleOrNull() ?: DEFAULT_QUANTITY
     }
 
     /**
@@ -150,27 +154,22 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
     /**
     Кнопки нижнего тулбара
      */
-
     override val applyEnabled by lazy {
-        isProviderSelected
-                .combineLatest(good)
-                .combineLatest(quantity)
-                .combineLatest(totalQuantity)
-                .combineLatest(basketQuantity)
-                .map {
-                    it?.let {
-                        val isProviderSelected = it.first.first.first.first
-                        val good = it.first.first.first.second
-                        val enteredQuantity = it.first.first.second
-                        val totalQuantity = it.first.second
-                        val basketQuantity = it.second
+        isProviderSelected.switchMap { isProviderSelected ->
+            quantity.switchMap { enteredQuantity ->
+                totalQuantity.switchMap { totalQuantity ->
+                    basketQuantity.switchMap { basketQuantity ->
+                        liveData {
+                            val isEnteredQuantityNotZero = enteredQuantity != DEFAULT_QUANTITY
+                            val isTotalQuantityMoreThenZero = totalQuantity > DEFAULT_QUANTITY
 
-                        val isEnteredQuantityNotZero = enteredQuantity != 0.0
-                        val isTotalQuantityMoreThenZero = totalQuantity > 0.0
-
-                        isProviderSelected && isEnteredQuantityNotZero && isTotalQuantityMoreThenZero && basketQuantity > 0.0
-                    } ?: false
+                            val result = isProviderSelected && isEnteredQuantityNotZero && isTotalQuantityMoreThenZero && basketQuantity > DEFAULT_QUANTITY
+                            emit(result)
+                        }
+                    }
                 }
+            }
+        }
     }
 
     val rollbackEnabled = tempMarks.map {
@@ -345,17 +344,11 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
     }
 
     private suspend fun addMarks(changedGood: Good) {
-            tempMarks.value?.let { tempMarksValue ->
-                changedGood.addMarks(tempMarksValue)
-                tempMarksValue.forEach { mark ->
-                    manager.addGoodToBasketWithMark(
-                            good = changedGood,
-                            mark = mark,
-                            provider = getProvider()
-                    )
-                }
-            }
+        tempMarks.value?.let { tempMarksValue ->
+            changedGood.addMarks(tempMarksValue)
+            manager.addGoodToBasketWithMarks(changedGood, tempMarksValue, getProvider())
         }
+    }
 
     /**
     Обработка нажатий кнопок
@@ -380,7 +373,7 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
 
 
     override fun onClickApply() {
-        if(isPlannedQuantityActual()) {
+        if (isPlannedQuantityActual()) {
             navigator.showQuantityMoreThanPlannedScreen()
             return
         }
@@ -390,8 +383,9 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
 
     override fun saveChangesAndExit() {
         launchUITryCatch {
+            navigator.showProgressLoadingData()
             saveChanges()
-            navigator.goBack()
+            navigator.hideProgress()
             navigator.openBasketCreateGoodListScreen()
             manager.isBasketsNeedsToBeClosed = false
             markManager.clearData()
@@ -477,10 +471,5 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
                 navigator.showInternalError(resource.goodNotFoundErrorMsg)
             }
         }
-    }
-
-    companion object {
-        private const val DEFAULT_PAGE = 0
-        private const val DEFAULT_QUANTITY_VALUE = 0.0
     }
 }

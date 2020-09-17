@@ -32,6 +32,12 @@ android {
         dataBinding = true
     }
 
+    sourceSets {
+        main {
+            res.srcDirs = ['src/main/res', 'src/main/res/components', 'src/main/res/fragments', 'src/main/res/items']
+        }
+    }
+
     flavorDimensions "server"
 
     productFlavors {
@@ -67,6 +73,7 @@ android {
     // For Kotlin projects
     kotlinOptions {
         jvmTarget = "1.8"
+        languageVersion = "1.4"
     }
 
     configurations {
@@ -77,14 +84,6 @@ android {
         pickFirst 'META-INF/kotlinx-io.kotlin_module'
         pickFirst 'META-INF/atomicfu.kotlin_module'
         pickFirst 'META-INF/kotlinx-coroutines-io.kotlin_module'
-    }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = '1.8'
     }
 
 }

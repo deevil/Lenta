@@ -3,6 +3,7 @@ package com.lenta.bp16.platform.databinding
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.lenta.bp16.R
+import com.lenta.bp16.model.GoodTypeIcon
 import com.lenta.bp16.model.IngredientStatusBlock
 import com.lenta.bp16.model.IngredientStatusWork
 import com.lenta.bp16.model.TaskStatus
@@ -53,6 +54,18 @@ fun setIngredientStatusWorkIcon(imageView: ImageView, ingredientStatusWork: Ingr
             })
             setVisible()
         }
+    }
+}
+
+@BindingAdapter("goodTypeIcon")
+fun setGoodTypeIcon(imageView: ImageView, goodTypeIcon: GoodTypeIcon) {
+    imageView.apply {
+            setImageResource(when (goodTypeIcon) {
+                GoodTypeIcon.PLAN ->  R.drawable.ic_plan_attribute_white_32dp
+                GoodTypeIcon.FACT ->  R.drawable.ic_fact_attribute_white_32dp
+                GoodTypeIcon.VET -> R.drawable.ic_mercury_white_32dp
+            })
+            setVisible()
     }
 }
 

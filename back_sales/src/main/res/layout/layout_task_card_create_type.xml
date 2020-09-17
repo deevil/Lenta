@@ -43,8 +43,8 @@
 
                 <EditText
                     style="@style/CellEditTextStyle"
-                    android:text="@={vm.taskName}"
                     android:inputType="textNoSuggestions"
+                    android:text="@={vm.taskName}"
                     tools:text="Возврат от 05.08.2020 15:16" />
 
             </LinearLayout>
@@ -77,12 +77,8 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@string/storage"
-                    android:textColor="@color/color_text_title_header" />
-
-                <TextView
-                    style="@style/CellTextStyle"
-                    android:text="@string/from"
+                    android:singleLine="false"
+                    android:text="@string/picking_warehouse"
                     android:textColor="@color/color_text_title_header" />
 
             </LinearLayout>
@@ -106,7 +102,10 @@
         <View style="@style/HorizontalDivider" />
 
         <!-- Поставщик -->
-        <LinearLayout style="@style/LinearRowStyle">
+        <LinearLayout
+            style="@style/LinearRowStyle"
+            android:visibility="@{!vm.isWholeSaleTask}"
+            >
 
             <LinearLayout style="@style/LinearCellStyle">
 

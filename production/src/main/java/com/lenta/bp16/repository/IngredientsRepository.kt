@@ -1,16 +1,10 @@
 package com.lenta.bp16.repository
 
+import androidx.lifecycle.MutableLiveData
+import com.lenta.bp16.model.ProducerDataInfo
 import com.lenta.bp16.model.ingredients.TechOrderDataInfo
-import com.lenta.bp16.model.ingredients.params.GetIngredientDataParams
-import com.lenta.bp16.model.ingredients.params.GetIngredientsParams
-import com.lenta.bp16.model.ingredients.params.IngredientDataCompleteParams
-import com.lenta.bp16.model.ingredients.params.UnblockIngredientsParams
-import com.lenta.bp16.model.ingredients.results.IngredientDataCompleteResult
-import com.lenta.bp16.model.ingredients.results.IngredientsDataListResult
-import com.lenta.bp16.model.ingredients.results.IngredientsListResult
-import com.lenta.bp16.model.ingredients.results.UnblockOrderIngredientsResult
-import com.lenta.bp16.model.ingredients.ui.IngredientsDataListResultUI
-import com.lenta.bp16.model.ingredients.ui.IngredientsListResultUI
+import com.lenta.bp16.model.ingredients.params.*
+import com.lenta.bp16.model.ingredients.results.*
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
@@ -24,6 +18,7 @@ class IngredientsRepository @Inject constructor(
 ) : IIngredientsRepository {
 
     private val ordersByRemake: MutableList<TechOrderDataInfo> = mutableListOf()
+    private val producersByEan: MutableList<ProducerDataInfo> = mutableListOf()
 
     override suspend fun getAllIngredients(params: GetIngredientsParams): Either<Failure, IngredientsListResult> {
 
@@ -67,11 +62,19 @@ class IngredientsRepository @Inject constructor(
         return ordersByRemake
     }
 
+    override suspend fun getProducerByEan(): List<ProducerDataInfo> {
+        return producersByEan
+    }
+
+    override suspend fun getMercuryDataInfo(params: MercuryDataInfoParams): Either<Failure, MercuryDataInfoResult> {
+        return fmpRequestsHelper.restRequest(FMP_MERCURY_RESOURCE_NAME, params, MercuryDataInfoStatus::class.java)
+    }
+
     companion object {
-        // получение компонентов по заказу и по материалу
+        // Получение компонентов по заказу и по материалу
         private const val FMP_ORDERS_RESOURCE_NAME = "ZMP_UTZ_PRO_10_V001"
 
-        // получение ингредиентов по заказу или по материалу
+        // Получение ингредиентов по заказу или по материалу
         private const val FMP_ORDERS_DATA_RESOURCE_NAME = "ZMP_UTZ_PRO_11_V001"
 
         // Разблокировка объекта
@@ -80,14 +83,18 @@ class IngredientsRepository @Inject constructor(
         // Создание тары для заказа
         private const val FMP_INGREDIENT_COMPLETE = "ZMP_UTZ_PRO_04_V001"
 
-        // сохранение результатов переделки материала
+        // Сохранение результатов переделки материала
         private const val FMP_MATERIAL_COMPLETE = "ZMP_UTZ_PRO_12_V001"
+
+        // Определение данных меркурианской партии по номеру ЕО
+        private const val FMP_MERCURY_RESOURCE_NAME = "ZMP_UTZ_PRO_14_V001"
     }
 
     internal class IngredientsListStatus : ObjectRawStatus<IngredientsListResult>()
     internal class IngredientsDataListStatus : ObjectRawStatus<IngredientsDataListResult>()
     internal class UnlockOrderIngredientsDataStatus : ObjectRawStatus<UnblockOrderIngredientsResult>()
     internal class IngredientDataCompleteStatus : ObjectRawStatus<IngredientDataCompleteResult>()
+    internal class MercuryDataInfoStatus : ObjectRawStatus<MercuryDataInfoResult>()
 }
 
 interface IIngredientsRepository {
@@ -130,4 +137,16 @@ interface IIngredientsRepository {
      * Получаем список переделов
      */
     suspend fun getTechOrdersByRemake(): List<TechOrderDataInfo>
+
+    /**
+     * Получение списка производителей
+     **/
+    suspend fun getProducerByEan(): List<ProducerDataInfo>
+
+    /**
+     * Определение данных по меркурианской партии по номеру ЕО
+     *
+     * @param params - [MercuryDataInfoParams]
+     * */
+    suspend fun getMercuryDataInfo(params: MercuryDataInfoParams): Either<Failure, MercuryDataInfoResult>
 }

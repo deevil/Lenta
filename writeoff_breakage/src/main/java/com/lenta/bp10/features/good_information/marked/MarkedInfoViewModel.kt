@@ -41,8 +41,6 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
         MarkedGoodStampCollector(processMarkedGoodProductService)
     }
 
-    var selectedPage = MutableLiveData(0)
-
     val isSpecialMode = MutableLiveData(false)
 
     private val properties = MutableLiveData(listOf<Property>())
@@ -167,7 +165,7 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
     override fun onScanResult(data: String) {
         actionByNumber(
                 number = data,
-                funcForShoes = { _, markWithoutTail -> actionForMark(markWithoutTail) },
+                funcForShoes = ::actionForMark,
                 funcForCigarettes = ::actionForMark,
                 funcForCigaretteBox = { boxNumber ->
                     if (isSpecialMode.value == false) {
