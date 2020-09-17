@@ -3,15 +3,20 @@ package com.lenta.bp12.platform.extention
 import com.lenta.bp12.R
 import com.lenta.bp12.model.*
 import com.lenta.bp12.model.pojo.TaskType
+import com.lenta.bp12.platform.DATE_STRING_LENGTH
 import com.lenta.bp12.request.pojo.CreateTaskBasketInfo
+import com.lenta.bp12.request.pojo.TaskInfo
 import com.lenta.bp12.request.pojo.good_info.GoodInfoResult
 import com.lenta.bp12.request.pojo.markCartonBoxGoodInfoNetRequest.MarkCartonBoxGoodInfoNetRequestResult
 import com.lenta.bp12.request.pojo.markCartonBoxGoodInfoNetRequest.MarkRequestStatus
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
+import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.utilities.enumValueOrNull
 import com.lenta.shared.utilities.extentions.isSapTrue
 import com.lenta.shared.utilities.orIfNull
 import java.math.BigInteger
+import java.text.SimpleDateFormat
+import java.util.*
 
 fun GoodKind.getDescriptionResId(): Int {
     return when (this) {
@@ -19,18 +24,21 @@ fun GoodKind.getDescriptionResId(): Int {
         GoodKind.ALCOHOL -> R.string.alcohol
         GoodKind.EXCISE -> R.string.excise_alcohol
         GoodKind.MARK -> R.string.marked_good
+        GoodKind.VET -> R.string.vet_good
     }
 }
 
 fun GoodInfoResult.getGoodKind(): GoodKind {
     val isAlcohol = this.materialInfo?.isAlcohol.isSapTrue()
     val isExcise = this.materialInfo?.isExcise.isSapTrue()
+    val isVet = this.materialInfo?.isVet.isSapTrue()
     val isMark = this.materialInfo?.markType.orEmpty().isNotEmpty()
 
     return when {
         isExcise -> GoodKind.EXCISE
         isAlcohol -> GoodKind.ALCOHOL
         isMark -> GoodKind.MARK
+        isVet -> GoodKind.VET
         else -> GoodKind.COMMON
     }
 }
@@ -94,6 +102,23 @@ fun GoodInfoResult.getControlType(): ControlType {
         isMark -> ControlType.MARK
         !isAlcohol && !isVet -> ControlType.COMMON
         isAlcohol && !isVet -> ControlType.ALCOHOL
+        !isAlcohol && isVet -> ControlType.VET
+        isMark -> ControlType.MARK
+        else -> ControlType.UNKNOWN
+    }
+}
+
+fun TaskInfo.getControlType(): ControlType {
+    val isVet = this.isVet.isSapTrue()
+    val isAlcohol = this.isAlco.isSapTrue()
+    val isUsual = this.isUsual.isSapTrue()
+    val isMark = this.isMark.isSapTrue()
+
+    return when {
+        isUsual -> ControlType.COMMON
+        isAlcohol -> ControlType.ALCOHOL
+        isVet -> ControlType.VET
+        isMark -> ControlType.MARK
         else -> ControlType.UNKNOWN
     }
 }
@@ -105,6 +130,48 @@ fun String.addZerosToStart(targetLength: Int): String {
     }
 
     return value
+}
+
+/** Проверка даты на корректность
+ * если дата в формате dd.mm.yyyy */
+private fun String.isDateInFormatDdMmYyyyWithDotsCorrect(): Boolean {
+        return if (this.isNotEmpty() && this.length == DATE_STRING_LENGTH) {
+            try {
+                val splitCheckDate = this.split(".")
+                val day = splitCheckDate[0].toInt()
+                val month = splitCheckDate[1].toInt()
+                val year = splitCheckDate[2].toInt()
+                val monthWith31Days = listOf(1, 3, 5, 7, 8, 10, 12)
+                val monthWith30Days = listOf(4, 6, 9, 11)
+                when {
+                    year < 1 || year > 2100 -> false
+                    monthWith31Days.contains(month) -> day <= 31
+                    monthWith30Days.contains(month) && month != 2 -> day <= 30
+                    year % 4 == 0 -> day <= 29
+                    month == 2 -> day <= 28
+                    else -> false
+                }
+            } catch (e: RuntimeException) {
+                false
+            }
+        } else {
+            false
+        }
+}
+
+/** Проверка даты на корректность и что она не позже сегодняшней даты
+ * если дата в формате dd.mm.yyyy */
+fun String.isDateCorrectAndNotAfterToday(): Boolean {
+    return if (this.isDateInFormatDdMmYyyyWithDotsCorrect()){
+        try{
+            val date = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy, Locale.getDefault()).parse(this)
+            date <= Date()
+        } catch (e: RuntimeException){
+            false
+        }
+    } else {
+        false
+    }
 }
 
 fun String.extractAlcoCode(): String {

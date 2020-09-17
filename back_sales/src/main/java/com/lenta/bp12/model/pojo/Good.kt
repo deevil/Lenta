@@ -30,6 +30,7 @@ class Good(
         val matrix: MatrixType,
         val volume: Double,
         val control: ControlType = ControlType.COMMON,
+        val purchaseGroup: String,
 
         val commonUnits: Uom,
         private val innerUnits: Uom,
@@ -96,6 +97,7 @@ class Good(
     }
 
     fun isTobacco() = this.markType == MarkType.TOBACCO
+
     fun isTobaccoAndFoundGoodHasDifferentMrc(other: Good) =
             this.isTobacco() && maxRetailPrice.isNotEmpty() && maxRetailPrice != other.maxRetailPrice
 
@@ -106,6 +108,9 @@ class Good(
             this.getTotalQuantity() > 0.0
         }
     }
+
+    fun isExciseAlco() = kind == GoodKind.EXCISE
+    fun isMarked() = markType != MarkType.UNKNOWN
 
     fun isNotDeletedAndQuantityNotActual() = !this.isDeleted && !isQuantityActual()
 

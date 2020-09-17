@@ -3,6 +3,7 @@ package com.lenta.bp12.features.basket.basket_good_list
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
+import com.lenta.bp12.features.create_task.task_content.TaskContentFragment
 import com.lenta.bp12.managers.interfaces.ICreateTaskManager
 import com.lenta.bp12.managers.interfaces.IMarkManager
 import com.lenta.bp12.model.*
@@ -10,6 +11,7 @@ import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.create_task.TaskCreate
 import com.lenta.bp12.model.pojo.extentions.*
+import com.lenta.bp12.platform.ZERO_VOLUME
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
 import com.lenta.bp12.platform.extention.getMarkType
@@ -88,7 +90,6 @@ class BasketCreateGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
     val numberField: MutableLiveData<String> = MutableLiveData("")
 
     val goods by unsafeLazy {
-        Logg.e { basket.value.toString() }
         basket.map {
             it?.let { basket ->
                 val list = basket.getGoodList()
@@ -96,7 +97,7 @@ class BasketCreateGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
                     val units = good.commonUnits.name
                     val quantity = basket.goods[good]
 
-                    Logg.e { "freeVolume: ${basket.freeVolume}, isPrinted: ${basket.isPrinted}, isLocked: ${basket.isLocked} goods: ${basket.goods}" }
+                    Logg.d { "freeVolume: ${basket.freeVolume}, isPrinted: ${basket.isPrinted}, isLocked: ${basket.isLocked} goods: ${basket.goods}" }
 
                     ItemGoodUi(
                             position = "${index + 1}",
@@ -143,8 +144,6 @@ class BasketCreateGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
     val isOpenBtnVisible by unsafeLazy {
         MutableLiveData(isWholesaleBasket)
     }
-
-    // -----------------------------
 
     fun onScanResult(data: String) {
         checkEnteredNumber(data)
@@ -194,17 +193,13 @@ class BasketCreateGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
 
     private fun setFoundGood(foundGood: Good) {
         with(navigator) {
-            if (manager.isWholesaleTaskType && foundGood.kind == GoodKind.EXCISE) {
-                showCantAddExciseGoodForWholesale()
+            if (foundGood.isMarked()) {
+                manager.updateCurrentGood(foundGood)
+                openMarkedGoodInfoCreateScreen()
+                showForGoodNeedScanFirstMark()
             } else {
                 manager.updateCurrentGood(foundGood)
-                if (foundGood.markType != MarkType.UNKNOWN) {
-                    openMarkedGoodInfoCreateScreen()
-                    showForGoodNeedScanFirstMark()
-                } else {
-                    openGoodInfoCreateScreen()
-                }
-                Logg.d { "--> found good: $foundGood" }
+                openGoodInfoCreateScreen()
             }
         }
     }
@@ -257,10 +252,18 @@ class BasketCreateGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
 
     private fun handleLoadGoodInfoResult(result: GoodInfoResult) {
         launchUITryCatch {
-            if (manager.isGoodCanBeAdded(result)) {
-                setGood(result)
-            } else {
-                navigator.showGoodCannotBeAdded()
+            val isGoodCanBeAdded = manager.isGoodCanBeAdded(result)
+            val isWholesaleTask = manager.isWholesaleTaskType
+            val goodKind = result.getGoodKind()
+            val isGoodVet = goodKind == GoodKind.VET
+            val isGoodExcise = goodKind == GoodKind.EXCISE
+            with(navigator) {
+                when {
+                    isWholesaleTask && isGoodVet -> showCantAddVetToWholeSale()
+                    isWholesaleTask && isGoodExcise -> showCantAddExciseGoodForWholesale()
+                    isGoodCanBeAdded -> setGood(result)
+                    else -> showGoodCannotBeAdded()
+                }
             }
         }
     }
@@ -295,9 +298,10 @@ class BasketCreateGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
                                 ?: 1.0,
                         providers = providers.orEmpty().toMutableList(),
                         producers = producers.orEmpty().toMutableList(),
-                        volume = materialInfo?.volume?.toDoubleOrNull() ?: 0.0,
+                        volume = materialInfo?.volume?.toDoubleOrNull() ?: ZERO_VOLUME,
                         markType = markType,
-                        markTypeGroup = database.getMarkTypeGroupByMarkType(markType)
+                        markTypeGroup = database.getMarkTypeGroupByMarkType(markType),
+                        purchaseGroup = materialInfo?.purchaseGroup.orEmpty()
                 )
 
                 setFoundGood(good)
@@ -321,7 +325,7 @@ class BasketCreateGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
     }
 
     fun onClickNext() {
-        navigator.goBack()
+        navigator.goBackTo(TaskContentFragment::class.simpleName)
     }
 
     fun onClickProperties() {

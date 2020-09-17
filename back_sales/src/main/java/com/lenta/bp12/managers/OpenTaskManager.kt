@@ -3,11 +3,11 @@ package com.lenta.bp12.managers
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.managers.interfaces.IGeneralTaskManager
 import com.lenta.bp12.managers.interfaces.IOpenTaskManager
-import com.lenta.bp12.model.BlockType
-import com.lenta.bp12.model.ControlType
 import com.lenta.bp12.model.pojo.*
 import com.lenta.bp12.model.pojo.extentions.*
 import com.lenta.bp12.model.pojo.open_task.TaskOpen
+import com.lenta.bp12.platform.DEFAULT_QUANTITY
+import com.lenta.bp12.platform.ZERO_VOLUME
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.isAlcohol
 import com.lenta.bp12.platform.extention.isCommon
@@ -191,12 +191,13 @@ class OpenTaskManager @Inject constructor(
                         val index = basketList.lastOrNull()?.index?.plus(1) ?: INDEX_OF_FIRST_BASKET
                         Basket(
                                 index = index,
-                                section = good.section.takeIf{ task.type?.isDivBySection == true},
+                                section = good.section.takeIf { task.type?.isDivBySection == true },
                                 volume = basketVolume,
-                                provider = provider.takeIf{ task.type?.isDivByProvider == true},
+                                provider = provider.takeIf { task.type?.isDivByProvider == true },
                                 control = good.control,
-                                goodType = good.type.takeIf{ task.type?.isDivByGoodType == true},
-                                markTypeGroup = good.markTypeGroup
+                                goodType = good.type.takeIf { task.type?.isDivByGoodType == true },
+                                markTypeGroup = good.markTypeGroup,
+                                purchaseGroup = good.purchaseGroup.takeIf { task.type?.isDivByPurchaseGroup == true }
                         ).also {
                             it.maxRetailPrice = good.maxRetailPrice
                             addBasket(it)
@@ -211,7 +212,7 @@ class OpenTaskManager @Inject constructor(
         return currentTask.value?.let { task ->
             currentGood.value?.let { good ->
                 task.type?.let { type ->
-                    with(type){
+                    with(type) {
                         task.baskets.lastOrNull { basket ->
                             //Если в задании есть деление по параметру (task.type), то сравниваем,
                             //Если нет — то просто пропускаем как подходящий для корзины
@@ -223,6 +224,8 @@ class OpenTaskManager @Inject constructor(
                             val divByControl = basket.control == good.control
                             val divs = divByMark && divByMrc && divBySection && divByType && divByProviders && divByControl
                             isLastBasketMatches(basket, good, divs)
+                        }?.also {
+                            updateCurrentBasket(it)
                         }
                     }
                 }
@@ -298,30 +301,9 @@ class OpenTaskManager @Inject constructor(
 
     private suspend fun getTaskListFromInfo(tasksInfo: List<TaskInfo>): List<TaskOpen> {
         return tasksInfo.map { taskInfo ->
-            TaskOpen(
-                    number = taskInfo.number.orEmpty(),
-                    name = taskInfo.name.orEmpty(),
+            taskInfo.convertToTaskOpen(
                     type = database.getTaskType(taskInfo.typeCode.orEmpty()),
-                    block = Block(
-                            type = BlockType.from(taskInfo.blockType.orEmpty()),
-                            user = taskInfo.blockUser.orEmpty(),
-                            ip = taskInfo.blockIp.orEmpty()
-                    ),
-                    storage = taskInfo.storage.orEmpty(),
-                    control = ControlType.from(taskInfo.control.orEmpty()),
-                    provider = ProviderInfo(
-                            code = taskInfo.providerCode.orEmpty(),
-                            name = taskInfo.providerName.orEmpty()
-                    ),
-                    reason = database.getReturnReason(taskInfo.typeCode.orEmpty(), taskInfo.reasonCode.orEmpty()),
-                    comment = taskInfo.comment.orEmpty(),
-                    section = taskInfo.section.orEmpty(),
-                    goodType = taskInfo.goodType.orEmpty(),
-                    purchaseGroup = taskInfo.purchaseGroup.orEmpty(),
-                    goodGroup = taskInfo.goodType.orEmpty(),
-                    numberOfGoods = taskInfo.quantity?.toIntOrNull() ?: 0,
-                    isStrict = taskInfo.isStrict.isSapTrue(),
-                    isFinished = !taskInfo.isNotFinish.isSapTrue()
+                    reason = database.getReturnReason(taskInfo.typeCode.orEmpty(), taskInfo.reasonCode.orEmpty())
             )
         }
     }
@@ -377,7 +359,8 @@ class OpenTaskManager @Inject constructor(
                             markType = markType,
                             markTypeGroup = database.getMarkTypeGroupByMarkType(markType),
                             maxRetailPrice = positionInfo.maxRetailPrice?.toDoubleOrNull().dropZeros(),
-                            type = ""
+                            type = "",
+                            purchaseGroup = purchaseGroup
                     )
 
                     factQuantity?.toDoubleOrNull()?.let { factQuantity ->
@@ -416,7 +399,8 @@ class OpenTaskManager @Inject constructor(
                     control = control,
                     provider = taskGoods.firstOrNull()?.provider,
                     volume = basketVolume,
-                    markTypeGroup = markTypeGroup
+                    markTypeGroup = markTypeGroup,
+                    purchaseGroup = restBasket.purchaseGroup
             ).apply {
                 isLocked = restBasket.isClose.isSapTrue()
                 isPrinted = restBasket.isPrint.isSapTrue()
@@ -712,7 +696,5 @@ class OpenTaskManager @Inject constructor(
     companion object {
         private const val NULL_BASKET_VOLUME = "Объем корзины отсутствует"
         private const val INDEX_OF_FIRST_BASKET = 1
-        private const val DEFAULT_QUANTITY = 0.0
-        private const val ZERO_VOLUME = 0.0
     }
 }

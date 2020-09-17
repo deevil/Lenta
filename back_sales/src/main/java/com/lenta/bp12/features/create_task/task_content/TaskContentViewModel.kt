@@ -1,6 +1,7 @@
 package com.lenta.bp12.features.create_task.task_content
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
 import com.lenta.bp12.features.basket.ItemWholesaleBasketUi
 import com.lenta.bp12.managers.interfaces.ICreateTaskManager
@@ -12,6 +13,7 @@ import com.lenta.bp12.model.pojo.create_task.TaskCreate
 import com.lenta.bp12.model.pojo.extentions.getDescription
 import com.lenta.bp12.model.pojo.extentions.isAnyNotLocked
 import com.lenta.bp12.model.pojo.extentions.isAnyPrinted
+import com.lenta.bp12.platform.ZERO_VOLUME
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
 import com.lenta.bp12.platform.extention.getMarkType
@@ -165,18 +167,24 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     Кнопки нижнего тулбара
      */
 
-    val deleteEnabled = selectedPage.combineLatest(goodSelectionsHelper.selectedPositions)
-            .combineLatest(basketSelectionsHelper.selectedPositions).map {
-                val tab = it!!.first.first
-                val isGoodSelected = it.first.second.isNotEmpty()
-                val isBasketSelected = it.second.isNotEmpty()
-
-                tab == 0 && isGoodSelected || tab == 1 && isBasketSelected
+    val deleteEnabled by unsafeLazy {
+        selectedPage.switchMap { tab ->
+            goodSelectionsHelper.selectedPositions.switchMap { selectedGoods ->
+                basketSelectionsHelper.selectedPositions.switchMap {  selectedBaskets ->
+                    liveData {
+                        val isGoodSelected = selectedGoods.isNotEmpty()
+                        val isBasketSelected = selectedBaskets.isNotEmpty()
+                        val result = (tab == GOOD_TAB_INDEX && isGoodSelected) || (tab == BASKET_TAB_INDEX && isBasketSelected)
+                        emit(result)
+                    }
+                }
             }
+        }
+    }
 
     val printVisibility by lazy {
         selectedPage.map { tab ->
-            manager.isWholesaleTaskType && tab == 1
+            manager.isWholesaleTaskType && tab == BASKET_TAB_INDEX
         }
     }
 
@@ -276,20 +284,17 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     private fun setFoundGood(foundGood: Good) {
         with(navigator) {
-            if (manager.isWholesaleTaskType && foundGood.kind == GoodKind.EXCISE) {
-                showCantAddExciseGoodForWholesale()
+            manager.updateCurrentGood(foundGood)
+            if (foundGood.isMarked()) {
+                openMarkedGoodInfoCreateScreen()
+                showForGoodNeedScanFirstMark()
             } else {
                 manager.updateCurrentGood(foundGood)
-                if (foundGood.markType != MarkType.UNKNOWN) {
-                    openMarkedGoodInfoCreateScreen()
-                    showForGoodNeedScanFirstMark()
-                } else {
-                    openGoodInfoCreateScreen()
-                }
-                Logg.d { "--> found good: $foundGood" }
+                openGoodInfoCreateScreen()
             }
         }
     }
+
 
     private suspend fun loadGoodInfoByEan(ean: String) {
         navigator.showProgressLoadingData(::handleFailure)
@@ -319,10 +324,18 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     private fun handleLoadGoodInfoResult(result: GoodInfoResult) {
         launchUITryCatch {
-            if (manager.isGoodCanBeAdded(result)) {
-                setGood(result)
-            } else {
-                navigator.showGoodCannotBeAdded()
+            val isGoodCanBeAdded = manager.isGoodCanBeAdded(result)
+            val isWholesaleTask = manager.isWholesaleTaskType
+            val goodKind = result.getGoodKind()
+            val isGoodVet = goodKind == GoodKind.VET
+            val isGoodExcise = goodKind == GoodKind.EXCISE
+            with(navigator) {
+                when {
+                    isWholesaleTask && isGoodVet -> showCantAddVetToWholeSale()
+                    isWholesaleTask && isGoodExcise -> showCantAddExciseGoodForWholesale()
+                    isGoodCanBeAdded -> setGood(result)
+                    else -> showGoodCannotBeAdded()
+                }
             }
         }
     }
@@ -335,40 +348,35 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     private fun setGood(result: GoodInfoResult) {
         launchUITryCatch {
             with(result) {
-                task.value?.let { task ->
-                    val taskType = task.type
-                    val goodEan = eanInfo?.ean.orEmpty()
-                    val markType = getMarkType()
+                val goodEan = eanInfo?.ean.orEmpty()
+                val markType = getMarkType()
 
-                    val good = Good(
-                            ean = goodEan,
-                            eans = database.getEanListByMaterialUnits(
-                                    material = materialInfo?.material.orEmpty(),
-                                    unitsCode = materialInfo?.commonUnitsCode.orEmpty()
-                            ),
-                            material = materialInfo?.material.orEmpty(),
-                            name = materialInfo?.name.orEmpty(),
-                            kind = getGoodKind(),
-                            type = materialInfo?.goodType.orEmpty(),
-                            control = getControlType(),
-                            section = materialInfo?.section.orEmpty(),
-                            matrix = getMatrixType(materialInfo?.matrix.orEmpty()),
-                            commonUnits = database.getUnitsByCode(materialInfo?.commonUnitsCode.orEmpty()),
-                            innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
-                            innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull()
-                                    ?: 1.0,
-                            providers = providers.orEmpty().toMutableList(),
-                            producers = producers.orEmpty().toMutableList(),
-                            volume = materialInfo?.volume?.toDoubleOrNull() ?: 0.0,
-                            markType = markType,
-                            markTypeGroup = database.getMarkTypeGroupByMarkType(markType)
-                    )
+                val good = Good(
+                        ean = goodEan,
+                        eans = database.getEanListByMaterialUnits(
+                                material = materialInfo?.material.orEmpty(),
+                                unitsCode = materialInfo?.commonUnitsCode.orEmpty()
+                        ),
+                        material = materialInfo?.material.orEmpty(),
+                        name = materialInfo?.name.orEmpty(),
+                        kind = getGoodKind(),
+                        type = materialInfo?.goodType.orEmpty(),
+                        control = getControlType(),
+                        section = materialInfo?.section.orEmpty(),
+                        matrix = getMatrixType(materialInfo?.matrix.orEmpty()),
+                        commonUnits = database.getUnitsByCode(materialInfo?.commonUnitsCode.orEmpty()),
+                        innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
+                        innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull()
+                                ?: 1.0,
+                        providers = providers.orEmpty().toMutableList(),
+                        producers = producers.orEmpty().toMutableList(),
+                        volume = materialInfo?.volume?.toDoubleOrNull() ?: ZERO_VOLUME,
+                        markType = markType,
+                        markTypeGroup = database.getMarkTypeGroupByMarkType(markType),
+                        purchaseGroup = materialInfo?.purchaseGroup.orEmpty()
+                )
 
-                    setFoundGood(good)
-                }.orIfNull {
-                    Logg.e { "task null" }
-                    navigator.showInternalError(resource.taskNotFoundErrorMsg)
-                }
+                setFoundGood(good)
             }
         }
     }

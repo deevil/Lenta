@@ -15,6 +15,7 @@ import com.lenta.bp12.model.actionByNumber
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.extentions.addMarks
+import com.lenta.bp12.platform.DEFAULT_QUANTITY
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -127,7 +128,7 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
     }
 
     override val quantity = quantityField.map {
-        it?.toDoubleOrNull() ?: DEFAULT_QUANTITY_VALUE
+        it?.toDoubleOrNull() ?: DEFAULT_QUANTITY
     }
 
     /**
@@ -159,10 +160,10 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
                 totalQuantity.switchMap { totalQuantity ->
                     basketQuantity.switchMap { basketQuantity ->
                         liveData {
-                            val isEnteredQuantityNotZero = enteredQuantity != DEFAULT_QUANTITY_VALUE
-                            val isTotalQuantityMoreThenZero = totalQuantity > DEFAULT_QUANTITY_VALUE
+                            val isEnteredQuantityNotZero = enteredQuantity != DEFAULT_QUANTITY
+                            val isTotalQuantityMoreThenZero = totalQuantity > DEFAULT_QUANTITY
 
-                            val result = isProviderSelected && isEnteredQuantityNotZero && isTotalQuantityMoreThenZero && basketQuantity > DEFAULT_QUANTITY_VALUE
+                            val result = isProviderSelected && isEnteredQuantityNotZero && isTotalQuantityMoreThenZero && basketQuantity > DEFAULT_QUANTITY
                             emit(result)
                         }
                     }
@@ -382,8 +383,9 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
 
     override fun saveChangesAndExit() {
         launchUITryCatch {
+            navigator.showProgressLoadingData()
             saveChanges()
-            navigator.goBack()
+            navigator.hideProgress()
             navigator.openBasketCreateGoodListScreen()
             manager.isBasketsNeedsToBeClosed = false
             markManager.clearData()
@@ -469,9 +471,5 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
                 navigator.showInternalError(resource.goodNotFoundErrorMsg)
             }
         }
-    }
-
-    companion object {
-        private const val DEFAULT_QUANTITY_VALUE = 0.0
     }
 }

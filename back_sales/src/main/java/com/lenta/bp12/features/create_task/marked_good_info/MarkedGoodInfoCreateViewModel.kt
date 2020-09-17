@@ -13,6 +13,7 @@ import com.lenta.bp12.model.actionByNumber
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.extentions.addMarks
+import com.lenta.bp12.platform.DEFAULT_QUANTITY
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -22,10 +23,7 @@ import com.lenta.bp12.request.ScanInfoNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.launchAsyncTryCatch
-import com.lenta.shared.utilities.extentions.launchUITryCatch
-import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.unsafeLazy
+import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.orIfNull
 import javax.inject.Inject
 
@@ -109,6 +107,12 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
         }
     }
 
+    val isBasketNumberVisible by unsafeLazy {
+        tempMarks.mapSkipNulls {
+            it.isNotEmpty()
+        }
+    }
+
     /**
      * Все сканированные марки хранятся в этом списке до нажатия кнопки применить.
      * После нажатия применить все марки обрабатываются менедежером по корзинам и сохраняется в задании.
@@ -133,7 +137,7 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
     }
 
     override val quantity = quantityField.map {
-        it?.toDoubleOrNull() ?: 0.0
+        it?.toDoubleOrNull() ?: DEFAULT_QUANTITY
     }
 
     /**
@@ -402,7 +406,6 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
             navigator.showProgressLoadingData()
             saveChanges()
             navigator.hideProgress()
-            navigator.goBack()
             navigator.openBasketCreateGoodListScreen()
             manager.isBasketsNeedsToBeClosed = false
             markManager.clearData()
@@ -487,9 +490,5 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
                 navigator.showInternalError(resource.goodNotFoundErrorMsg)
             }
         }
-    }
-
-    companion object{
-        private const val DEFAULT_QUANTITY = 0.0
     }
 }
