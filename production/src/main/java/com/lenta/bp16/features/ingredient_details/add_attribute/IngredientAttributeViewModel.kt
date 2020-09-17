@@ -8,6 +8,13 @@ import com.lenta.bp16.model.ingredients.ui.OrderIngredientDataInfoUI
 import com.lenta.bp16.model.ingredients.ui.ProducerDataInfoUI
 import com.lenta.bp16.model.ingredients.ui.ZPartDataInfoUI
 import com.lenta.bp16.platform.Constants
+import com.lenta.bp16.platform.Constants.HOUR_RANGE
+import com.lenta.bp16.platform.Constants.MINUTES_RANGE
+import com.lenta.bp16.platform.Constants.MONTH_WITH_28_DAY
+import com.lenta.bp16.platform.Constants.MONTH_WITH_29_DAY
+import com.lenta.bp16.platform.Constants.MONTH_WITH_30_DAY
+import com.lenta.bp16.platform.Constants.MONTH_WITH_31_DAY
+import com.lenta.bp16.platform.Constants.YEAR_RANGE_2000_TO_2100
 import com.lenta.bp16.platform.base.IZpartVisibleConditions
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.repository.IDatabaseRepository
@@ -151,12 +158,13 @@ class IngredientAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
             val year = splitCheckDate[2].toInt()
             val monthWith31Days = listOf(1, 3, 5, 7, 8, 10, 12)
             val monthWith30Days = listOf(4, 6, 9, 11)
+            val leapYear = (year % 4 == 0) //Условие високосного года
             when {
-                year < Constants.YEAR_RANGE_START || year > Constants.YEAR_RANGE_END -> false
-                monthWith31Days.contains(month) -> day <= Constants.MONTH_WITH_31_DAY
-                monthWith30Days.contains(month) && month != 2 -> day <= Constants.MONTH_WITH_30_DAY
-                year % 4 == 0 -> day <= Constants.MONTH_WITH_29_DAY
-                month == 2 -> day <= Constants.MONTH_WITH_28_DAY
+                year in YEAR_RANGE_2000_TO_2100 -> false
+                monthWith31Days.contains(month) -> day <= MONTH_WITH_31_DAY
+                monthWith30Days.contains(month) && month != 2 -> day <= MONTH_WITH_30_DAY
+                leapYear  -> day <= MONTH_WITH_29_DAY
+                month == 2 -> day <= MONTH_WITH_28_DAY
                 else -> false
             }
         } else {
@@ -173,7 +181,7 @@ class IngredientAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
                 val splitCheckTime = checkTime.split(":")
                 val hours = splitCheckTime[0].toInt()
                 val minutes = splitCheckTime[1].toInt()
-                hours in Constants.HOUR_RANGE_START..Constants.HOUR_RANGE_END && minutes in Constants.MINUTES_RANGE_START..Constants.MINUTES_RANGE_END
+                hours in HOUR_RANGE && minutes in MINUTES_RANGE
             } else {
                 false
             }
