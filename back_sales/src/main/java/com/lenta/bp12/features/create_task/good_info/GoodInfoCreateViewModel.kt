@@ -18,10 +18,7 @@ import com.lenta.bp12.model.pojo.extentions.addPosition
 import com.lenta.bp12.platform.DEFAULT_POSITION
 import com.lenta.bp12.platform.DEFAULT_QUANTITY
 import com.lenta.bp12.platform.ZERO_VOLUME
-import com.lenta.bp12.platform.extention.extractAlcoCode
-import com.lenta.bp12.platform.extention.getControlType
-import com.lenta.bp12.platform.extention.getGoodKind
-import com.lenta.bp12.platform.extention.isDateCorrectAndNotAfterToday
+import com.lenta.bp12.platform.extention.*
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -845,15 +842,6 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
     }
 
     override fun afterTextChanged(s: Editable?) {
-        val regex = Regex("^-?\$|^\\d+\$|^(-?\\d+)\$")
-        val quantity = quantityField.value ?: ""
-        if(s?.matches(regex) == false) {
-            val indexOfLast = quantity.indexOfLast { it == '-' }
-            val newQuantity = buildString {
-                append(quantity.substring(0, indexOfLast))
-                append(quantity.substring(indexOfLast + 1, quantity.length))
-            }
-            quantityField.value = newQuantity
-        }
+        quantityField.value = s.returnWithNoSecondMinus()
     }
 }

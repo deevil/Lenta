@@ -1,5 +1,6 @@
 package com.lenta.bp12.platform.extention
 
+import android.text.Editable
 import com.lenta.bp12.R
 import com.lenta.bp12.model.*
 import com.lenta.bp12.model.pojo.TaskType
@@ -59,7 +60,8 @@ fun MarkCartonBoxGoodInfoNetRequestResult.getMarkStatus(): MarkStatus {
 
         MarkRequestStatus.MARK_NOT_FOUND_IN_TASK,
         MarkRequestStatus.MARK_NOT_FOUND_OR_PROBLEMATIC,
-        MarkRequestStatus.MARK_OF_DIFFERENT_GOOD -> MarkStatus.BAD_MARK
+        MarkRequestStatus.MARK_OF_DIFFERENT_GOOD
+        -> MarkStatus.BAD_MARK
 
         MarkRequestStatus.CARTON_FOUND_OR_GRAYZONE -> MarkStatus.GOOD_CARTON
 
@@ -67,14 +69,16 @@ fun MarkCartonBoxGoodInfoNetRequestResult.getMarkStatus(): MarkStatus {
         MarkRequestStatus.CARTON_NOT_FOUND,
         MarkRequestStatus.CARTON_NOT_FOUND_IN_TASK,
         MarkRequestStatus.CARTON_OF_DIFFERENT_GOOD,
-        MarkRequestStatus.CARTON_OLD -> MarkStatus.BAD_CARTON
+        MarkRequestStatus.CARTON_OLD
+        -> MarkStatus.BAD_CARTON
 
         MarkRequestStatus.BOX_FOUND -> MarkStatus.GOOD_BOX
 
         MarkRequestStatus.BOX_NOT_FOUND,
         MarkRequestStatus.BOX_OF_DIFFERENT_GOOD,
         MarkRequestStatus.BOX_INCOMPLETE,
-        MarkRequestStatus.BOX_NOT_FOUND_IN_TASK -> MarkStatus.BAD_BOX
+        MarkRequestStatus.BOX_NOT_FOUND_IN_TASK
+        -> MarkStatus.BAD_BOX
 
         else -> MarkStatus.UNKNOWN
     }
@@ -135,43 +139,71 @@ fun String.addZerosToStart(targetLength: Int): String {
 /** Проверка даты на корректность
  * если дата в формате dd.mm.yyyy */
 private fun String.isDateInFormatDdMmYyyyWithDotsCorrect(): Boolean {
-        return if (this.isNotEmpty() && this.length == DATE_STRING_LENGTH) {
-            try {
-                val splitCheckDate = this.split(".")
-                val day = splitCheckDate[0].toInt()
-                val month = splitCheckDate[1].toInt()
-                val year = splitCheckDate[2].toInt()
-                val monthWith31Days = listOf(1, 3, 5, 7, 8, 10, 12)
-                val monthWith30Days = listOf(4, 6, 9, 11)
-                when {
-                    year < 1 || year > 2100 -> false
-                    monthWith31Days.contains(month) -> day <= 31
-                    monthWith30Days.contains(month) && month != 2 -> day <= 30
-                    year % 4 == 0 -> day <= 29
-                    month == 2 -> day <= 28
-                    else -> false
-                }
-            } catch (e: RuntimeException) {
-                false
+    return if (this.isNotEmpty() && this.length == DATE_STRING_LENGTH) {
+        try {
+            val splitCheckDate = this.split(".")
+            val day = splitCheckDate[0].toInt()
+            val month = splitCheckDate[1].toInt()
+            val year = splitCheckDate[2].toInt()
+            val monthWith31Days = listOf(1, 3, 5, 7, 8, 10, 12)
+            val monthWith30Days = listOf(4, 6, 9, 11)
+            when {
+                year < 1 || year > 2100 -> false
+                monthWith31Days.contains(month) -> day <= 31
+                monthWith30Days.contains(month) && month != 2 -> day <= 30
+                year % 4 == 0 -> day <= 29
+                month == 2 -> day <= 28
+                else -> false
             }
-        } else {
-            false
-        }
-}
-
-/** Проверка даты на корректность и что она не позже сегодняшней даты
- * если дата в формате dd.mm.yyyy */
-fun String.isDateCorrectAndNotAfterToday(): Boolean {
-    return if (this.isDateInFormatDdMmYyyyWithDotsCorrect()){
-        try{
-            val date = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy, Locale.getDefault()).parse(this)
-            date <= Date()
-        } catch (e: RuntimeException){
+        } catch (e: RuntimeException) {
             false
         }
     } else {
         false
     }
+}
+
+/** Проверка даты на корректность и что она не позже сегодняшней даты
+ * если дата в формате dd.mm.yyyy */
+fun String.isDateCorrectAndNotAfterToday(): Boolean {
+    return if (this.isDateInFormatDdMmYyyyWithDotsCorrect()) {
+        try {
+            val date = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy, Locale.getDefault()).parse(this)
+            date <= Date()
+        } catch (e: RuntimeException) {
+            false
+        }
+    } else {
+        false
+    }
+}
+/**
+ * Метод проверяет по регулярке есть ли второй минус в строке (учитывая что в строку может попасть только цифры и минус)
+ * Использовать вместе с
+ * TextViewBindingAdapter.AfterTextChanged
+ * fun afterTextChanged(s: Editable?)
+ * */
+fun Editable?.returnWithNoSecondMinus(): String {
+    val regex = Regex(Constants.STRING_WITH_ONLY_ONE_MINUS_IN_BEGINNING_PATTERN)
+    val quantity = this.toString()
+    return if(!quantity.matches(regex)) {
+        quantity.deleteSecondMinus()
+    } else quantity
+}
+
+/**
+ * Метод удаляет второй минус в строке
+ * Использовать только если строка не проходит по регулярке Constants.STRING_WITH_ONLY_ONE_MINUS_IN_BEGINNING_PATTERN
+ * */
+private fun String.deleteSecondMinus(): String {
+    val newString = this
+    val indexOfLast = newString.indexOfLast { it == '-' }
+    return if (indexOfLast > 0) {
+        buildString {
+            append(newString.substring(0, indexOfLast))
+            append(newString.substring(indexOfLast + 1, newString.length))
+        }
+    } else newString
 }
 
 fun String.extractAlcoCode(): String {
