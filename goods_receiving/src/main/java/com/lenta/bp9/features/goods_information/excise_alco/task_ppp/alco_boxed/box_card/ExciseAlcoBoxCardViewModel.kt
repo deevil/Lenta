@@ -321,11 +321,11 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
                             typeDiscrepancies = TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
                     )
         } else {
-            isBoxSAP(box, typeDiscrepancies)
+            chekScannedBoxBelongsAnotherProduct(box, typeDiscrepancies)
         }
     }
 
-    private fun isBoxSAP(box: TaskBoxInfo, typeDiscrepancies: String) {
+    private fun chekScannedBoxBelongsAnotherProduct(box: TaskBoxInfo, typeDiscrepancies: String) {
         if (box.materialNumber != productInfo.value!!.materialNumber) {
             //Отсканированная коробка принадлежит товару <SAP-код> <Название>
             val productInfoByMaterial = zfmpUtz48V001.getProductInfoByMaterial(box.materialNumber)

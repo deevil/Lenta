@@ -457,7 +457,7 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
              */
             boxSurplus(scannedExciseStamp)
         } else { //https://trello.com/c/iOmIb6N7 Карточка короба
-            markSurplus(data, scannedExciseStamp)
+            checkSurplusExciseStamp(data, scannedExciseStamp)
         }
     }
 
@@ -469,16 +469,16 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
-    private fun markSurplus(data: String, scannedExciseStamp: TaskExciseStampInfo?) {
+    private fun checkSurplusExciseStamp(data: String, scannedExciseStamp: TaskExciseStampInfo?) {
         if (scannedExciseStamp == null) {
-            isSurplusMark(data)
+            surplusMark(data)
         } else {
-            isNotSurplusMark(data, scannedExciseStamp)
+            notSurplusMark(data, scannedExciseStamp)
         }
     }
 
 
-    private fun isSurplusMark(data: String) {
+    private fun surplusMark(data: String) {
         screenNavigator.openScannedStampBoxPGENotFoundDialog( //Отсканированная марка не найдена. Пометить ее как излишек? В случае согласия необходимо будет отсканировать все марки в текущей коробке.
                 nextCallbackFunc = {
                     //https://trello.com/c/lWYJ43Pe
@@ -517,15 +517,15 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
         )
     }
 
-    private fun isNotSurplusMark(data: String, scannedExciseStamp: TaskExciseStampInfo) {
+    private fun notSurplusMark(data: String, scannedExciseStamp: TaskExciseStampInfo) {
         if (processExciseAlcoBoxAccPGEService.exciseStampIsAlreadyProcessed(data)) {
             screenNavigator.openAlertScannedStampIsAlreadyProcessedScreen() //АМ уже обработана
         } else {
-            SAPMark(scannedExciseStamp)
+            chekScannedStampBelongsAnotherProductOrFromAnotherBox(scannedExciseStamp)
         }
     }
 
-    private fun SAPMark(scannedExciseStamp: TaskExciseStampInfo) {
+    private fun chekScannedStampBelongsAnotherProductOrFromAnotherBox(scannedExciseStamp: TaskExciseStampInfo) {
         if (scannedExciseStamp.materialNumber != productInfo.value!!.materialNumber) {
             //Отсканированная марка принадлежит товару <SAP-код> <Название>"
             screenNavigator.openAlertScannedStampBelongsAnotherProductScreen(
@@ -567,29 +567,29 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
 
     private fun checkScannedBox(data: String) {
         if (enabledApplyBtn.value == true) { //Функция доступна только при условии, что доступна кнопка "Применить". (ПГЕ https://trello.com/c/TzUSGIH7
-            isAllBoxesProcessed(data)
+            allBoxesProcessed(data)
         }
     }
 
-    private fun isAllBoxesProcessed(data: String) {
+    private fun allBoxesProcessed(data: String) {
         if (processExciseAlcoBoxAccPGEService.getCountBoxOfProductOfDiscrepancies(data) >= processExciseAlcoBoxAccPGEService.getCountAcceptRefusal()) {
             screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
         } else {
-            boxInfo(data)
+            checkScanedBoxNotFound(data)
         }
     }
 
-    private fun boxInfo (data: String) {
+    private fun checkScanedBoxNotFound (data: String) {
         val boxInfo = processExciseAlcoBoxAccPGEService.searchBox(boxNumber = data)
         if (boxInfo == null) {
             scannedBoxNumber.value = data
             scannedBoxNotFound(data)
         } else {
-            isBoxSAP(boxInfo)
+            chekScannedBoxBelongsAnotherProduct(boxInfo)
         }
     }
 
-    private fun isBoxSAP(boxInfo: TaskBoxInfo) {
+    private fun chekScannedBoxBelongsAnotherProduct(boxInfo: TaskBoxInfo) {
         if (boxInfo.materialNumber != productInfo.value!!.materialNumber) {
             //Отсканированная коробка принадлежит товару <SAP-код> <Название>
             screenNavigator.openAlertScannedBoxBelongsAnotherProductScreen(
