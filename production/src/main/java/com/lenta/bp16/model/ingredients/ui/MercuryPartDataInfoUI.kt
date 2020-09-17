@@ -12,5 +12,5 @@ data class MercuryPartDataInfoUI (
         /**Наименование производителя*/
         override val prodName: String,
         /**Дата производства*/
-        val prodDate: String
+        override val prodDate: String
 ): IDataInfo

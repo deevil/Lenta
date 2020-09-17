@@ -226,13 +226,12 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
                 navigator.showAlertProducerCodeNotFound()
             } else {
                 disableSpinner.value = addedAttribute.value?.let { false }.orIfNull { true }
-                checkProducerInfo()
-                checkDataInfo()
+                checkProduceAndDataInfo()
             }
         }
     }
 
-    private fun checkProducerInfo() {
+    private fun checkProduceAndDataInfo() {
         /** Если был передан производитель из AddAttributeFragment, то заполнять данными из нее*/
         val addedAttributeIsNotEmpty = !addedAttribute.value?.name.isNullOrBlank()
         val orderIngredientIsVet = materialIngredient.value?.isVet.isSapTrue()
@@ -247,38 +246,15 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
                 zPartDataInfo.value?.distinctAndAddFirstValue({ it.prodName to it.prodCode }, { it.prodName })
             }
         }
-    }
-
-    private fun checkDataInfo() {
-        /** Если была передана дата из AddAttributeFragment, то заполнять данными из нее*/
-        val addedAttributeIsNotEmpty = !addedAttribute.value?.date.isNullOrBlank()
-        val orderIngredientIsVet = materialIngredient.value?.isVet.isSapTrue()
-        when {
+        productionDateField.value = when {
             addedAttributeIsNotEmpty -> {
-                addedAttribute.value?.let { addAttributeDataInfoList ->
-                    val productionDate = addAttributeDataInfoList.date
-                    productionDateField.value = listOf(productionDate)
-                }
+                addedAttribute.value?.run { listOf(date) }
             }
             orderIngredientIsVet -> {
-                mercuryDataInfo.value?.let { mercuryDataInfoList ->
-                    val dateListWithoutRepeat = mercuryDataInfoList.distinctBy { it.prodDate }
-                    val productionDate = dateListWithoutRepeat.map { it.prodDate }.toMutableList()
-                    if (productionDate.size > 1) {
-                        productionDate.add(0, Constants.CHOOSE_PRODUCTION_DATE)
-                    }
-                    productionDateField.value = productionDate
-                }
+                mercuryDataInfo.value?.distinctAndAddFirstValue({ it.prodDate }, { it.prodDate })
             }
             else -> {
-                zPartDataInfo.value?.let { zpartDataInfoList ->
-                    val dateListWithoutRepeat = zpartDataInfoList.distinctBy { it.prodDate }
-                    val productionDate = dateListWithoutRepeat.map { it.prodDate }.toMutableList()
-                    if (productionDate.size > 1) {
-                        productionDate.add(0, Constants.CHOOSE_PRODUCTION_DATE)
-                    }
-                    productionDateField.value = productionDate
-                }
+                zPartDataInfo.value?.distinctAndAddFirstValue({ it.prodDate }, { it.prodDate })
             }
         }
     }
@@ -308,7 +284,6 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
             }
         }
     }
-
 
     fun onCompleteClicked() = launchUITryCatch {
         val weight = total.value ?: 0.0

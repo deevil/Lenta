@@ -32,9 +32,9 @@ fun getFieldWithSuffix(field: String?, suffix: String): String {
 
 fun <T : IDataInfo, K> Iterable<T>.distinctAndAddFirstValue(selector: (T) -> K, mapper: (T) -> String): List<String> {
     val listWithoutRepeat = this.distinctBy(selector)
-    val producerNameList = listWithoutRepeat.map(mapper).toMutableList()
-    if (producerNameList.size > 1) {
-        producerNameList.add(0, Constants.CHOOSE_PRODUCER)
+    val list = listWithoutRepeat.map(mapper).toMutableList()
+    if (list.size > 1) {
+        list.add(0, Constants.CHOOSE_ITEM)
     }
-    return producerNameList
+    return list
 }

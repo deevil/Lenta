@@ -19,8 +19,7 @@ object Constants {
     const val QUANTITY_DEFAULT_VALUE_1 = 1.0
     const val QUANTITY_DEFAULT_VALUE_0 = 0.0
 
-    const val CHOOSE_PRODUCER = "Выберите производителя"
-    const val CHOOSE_PRODUCTION_DATE = "Выберите дату производства"
+    const val CHOOSE_ITEM = "Выберите пункт из списка"
 
     const val HOURS_IN_DAY = 24
     const val MINUTES_IN_HOUR = 60
