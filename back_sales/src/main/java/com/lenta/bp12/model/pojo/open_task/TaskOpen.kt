@@ -103,5 +103,11 @@ data class TaskOpen(
         baskets.removeAll(baskets.filter { it.getGoodList().isEmpty() })
     }
 
+    override fun getBasketsByGood(good: Good): List<Basket> {
+        return baskets.filter { basket ->
+            basket.getGoodList().any { it.material == good.material }
+        }
+    }
+
     fun isMrcNotInTaskMrcList(formattedMrc: String) = this.mrcList.none { it.maxRetailPrice == formattedMrc }
 }

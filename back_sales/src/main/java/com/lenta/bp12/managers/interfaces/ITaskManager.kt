@@ -26,9 +26,9 @@ interface ITaskManager{
     val currentBasket: MutableLiveData<Basket>
 
     fun addBasket(basket: Basket)
-    fun getBasket(providerCode: String, goodToAdd: Good): Basket?
+    suspend fun getBasket(providerCode: String, goodToAdd: Good): Basket?
 
-    suspend fun addGoodToBasket(good: Good, part: Part? = null, provider: ProviderInfo, count: Double)
+    suspend fun addOrDeleteGoodToBasket(good: Good, part: Part? = null, provider: ProviderInfo, count: Double)
     suspend fun addGoodToBasketWithMark(good: Good, mark: Mark, provider: ProviderInfo)
     suspend fun addGoodToBasketWithMarks(good: Good, marks: List<Mark>, provider: ProviderInfo)
 

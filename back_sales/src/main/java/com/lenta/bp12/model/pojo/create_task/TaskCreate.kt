@@ -24,7 +24,7 @@ data class TaskCreate(
         return "${type.code} // $name"
     }
 
-    fun getBasketsByGood(good: Good): List<Basket> {
+    override fun getBasketsByGood(good: Good): List<Basket> {
         return baskets.filter { basket ->
             basket.getGoodList().any { it.material == good.material }
         }
