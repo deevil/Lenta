@@ -502,7 +502,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
                         innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
                         innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull()
                                 ?: DEFAULT_QUANTITY,
-                        provider = task.value?.provider ?: ProviderInfo(),
+                        provider = task.value?.takeIf { manager.isWholesaleTaskType.not() }?.provider ?: ProviderInfo.getEmptyProvider(),
                         producers = producers.orEmpty().toMutableList(),
                         volume = materialInfo?.volume?.toDoubleOrNull() ?: ZERO_VOLUME,
                         type = materialInfo?.goodType.orEmpty(),

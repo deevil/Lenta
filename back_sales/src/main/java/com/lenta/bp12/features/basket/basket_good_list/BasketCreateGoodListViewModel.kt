@@ -296,7 +296,7 @@ class BasketCreateGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
                         innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
                         innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull()
                                 ?: 1.0,
-                        providers = providers.orEmpty().toMutableList(),
+                        providers = providers.takeIf { manager.isWholesaleTaskType.not() }.orEmpty().toMutableList(),
                         producers = producers.orEmpty().toMutableList(),
                         volume = materialInfo?.volume?.toDoubleOrNull() ?: ZERO_VOLUME,
                         markType = markType,
