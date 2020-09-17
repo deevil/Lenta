@@ -239,6 +239,7 @@ class ProcessZBatchesPGEService
                                 manufactureCode = manufactureCode,
                                 shelfLifeDate = shelfLifeDate,
                                 shelfLifeTime = shelfLifeTime,
+                                productionDate = "", //todo скопировать из ППП
                                 partySign = partySignsType
                         )
 

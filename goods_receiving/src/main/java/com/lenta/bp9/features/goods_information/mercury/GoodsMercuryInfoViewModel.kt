@@ -9,9 +9,13 @@ import com.lenta.bp9.features.delegates.SearchProductDelegate
 import com.lenta.bp9.model.processing.*
 import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_WAREHOUSE_MARRIAGE
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
@@ -415,7 +419,7 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
         }
     }
 
-    fun onClickDetails(){
+    fun onClickDetails() {
         screenNavigator.openGoodsDetailsScreen(productInfo.value!!)
     }
 
@@ -431,14 +435,14 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
                 expirationDate.value!!.add(Calendar.DATE, generalShelfLife.value?.toInt() ?: 0)
 
                 if (expirationDate.value!!.time <= currentDate.value
-                        && (currentQualityInfoCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
-                                || currentQualityInfoCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS)) {
+                        && (currentQualityInfoCode == TYPE_DISCREPANCIES_QUALITY_NORM
+                                || currentQualityInfoCode == TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS)) {
                     screenNavigator.openShelfLifeExpiredDialog(
                             yesCallbackFunc = {
                                 //устанавливаем брак складской (как и в обычном товаре, Маша Стоян)
                                 spinQualitySelectedPosition.value =
                                         qualityInfo.value
-                                                ?.indexOfLast { it.code == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_WAREHOUSE_MARRIAGE }
+                                                ?.indexOfLast { it.code == TYPE_DISCREPANCIES_QUALITY_PGE_WAREHOUSE_MARRIAGE }
                                                 ?: -1
                             }
                     )
