@@ -139,7 +139,7 @@ fun String.addZerosToStart(targetLength: Int): String {
 /** Проверка даты на корректность
  * если дата в формате dd.mm.yyyy */
 private fun String.isDateInFormatDdMmYyyyWithDotsCorrect(): Boolean {
-    return if (this.isNotEmpty() && this.length == DATE_STRING_LENGTH) {
+    return if (this.isNotEmpty() && (this.length == DATE_STRING_LENGTH)) {
         try {
             val splitCheckDate = this.split(".")
             val day = splitCheckDate[0].toInt()
@@ -148,11 +148,11 @@ private fun String.isDateInFormatDdMmYyyyWithDotsCorrect(): Boolean {
             val monthWith31Days = listOf(1, 3, 5, 7, 8, 10, 12)
             val monthWith30Days = listOf(4, 6, 9, 11)
             when {
-                year < 1 || year > 2100 -> false
+                (year < 1) || (year > 2100) -> false
                 monthWith31Days.contains(month) -> day <= 31
-                monthWith30Days.contains(month) && month != 2 -> day <= 30
-                year % 4 == 0 -> day <= 29
-                month == 2 -> day <= 28
+                monthWith30Days.contains(month) && (month != 2) -> day <= 30
+                (year % 4 == 0) -> day <= 29
+                (month == 2) -> day <= 28
                 else -> false
             }
         } catch (e: RuntimeException) {
@@ -168,7 +168,11 @@ private fun String.isDateInFormatDdMmYyyyWithDotsCorrect(): Boolean {
 fun String.isDateCorrectAndNotAfterToday(): Boolean {
     return if (this.isDateInFormatDdMmYyyyWithDotsCorrect()) {
         try {
-            val date = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy, Locale.getDefault()).parse(this)
+            val date = SimpleDateFormat(
+                    Constants.DATE_FORMAT_dd_mm_yyyy,
+                    Locale.getDefault()
+            ).parse(this)
+            
             date <= Date()
         } catch (e: RuntimeException) {
             false
@@ -177,6 +181,7 @@ fun String.isDateCorrectAndNotAfterToday(): Boolean {
         false
     }
 }
+
 /**
  * Метод проверяет по регулярке есть ли второй минус в строке (учитывая что в строку может попасть только цифры и минус)
  * Использовать вместе с
@@ -186,9 +191,11 @@ fun String.isDateCorrectAndNotAfterToday(): Boolean {
 fun Editable?.returnWithNoSecondMinus(): String {
     val regex = Regex(Constants.STRING_WITH_ONLY_ONE_MINUS_IN_BEGINNING_PATTERN)
     val quantity = this.toString()
-    return if(!quantity.matches(regex)) {
+    return if (!quantity.matches(regex)) {
         quantity.deleteSecondMinus()
-    } else quantity
+    } else {
+        quantity
+    }
 }
 
 /**
