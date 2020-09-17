@@ -6,7 +6,6 @@ import com.lenta.bp16.data.IScales
 import com.lenta.bp16.model.AddAttributeProdInfo
 import com.lenta.bp16.model.BatchNewDataInfoParam
 import com.lenta.bp16.model.GoodTypeIcon
-import com.lenta.bp16.model.managers.IAttributeManager
 import com.lenta.bp16.model.ingredients.OrderByBarcode
 import com.lenta.bp16.model.ingredients.params.IngredientDataCompleteParams
 import com.lenta.bp16.model.ingredients.params.MaterialDataCompleteParams
@@ -14,9 +13,10 @@ import com.lenta.bp16.model.ingredients.ui.MaterialIngredientDataInfoUI
 import com.lenta.bp16.model.ingredients.ui.MercuryPartDataInfoUI
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
 import com.lenta.bp16.model.ingredients.ui.ZPartDataInfoUI
-import com.lenta.bp16.model.managers.ITechOrderManager
+import com.lenta.bp16.model.managers.IAttributeManager
 import com.lenta.bp16.platform.Constants
 import com.lenta.bp16.platform.base.IZpartVisibleConditions
+import com.lenta.bp16.platform.extention.distinctAndAddFirstValue
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.platform.resource.IResourceManager
 import com.lenta.bp16.request.CompleteIngredientByMaterialNetRequest
@@ -108,19 +108,17 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
 
     /** Условие отображения производителя */
     val producerVisibleCondition by unsafeLazy {
-        materialIngredient.switchMap { ingredient ->
-            producerConditions.switchMap { cond ->
-                asyncLiveData<Boolean> {
-                    val isVet = ingredient.isVet.isSapTrue()
-                    val isZPart = ingredient.isZpart.isSapTrue()
-                    val condition = when {
-                        isVet -> true
-                        !isVet && isZPart -> cond.first
-                        else -> false
-                    }
-                    alertNotFoundProducerName.postValue(cond.second)
-                    emit(condition)
+        materialIngredient.mapSkipNulls { ingredient ->
+            producerConditions.mapSkipNulls { cond ->
+                val isVet = ingredient.isVet.isSapTrue()
+                val isZPart = ingredient.isZpart.isSapTrue()
+                val condition = when {
+                    isVet -> true
+                    !isVet && isZPart -> cond.first
+                    else -> false
                 }
+                alertNotFoundProducerName.value = cond.second
+                condition
             }
         }
     }
@@ -238,36 +236,15 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
         /** Если был передан производитель из AddAttributeFragment, то заполнять данными из нее*/
         val addedAttributeIsNotEmpty = !addedAttribute.value?.name.isNullOrBlank()
         val orderIngredientIsVet = materialIngredient.value?.isVet.isSapTrue()
-        when {
+        producerNameField.value = when {
             addedAttributeIsNotEmpty -> {
-                addedAttribute.value?.let { addAttributeDataInfoList ->
-                    val producerName = addAttributeDataInfoList.name
-                    producerNameField.value = listOf(producerName)
-                }
+                addedAttribute.value?.run { listOf(name) }
             }
             orderIngredientIsVet -> {
-                mercuryDataInfo.value?.let { mercuryDataInfoList ->
-                    val listWithoutRepeat = mercuryDataInfoList.distinctBy {
-                        Pair(it.prodName, it.zProd)
-                    }
-                    val producerNameList = listWithoutRepeat.map { it.prodName }.toMutableList()
-                    if (producerNameList.size > 1) {
-                        producerNameList.add(0, Constants.CHOOSE_PRODUCER)
-                    }
-                    producerNameField.value = producerNameList
-                }
+                mercuryDataInfo.value?.distinctAndAddFirstValue({ it.prodName to it.prodCode }, { it.prodName })
             }
             else -> {
-                zPartDataInfo.value?.let { zpartDataInfoList ->
-                    val listWithoutRepeat = zpartDataInfoList.distinctBy {
-                        Pair(it.prodName, it.prodCode)
-                    }
-                    val producerNameList = listWithoutRepeat.map { it.prodName }.toMutableList()
-                    if (producerNameList.size > 1) {
-                        producerNameList.add(0, Constants.CHOOSE_PRODUCER)
-                    }
-                    producerNameField.value = producerNameList
-                }
+                zPartDataInfo.value?.distinctAndAddFirstValue({ it.prodName to it.prodCode }, { it.prodName })
             }
         }
     }

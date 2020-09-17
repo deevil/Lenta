@@ -218,7 +218,7 @@
 
         <ImageButton
             android:visibility="@{vm.vetIconInfoCondition}"
-            android:id="@+id/ib_scan_code-128"
+            android:id="@+id/ib_scan_code_128"
             android:layout_margin="@dimen/size_8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/ib_scan_barcode_gs1"

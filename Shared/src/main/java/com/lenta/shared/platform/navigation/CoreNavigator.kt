@@ -313,40 +313,50 @@ class CoreNavigator @Inject constructor(
 
     override fun openGS1InfoScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(message = iconDescriptionHelper.getDescription(IconCode.GS1_CODE)
-                    ?: context.getString(R.string.gs1_info),
+            val message = iconDescriptionHelper.getDescription(IconCode.GS1_CODE)
+                    ?: context.getString(R.string.gs1_info)
+
+            getFragmentStack()?.push(AlertFragment.create(message = message,
                     iconRes = R.drawable.ic_scan_barcode_gs1_white_80dp), CustomAnimation.vertical)
         }
     }
 
     override fun openPlanInfoScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(message = iconDescriptionHelper.getDescription(IconCode.ICON_PLAN)
-                    ?: context.getString(R.string.plan_info),
+            val message = iconDescriptionHelper.getDescription(IconCode.ICON_PLAN)
+                    ?: context.getString(R.string.plan_info)
+
+            getFragmentStack()?.push(AlertFragment.create(message = message,
                     iconRes = R.drawable.ic_plan_attribute_white_80dp), CustomAnimation.vertical)
         }
     }
 
     override fun openFactInfoScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(message = iconDescriptionHelper.getDescription(IconCode.ICON_FACT)
-                    ?: context.getString(R.string.fact_info),
+            val message = iconDescriptionHelper.getDescription(IconCode.ICON_FACT)
+                    ?: context.getString(R.string.fact_info)
+
+            getFragmentStack()?.push(AlertFragment.create(message = message,
                     iconRes = R.drawable.ic_fact_attribute_white_80dp), CustomAnimation.vertical)
         }
     }
 
     override fun openVetInfoScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(message = iconDescriptionHelper.getDescription(IconCode.ICON_VET)
-                    ?: context.getString(R.string.vet_info),
+            val message = iconDescriptionHelper.getDescription(IconCode.ICON_VET)
+                    ?: context.getString(R.string.vet_info)
+
+            getFragmentStack()?.push(AlertFragment.create(message = message,
                     iconRes = R.drawable.ic_mercury_white_80dp), CustomAnimation.vertical)
         }
     }
 
     override fun openCode128InfoScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(message = iconDescriptionHelper.getDescription(IconCode.GS128_CODE)
-                    ?: context.getString(R.string.code128_info),
+            val message = iconDescriptionHelper.getDescription(IconCode.GS128_CODE)
+                    ?: context.getString(R.string.code128_info)
+
+            getFragmentStack()?.push(AlertFragment.create(message = message,
                     iconRes = R.drawable.ic_scan_barcode_code128_white_80dp), CustomAnimation.vertical)
         }
     }
