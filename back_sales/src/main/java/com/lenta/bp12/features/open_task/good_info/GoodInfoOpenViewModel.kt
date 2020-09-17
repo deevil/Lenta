@@ -1,5 +1,7 @@
 package com.lenta.bp12.features.open_task.good_info
 
+import android.text.Editable
+import androidx.databinding.adapters.TextViewBindingAdapter
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
@@ -16,10 +18,7 @@ import com.lenta.bp12.model.pojo.extentions.addPosition
 import com.lenta.bp12.platform.DEFAULT_POSITION
 import com.lenta.bp12.platform.DEFAULT_QUANTITY
 import com.lenta.bp12.platform.ZERO_VOLUME
-import com.lenta.bp12.platform.extention.extractAlcoCode
-import com.lenta.bp12.platform.extention.getControlType
-import com.lenta.bp12.platform.extention.getGoodKind
-import com.lenta.bp12.platform.extention.isDateCorrectAndNotAfterToday
+import com.lenta.bp12.platform.extention.*
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -46,7 +45,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
+class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapter.AfterTextChanged {
 
     @Inject
     override lateinit var navigator: IScreenNavigator
@@ -874,10 +873,12 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
         }
     }
 
+    override fun afterTextChanged(s: Editable?) {
+        quantityField.value = s.returnWithNoSecondMinus()
+    }
+
     companion object {
         private const val DEFAULT_QUANTITY_STRING_FOR_EAN = "1"
         private const val DEFAULT_QUANTITY_STRING = "0"
-        private const val DEFAULT_DATE_LENGTH = 10
     }
-
 }
