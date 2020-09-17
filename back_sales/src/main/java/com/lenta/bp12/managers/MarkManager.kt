@@ -320,7 +320,6 @@ class MarkManager @Inject constructor(
             container: Pair<String, Mark.Container>? = null,
             mrc: String = ""
     ): MarkScreenStatus {
-        val taskFromManager = createManager.currentTask
         val goodFromManager = createManager.currentGood
         val good = goodFromManager.value
         return with(result) {
@@ -352,7 +351,7 @@ class MarkManager @Inject constructor(
                         purchaseGroup = materialInfo?.purchaseGroup.orEmpty()
                 )
 
-                if(createdGood.material != good?.material) {
+                if(good != null && createdGood.material != good.material) {
                     createdGoodToShowError.value = createdGood
                     MarkScreenStatus.NOT_SAME_GOOD
                 }
@@ -467,8 +466,8 @@ class MarkManager @Inject constructor(
             container: Pair<String, Mark.Container>? = null
     ): MarkScreenStatus {
         val manager = chooseManager()
-
-        return if(foundGood.material != manager.currentGood.value?.material) {
+        val currentGood = manager.currentGood.value
+        return if(currentGood != null && foundGood.material != currentGood.material) {
             createdGoodToShowError.value = foundGood
             MarkScreenStatus.NOT_SAME_GOOD
         } else {

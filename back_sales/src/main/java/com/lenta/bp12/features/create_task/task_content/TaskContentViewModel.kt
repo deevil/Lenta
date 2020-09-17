@@ -239,6 +239,10 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                     navigator.hideProgress()
                     navigator.openMarkedGoodInfoCreateScreen()
                 }
+                MarkScreenStatus.CANT_SCAN_PACK -> {
+                    navigator.hideProgress()
+                    navigator.showCantScanPackAlert()
+                }
                 MarkScreenStatus.NO_MARKTYPE_IN_SETTINGS -> {
                     navigator.hideProgress()
                     navigator.showNoMarkTypeInSettings()
@@ -500,7 +504,6 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
                     }
             )
         }
-
     }
 
     fun onClickSave() {
