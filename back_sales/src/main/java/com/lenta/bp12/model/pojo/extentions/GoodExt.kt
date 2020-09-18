@@ -100,3 +100,6 @@ fun Good.getScreenStatus(): ScreenStatus {
         else -> ScreenStatus.VET
     }
 }
+
+fun Good.isGoodHasSameEan(otherEan: String) = this.ean == otherEan || this.eans.contains(otherEan)
+fun Good.isGoodHasSameMaxRetailPrice(otherMrc: String) = this.maxRetailPrice == otherMrc

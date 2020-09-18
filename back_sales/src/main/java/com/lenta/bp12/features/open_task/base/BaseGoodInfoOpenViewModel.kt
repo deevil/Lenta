@@ -1,10 +1,11 @@
 package com.lenta.bp12.features.open_task.base
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.features.open_task.base.interfaces.IBaseGoodInfoOpenViewModel
+import androidx.lifecycle.switchMap
 import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.extentions.getQuantityOfGood
-import com.lenta.bp12.platform.DEFAULT_POSITION
-import com.lenta.bp12.platform.DEFAULT_QUANTITY
+import com.lenta.bp12.platform.FIRST_POSITION
+import com.lenta.bp12.platform.ZERO_QUANTITY
 import com.lenta.bp12.platform.extention.isWholesaleType
 import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -88,10 +89,9 @@ abstract class BaseGoodInfoOpenViewModel : CoreViewModel(), IBaseGoodInfoOpenVie
     /**
      * Корзины
      * */
-
     override val basketNumber by unsafeLazy {
-        good.combineLatest(quantity).combineLatest(isProviderSelected).map {
-            it?.let {
+        good.combineLatest(quantity).combineLatest(isProviderSelected).switchMap {
+            asyncTryCatchLiveData {
                 val isProviderSelected = it.second
 
                 if (isProviderSelected) {
@@ -106,16 +106,18 @@ abstract class BaseGoodInfoOpenViewModel : CoreViewModel(), IBaseGoodInfoOpenVie
     }
 
     override val basketQuantity by unsafeLazy {
-        good.combineLatest(quantity).combineLatest(isProviderSelected).map {
-            it?.let {
+        good.combineLatest(quantity).combineLatest(isProviderSelected).switchMap {
+            asyncTryCatchLiveData {
                 val good = it.first.first
                 val enteredQuantity = it.first.second
                 val isProviderSelected = it.second
 
-                if (isProviderSelected) {
+                val result = if (isProviderSelected) {
                     getBasket()?.getQuantityOfGood(good)?.sumWith(enteredQuantity)
                             ?: enteredQuantity
-                } else DEFAULT_QUANTITY
+                } else ZERO_QUANTITY
+
+                result
             }
         }
     }
@@ -165,16 +167,16 @@ abstract class BaseGoodInfoOpenViewModel : CoreViewModel(), IBaseGoodInfoOpenVie
 
     override val isProviderSelected = providerEnabled.combineLatest(providerPosition).map {
         val isEnabled = it?.first ?: false
-        val position = it?.second ?: DEFAULT_POSITION
+        val position = it?.second ?: FIRST_POSITION
 
         isProviderEnabledAndPositionChanged(isEnabled, position)  or
                 isProviderNotEnabledAndPositionDidntChanged(isEnabled, position)
     }
 
     private fun isProviderEnabledAndPositionChanged(isEnabled: Boolean, position: Int)
-            = isEnabled && position > DEFAULT_POSITION
+            = isEnabled && position > FIRST_POSITION
     private fun isProviderNotEnabledAndPositionDidntChanged(isEnabled: Boolean, position: Int)
-            = !isEnabled && position == DEFAULT_POSITION
+            = !isEnabled && position == FIRST_POSITION
 
     /**
     Количество товара по корзинам
@@ -201,7 +203,7 @@ abstract class BaseGoodInfoOpenViewModel : CoreViewModel(), IBaseGoodInfoOpenVie
      * */
 
     val plannedQuantity by unsafeLazy {
-        good.value?.planQuantity ?: DEFAULT_QUANTITY
+        good.value?.planQuantity ?: ZERO_QUANTITY
     }
 
     val isPlannedQuantityMoreThanZero by unsafeLazy {
@@ -224,7 +226,7 @@ abstract class BaseGoodInfoOpenViewModel : CoreViewModel(), IBaseGoodInfoOpenVie
         }
     }
 
-    override fun getBasket(): Basket? {
+    override suspend fun getBasket(): Basket? {
         val good = good.value
         return good?.let {
             manager.getBasket(it.provider.code.orEmpty(), it)

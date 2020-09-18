@@ -37,8 +37,8 @@ interface IBaseGoodInfoCreateViewModel {
     val totalQuantity: MutableLiveData<Double>
     val totalWithUnits: MutableLiveData<String>
 
-    val basketNumber: MutableLiveData<String>
-    val basketQuantity: MutableLiveData<Double>
+    val basketNumber: LiveData<String>
+    val basketQuantity: LiveData<Double>
     val basketQuantityWithUnits: MutableLiveData<String>
 
     val sourceProviders: MutableLiveData<MutableList<ProviderInfo>>
@@ -59,7 +59,7 @@ interface IBaseGoodInfoCreateViewModel {
     fun onScanResult(number: String)
 
     fun checkSearchNumber(number: String)
-    fun getBasket(good: Good): Basket?
+    suspend fun getBasket(good: Good): Basket?
 
     fun updateData()
     fun onClickApply()

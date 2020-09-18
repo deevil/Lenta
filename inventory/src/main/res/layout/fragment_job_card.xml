@@ -233,7 +233,7 @@
             android:layout_marginBottom="8dp"
             android:background="?selectableItemBackground"
             android:src="@drawable/ic_excise_alcohol_white_32dp"
-            app:alcoIcon="@{vm.productType}"
+            app:goodTypeIcon="@{vm.productType}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 

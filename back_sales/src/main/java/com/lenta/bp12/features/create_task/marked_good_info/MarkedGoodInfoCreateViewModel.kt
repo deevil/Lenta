@@ -13,7 +13,7 @@ import com.lenta.bp12.model.actionByNumber
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.extentions.addMarks
-import com.lenta.bp12.platform.DEFAULT_QUANTITY
+import com.lenta.bp12.platform.ZERO_QUANTITY
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -137,7 +137,7 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
     }
 
     override val quantity = quantityField.map {
-        it?.toDoubleOrNull() ?: DEFAULT_QUANTITY
+        it?.toDoubleOrNull() ?: ZERO_QUANTITY
     }
 
     /**
@@ -169,9 +169,9 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
                 totalQuantity.switchMap { totalQuantity ->
                     basketQuantity.switchMap { basketQuantity ->
                         liveData {
-                            val isEnteredQuantityNotZero = enteredQuantity != DEFAULT_QUANTITY
-                            val isTotalQuantityMoreThenZero = totalQuantity > DEFAULT_QUANTITY
-                            val result = isProviderSelected && isEnteredQuantityNotZero && isTotalQuantityMoreThenZero && basketQuantity > DEFAULT_QUANTITY
+                            val isEnteredQuantityNotZero = enteredQuantity != ZERO_QUANTITY
+                            val isTotalQuantityMoreThenZero = totalQuantity > ZERO_QUANTITY
+                            val result = isProviderSelected && isEnteredQuantityNotZero && isTotalQuantityMoreThenZero && basketQuantity > ZERO_QUANTITY
                             emit(result)
                         }
                     }

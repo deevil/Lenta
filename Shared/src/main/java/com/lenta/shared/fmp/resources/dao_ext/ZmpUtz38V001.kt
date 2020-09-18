@@ -25,6 +25,11 @@ enum class IconCode(val code: String) {
     TASK_WITH_ALCO("10"),
     QR_CODE("11"),
     MARKING_GOODS("14"),
-    EXCEPTIONS_SHELF_LIFE("16")
+    EXCEPTIONS_SHELF_LIFE("16"),
+    GS1_CODE("23"),
+    GS128_CODE("24"),
+    ICON_FACT("25"),
+    ICON_PLAN("26"),
+    ICON_VET("27")
 }
 

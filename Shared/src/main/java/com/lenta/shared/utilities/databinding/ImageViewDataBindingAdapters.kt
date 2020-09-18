@@ -1,8 +1,5 @@
 package com.lenta.shared.utilities.databinding
 
-import android.os.Build
-import android.view.View.FOCUSABLE_AUTO
-import android.view.View.NOT_FOCUSABLE
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.lenta.shared.R
@@ -16,11 +13,12 @@ fun setImageSrc(imageView: ImageView, imageRes: Int) {
     imageView.setImageResource(imageRes)
 }
 
-@BindingAdapter("alcoIcon")
-fun setAlcoIcon(imageView: ImageView, productType: ProductType?) {
+@BindingAdapter("goodTypeIcon")
+fun setGoodTypeIcon(imageView: ImageView, productType: ProductType?) {
     (when (productType) {
         ProductType.NonExciseAlcohol -> R.drawable.ic_no_excise_alcohol_white_32dp
         ProductType.ExciseAlcohol -> R.drawable.ic_excise_alcohol_white_32dp
+        ProductType.Marked -> R.drawable.ic_marked_white_32dp
         else -> 0
     }).let { iconRes ->
         imageView.setImageResource(iconRes)
@@ -66,12 +64,5 @@ fun setStrictListIcon(imageView: ImageView, isStrictList: Boolean?) {
                 imageView.setOnClickListener(null)
             }
         }
-    }
-}
-
-@BindingAdapter("focusable")
-fun setAlcoIcon(imageView: ImageView, focusable: Boolean?) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        imageView.focusable = if (focusable == true) FOCUSABLE_AUTO else NOT_FOCUSABLE
     }
 }

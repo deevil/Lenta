@@ -2,13 +2,14 @@ package com.lenta.bp12.model.pojo.extentions
 
 import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.Good
+import com.lenta.bp12.platform.ZERO_QUANTITY
 import com.lenta.shared.utilities.orIfNull
 
 fun Basket.addGood(good: Good, quantity: Double) {
     val goodWholeVolume = good.volume * quantity
     if (freeVolume >= goodWholeVolume) {
         freeVolume -= (good.volume * quantity)
-        val oldQuantity = goods[good].orIfNull { 0.0 }
+        val oldQuantity = goods[good].orIfNull { ZERO_QUANTITY }
         val newQuantity = quantity + oldQuantity
         goods[good] = newQuantity
     }
@@ -17,7 +18,7 @@ fun Basket.addGood(good: Good, quantity: Double) {
 fun Basket.deleteGood(good: Good) {
     val basketsFreeVolumePlusGoodsVolume = freeVolume + good.volume
     if (basketsFreeVolumePlusGoodsVolume <= volume) {
-        val oldQuantity = goods[good].orIfNull { 0.0 }
+        val oldQuantity = goods[good].orIfNull { ZERO_QUANTITY }
         val volumeToReturnToBasket = oldQuantity * good.volume
         freeVolume += volumeToReturnToBasket
         goods.remove(good)
@@ -32,7 +33,7 @@ fun Basket.deleteGoodByMarks(good: Good) {
     val oldQuantity = this.goods[good]
     oldQuantity?.let {
         val newQuantity = it - quantityToDel
-        if (newQuantity == 0.0) {
+        if (newQuantity == ZERO_QUANTITY) {
             this.deleteGood(good)
         } else {
             minusQuantityOfGood(good, quantityToDel, newQuantity)
@@ -40,7 +41,7 @@ fun Basket.deleteGoodByMarks(good: Good) {
     }
 }
 
-private fun Basket.minusQuantityOfGood(good: Good, quantityToDel: Double, newQuantity: Double) {
+fun Basket.minusQuantityOfGood(good: Good, quantityToDel: Double, newQuantity: Double) {
     val volumeToReturnToBasket = quantityToDel * good.volume
     val freeVolumePlusGoodsVolume = freeVolume + volumeToReturnToBasket
     if (freeVolumePlusGoodsVolume <= volume) {

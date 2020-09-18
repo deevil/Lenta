@@ -1,6 +1,7 @@
-package com.lenta.bp16.model
+package com.lenta.bp16.model.managers
 
 import androidx.lifecycle.MutableLiveData
+import com.lenta.bp16.model.AddAttributeProdInfo
 
 interface IAttributeManager {
 

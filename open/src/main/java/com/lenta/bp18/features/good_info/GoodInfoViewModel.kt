@@ -20,6 +20,7 @@ import com.lenta.shared.requests.network.ServerTimeRequest
 import com.lenta.shared.requests.network.ServerTimeRequestParam
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.extentions.isSapTrue
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
@@ -130,9 +131,14 @@ class GoodInfoViewModel : CoreViewModel() {
         //partNumberField.value = /*значение*/
 
         val groupList = database.getAllGoodGroup()
-
-        selectedGroup.value = findSelectedIndexForGroup(groupList)
+        val filteredGroupList = filterGroupList(groupList)
+        selectedGroup.value = findSelectedIndexForGroup(filteredGroupList)
         selectedCondition.value = findSelectedIndexForCondition(conditionList)
+    }
+
+    private suspend fun filterGroupList(groupList: List<GroupInfo>): List<GroupInfo> = withContext(Dispatchers.IO) {
+        val currentMarket = sessionInfo.market
+        groupList.filter { it.werks == currentMarket }
     }
 
     private suspend fun getQuantityFieldFromGood(good: Good) {
@@ -176,7 +182,7 @@ class GoodInfoViewModel : CoreViewModel() {
     private suspend fun findSelectedIndexForCondition(conditionList: List<ConditionInfo>): Int = withContext(Dispatchers.IO) {
         var selectedIndex = 0
         conditionList.forEachIndexed { index, conditionInfo ->
-            if (conditionInfo.defCondition == DEF_COND_FLAG) {
+            if (conditionInfo.defCondition.isSapTrue()) {
                 currentCondition = conditionInfo.name
                 selectedIndex = index
                 return@forEachIndexed
@@ -250,6 +256,5 @@ class GoodInfoViewModel : CoreViewModel() {
 
     companion object {
         private const val DEF_WEIGHT = "0"
-        private const val DEF_COND_FLAG = "X"
     }
 }

@@ -3,10 +3,18 @@ package com.lenta.bp16.features.ingredient_details.add_attribute
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.switchMap
 import com.lenta.bp16.model.AddAttributeProdInfo
-import com.lenta.bp16.model.IAttributeManager
+import com.lenta.bp16.model.managers.IAttributeManager
 import com.lenta.bp16.model.ingredients.ui.OrderIngredientDataInfoUI
 import com.lenta.bp16.model.ingredients.ui.ProducerDataInfoUI
 import com.lenta.bp16.model.ingredients.ui.ZPartDataInfoUI
+import com.lenta.bp16.platform.Constants
+import com.lenta.bp16.platform.Constants.HOUR_RANGE
+import com.lenta.bp16.platform.Constants.MINUTES_RANGE
+import com.lenta.bp16.platform.Constants.MONTH_WITH_28_DAY
+import com.lenta.bp16.platform.Constants.MONTH_WITH_29_DAY
+import com.lenta.bp16.platform.Constants.MONTH_WITH_30_DAY
+import com.lenta.bp16.platform.Constants.MONTH_WITH_31_DAY
+import com.lenta.bp16.platform.Constants.YEAR_RANGE_2000_TO_2100
 import com.lenta.bp16.platform.base.IZpartVisibleConditions
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.repository.IDatabaseRepository
@@ -20,6 +28,8 @@ import com.lenta.shared.requests.network.ServerTime
 import com.lenta.shared.requests.network.ServerTimeRequest
 import com.lenta.shared.requests.network.ServerTimeRequestParam
 import com.lenta.shared.utilities.extentions.*
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
 
 class IngredientAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
@@ -81,11 +91,10 @@ class IngredientAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
 
     /** Условие отображения производителя */
     val producerVisibleCondition by unsafeLazy {
-        asyncLiveData<Boolean> {
-            val cond = producerConditions
+        producerConditions.mapSkipNulls { cond ->
             val condition = cond.first
-            alertNotFoundProducerName.postValue(cond.second)
-            emit(condition)
+            alertNotFoundProducerName.value = cond.second
+            condition
         }
     }
 
@@ -98,7 +107,7 @@ class IngredientAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
 
     private suspend fun checkTimeFieldVisibleCondition(): Boolean {
         val visibleCondition: Boolean
-        val timeParams = database.getPerishable()?.div(DIVIDER) ?: 0
+        val timeParams = database.getPerishable()?.div(Constants.HOURS_IN_DAY) ?: 0
         val shelfLife = orderIngredient.value?.shelfLife?.toInt() ?: 0
         visibleCondition = shelfLife < timeParams
         return visibleCondition
@@ -149,11 +158,13 @@ class IngredientAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
             val year = splitCheckDate[2].toInt()
             val monthWith31Days = listOf(1, 3, 5, 7, 8, 10, 12)
             val monthWith30Days = listOf(4, 6, 9, 11)
-            when{
-                monthWith31Days.contains(month) -> day <= 31
-                monthWith30Days.contains(month) && month != 2 -> day <= 30
-                year % 4 == 0 -> day <= 29
-                month == 2 -> day <= 28
+            val leapYear = (year % 4 == 0) //Условие високосного года
+            when {
+                year in YEAR_RANGE_2000_TO_2100 -> false
+                monthWith31Days.contains(month) -> day <= MONTH_WITH_31_DAY
+                monthWith30Days.contains(month) && month != 2 -> day <= MONTH_WITH_30_DAY
+                leapYear  -> day <= MONTH_WITH_29_DAY
+                month == 2 -> day <= MONTH_WITH_28_DAY
                 else -> false
             }
         } else {
@@ -170,7 +181,7 @@ class IngredientAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
                 val splitCheckTime = checkTime.split(":")
                 val hours = splitCheckTime[0].toInt()
                 val minutes = splitCheckTime[1].toInt()
-                hours in 0..23 && minutes in 0..59
+                hours in HOUR_RANGE && minutes in MINUTES_RANGE
             } else {
                 false
             }
@@ -179,24 +190,35 @@ class IngredientAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
         }
     }
 
-/*    */
-    /**Проверка на истечение срока годности*//*
+
+    /**Проверка на истечение срока годности*/
     private fun checkShelfLife(): Boolean {
         val date = dateInfoField.value.orEmpty()
-        val time = timeField.value.orEmpty()
-
-    }*/
+        return if (date.isNotEmpty() && date.length == DATE_LENGTH) {
+            val shelfLife = orderIngredient.value?.shelfLife?.toLong() ?: 0
+            val currentDate = timeMonitor.getServerDate().getFormattedDateLongYear()
+            val sdf = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy, Locale.US)
+            val shelfLifeToMillSec = shelfLife * Constants.CONVERT_TO_MILLISECOND_VALUE
+            val prodDate = sdf.parse(date).time //Дата производства в миллисекундах
+            val checkCurrentDate = sdf.parse(currentDate) //Дата проверки
+            val expiredDateInString = sdf.format(prodDate + shelfLifeToMillSec) //Дата истечения срока годности в миллисекундах
+            val expiredDate = sdf.parse(expiredDateInString)
+            checkCurrentDate.before(expiredDate)
+        } else {
+            true
+        }
+    }
 
     fun onClickComplete() = launchUITryCatch {
         setDateInfo()
         setTimeInfo()
         val dateIsCorrect = checkDate()
         val timeIsCorrect = checkTime()
-        //val shelfLifeCorrect = checkShelfLife()
+        val shelfLifeCorrect = checkShelfLife()
         when {
             !dateIsCorrect -> navigator.showAlertWrongDate()
             !timeIsCorrect -> navigator.showAlertWrongTime()
-            //!shelfLifeCorrect -> navigator.showAlertShelfLifeExpired()
+            !shelfLifeCorrect -> navigator.showAlertShelfLifeExpired()
             else -> {
                 val producerIndex = selectedProducerPosition.getOrDefaultWithNull()
                 val producerSelected = producerNameList.getOrEmpty(producerIndex)
@@ -217,8 +239,5 @@ class IngredientAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
     companion object {
         const val DATE_LENGTH = 10
         const val TIME_LENGTH = 5
-
-        /** Значение, на которое необходимо поделить параметр GRZ_PERISHABLE_HH */
-        const val DIVIDER = 24
     }
 }

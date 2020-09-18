@@ -34,8 +34,9 @@ import com.lenta.bp16.features.tech_orders_list.TechOrdersListViewModel
 import com.lenta.bp16.features.warehouse_selection.WarehouseSelectionViewModel
 import com.lenta.bp16.main.MainActivity
 import com.lenta.bp16.main.MainViewModel
-import com.lenta.bp16.model.IAttributeManager
+import com.lenta.bp16.model.managers.IAttributeManager
 import com.lenta.bp16.model.ITaskManager
+import com.lenta.bp16.model.managers.ITechOrderManager
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.platform.resource.IResourceManager
 import com.lenta.bp16.repository.IDatabaseRepository
@@ -57,6 +58,7 @@ interface AppComponent : CoreComponent, FromParentToCoreProvider {
     fun getTaskManager(): ITaskManager
     fun getResourceManager(): IResourceManager
     fun getAttributeManager(): IAttributeManager
+    fun getTechOrderManager(): ITechOrderManager
     fun getScales(): IScales
     fun getPrinter(): IPrinter
 

@@ -2,6 +2,8 @@ package com.lenta.bp16.features.tech_orders_list
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp16.model.ingredients.ui.ItemTechOrderUi
+import com.lenta.bp16.model.ingredients.ui.TechOrderDataInfoUI
+import com.lenta.bp16.model.managers.ITechOrderManager
 import com.lenta.bp16.platform.extention.getFieldWithSuffix
 import com.lenta.bp16.platform.resource.IResourceManager
 import com.lenta.bp16.request.GetTechOrdersUseCase
@@ -13,10 +15,14 @@ import javax.inject.Inject
 class TechOrdersListViewModel : CoreViewModel() {
 
     @Inject
-    lateinit var getTechOrdersUseCase: GetTechOrdersUseCase
+    lateinit var resourceManager: IResourceManager
 
     @Inject
-    lateinit var resourceManager: IResourceManager
+    lateinit var techOrderManager: ITechOrderManager
+
+    val techOrderList by unsafeLazy {
+        MutableLiveData<List<TechOrderDataInfoUI>>()
+    }
 
     // суффикс
     val suffix: String by unsafeLazy {
@@ -34,17 +40,17 @@ class TechOrdersListViewModel : CoreViewModel() {
 
     init {
         launchUITryCatch {
-            getTechOrdersUseCase(Unit).either { list ->
+            techOrderList.value = techOrderManager.currentTechOrder.value
+            techOrderList.value?.let { list ->
                 allTechOrdersList.value = list.filter { it.ktsch == materialIngredientKtsch.value }.mapIndexed { index, techOrderDataInfo ->
                     val position = (index + 1).toString()
                     ItemTechOrderUi(
                             position = position,
-                            text1 = techOrderDataInfo.text1.orEmpty().takeLast(valueNumber),
-                            text2 = techOrderDataInfo.text2.orEmpty(),
+                            text1 = techOrderDataInfo.text1.takeLast(valueNumber),
+                            text2 = techOrderDataInfo.text2,
                             plan = getFieldWithSuffix(techOrderDataInfo.plan_qnt, suffix)
                     )
                 }
-                Unit
             }
         }
     }
