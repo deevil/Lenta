@@ -13,10 +13,7 @@ import com.lenta.bp10.requests.network.pojo.Property
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.actionByNumber
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.combineLatest
-import com.lenta.shared.utilities.extentions.launchUITryCatch
-import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.toStringFormatted
+import com.lenta.shared.utilities.extentions.*
 import javax.inject.Inject
 
 class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
@@ -65,11 +62,9 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
     }
 
     val damagedEnabled: LiveData<Boolean> by lazy {
-        enabledApplyButton.combineLatest(isSpecialMode).map {
-            it?.let {
-                val (enabledApplyButton, isSpecialMode) = it
-                if (isSpecialMode) isSpecialMode else enabledApplyButton
-            }
+        enabledApplyButton.combineLatest(isSpecialMode).mapSkipNulls {
+            val (enabledApplyButton, isSpecialMode) = it
+            if (isSpecialMode) isSpecialMode else enabledApplyButton
         }
     }
 
