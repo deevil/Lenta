@@ -20,6 +20,7 @@ import com.lenta.shared.requests.network.ServerTimeRequest
 import com.lenta.shared.requests.network.ServerTimeRequestParam
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.extentions.isSapTrue
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.view.OnPositionClickListener
@@ -181,7 +182,7 @@ class GoodInfoViewModel : CoreViewModel() {
     private suspend fun findSelectedIndexForCondition(conditionList: List<ConditionInfo>): Int = withContext(Dispatchers.IO) {
         var selectedIndex = 0
         conditionList.forEachIndexed { index, conditionInfo ->
-            if (conditionInfo.defCondition == DEF_COND_FLAG) {
+            if (conditionInfo.defCondition.isSapTrue()) {
                 currentCondition = conditionInfo.name
                 selectedIndex = index
                 return@forEachIndexed
@@ -255,6 +256,5 @@ class GoodInfoViewModel : CoreViewModel() {
 
     companion object {
         private const val DEF_WEIGHT = "0"
-        private const val DEF_COND_FLAG = "X"
     }
 }
