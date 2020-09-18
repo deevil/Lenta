@@ -195,7 +195,9 @@ abstract class BaseGoodListOpenViewModel: CoreViewModel(), IBaseGoodListOpenView
                     innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
                     innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull()
                             ?: DEFAULT_QUANTITY,
-                    provider = task.value?.provider ?: ProviderInfo.getEmptyProvider(),
+                    provider = task.value?.takeIf { manager.isWholesaleTaskType.not() }
+                            ?.provider
+                            ?: ProviderInfo.getEmptyProvider(),
                     producers = producers.orEmpty().toMutableList(),
                     volume = materialInfo?.volume?.toDoubleOrNull() ?: ZERO_VOLUME,
                     markType = markType,

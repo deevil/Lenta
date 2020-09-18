@@ -4,7 +4,7 @@ import android.text.Editable
 import com.lenta.bp12.R
 import com.lenta.bp12.model.*
 import com.lenta.bp12.model.pojo.TaskType
-import com.lenta.bp12.platform.DATE_STRING_LENGTH
+import com.lenta.bp12.platform.DEFAULT_DATE_LENGTH
 import com.lenta.bp12.platform.DEFAULT_QUANTITY
 import com.lenta.bp12.request.pojo.CreateTaskBasketInfo
 import com.lenta.bp12.request.pojo.TaskInfo
@@ -140,7 +140,7 @@ fun String.addZerosToStart(targetLength: Int): String {
 /** Проверка даты на корректность
  * если дата в формате dd.mm.yyyy */
 private fun String.isDateInFormatDdMmYyyyWithDotsCorrect(): Boolean {
-    return if (this.isNotEmpty() && (this.length == DATE_STRING_LENGTH)) {
+    return if (this.isNotEmpty() && (this.length == DEFAULT_DATE_LENGTH)) {
         try {
             val splitCheckDate = this.split(".")
             val day = splitCheckDate[0].toInt()
