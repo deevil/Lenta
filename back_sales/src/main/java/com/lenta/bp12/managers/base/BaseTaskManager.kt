@@ -3,16 +3,12 @@ package com.lenta.bp12.managers.base
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.managers.interfaces.ITaskManager
 import com.lenta.bp12.model.Taskable
-import com.lenta.bp12.model.pojo.Basket
-import com.lenta.bp12.model.pojo.Good
-import com.lenta.bp12.model.pojo.Part
-import com.lenta.bp12.model.pojo.Position
-import com.lenta.bp12.model.pojo.extentions.addGood
-import com.lenta.bp12.model.pojo.extentions.addPart
-import com.lenta.bp12.model.pojo.extentions.addPosition
+import com.lenta.bp12.model.pojo.*
+import com.lenta.bp12.model.pojo.extentions.*
 import com.lenta.bp12.platform.ZERO_QUANTITY
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.request.pojo.ProviderInfo
+import com.lenta.bp12.request.pojo.good_info.GoodInfoResult
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.orIfNull
 import kotlinx.coroutines.Dispatchers
@@ -20,10 +16,10 @@ import kotlinx.coroutines.withContext
 import kotlin.math.absoluteValue
 import kotlin.math.floor
 
-abstract class BaseTaskManager<T : Taskable> : ITaskManager {
+abstract class BaseTaskManager<T : Taskable> : ITaskManager<T> {
 
     abstract val database: IDatabaseRepository
-    abstract val currentTask: MutableLiveData<T>
+    abstract override val currentTask: MutableLiveData<T>
 
     /** Метод добавляет обычные в товары в корзину */
     override suspend fun addOrDeleteGoodToBasket(good: Good, part: Part?, provider: ProviderInfo, count: Double) {
@@ -205,6 +201,150 @@ abstract class BaseTaskManager<T : Taskable> : ITaskManager {
         task.baskets.filter { it.markedForLock }.forEach {
             it.isLocked = true
             it.markedForLock = false
+        }
+    }
+
+    /** Добавляет товар в корзину один раз без цикла, и при этом добавляет в товар марку */
+    override suspend fun addGoodToBasketWithMark(good: Good, mark: Mark, provider: ProviderInfo) {
+        currentTask.value?.let { taskValue ->
+            val suitableBasket = getOrCreateSuitableBasket(taskValue, good, provider)
+            // Добавим марке номер корзины
+            mark.basketNumber = suitableBasket.index
+            // Продублируем марку в позиции (просто надо)
+            addEmptyPosition(good, provider, suitableBasket)
+            // Добавим товар в корзину
+            suitableBasket.addGood(good, 1.0)
+            // Добавим товар в задание
+            saveGoodInTask(good)
+            // Обновим товар в менеджере
+            updateCurrentGood(good)
+
+            if (isBasketsNeedsToBeClosed) {
+                suitableBasket.isLocked = true
+            }
+        }
+    }
+
+    override suspend fun addGoodToBasketWithMarks(good: Good, marks: List<Mark>, provider: ProviderInfo) {
+        currentTask.value?.let { taskValue ->
+            marks.forEach { mark ->
+                val suitableBasket = getOrCreateSuitableBasket(taskValue, good, provider)
+
+                // Добавим марке номер корзины
+                mark.basketNumber = suitableBasket.index
+
+                // Продублируем марку в позиции (просто надо)
+                addEmptyPosition(good, provider, suitableBasket)
+                // Добавим товар в корзину
+                suitableBasket.addGood(good, 1.0)
+                // Добавим товар в задание
+                saveGoodInTask(good)
+                // Обновим товар в менеджере
+                updateCurrentGood(good)
+
+                if (isBasketsNeedsToBeClosed) {
+                    suitableBasket.markedForLock = true
+                }
+            }
+
+            taskValue.baskets.filter { it.markedForLock }.forEach {
+                it.isLocked = true
+                it.markedForLock = false
+            }
+        }
+    }
+
+    fun updateCurrentTask(task: T?) {
+        currentTask.postValue(task)
+    }
+
+    override fun updateCurrentGood(good: Good?) {
+        currentGood.postValue(good)
+    }
+
+    override fun updateCurrentBasket(basket: Basket?) {
+        currentBasket.postValue(basket)
+    }
+
+    override fun clearCurrentGood() {
+        currentGood.value = null
+    }
+
+    override fun saveGoodInTask(good: Good) {
+        currentTask.value?.let { task ->
+            task.goods.find {
+                (it.material == good.material) && (it.maxRetailPrice == good.maxRetailPrice)
+            }?.let { good ->
+                        task.goods.remove(good)
+                    }
+            task.goods.add(0, good)
+            updateCurrentTask(task)
+        }
+    }
+
+    override fun addBasket(basket: Basket) {
+        currentTask.value?.let { task ->
+            task.baskets.add(basket)
+            updateCurrentTask(task)
+        }
+
+        updateCurrentBasket(basket)
+    }
+
+    override suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult): Boolean {
+        return database.isGoodCanBeAdded(goodInfo, currentTask.value?.type?.code.orEmpty())
+    }
+
+    override fun findGoodByEan(ean: String): Good? {
+        return currentTask.value?.let { task ->
+            task.goods.find { good ->
+                good.isGoodHasSameEan(ean)
+            }?.also { found ->
+                found.ean = ean
+                updateCurrentTask(task)
+            }
+        }
+    }
+
+    override fun findGoodByEanAndMRC(ean: String, mrc: String): Good? {
+        return if (mrc.isEmpty()) {
+            findGoodByEan(ean)
+        } else {
+            currentTask.value?.let { task ->
+                task.goods.find { good ->
+                    good.isGoodHasSameEan(ean) && good.isGoodHasSameMaxRetailPrice(mrc)
+                }
+            }
+        }
+    }
+
+    override fun findGoodByMaterial(material: String): Good? {
+        return currentTask.value?.goods?.find { it.material == material }
+    }
+
+    override fun removeMarksFromGoods(mappedMarks: List<Mark>) {
+        currentTask.value?.let { task ->
+            task.goods.find {
+                it.marks.isAnyAlreadyIn(mappedMarks)
+            }?.let { good ->
+                task.baskets.forEach {
+                    if (it.goods.containsKey(good)) {
+                        it.deleteGoodByMarks(good)
+                    }
+                }
+                good.removeMarks(mappedMarks)
+            }
+            task.removeEmptyBaskets()
+            task.removeEmptyGoods()
+
+            updateCurrentTask(task)
+        }
+    }
+
+    override fun removeBaskets(basketList: MutableList<Basket>) {
+        currentTask.value?.let { task ->
+            task.removeBaskets(basketList)
+            updateCurrentTask(task)
         }
     }
 

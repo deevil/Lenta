@@ -89,3 +89,6 @@ fun Good.deletePositionsFromTask(goodFromBasket: Good, basketToGetQuantity: Bask
 
 
 fun Good.removeMarks(other: List<Mark>) = this.marks.removeAll(other)
+
+fun Good.isGoodHasSameEan(otherEan: String) = this.ean == otherEan || this.eans.contains(otherEan)
+fun Good.isGoodHasSameMaxRetailPrice(otherMrc: String) = this.maxRetailPrice == otherMrc

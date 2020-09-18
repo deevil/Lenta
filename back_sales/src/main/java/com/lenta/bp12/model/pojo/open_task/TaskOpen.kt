@@ -26,7 +26,7 @@ data class TaskOpen(
         var goodGroup: String,
 
         val numberOfGoods: Int,
-        val goods: MutableList<Good> = mutableListOf(),
+        override val goods: MutableList<Good> = mutableListOf(),
         override val baskets: MutableList<Basket> = mutableListOf(),
         val mrcList: MutableList<Mrc> = mutableListOf(),
 

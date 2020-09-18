@@ -661,7 +661,7 @@ class MarkManager @Inject constructor(
         manager.updateCurrentGood(tempGood.value)
     }
 
-    private fun chooseManager(): ITaskManager {
+    private fun chooseManager(): ITaskManager<*> {
         return when (workType) {
             WorkType.CREATE -> createManager
             WorkType.OPEN -> openManager

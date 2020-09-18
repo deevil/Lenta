@@ -12,11 +12,11 @@ data class TaskCreate(
         override val name: String,
         val storage: String,
         val reason: ReturnReason?,
-        val type: TaskType,
+        override val type: TaskType,
         override val control: ControlType = ControlType.UNKNOWN,
         var isProcessed: Boolean = false,
 
-        val goods: MutableList<Good> = mutableListOf(),
+        override val goods: MutableList<Good> = mutableListOf(),
         override val baskets: MutableList<Basket> = mutableListOf()
 ) : Taskable {
 

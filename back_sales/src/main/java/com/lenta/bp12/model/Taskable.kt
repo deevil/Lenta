@@ -9,6 +9,7 @@ interface Taskable{
     val name: String
     val control: ControlType
     val baskets: MutableList<Basket>
+    val goods: MutableList<Good>
     val type: TaskType?
 
     fun updateBasket(basket: Basket)
