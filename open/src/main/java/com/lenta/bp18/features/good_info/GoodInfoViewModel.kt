@@ -130,9 +130,14 @@ class GoodInfoViewModel : CoreViewModel() {
         //partNumberField.value = /*значение*/
 
         val groupList = database.getAllGoodGroup()
-
-        selectedGroup.value = findSelectedIndexForGroup(groupList)
+        val filteredGroupList = filterGroupList(groupList)
+        selectedGroup.value = findSelectedIndexForGroup(filteredGroupList)
         selectedCondition.value = findSelectedIndexForCondition(conditionList)
+    }
+
+    private suspend fun filterGroupList(groupList: List<GroupInfo>): List<GroupInfo> = withContext(Dispatchers.IO) {
+        val currentMarket = sessionInfo.market
+        groupList.filter { it.werks == currentMarket }
     }
 
     private suspend fun getQuantityFieldFromGood(good: Good) {
