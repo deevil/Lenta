@@ -19,7 +19,6 @@ import com.lenta.shared.utilities.extentions.toSapBooleanString
 import com.lenta.shared.utilities.getStringFromDate
 import com.lenta.shared.utilities.orIfNull
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.math.absoluteValue
@@ -39,8 +38,6 @@ class CreateTaskManager @Inject constructor(
     override val currentTask = MutableLiveData<TaskCreate>()
     override val currentGood = MutableLiveData<Good>()
     override val currentBasket = MutableLiveData<Basket>()
-
-    private val basketLocker = Mutex()
 
     /** Метод добавляет обычные в товары в корзину */
     override suspend fun addOrDeleteGoodToBasket(
