@@ -32,12 +32,6 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
     @Inject
     lateinit var processMercuryProductService: ProcessMercuryProductService
 
-    @Inject
-    lateinit var searchProductDelegate: SearchProductDelegate
-
-    @Inject
-    lateinit var timeMonitor: ITimeMonitor
-
     val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData(false)
     val uom: MutableLiveData<Uom?> by lazy {
         if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.DirectSupplier) {
@@ -46,9 +40,7 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
             MutableLiveData(productInfo.value?.uom)
         }
     }
-    val isGoodsAddedAsSurplus: MutableLiveData<Boolean> by lazy {
-        MutableLiveData(productInfo.value?.isGoodsAddedAsSurplus == true )
-    }
+
     val isTaskPGE: MutableLiveData<Boolean> by lazy {
         if (taskManager.getReceivingTask()!!.taskHeader.taskType == TaskType.RecalculationCargoUnit) MutableLiveData(true) else MutableLiveData(false)
     }
@@ -127,7 +119,6 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
         }
     }
 
-    val isDiscrepancy: MutableLiveData<Boolean> = MutableLiveData(false)
     override val isDefect: MutableLiveData<Boolean> =
             spinQualitySelectedPosition
                     .combineLatest(isDiscrepancy)
@@ -155,8 +146,6 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
     }
 
     val isPerishable: MutableLiveData<Boolean> = MutableLiveData()
-    val count: MutableLiveData<String> = MutableLiveData("0")
-    private val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
     private val addGoods: MutableLiveData<Boolean> = MutableLiveData(false)
 
     val acceptTotalCount: MutableLiveData<Double> by lazy {
@@ -168,14 +157,14 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
                             ?: processMercuryProductService.getCountAccept()
 
             if (isTaskPGE.value == true) {
-                if (currentQualityInfoCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
-                        || currentQualityInfoCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS) {
+                if (currentQualityInfoCode == TYPE_DISCREPANCIES_QUALITY_NORM
+                        || currentQualityInfoCode == TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS) {
                     convertEizToBei() + countAccept
                 } else {
                     countAccept
                 }
             } else {
-                if (currentQualityInfoCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
+                if (currentQualityInfoCode == TYPE_DISCREPANCIES_QUALITY_NORM) {
                     (it?.first ?: 0.0) + countAccept
                 } else {
                     countAccept
@@ -237,10 +226,6 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
         } else {
             "${if (countRefusal > 0.0) "- " + countRefusal.toStringFormatted() else countRefusal.toStringFormatted()} ${uom.value?.name}"
         }
-    }
-
-    private val isNotRecountCargoUnit: MutableLiveData<Boolean> by lazy { //https://trello.com/c/PRTAVnUP только без признака ВЗЛОМ (обсудили с Колей 17.06.2020)
-        MutableLiveData(isTaskPGE.value == true && productInfo.value!!.isWithoutRecount)
     }
 
     val enabledApplyButton: MutableLiveData<Boolean> = countValue.map {

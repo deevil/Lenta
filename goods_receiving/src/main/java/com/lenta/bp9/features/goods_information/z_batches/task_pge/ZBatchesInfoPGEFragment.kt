@@ -77,9 +77,9 @@ class ZBatchesInfoPGEFragment : CoreFragment<FragmentZBatchesInfoPgeBinding, ZBa
             }
         }
 
-        binding?.spinnerRejectRejection?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        binding?.spinnerProcessingUnit?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(adapterView: AdapterView<*>, view: View?, position: Int, l: Long) {
-                vm.onClickPositionSpinRejectRejection(position)
+                vm.onClickPositionSpinProcessingUnit(position)
             }
 
             override fun onNothingSelected(adapterView: AdapterView<*>) {

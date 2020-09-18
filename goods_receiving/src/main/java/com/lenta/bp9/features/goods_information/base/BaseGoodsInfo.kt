@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp9.features.base.BaseFeatures
+import com.lenta.bp9.features.delegates.SearchProductDelegate
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants
@@ -25,17 +26,9 @@ abstract class BaseGoodsInfo : BaseFeatures(),
         IBaseCurrentTypeDiscrepancies,
         IBaseProductInfo,
         IBaseQualityInfo,
-        IBaseReasonRejectionInfo
+        IBaseReasonRejectionInfo,
+        IBaseUnit
 {
-    @Inject
-    lateinit var screenNavigator: IScreenNavigator
-
-    @Inject
-    lateinit var dataBase: IDataBaseRepo
-
-    @Inject
-    lateinit var context: Context
-
     @SuppressLint("SimpleDateFormat")
     override val formatterRU = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy)
 
@@ -59,16 +52,32 @@ abstract class BaseGoodsInfo : BaseFeatures(),
     override val spinManufacturers: MutableLiveData<List<String>> = MutableLiveData()
     override val spinManufacturersSelectedPosition: MutableLiveData<Int> = MutableLiveData(DEFAULT_SPINNER_POSITION)
 
-    override val isDefect: MutableLiveData<Boolean> = spinQualitySelectedPosition.map {
-        if (taskType != TaskType.RecalculationCargoUnit) {
-            currentQualityInfoCode != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
-        } else {
-            currentQualityInfoCode != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
-                    && currentQualityInfoCode != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS
+    final override val count: MutableLiveData<String> = MutableLiveData(DEFAULT_ENTERED_COUNT)
+    override val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
+
+    override val isDefect: MutableLiveData<Boolean> by lazy {
+        spinQualitySelectedPosition.map {
+            if (taskType != TaskType.RecalculationCargoUnit) {
+                currentQualityInfoCode != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
+            } else {
+                currentQualityInfoCode != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
+                        && currentQualityInfoCode != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS
+            }
         }
     }
 
+    override val isNotRecountCargoUnit: MutableLiveData<Boolean> by lazy { //https://trello.com/c/PRTAVnUP только без признака ВЗЛОМ (обсудили с Колей 17.06.2020)
+        MutableLiveData(taskType == TaskType.RecalculationCargoUnit && productInfo.value?.isWithoutRecount == true)
+    }
+
+    override val isGoodsAddedAsSurplus: MutableLiveData<Boolean> by lazy {
+        MutableLiveData(productInfo.value?.isGoodsAddedAsSurplus == true )
+    }
+
+    override val isDiscrepancy: MutableLiveData<Boolean> = MutableLiveData(false)
+
     companion object {
+        private const val DEFAULT_ENTERED_COUNT = "0"
         private const val DEFAULT_SPINNER_POSITION = -1
     }
 }

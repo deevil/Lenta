@@ -281,10 +281,9 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/ConstraintDefect"
+            android:id="@+id/ConstraintProcessingUnit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="@{vm.isDefect}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ConstraintBottlingDate">
@@ -296,11 +295,11 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
-                app:items="@{vm.spinReasonRejection}"
+                app:items="@{vm.spinProcessingUnit}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:position="@{vm.spinReasonRejectionSelectedPosition}"
+                app:position="@{vm.spinProcessingUnitSelectedPosition}"
                 tools:entries="@array/test_list" />
 
             <View
@@ -322,7 +321,7 @@
             android:visibility="@{!vm.isDefect}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ConstraintDefect">
+            app:layout_constraintTop_toBottomOf="@+id/ConstraintProcessingUnit">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -343,9 +342,8 @@
                         android:orientation="horizontal">
 
                         <LinearLayout
-                            android:layout_width="0dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:orientation="vertical">
 
                             <TextView
@@ -354,11 +352,11 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="8dp"
                                 android:layout_marginTop="8dp"
-                                android:layout_weight="1"
+                                android:layout_marginBottom="6dp"
                                 android:ellipsize="end"
                                 android:gravity="start|center_vertical"
                                 android:maxLines="1"
-                                android:text='@{vm.generalShelfLife}'
+                                android:text='@{vm.tvGeneralShelfLife}'
                                 app:layout_constraintStart_toEndOf="@+id/div_vert3"
                                 app:layout_constraintTop_toTopOf="parent"
                                 tools:text="ОБЩ СГ 5 сут" />
@@ -375,9 +373,8 @@
                         android:orientation="horizontal">
 
                         <LinearLayout
-                            android:layout_width="0dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:orientation="vertical">
 
                             <TextView
@@ -386,11 +383,11 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="8dp"
                                 android:layout_marginTop="8dp"
-                                android:layout_weight="1"
+                                android:layout_marginBottom="6dp"
                                 android:ellipsize="end"
                                 android:gravity="start|center_vertical"
                                 android:maxLines="1"
-                                android:text='@{vm.remainingShelfLife }'
+                                android:text='@{vm.tvRemainingShelfLife }'
                                 app:layout_constraintStart_toEndOf="@+id/div_vert3"
                                 app:layout_constraintTop_toTopOf="parent"
                                 tools:text="ОСТ СГ 3 сут" />
@@ -407,9 +404,8 @@
                         android:orientation="horizontal">
 
                         <LinearLayout
-                            android:layout_width="0dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:orientation="vertical">
 
                             <TextView
@@ -418,11 +414,11 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="8dp"
                                 android:layout_marginTop="8dp"
-                                android:layout_weight="1"
+                                android:layout_marginBottom="6dp"
                                 android:ellipsize="end"
                                 android:gravity="start|center_vertical"
                                 android:maxLines="1"
-                                android:text='@{vm.alternativeUnitMeasure}'
+                                android:text='@{vm.tvAlternativeUnitMeasure}'
                                 app:layout_constraintStart_toEndOf="@+id/div_vert3"
                                 app:layout_constraintTop_toTopOf="parent"
                                 tools:text="АЕИ 100 кор" />
@@ -436,7 +432,6 @@
                 <View style="@style/HorizontalDivider" />
 
             </LinearLayout>
-
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -10,11 +10,17 @@ import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
 import java.text.SimpleDateFormat
 
 interface IBaseVariables {
+    val productInfo: MutableLiveData<TaskProductInfo>
+    val isDefect: MutableLiveData<Boolean>
+    val isNotRecountCargoUnit: MutableLiveData<Boolean>
+    val isGoodsAddedAsSurplus: MutableLiveData<Boolean>
+    val count: MutableLiveData<String> //todo сменить название на enteredCount после того, как все ViewModel будут переведены на базовый класс
+    val countValue: MutableLiveData<Double> //todo возможно тоже сменить название
+    val isDiscrepancy: MutableLiveData<Boolean> //todo сменить название на isMovedFromScreenDiscrepanciesFound после того, как все ViewModel будут переведены на базовый класс
+
     val formatterRU: SimpleDateFormat
     val formatterEN: SimpleDateFormat
     val formatterERP: SimpleDateFormat
-
-    val productInfo: MutableLiveData<TaskProductInfo>
 
     val qualityInfo: MutableLiveData<List<QualityInfo>>
     val spinQualitySelectedPosition: MutableLiveData<Int>
@@ -27,6 +33,4 @@ interface IBaseVariables {
 
     val spinManufacturers: MutableLiveData<List<String>>
     val spinManufacturersSelectedPosition: MutableLiveData<Int>
-
-    val isDefect: MutableLiveData<Boolean>
 }

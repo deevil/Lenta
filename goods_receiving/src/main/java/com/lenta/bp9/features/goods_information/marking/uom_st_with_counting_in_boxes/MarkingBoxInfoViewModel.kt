@@ -35,9 +35,6 @@ class MarkingBoxInfoViewModel : BaseGoodsInfo(),  OnPositionClickListener {
     lateinit var processMarkingBoxProductService: ProcessMarkingBoxProductService
 
     @Inject
-    lateinit var searchProductDelegate: SearchProductDelegate
-
-    @Inject
     lateinit var hyperHive: HyperHive
 
     val tvAccept: MutableLiveData<String> by lazy {

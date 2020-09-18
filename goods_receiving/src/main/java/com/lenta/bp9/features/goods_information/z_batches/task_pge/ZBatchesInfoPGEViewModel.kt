@@ -6,16 +6,19 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
 import com.lenta.bp9.features.delegates.SearchProductDelegate
 import com.lenta.bp9.features.goods_information.base.BaseGoodsInfo
+import com.lenta.bp9.features.goods_information.z_batches.task_ppp.ZBatchesInfoPPPViewModel
 import com.lenta.bp9.model.processing.ProcessZBatchesPGEService
 import com.lenta.bp9.model.processing.ProcessZBatchesPPPService
 import com.lenta.bp9.model.task.PartySignsTypeOfZBatches
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_DELIVERY_ERRORS
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.date_time.DateTimeUtil
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.launchUITryCatch
@@ -31,32 +34,27 @@ import javax.inject.Inject
 class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
 
     @Inject
-    lateinit var searchProductDelegate: SearchProductDelegate
-
-    @Inject
-    lateinit var timeMonitor: ITimeMonitor
-
-    @Inject
     lateinit var processZBatchesPGEService: ProcessZBatchesPGEService
+
+    private val termControlType: MutableLiveData<List<QualityInfo>> = MutableLiveData()
+    private val processingUnitsOfProduct: MutableLiveData<List<TaskProductInfo>?> by lazy {
+        MutableLiveData(getProcessingUnitsOfProduct(productMaterialNumber))
+    }
 
     val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData(false)
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
-    private val termControlInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     val spinEnteredDate: MutableLiveData<List<String>> = MutableLiveData()
     val spinEnteredDateSelectedPosition: MutableLiveData<Int> = MutableLiveData(-1)
-    val spinReasonRejection: MutableLiveData<List<String>> = MutableLiveData()
+    val spinProcessingUnit: MutableLiveData<List<String>> = MutableLiveData()
+    val spinProcessingUnitSelectedPosition: MutableLiveData<Int> = MutableLiveData(-1)
     val enteredDate: MutableLiveData<String> = MutableLiveData("")
     val enteredTime: MutableLiveData<String> = MutableLiveData("")
     val suffix: MutableLiveData<String> = MutableLiveData()
     val generalShelfLife: MutableLiveData<String> = MutableLiveData()
+    val tvGeneralShelfLife: MutableLiveData<String> = MutableLiveData("")
     val remainingShelfLife: MutableLiveData<String> = MutableLiveData()
-    val alternativeUnitMeasure: MutableLiveData<String> = MutableLiveData()
-    val count: MutableLiveData<String> = MutableLiveData("0")
-    val isDiscrepancy: MutableLiveData<Boolean> = MutableLiveData(false)
-
-    val isGoodsAddedAsSurplus: MutableLiveData<Boolean> by lazy {
-        MutableLiveData(productInfo.value?.isGoodsAddedAsSurplus == true )
-    }
+    val tvRemainingShelfLife: MutableLiveData<String> = MutableLiveData("")
+    val tvAlternativeUnitMeasure: MutableLiveData<String> = MutableLiveData()
 
     val isEizUnit: MutableLiveData<Boolean> by lazy {
         MutableLiveData(isDiscrepancy.value == false && isGoodsAddedAsSurplus.value == false)
@@ -68,7 +66,7 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
             return position
                     .takeIf { it >= 0 }
                     ?.let {
-                        termControlInfo.value
+                        termControlType.value
                                 ?.getOrNull(it)
                                 ?.code
                                 .orEmpty()
@@ -102,13 +100,10 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
         }
     }
 
-    private val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
     private val currentDate: MutableLiveData<Date> = MutableLiveData()
     private val expirationDate: MutableLiveData<Calendar> = MutableLiveData()
-    private val infoForSpinEnteredDate: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     private val addGoods: MutableLiveData<Boolean> = MutableLiveData(false)
     private val isClickApply: MutableLiveData<Boolean> = MutableLiveData(false)
-    private val paramGrsGrundNeg: MutableLiveData<String> = MutableLiveData("")
     private val paramGrwOlGrundcat: MutableLiveData<String> = MutableLiveData("")
     private val paramGrwUlGrundcat: MutableLiveData<String> = MutableLiveData("")
 
@@ -150,7 +145,7 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
                     .combineLatest(spinQualitySelectedPosition)
                     .map {
                         val enteredCount = it?.first ?: 0.0
-                        if (currentQualityInfoCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
+                        if (currentQualityInfoCode == TYPE_DISCREPANCIES_QUALITY_NORM) {
                             enteredCount + countAcceptOfProduct
                         } else {
                             countAcceptOfProduct
@@ -172,7 +167,7 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
                     .combineLatest(spinQualitySelectedPosition)
                     .map {
                         val enteredCount = it?.first ?: 0.0
-                        if (currentQualityInfoCode != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
+                        if (currentQualityInfoCode != TYPE_DISCREPANCIES_QUALITY_NORM) {
                             enteredCount + countRefusalOfProduct
                         } else {
                             countRefusalOfProduct
@@ -205,30 +200,37 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
             searchProductDelegate.init(viewModelScope = this@ZBatchesInfoPGEViewModel::viewModelScope,
                     scanResultHandler = this@ZBatchesInfoPGEViewModel::handleProductSearchResult)
 
-            currentDate.value = timeMonitor.getServerDate()
-            expirationDate.value = Calendar.getInstance()
-            suffix.value = productInfo.value?.purchaseOrderUnits?.name.orEmpty()
+            paramGrwOlGrundcat.value = dataBase.getParamGrwOlGrundcat().orEmpty()
+            paramGrwUlGrundcat.value = dataBase.getParamGrwUlGrundcat().orEmpty()
 
-            if (isDiscrepancy.value == true) {
-                count.value =
-                        taskManager
-                                .getReceivingTask()
-                                ?.run {
-                                    taskRepository
-                                            .getProductsDiscrepancies()
-                                            .getCountProductNotProcessedOfProduct(productInfo.value!!)
-                                            .toStringFormatted()
-                                }
+            when {
+                isGoodsAddedAsSurplus.value == true -> { //товар, который не числится в задании
+                    spinProcessingUnit.value = listOf(productInfo.value?.processingUnit.orEmpty())
+                    suffix.value = unitNameByTaskType
+                    qualityInfo.value = dataBase.getSurplusInfoForZBatchesTaskPGE().orEmpty()
+                }
+                isDiscrepancy.value == true -> {
+                    suffix.value = unitNameByTaskType
+                    count.value =  getQuantityByProductForMarriageOfProcessingUnits()
 
-                qualityInfo.value = dataBase.getQualityInfoForDiscrepancy().orEmpty()
-                spinQualitySelectedPosition.value =
-                        qualityInfo.value
-                                ?.indexOfLast { it.code == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_DELIVERY_ERRORS }
-                                ?: -1
-            } else {
-                qualityInfo.value = dataBase.getQualityMercuryInfo().orEmpty()
+                    if (isNotRecountCargoUnit.value == true) {
+                        qualityInfo.value = dataBase.getQualityInfoZBatchesTaskPGENotRecountBreaking().orEmpty()
+                    } else {
+                        qualityInfo.value = dataBase.getQualityInfoZBatchesTaskPGEForDiscrepancy().orEmpty()
+                    }
+                }
+                else -> {
+                    suffix.value = productInfo.value?.purchaseOrderUnits?.name.orEmpty()
+                    if (isNotRecountCargoUnit.value == true) {
+                        qualityInfo.value = dataBase.getQualityInfoZBatchesTaskPGENotRecountBreaking().orEmpty()
+                    } else {
+                        qualityInfo.value = dataBase.getQualityInfoZBatchesTaskPGE().orEmpty()
+                    }
+                }
             }
 
+            currentDate.value = timeMonitor.getServerDate()
+            expirationDate.value = Calendar.getInstance()
             spinQuality.value = qualityInfo.value?.map { it.name }
 
             spinManufacturers.value =
@@ -239,12 +241,8 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
                             ?.map { it.key }
                             ?: listOf(context.getString(R.string.no_manufacturer_selection_required))
 
-            infoForSpinEnteredDate.value = dataBase.getTermControlInfo()
-            termControlInfo.value = dataBase.getTermControlInfo()
-            spinEnteredDate.value = termControlInfo.value?.map { it.name }.orEmpty()
-
-            paramGrwOlGrundcat.value = dataBase.getParamGrwOlGrundcat() ?: ""
-            paramGrwUlGrundcat.value = dataBase.getParamGrwUlGrundcat() ?: ""
+            termControlType.value = dataBase.getTermControlInfo()
+            spinEnteredDate.value = termControlType.value?.map { it.name }.orEmpty()
 
             /** Z-партии всегда скоропорт */
             val productGeneralShelfLife = productInfo.value?.generalShelfLife?.toInt() ?: 0
@@ -260,12 +258,34 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
                 remainingShelfLife.value = productMhdrzDays.toString()
             }
 
-            paramGrsGrundNeg.value = dataBase.getParamGrsGrundNeg().orEmpty()
+            tvGeneralShelfLife.value = "${context.getString(R.string.general_shelf_life_abbr)}: ${generalShelfLife.value} ${context.getString(R.string.day_abbreviated)}"
+            tvRemainingShelfLife.value = "${context.getString(R.string.remaining_shelf_life_abbr)}: ${remainingShelfLife.value} ${context.getString(R.string.day_abbreviated)}"
+            tvAlternativeUnitMeasure.value = "${context.getString(R.string.alternative_unit_measure_abbr)}: 100 кор"
 
-            val paramGrzPerishableHH = (dataBase.getParamGrzPerishableHH()?.toDoubleOrNull()
-                    ?: 0.0) / 24
+            val paramGrzPerishableHH = (dataBase.getParamGrzPerishableHH()?.toDoubleOrNull() ?: 0.0) / 24
             val generalShelfLifeValue = generalShelfLife.value?.toDoubleOrNull() ?: 0.0
             isVisibilityEnteredTime.value = generalShelfLifeValue <= paramGrzPerishableHH
+        }
+    }
+
+    private fun getQuantityByProductForMarriageOfProcessingUnits(): String {
+        val countProcessingUnitsOfProduct = processingUnitsOfProduct.value?.size ?: 0
+
+        return if (countProcessingUnitsOfProduct > 1) { //если у товара две ЕО
+            val countOrderQuantity =
+                    processingUnitsOfProduct.value
+                            ?.map { it.orderQuantity.toDouble() }
+                            ?.sumByDouble { it }
+                            ?: 0.0
+
+            productInfo.value
+                    ?.let { getCountProductNotProcessedOfProductPGEOfProcessingUnits(it, countOrderQuantity).toStringFormatted() }
+                    .orEmpty()
+
+        } else {
+            productInfo.value
+                    ?.let { getCountProductNotProcessedOfProductPGE(it).toStringFormatted() }
+                    .orEmpty()
         }
     }
 
@@ -320,35 +340,7 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
     }
 
     fun onClickPositionSpinQuality(position: Int) {
-        launchUITryCatch {
-            spinQualitySelectedPosition.value = position
-            updateDataSpinReasonRejection(currentQualityInfoCode)
-        }
-    }
-
-    private suspend fun updateDataSpinReasonRejection(selectedQuality: String) {
-        launchUITryCatch {
-            screenNavigator.showProgressLoadingData(::handleFailure)
-            reasonRejectionInfo.value = dataBase.getReasonRejectionMercuryInfoOfQuality(selectedQuality)
-            spinReasonRejection.value = reasonRejectionInfo.value?.map { it.name }
-            if (isDiscrepancy.value == true) {
-                spinReasonRejectionSelectedPosition.value =
-                        reasonRejectionInfo.value
-                                ?.indexOfLast { it.code == "44" }
-                                .let {
-                                    val reasonRejectionInfoValue = it ?: 0
-                                    if (reasonRejectionInfoValue < 0) {
-                                        0
-                                    } else {
-                                        reasonRejectionInfoValue
-                                    }
-                                }
-            } else {
-                spinReasonRejectionSelectedPosition.value = 0
-            }
-            count.value = count.value
-            screenNavigator.hideProgress()
-        }
+        spinQualitySelectedPosition.value = position
     }
 
     fun onClickPositionSpinManufacturers(position: Int) {
@@ -359,8 +351,8 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
         spinEnteredDateSelectedPosition.value = position
     }
 
-    fun onClickPositionSpinRejectRejection(position: Int) {
-        spinReasonRejectionSelectedPosition.value = position
+    fun onClickPositionSpinProcessingUnit(position: Int) {
+        spinProcessingUnitSelectedPosition.value = position
     }
 
     fun onBackPressed() {
@@ -431,7 +423,7 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
         }
 
         //блок 7.134
-        if (spinEnteredDateSelectedPosition.value == infoForSpinEnteredDate.value?.indexOfLast {it.code == TERM_CONTROL_CODE_SHELF_LIFE}) {
+        if (spinEnteredDateSelectedPosition.value == termControlType.value?.indexOfLast {it.code == TERM_CONTROL_CODE_SHELF_LIFE}) {
             //блок 7.154
             expirationDate.value?.time = formatterRU.parse(enteredDate.value)
         } else {
@@ -550,8 +542,9 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
                             manufactureCode = currentManufactureCode,
                             shelfLifeDate = getShelfLifeDate(),
                             shelfLifeTime = getShelfLifeTime(),
-                            partySignsType = getPartySignsType(),
-                            processingUnit = spinReasonRejection.value!![spinReasonRejectionSelectedPosition.value!!].substring(5)
+                            productionDate = getProductionDate(),
+                            processingUnit = "", //todo spinReasonRejection.value!![spinReasonRejectionSelectedPosition.value!!].substring(5),
+                            partySignsType = getPartySignsType()
                     )
                     //блок 7.177
                     saveCategoryPGE(true)
@@ -612,10 +605,11 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
                             processZBatchesPGEService.addCountMoreCargoUnit(
                                     paramGrwOlGrundcat = paramGrwOlGrundcat.value!!,
                                     count = convertEizToBei(),
-                                    processingUnit = spinReasonRejection.value!![spinReasonRejectionSelectedPosition.value!!].substring(5),
+                                    processingUnit = "", //todo spinReasonRejection.value!![spinReasonRejectionSelectedPosition.value!!].substring(5),
                                     manufactureCode = currentManufactureCode,
                                     shelfLifeDate = getShelfLifeDate(),
                                     shelfLifeTime = getShelfLifeTime(),
+                                    productionDate = getProductionDate(),
                                     partySignsType = getPartySignsType()
                             )
                             //блок 7.188 (переходим минуя 7.177 и 7.185, т.к. мы уже сохранили данные в блоке 7.209)
@@ -645,8 +639,9 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
                     manufactureCode = currentManufactureCode,
                     shelfLifeDate = getShelfLifeDate(),
                     shelfLifeTime = getShelfLifeTime(),
-                    partySignsType = getPartySignsType(),
-                    processingUnit = spinReasonRejection.value!![spinReasonRejectionSelectedPosition.value!!].substring(5)
+                    productionDate = getProductionDate(),
+                    processingUnit = "", //todo spinReasonRejection.value!![spinReasonRejectionSelectedPosition.value!!].substring(5),
+                    partySignsType = getPartySignsType()
             )
         }
 
@@ -656,7 +651,7 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
 
     private fun getShelfLifeDate(): String {
         return if (currentTermControlCode == TERM_CONTROL_CODE_PRODUCTION_DATE
-                && currentQualityInfoCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
+                && currentQualityInfoCode == TYPE_DISCREPANCIES_QUALITY_NORM) {
             val shelfLife = Calendar.getInstance()
             shelfLife.time = formatterRU.parse(enteredDate.value)
             shelfLife.add(Calendar.DATE, generalShelfLife.value?.toInt() ?: 0)
@@ -674,6 +669,28 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
             enteredTime.value.orEmpty().replace(":", "") + "00"
         } else {
             ""
+        }
+    }
+
+    private fun getProductionDate(): String {
+        try {
+            return if (currentTermControlCode == "001" // todo ZBatchesInfoPPPViewModel.TERM_CONTROL_CODE_SHELF_LIFE
+                    && currentQualityInfoCode == TYPE_DISCREPANCIES_QUALITY_NORM) {
+                val productionDate = Calendar.getInstance()
+                val generalShelfLifeValue = generalShelfLife.value?.toInt() ?: 0
+                productionDate.time = formatterRU.parse(enteredDate.value)
+                productionDate.add(Calendar.DATE, -generalShelfLifeValue)
+                productionDate.time?.let { formatterERP.format(it) }.orEmpty()
+            } else {
+                enteredDate.value
+                        ?.takeIf { it.isNotEmpty() }
+                        ?.let { formatterERP.format(formatterRU.parse(it)) }
+                        .orEmpty()
+            }
+        }
+        catch (e: Exception) {
+            Logg.e { "Get production date exception: $e" }
+            return ""
         }
     }
 

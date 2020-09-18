@@ -116,7 +116,15 @@ class ProcessZBatchesPGEService
                 )
     }
 
-    fun addWithoutUnderload(typeDiscrepancies: String, count: String, manufactureCode: String, shelfLifeDate: String, shelfLifeTime: String, productionDate: String, partySignsType: PartySignsTypeOfZBatches) {
+    fun addWithoutUnderload(
+            typeDiscrepancies: String,
+            count: String,
+            manufactureCode: String,
+            shelfLifeDate: String,
+            shelfLifeTime: String,
+            productionDate: String,
+            processingUnit: String,
+            partySignsType: PartySignsTypeOfZBatches) {
         val productDiscrepancy =
                 taskRepository
                         ?.getProductsDiscrepancies()
@@ -128,7 +136,7 @@ class ProcessZBatchesPGEService
                     ?.getProductsDiscrepancies()
                     ?.changeProductDiscrepancy(productDiscrepancy.copy(numberDiscrepancies = count))
         } else {
-            add(count, typeDiscrepancies, manufactureCode, shelfLifeDate, shelfLifeTime, productionDate, partySignsType)
+            add(count, typeDiscrepancies, manufactureCode, shelfLifeDate, shelfLifeTime, productionDate, processingUnit, partySignsType)
         }
     }
 
@@ -173,7 +181,7 @@ class ProcessZBatchesPGEService
                         ?.copy(numberDiscrepancies = countAdd.toString())
                         ?: TaskProductDiscrepancies(
                                 materialNumber = productInfo.materialNumber,
-                                processingUnitNumber = productInfo.processingUnit,
+                                processingUnitNumber = processingUnit,
                                 numberDiscrepancies = countAdd.toString(),
                                 uom = productInfo.purchaseOrderUnits,
                                 typeDiscrepancies = typeDiscrepancies,
@@ -270,11 +278,14 @@ class ProcessZBatchesPGEService
         val countCategoryUnderload = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo)?.findLast {
             it.typeDiscrepancies == paramGrwUlGrundcat
         }?.numberDiscrepancies?.toDouble() ?: 0.0
+
         val countCategorySurplus = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo)?.findLast {
             it.typeDiscrepancies == paramGrwOlGrundcat
         }?.numberDiscrepancies?.toDouble() ?: 0.0
-        val countAllCategory = (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountAcceptOfProductPGE(productInfo) ?: 0.0)
-        + (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountRefusalOfProductPGE(productInfo) ?: 0.0)
+
+        val countAllCategory =
+                (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountAcceptOfProductPGE(productInfo) ?: 0.0) + (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountRefusalOfProductPGE(productInfo) ?: 0.0)
+
         return productInfo.orderQuantity.toDouble() - countCategoryUnderload - countAllCategory + countCategorySurplus
     }
 
@@ -288,26 +299,76 @@ class ProcessZBatchesPGEService
     }
 
     fun countNormAndParamMoreOrderQuantityPGE (paramGrwOlGrundcat: String, count: Double) : Boolean {
-        var countNormAndParam = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo)?.filter {
-            (it.typeDiscrepancies == "1" || it.typeDiscrepancies == paramGrwOlGrundcat) && it.processingUnitNumber == productInfo.processingUnit
-        }?.sumByDouble {
-            it.numberDiscrepancies.toDouble()
-        } ?: 0.0
+        var countNormAndParam =
+                taskManager
+                        .getReceivingTask()
+                        ?.taskRepository
+                        ?.getProductsDiscrepancies()
+                        ?.findProductDiscrepanciesOfProduct(productInfo)
+                        ?.filter {
+                            (it.typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM || it.typeDiscrepancies == paramGrwOlGrundcat)
+                                    && it.processingUnitNumber == productInfo.processingUnit
+                        }?.sumByDouble {
+                            it.numberDiscrepancies.toDouble()
+                        } ?: 0.0
+
         countNormAndParam += count
         return countNormAndParam > productInfo.orderQuantity.toDouble()
     }
 
-    fun addCountMoreCargoUnit(paramGrwOlGrundcat: String, count: Double, processingUnit: String, manufactureCode: String, shelfLifeDate: String, shelfLifeTime: String, partySignsType: PartySignsTypeOfZBatches) {
-        var countNormAndParam = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo)?.filter {
-            it.typeDiscrepancies == "1" || it.typeDiscrepancies == paramGrwOlGrundcat
-        }?.sumByDouble {
-            it.numberDiscrepancies.toDouble()
-        } ?: 0.0
+    fun addCountMoreCargoUnit(
+            paramGrwOlGrundcat: String,
+            count: Double,
+            processingUnit: String,
+            manufactureCode: String,
+            shelfLifeDate: String,
+            shelfLifeTime: String,
+            productionDate: String,
+            partySignsType: PartySignsTypeOfZBatches
+    ) {
+        var countNormAndParam =
+                taskManager
+                        .getReceivingTask()
+                        ?.taskRepository
+                        ?.getProductsDiscrepancies()
+                        ?.findProductDiscrepanciesOfProduct(productInfo)
+                        ?.filter {
+                            it.typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM || it.typeDiscrepancies == paramGrwOlGrundcat
+                        }?.sumByDouble {
+                            it.numberDiscrepancies.toDouble()
+                        } ?: 0.0
+
         countNormAndParam += count
-        taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.deleteProductDiscrepancy(materialNumber =  productInfo.materialNumber, typeDiscrepancies = "1")
-        add(productInfo.orderQuantity, "1", manufactureCode, shelfLifeDate, shelfLifeTime, processingUnit, partySignsType)
-        taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.deleteProductDiscrepancy(materialNumber =  productInfo.materialNumber, typeDiscrepancies = paramGrwOlGrundcat)
-        add((countNormAndParam - productInfo.orderQuantity.toDouble()).toString(), paramGrwOlGrundcat, manufactureCode, shelfLifeDate, shelfLifeTime, processingUnit, partySignsType)
+        taskManager
+                .getReceivingTask()
+                ?.taskRepository
+                ?.getProductsDiscrepancies()
+                ?.deleteProductDiscrepancy(materialNumber =  productInfo.materialNumber, typeDiscrepancies = TYPE_DISCREPANCIES_QUALITY_NORM)
+
+        add(count = productInfo.orderQuantity,
+                typeDiscrepancies = TYPE_DISCREPANCIES_QUALITY_NORM,
+                manufactureCode = manufactureCode,
+                shelfLifeDate = shelfLifeDate,
+                shelfLifeTime = shelfLifeTime,
+                productionDate = productionDate,
+                processingUnit = processingUnit,
+                partySignsType = partySignsType)
+
+        taskManager
+                .getReceivingTask()
+                ?.taskRepository
+                ?.getProductsDiscrepancies()
+                ?.deleteProductDiscrepancy(materialNumber =  productInfo.materialNumber, typeDiscrepancies = paramGrwOlGrundcat)
+
+        add(count = (countNormAndParam - productInfo.orderQuantity.toDouble()).toString(),
+                typeDiscrepancies = paramGrwOlGrundcat,
+                manufactureCode = manufactureCode,
+                shelfLifeDate = shelfLifeDate,
+                shelfLifeTime = shelfLifeTime,
+                productionDate = productionDate,
+                processingUnit = processingUnit,
+                partySignsType = partySignsType
+        )
     }
 
 }

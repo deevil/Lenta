@@ -32,17 +32,10 @@ import javax.inject.Inject
 class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
 
     @Inject
-    lateinit var searchProductDelegate: SearchProductDelegate
-
-    @Inject
-    lateinit var timeMonitor: ITimeMonitor
-
-    @Inject
     lateinit var processZBatchesPPPService: ProcessZBatchesPPPService
 
     val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData(false)
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
-    private val termControlInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     val spinEnteredDate: MutableLiveData<List<String>> = MutableLiveData()
     val spinEnteredDateSelectedPosition: MutableLiveData<Int> = MutableLiveData(-1)
     val spinReasonRejection: MutableLiveData<List<String>> = MutableLiveData()
@@ -50,17 +43,18 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
     val enteredTime: MutableLiveData<String> = MutableLiveData("")
     val suffix: MutableLiveData<String> = MutableLiveData()
     val generalShelfLife: MutableLiveData<String> = MutableLiveData()
+    val tvGeneralShelfLife: MutableLiveData<String> = MutableLiveData("")
     val remainingShelfLife: MutableLiveData<String> = MutableLiveData()
-    val count: MutableLiveData<String> = MutableLiveData("0")
-    val isDiscrepancy: MutableLiveData<Boolean> = MutableLiveData(false)
+    val tvRemainingShelfLife: MutableLiveData<String> = MutableLiveData("")
 
+    private val termControlType: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     private val currentTermControlCode: String
         get() {
             val position = spinEnteredDateSelectedPosition.value ?: -1
             return position
                     .takeIf { it >= 0 }
                     ?.let {
-                        termControlInfo.value
+                        termControlType.value
                                 ?.getOrNull(it)
                                 ?.code
                                 .orEmpty()
@@ -94,10 +88,8 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
         }
     }
 
-    private val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
     private val currentDate: MutableLiveData<Date> = MutableLiveData()
     private val expirationDate: MutableLiveData<Calendar> = MutableLiveData()
-    private val infoForSpinEnteredDate: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     private val addGoods: MutableLiveData<Boolean> = MutableLiveData(false)
     private val isClickApply: MutableLiveData<Boolean> = MutableLiveData(false)
     private val paramGrsGrundNeg: MutableLiveData<String> = MutableLiveData("")
@@ -229,9 +221,8 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
                             ?.map { it.key }
                             ?: listOf(context.getString(R.string.no_manufacturer_selection_required))
 
-            infoForSpinEnteredDate.value = dataBase.getTermControlInfo()
-            termControlInfo.value = dataBase.getTermControlInfo()
-            spinEnteredDate.value = termControlInfo.value?.map { it.name }.orEmpty()
+            termControlType.value = dataBase.getTermControlInfo()
+            spinEnteredDate.value = termControlType.value?.map { it.name }.orEmpty()
 
             /** Z-партии всегда скоропорт */
             val productGeneralShelfLife = productInfo.value?.generalShelfLife?.toInt() ?: 0
@@ -246,6 +237,9 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
                 generalShelfLife.value = productMhdhbDays.toString()
                 remainingShelfLife.value = productMhdrzDays.toString()
             }
+
+            tvGeneralShelfLife.value = "${generalShelfLife.value} ${context.getString(R.string.day_abbreviated)}"
+            tvRemainingShelfLife.value = "${remainingShelfLife.value} ${context.getString(R.string.day_abbreviated)}"
 
             paramGrsGrundNeg.value = dataBase.getParamGrsGrundNeg().orEmpty()
 
@@ -394,7 +388,7 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
         }
 
         //блок 6.131
-        if (spinEnteredDateSelectedPosition.value == infoForSpinEnteredDate.value?.indexOfLast { it.code == TERM_CONTROL_CODE_SHELF_LIFE }) {
+        if (spinEnteredDateSelectedPosition.value == termControlType.value?.indexOfLast { it.code == TERM_CONTROL_CODE_SHELF_LIFE }) {
             //блок 6.146
             expirationDate.value?.time = formatterRU.parse(enteredDate.value)
         } else {
