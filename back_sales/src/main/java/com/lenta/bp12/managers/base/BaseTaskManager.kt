@@ -1,6 +1,5 @@
 package com.lenta.bp12.managers.base
 
-import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.managers.interfaces.ITaskManager
 import com.lenta.bp12.model.Taskable
 import com.lenta.bp12.model.pojo.*
@@ -19,7 +18,6 @@ import kotlin.math.floor
 abstract class BaseTaskManager<T : Taskable> : ITaskManager<T> {
 
     abstract val database: IDatabaseRepository
-    abstract override val currentTask: MutableLiveData<T>
 
     /** Метод добавляет обычные в товары в корзину */
     override suspend fun addOrDeleteGoodToBasket(good: Good, part: Part?, provider: ProviderInfo, count: Double) {
@@ -61,7 +59,7 @@ abstract class BaseTaskManager<T : Taskable> : ITaskManager<T> {
     }
 
     /** Метод ищет корзины или создает их в зависимости от того что вернет getBasket() */
-    suspend fun getOrCreateSuitableBasket(
+    private suspend fun getOrCreateSuitableBasket(
             task: T,
             good: Good,
             provider: ProviderInfo
@@ -95,7 +93,7 @@ abstract class BaseTaskManager<T : Taskable> : ITaskManager<T> {
     /**
      * Метод добавляет пустую позицию, используется при добавлении марки или партии
      */
-    protected fun addEmptyPosition(good: Good, provider: ProviderInfo, basket: Basket) {
+    private fun addEmptyPosition(good: Good, provider: ProviderInfo, basket: Basket) {
         good.isCounted = true
         val position = Position(
                 quantity = ZERO_QUANTITY,

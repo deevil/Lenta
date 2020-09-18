@@ -48,6 +48,4 @@ data class CreateTaskBasketInfo(
         /** Корзинка закрыта для добавления товаров */
         @SerializedName("IS_CLOSE")
         val isClose: String? = ""
-) : ITaskBasketInfo
-
-interface ITaskBasketInfo
+)
