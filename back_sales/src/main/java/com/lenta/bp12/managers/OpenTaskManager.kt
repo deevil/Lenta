@@ -1,6 +1,7 @@
 package com.lenta.bp12.managers
 
 import androidx.lifecycle.MutableLiveData
+import com.lenta.bp12.managers.base.BaseTaskManager
 import com.lenta.bp12.managers.interfaces.IGeneralTaskManager
 import com.lenta.bp12.managers.interfaces.IOpenTaskManager
 import com.lenta.bp12.model.pojo.*
@@ -34,7 +35,7 @@ import kotlin.math.floor
 class OpenTaskManager @Inject constructor(
         private val database: IDatabaseRepository,
         private val generalTaskManager: IGeneralTaskManager
-) : IOpenTaskManager {
+) : BaseTaskManager(), IOpenTaskManager {
 
     override var isNeedLoadTaskListByParams: Boolean = false
 
@@ -118,31 +119,6 @@ class OpenTaskManager @Inject constructor(
                 it.markedForLock = false
             }
         }
-    }
-
-    private fun deleteGoodFromBaskets(task: TaskOpen, good: Good, count: Double) {
-        var leftToDel = count.absoluteValue
-        val baskets = task.getBasketsByGood(good).toMutableList()
-        while (leftToDel > 0) {
-            val lastBasket = baskets.lastOrNull()
-            lastBasket?.let {
-                val oldQuantity = lastBasket.goods[good]
-                oldQuantity?.let {
-                    val newQuantity = oldQuantity.minus(leftToDel)
-                    if (newQuantity <= 0) {
-                        leftToDel = newQuantity.absoluteValue
-                        lastBasket.goods.remove(good)
-                        baskets.remove(lastBasket)
-                    } else {
-                        lastBasket.goods[good] = newQuantity
-                        leftToDel = ZERO_QUANTITY
-                    }
-                }
-                updateCurrentBasket(it)
-            }
-        }
-        task.removeEmptyBaskets()
-        task.removeEmptyGoods()
     }
 
     /** Добавляет товар в корзину один раз без цикла, и при этом добавляет в товар марку */

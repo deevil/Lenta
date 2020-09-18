@@ -1,6 +1,7 @@
 package com.lenta.bp12.managers
 
 import androidx.lifecycle.MutableLiveData
+import com.lenta.bp12.managers.base.BaseTaskManager
 import com.lenta.bp12.managers.interfaces.ICreateTaskManager
 import com.lenta.bp12.managers.interfaces.IGeneralTaskManager
 import com.lenta.bp12.model.pojo.*
@@ -21,14 +22,13 @@ import com.lenta.shared.utilities.orIfNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
-import kotlin.math.absoluteValue
 import kotlin.math.floor
 
 
 class CreateTaskManager @Inject constructor(
         private val database: IDatabaseRepository,
         private val generalTaskManager: IGeneralTaskManager
-) : ICreateTaskManager {
+) : BaseTaskManager(), ICreateTaskManager {
 
     override var isWasAddedProvider = false
 
@@ -105,31 +105,6 @@ class CreateTaskManager @Inject constructor(
             it.isLocked = true
             it.markedForLock = false
         }
-    }
-
-    private fun deleteGoodFromBaskets(task: TaskCreate, good: Good, count: Double) {
-        var leftToDel = count.absoluteValue
-        val baskets = task.getBasketsByGood(good).toMutableList()
-        while (leftToDel > 0) {
-            val lastBasket = baskets.lastOrNull()
-            lastBasket?.let {
-                val oldQuantity = lastBasket.goods[good]
-                oldQuantity?.let {
-                    val newQuantity = oldQuantity.minus(leftToDel)
-                    if (newQuantity <= 0) {
-                        leftToDel = newQuantity.absoluteValue
-                        lastBasket.goods.remove(good)
-                        baskets.remove(lastBasket)
-                    } else {
-                        lastBasket.goods[good] = newQuantity
-                        leftToDel = 0.0
-                    }
-                }
-                updateCurrentBasket(it)
-            }
-        }
-        task.removeEmptyBaskets()
-        task.removeEmptyGoods()
     }
 
     /** Добавляет товар в корзину один раз без цикла, и при этом добавляет в товар марку */
@@ -328,7 +303,7 @@ class CreateTaskManager @Inject constructor(
         }
     }
 
-    private fun Good.isGoodHasSameEan(otherEan: String) = this.ean == ean || this.eans.contains(ean)
+    private fun Good.isGoodHasSameEan(otherEan: String) = this.ean == otherEan || this.eans.contains(otherEan)
     private fun Good.isGoodHasSameMaxRetailPrice(otherMrc: String) = this.maxRetailPrice == otherMrc
 
     override fun findGoodByMaterial(material: String): Good? {
