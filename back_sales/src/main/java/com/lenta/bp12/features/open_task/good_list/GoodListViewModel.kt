@@ -12,7 +12,7 @@ import com.lenta.bp12.model.pojo.extentions.getDescription
 import com.lenta.bp12.model.pojo.extentions.getQuantityFromGoodList
 import com.lenta.bp12.model.pojo.extentions.isAnyNotLocked
 import com.lenta.bp12.model.pojo.extentions.isAnyPrinted
-import com.lenta.bp12.platform.DEFAULT_QUANTITY
+import com.lenta.bp12.platform.ZERO_QUANTITY
 import com.lenta.bp12.platform.ZERO_VOLUME
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
@@ -431,7 +431,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                     control = getControlType(),
                     commonUnits = database.getUnitsByCode(materialInfo?.commonUnitsCode.orEmpty()),
                     innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
-                    innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull() ?: DEFAULT_QUANTITY,
+                    innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull() ?: ZERO_QUANTITY,
                     provider = task.value?.provider ?: ProviderInfo(),
                     producers = producers.orEmpty().toMutableList(),
                     volume = materialInfo?.volume?.toDoubleOrNull() ?: ZERO_VOLUME,

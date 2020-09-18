@@ -12,7 +12,7 @@ import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.extentions.*
 import com.lenta.bp12.model.pojo.open_task.TaskOpen
-import com.lenta.bp12.platform.DEFAULT_QUANTITY
+import com.lenta.bp12.platform.ZERO_QUANTITY
 import com.lenta.bp12.platform.ZERO_VOLUME
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
@@ -289,7 +289,7 @@ class BasketOpenGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener 
                     control = getControlType(),
                     commonUnits = database.getUnitsByCode(materialInfo?.commonUnitsCode.orEmpty()),
                     innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
-                    innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull() ?: DEFAULT_QUANTITY,
+                    innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull() ?: ZERO_QUANTITY,
                     provider = task.value?.provider ?: ProviderInfo.getEmptyProvider(),
                     producers = producers.orEmpty().toMutableList(),
                     volume = materialInfo?.volume?.toDoubleOrNull() ?: ZERO_VOLUME,

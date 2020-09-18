@@ -9,12 +9,14 @@ import com.lenta.bp12.request.pojo.taskContentNetRequest.Mrc
 
 data class TaskOpen(
         val number: String,
-        override val name: String,
-        val type: TaskType?,
         val block: Block,
 
-        val storage: String,
+        override val name: String,
+        override val type: TaskType?,
         override val control: ControlType,
+
+        val storage: String,
+
         val provider: ProviderInfo,
         val reason: ReturnReason?,
         var comment: String,
@@ -24,7 +26,7 @@ data class TaskOpen(
         var goodGroup: String,
 
         val numberOfGoods: Int,
-        val goods: MutableList<Good> = mutableListOf(),
+        override val goods: MutableList<Good> = mutableListOf(),
         override val baskets: MutableList<Basket> = mutableListOf(),
         val mrcList: MutableList<Mrc> = mutableListOf(),
 
@@ -101,6 +103,12 @@ data class TaskOpen(
 
     override fun removeEmptyBaskets() {
         baskets.removeAll(baskets.filter { it.getGoodList().isEmpty() })
+    }
+
+    override fun getBasketsByGood(good: Good): List<Basket> {
+        return baskets.filter { basket ->
+            basket.getGoodList().any { it.material == good.material }
+        }
     }
 
     fun isMrcNotInTaskMrcList(formattedMrc: String) = this.mrcList.none { it.maxRetailPrice == formattedMrc }
