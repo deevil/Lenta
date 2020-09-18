@@ -4,7 +4,10 @@ import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.managers.base.BaseTaskManager
 import com.lenta.bp12.managers.interfaces.ICreateTaskManager
 import com.lenta.bp12.managers.interfaces.IGeneralTaskManager
-import com.lenta.bp12.model.pojo.*
+import com.lenta.bp12.model.pojo.Basket
+import com.lenta.bp12.model.pojo.Good
+import com.lenta.bp12.model.pojo.Mark
+import com.lenta.bp12.model.pojo.Part
 import com.lenta.bp12.model.pojo.create_task.TaskCreate
 import com.lenta.bp12.model.pojo.extentions.*
 import com.lenta.bp12.platform.extention.isAlcohol
@@ -18,17 +21,14 @@ import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.toSapBooleanString
 import com.lenta.shared.utilities.getStringFromDate
-import com.lenta.shared.utilities.orIfNull
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.math.floor
 
 
 class CreateTaskManager @Inject constructor(
-        private val database: IDatabaseRepository,
+        override val database: IDatabaseRepository,
         private val generalTaskManager: IGeneralTaskManager
-) : BaseTaskManager(), ICreateTaskManager {
+) : BaseTaskManager<TaskCreate>(), ICreateTaskManager {
 
     override var isWasAddedProvider = false
 
@@ -158,99 +158,6 @@ class CreateTaskManager @Inject constructor(
                 it.markedForLock = false
             }
         }
-    }
-
-    private fun addEmptyPosition(good: Good, provider: ProviderInfo, basket: Basket) {
-        val position = Position(
-                quantity = 0.0,
-                provider = provider
-        )
-        position.basketNumber = basket.index
-        Logg.d { "--> add position = $position" }
-        good.addPosition(position)
-    }
-
-    /** Метод ищет корзины или создает их в зависимости от того что вернет getBasket() */
-    override suspend fun getOrCreateSuitableBasket(
-            task: TaskCreate,
-            good: Good,
-            provider: ProviderInfo
-    ): Basket {
-        val basketVolume = database.getBasketVolume() ?: error(NULL_BASKET_VOLUME)
-        val basketList = task.baskets
-
-        //Найдем корзину в списке корзин задания
-        return withContext(Dispatchers.IO) {
-            getBasket(provider.code.orEmpty(), good) //Функция возвращает либо корзину с подходящими параметрами и достаточным объемом или возвращает null
-                    .orIfNull {
-                        //Если корзина не найдена - создадим ее
-                        val index = basketList.lastOrNull()?.index?.plus(1) ?: INDEX_OF_FIRST_BASKET
-                        val taskType = task.type
-                        Basket(
-                                index = index,
-                                section = good.section.takeIf { taskType.isDivBySection },
-                                volume = basketVolume,
-                                provider = provider.takeIf { taskType.isDivByProvider },
-                                control = good.control,
-                                goodType = good.type.takeIf { taskType.isDivByGoodType },
-                                markTypeGroup = good.markTypeGroup,
-                                purchaseGroup = good.purchaseGroup.takeIf { taskType.isDivByPurchaseGroup }
-                        ).also {
-                            it.maxRetailPrice = good.maxRetailPrice
-                            addBasket(it)
-                        }
-                    }
-        }
-    }
-
-    /** Метод ищет корзины в списке корзин задания,
-     * и проверяет подходят ли параметры (divs), закрыта она или нет, и есть ли свободный объём
-     */
-    override suspend fun getBasket(providerCode: String, goodToAdd: Good): Basket? {
-        return currentTask.value?.let { task ->
-            val allBaskets = ArrayList(task.baskets)
-            currentGood.value?.let { good ->
-                task.type.run {
-                    allBaskets.find { basket ->
-                        //Если в задании есть деление по параметру (task.type), то сравниваем,
-                        //Если нет — то просто пропускаем как подходящий для корзины
-                        val divByMark = if (isDivByMark) basket.markTypeGroup == good.markTypeGroup else true
-                        val divByMrc = if (isDivByMinimalPrice) isSameMrcGroup(basket, goodToAdd) else true
-                        val divBySection = if (isDivBySection) basket.section == good.section else true
-                        val divByType = if (isDivByGoodType) basket.goodType == good.type else true
-                        val divByProviders = if (isDivByProvider) basket.provider?.code == providerCode else true
-                        val divByControl = basket.control == good.control
-                        val divs = divByMark && divByMrc && divBySection && divByType && divByProviders && divByControl
-                        isLastBasketMatches(basket, good, divs)
-                    }?.also {
-                        updateCurrentBasket(it)
-                    }
-                }
-            }
-        }
-    }
-
-    /** Метод проверяет группу мрц товара
-     * одинаковые товары с разным мрц в разные корзины,
-     * разные товары с одинаковым мрц в одну корзину
-     * разные товары с разными мрц в одну корзину
-     * */
-    private fun isSameMrcGroup(basket: Basket, goodToAdd: Good): Boolean {
-        val sameGood = basket.goods.keys.firstOrNull { it.material == goodToAdd.material }
-        return sameGood?.run {
-            maxRetailPrice == goodToAdd.maxRetailPrice
-        } ?: true
-    }
-
-    private fun isLastBasketMatches(basket: Basket, good: Good, divs: Boolean): Boolean {
-        return divs && isBasketNotClosedAndHasEnoughVolume(basket, good)
-    }
-
-    private fun isBasketNotClosedAndHasEnoughVolume(basket: Basket, good: Good): Boolean =
-            !basket.isLocked && isBasketHasEnoughVolume(basket, good)
-
-    private fun isBasketHasEnoughVolume(basket: Basket, good: Good): Boolean {
-        return basket.freeVolume > good.volume
     }
 
     override fun updateCurrentTask(task: TaskCreate?) {
@@ -456,10 +363,4 @@ class CreateTaskManager @Inject constructor(
             updateCurrentTask(task)
         }
     }
-
-    companion object {
-        private const val NULL_BASKET_VOLUME = "Объем корзины отсутствует"
-        private const val INDEX_OF_FIRST_BASKET = 1
-    }
-
 }

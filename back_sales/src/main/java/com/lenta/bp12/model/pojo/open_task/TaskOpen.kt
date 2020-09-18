@@ -9,12 +9,14 @@ import com.lenta.bp12.request.pojo.taskContentNetRequest.Mrc
 
 data class TaskOpen(
         val number: String,
-        override val name: String,
-        val type: TaskType?,
         val block: Block,
 
-        val storage: String,
+        override val name: String,
+        override val type: TaskType?,
         override val control: ControlType,
+
+        val storage: String,
+
         val provider: ProviderInfo,
         val reason: ReturnReason?,
         var comment: String,

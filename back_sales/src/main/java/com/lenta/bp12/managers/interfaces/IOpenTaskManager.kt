@@ -19,7 +19,6 @@ interface IOpenTaskManager : ITaskManager {
     var isNeedLoadTaskListByParams: Boolean
     var searchParams: TaskSearchParams?
 
-    val currentTask: MutableLiveData<TaskOpen>
     val tasks: MutableLiveData<List<TaskOpen>>
     val foundTasks: MutableLiveData<List<TaskOpen>>
 

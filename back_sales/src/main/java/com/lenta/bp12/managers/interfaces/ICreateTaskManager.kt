@@ -10,7 +10,7 @@ import com.lenta.bp12.request.pojo.ProviderInfo
  * implementation:
  * @see com.lenta.bp12.managers.CreateTaskManager
  * */
-interface ICreateTaskManager : ITaskManager {
+interface ICreateTaskManager {
 
     val currentTask: MutableLiveData<TaskCreate>
     var isWasAddedProvider: Boolean
