@@ -20,6 +20,8 @@ import com.lenta.bp12.request.pojo.good_info.GoodInfoResult
  * */
 
 interface ITaskManager<T : Taskable>{
+
+    var ean: String
     var isWholesaleTaskType: Boolean
     var isBasketsNeedsToBeClosed: Boolean
 
@@ -51,4 +53,6 @@ interface ITaskManager<T : Taskable>{
     fun prepareSendTaskDataParams(deviceIp: String, tkNumber: String, userNumber: String)
 
     fun removeMarksFromGoods(mappedMarks: List<Mark>)
+
+    fun clearEan()
 }

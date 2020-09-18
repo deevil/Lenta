@@ -1,4 +1,4 @@
-package com.lenta.bp12.features.create_task.base_good_info
+package com.lenta.bp12.features.create_task.base.interfaces
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

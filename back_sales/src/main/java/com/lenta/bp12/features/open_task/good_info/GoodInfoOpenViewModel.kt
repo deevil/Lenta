@@ -5,7 +5,7 @@ import androidx.databinding.adapters.TextViewBindingAdapter
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
-import com.lenta.bp12.features.open_task.base_good_info.BaseGoodInfoOpenViewModel
+import com.lenta.bp12.features.open_task.base.BaseGoodInfoOpenViewModel
 import com.lenta.bp12.managers.interfaces.IOpenTaskManager
 import com.lenta.bp12.model.*
 import com.lenta.bp12.model.pojo.Good
@@ -15,6 +15,7 @@ import com.lenta.bp12.model.pojo.Position
 import com.lenta.bp12.model.pojo.extentions.addMark
 import com.lenta.bp12.model.pojo.extentions.addMarks
 import com.lenta.bp12.model.pojo.extentions.addPosition
+import com.lenta.bp12.model.pojo.extentions.getScreenStatus
 import com.lenta.bp12.platform.FIRST_POSITION
 import com.lenta.bp12.platform.ZERO_QUANTITY
 import com.lenta.bp12.platform.ZERO_VOLUME
@@ -185,10 +186,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
     }
 
     val dateEnabled = screenStatus.map { status ->
-        when (status) {
-            ScreenStatus.ALCOHOL, ScreenStatus.PART -> true
-            else -> false
-        }
+        (status == ScreenStatus.ALCOHOL || status == ScreenStatus.PART)
     }
 
 
@@ -264,7 +262,6 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
     /**
     Методы
      */
-
     override fun onScanResult(number: String) {
         good.value?.let {
             launchUITryCatch {
@@ -311,7 +308,6 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
 
     override fun checkSearchNumber(number: String) {
         originalSearchNumber = number
-
         actionByNumber(
                 number = number,
                 funcForEan = ::getGoodByEan,
@@ -389,7 +385,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
     }
 
     private fun setProducerList(good: Good) {
-        if (good.kind == GoodKind.EXCISE) {
+        if (good.isExciseAlco()) {
             updateProducers(emptyList())
         } else {
             updateProducers(good.producers)
@@ -397,28 +393,34 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
     }
 
     private fun setDefaultQuantity(good: Good) {
-        quantityField.value = if (good.kind == GoodKind.COMMON) {
-            if (good.isDifferentUnits()) {
-                with(ScanCodeInfo(originalSearchNumber)) {
-                    val converted =
-                            if (weight > 0.0) getConvertedQuantity(good.innerQuantity)
-                            else ZERO_QUANTITY
-                    converted.dropZeros()
-                }
-            } else {
-                if (isEanLastScanned) DEFAULT_QUANTITY_STRING_FOR_EAN else DEFAULT_QUANTITY_STRING
-            }
-        } else DEFAULT_QUANTITY_STRING
+        quantityField.value = if (good.isCommon()) {
+            getQuantityForCommonGood(good)
+        } else {
+            DEFAULT_QUANTITY_STRING
+        }
+        manager.clearEan()
+    }
+
+    private fun getQuantityForCommonGood(good: Good): String {
+        val ean = manager.ean
+        val isEanLastScanned = ean.isNotEmpty()
+        return if (good.isDifferentUnits() && isEanLastScanned) {
+            ScanCodeInfo(ean).getConvertedQuantityString(good.innerQuantity)
+        } else {
+            chooseOneOrZeroQuantity(isEanLastScanned)
+        }
+    }
+
+    private fun chooseOneOrZeroQuantity(isEanLastScanned: Boolean): String {
+        return if (isEanLastScanned) {
+            DEFAULT_QUANTITY_STRING_FOR_EAN
+        } else {
+            DEFAULT_QUANTITY_STRING
+        }
     }
 
     private fun setScreenStatus(good: Good) {
-        screenStatus.value = when (good.kind) {
-            GoodKind.COMMON -> ScreenStatus.COMMON
-            GoodKind.ALCOHOL -> ScreenStatus.ALCOHOL
-            GoodKind.EXCISE -> ScreenStatus.EXCISE
-            GoodKind.MARK -> ScreenStatus.MARK
-            GoodKind.VET -> ScreenStatus.VET
-        }
+        screenStatus.value = good.getScreenStatus()
     }
 
     private fun clearSpinnerPositions() {

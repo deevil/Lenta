@@ -367,6 +367,8 @@ class OpenTaskManager @Inject constructor(
         }
     }
 
+
+
     override fun saveStartTaskInfo() {
         val hashOfCurrentTask = currentTask.value.hashCode()
         startStateHashOfCurrentTask = hashOfCurrentTask

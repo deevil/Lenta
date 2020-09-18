@@ -3,7 +3,7 @@ package com.lenta.bp12.features.create_task.marked_good_info
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
-import com.lenta.bp12.features.create_task.base_good_info.BaseGoodInfoCreateViewModel
+import com.lenta.bp12.features.create_task.base.BaseGoodInfoCreateViewModel
 import com.lenta.bp12.managers.interfaces.ICreateTaskManager
 import com.lenta.bp12.managers.interfaces.IMarkManager
 import com.lenta.bp12.model.MarkScreenStatus

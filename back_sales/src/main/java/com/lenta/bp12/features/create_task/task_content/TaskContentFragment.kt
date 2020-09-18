@@ -237,6 +237,10 @@ class TaskContentFragment : CoreFragment<FragmentTaskContentBinding, TaskContent
 //                vm.onScanResult("4606068253837")
 //                return true
 //            }
+//            KeyCode.KEYCODE_6 -> { //011189 граммовый ШК: 2811189054009 (вес 5.4 кг)
+//                vm.onScanResult("2811189054009")
+//                return true
+//            }
 //        }
 //        return false
 //    }

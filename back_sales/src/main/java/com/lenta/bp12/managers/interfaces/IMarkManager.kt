@@ -7,6 +7,10 @@ import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.shared.exception.Failure
 
+/**
+ * Имплементация:
+ * @see com.lenta.bp12.managers.MarkManager
+ * */
 interface IMarkManager {
 
     fun setWorkType(workType: WorkType)
