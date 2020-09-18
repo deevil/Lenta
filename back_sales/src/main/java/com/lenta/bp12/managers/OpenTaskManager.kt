@@ -367,15 +367,7 @@ class OpenTaskManager @Inject constructor(
         }
     }
 
-    override fun getEan() = ean
 
-    override fun setEan(ean: String) {
-        this.ean = ean
-    }
-
-    override fun clearEan() {
-        this.ean = ""
-    }
 
     override fun saveStartTaskInfo() {
         val hashOfCurrentTask = currentTask.value.hashCode()

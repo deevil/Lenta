@@ -17,9 +17,6 @@ import com.lenta.bp12.model.pojo.extentions.addMarks
 import com.lenta.bp12.model.pojo.extentions.addPosition
 import com.lenta.bp12.model.pojo.extentions.getScreenStatus
 import com.lenta.bp12.platform.*
-import com.lenta.bp12.platform.FIRST_POSITION
-import com.lenta.bp12.platform.ZERO_QUANTITY
-import com.lenta.bp12.platform.ZERO_VOLUME
 import com.lenta.bp12.platform.extention.*
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
@@ -368,7 +365,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
     }
 
     private fun getQuantityForCommonGood(good: Good): String {
-        val ean = manager.getEan()
+        val ean = manager.ean
         val isEanLastScanned = ean.isNotEmpty()
         return if (good.isDifferentUnits() && isEanLastScanned) {
             ScanCodeInfo(ean).getConvertedQuantityString(good.innerQuantity)

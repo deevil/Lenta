@@ -45,7 +45,7 @@ abstract class BaseGoodListCreateViewModel : CoreViewModel(), IBaseGoodListCreat
      * Метод проверяет длину отсканированного/введенного кода
      * */
     override fun checkSearchNumber(number: String) {
-        manager.setEan(number)
+        manager.ean = number
         actionByNumber(
                 number = number,
                 funcForEan = ::getGoodByEan,

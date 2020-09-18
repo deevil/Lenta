@@ -5,7 +5,7 @@ import com.lenta.bp12.R
 import com.lenta.bp12.model.*
 import com.lenta.bp12.model.pojo.TaskType
 import com.lenta.bp12.platform.DEFAULT_DATE_LENGTH
-import com.lenta.bp12.platform.DEFAULT_QUANTITY
+import com.lenta.bp12.platform.ZERO_QUANTITY
 import com.lenta.bp12.request.pojo.CreateTaskBasketInfo
 import com.lenta.bp12.request.pojo.TaskInfo
 import com.lenta.bp12.request.pojo.good_info.GoodInfoResult
@@ -240,7 +240,7 @@ fun ScanCodeInfo.getConvertedQuantityString(divider: Double): String {
     val converted = if (weight > 0.0) {
         getConvertedQuantity(divider)
     } else {
-        DEFAULT_QUANTITY
+        ZERO_QUANTITY
     }
     return converted.dropZeros()
 }

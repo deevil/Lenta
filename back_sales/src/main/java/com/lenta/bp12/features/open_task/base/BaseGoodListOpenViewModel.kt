@@ -4,7 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.features.open_task.base.interfaces.IBaseGoodListOpenViewModel
 import com.lenta.bp12.model.*
 import com.lenta.bp12.model.pojo.Good
-import com.lenta.bp12.platform.DEFAULT_QUANTITY
+import com.lenta.bp12.platform.ZERO_QUANTITY
 import com.lenta.bp12.platform.ZERO_VOLUME
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
@@ -45,7 +45,7 @@ abstract class BaseGoodListOpenViewModel: CoreViewModel(), IBaseGoodListOpenView
      * Метод проверяет длину отсканированного/введенного кода
      * */
     override fun checkSearchNumber(number: String) {
-        manager.setEan(number)
+        manager.ean = number
         actionByNumber(
                 number = number,
                 funcForEan = {
@@ -146,10 +146,10 @@ abstract class BaseGoodListOpenViewModel: CoreViewModel(), IBaseGoodListOpenView
             with(navigator) {
                 manager.clearEan()
                 showProgressLoadingData()
-                val screenStatus = markManager.checkMark(number, WorkType.CREATE)
+                val screenStatus = markManager.checkMark(number, WorkType.OPEN)
                 hideProgress()
                 when (screenStatus) {
-                    MarkScreenStatus.OK -> openMarkedGoodInfoCreateScreen()
+                    MarkScreenStatus.OK -> openMarkedGoodInfoOpenScreen()
                     MarkScreenStatus.NO_MARKTYPE_IN_SETTINGS -> showNoMarkTypeInSettings()
                     MarkScreenStatus.INCORRECT_EAN_FORMAT -> showIncorrectEanFormat()
                     else -> Unit
@@ -194,7 +194,7 @@ abstract class BaseGoodListOpenViewModel: CoreViewModel(), IBaseGoodListOpenView
                     commonUnits = database.getUnitsByCode(materialInfo?.commonUnitsCode.orEmpty()),
                     innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
                     innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull()
-                            ?: DEFAULT_QUANTITY,
+                            ?: ZERO_QUANTITY,
                     provider = task.value?.takeIf { manager.isWholesaleTaskType.not() }
                             ?.provider
                             ?: ProviderInfo.getEmptyProvider(),
@@ -214,10 +214,10 @@ abstract class BaseGoodListOpenViewModel: CoreViewModel(), IBaseGoodListOpenView
         with(navigator) {
             manager.updateCurrentGood(foundGood)
             if (foundGood.isMarked()) {
-                openMarkedGoodInfoCreateScreen()
+                openMarkedGoodInfoOpenScreen()
                 showForGoodNeedScanFirstMark()
             } else {
-                openGoodInfoCreateScreen()
+                openGoodInfoOpenScreen()
             }
         }
     }

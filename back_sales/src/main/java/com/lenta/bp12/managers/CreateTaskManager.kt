@@ -21,7 +21,6 @@ import com.lenta.shared.utilities.extentions.toSapBooleanString
 import com.lenta.shared.utilities.getStringFromDate
 import javax.inject.Inject
 
-
 class CreateTaskManager @Inject constructor(
         override val database: IDatabaseRepository,
         private val generalTaskManager: IGeneralTaskManager
@@ -151,16 +150,4 @@ class CreateTaskManager @Inject constructor(
             )
         }
     }
-
-    override fun getEan() = ean
-
-    override fun setEan(ean: String) {
-        this.ean = ean
-    }
-
-    override fun clearEan() {
-        this.ean = ""
-    }
-
-
 }

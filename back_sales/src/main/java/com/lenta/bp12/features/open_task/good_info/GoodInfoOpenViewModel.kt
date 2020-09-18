@@ -16,8 +16,6 @@ import com.lenta.bp12.model.pojo.extentions.addMark
 import com.lenta.bp12.model.pojo.extentions.addMarks
 import com.lenta.bp12.model.pojo.extentions.addPosition
 import com.lenta.bp12.model.pojo.extentions.getScreenStatus
-import com.lenta.bp12.platform.DEFAULT_POSITION
-import com.lenta.bp12.platform.DEFAULT_QUANTITY
 import com.lenta.bp12.platform.FIRST_POSITION
 import com.lenta.bp12.platform.ZERO_QUANTITY
 import com.lenta.bp12.platform.ZERO_VOLUME
@@ -264,7 +262,6 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
     /**
     Методы
      */
-
     override fun onScanResult(number: String) {
         good.value?.let {
             launchUITryCatch {
@@ -388,7 +385,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
     }
 
     private fun setProducerList(good: Good) {
-        if (good.kind == GoodKind.EXCISE) {
+        if (good.isExciseAlco()) {
             updateProducers(emptyList())
         } else {
             updateProducers(good.producers)
@@ -405,7 +402,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
     }
 
     private fun getQuantityForCommonGood(good: Good): String {
-        val ean = manager.getEan()
+        val ean = manager.ean
         val isEanLastScanned = ean.isNotEmpty()
         return if (good.isDifferentUnits() && isEanLastScanned) {
             ScanCodeInfo(ean).getConvertedQuantityString(good.innerQuantity)

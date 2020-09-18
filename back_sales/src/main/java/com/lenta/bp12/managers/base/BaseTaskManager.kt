@@ -19,6 +19,8 @@ abstract class BaseTaskManager<T : Taskable> : ITaskManager<T> {
 
     abstract val database: IDatabaseRepository
 
+    override var ean: String = ""
+
     /** Метод добавляет обычные в товары в корзину */
     override suspend fun addOrDeleteGoodToBasket(good: Good, part: Part?, provider: ProviderInfo, count: Double) {
         currentTask.value?.let { taskValue ->
@@ -349,6 +351,10 @@ abstract class BaseTaskManager<T : Taskable> : ITaskManager<T> {
             task.removeBaskets(basketList)
             updateCurrentTask(task)
         }
+    }
+
+    override fun clearEan() {
+        this.ean = ""
     }
 
     companion object {
