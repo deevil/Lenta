@@ -123,8 +123,13 @@ abstract class BaseTaskManager<T : Taskable> : ITaskManager<T> {
                         lastBasket.goods[good] = newQuantity
                         leftToDel = ZERO_QUANTITY
                     }
+                }.orIfNull {
+                    leftToDel = ZERO_QUANTITY
+                    Unit
                 }
                 updateCurrentBasket(it)
+            }.orIfNull {
+                leftToDel = ZERO_QUANTITY
             }
         }
         task.removeEmptyBaskets()

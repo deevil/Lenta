@@ -77,7 +77,6 @@ abstract class BaseGoodInfoCreateViewModel : CoreViewModel(), IBaseGoodInfoCreat
     /**
      * Корзины
      * */
-
     override val basketNumber by unsafeLazy {
         good.combineLatest(quantity)
                 .combineLatest(isProviderSelected)
@@ -86,10 +85,11 @@ abstract class BaseGoodInfoCreateViewModel : CoreViewModel(), IBaseGoodInfoCreat
                         val good = it.first.first
                         val isProviderSelected = it.second
 
-                        if (isProviderSelected) {
-                            val index = getBasket(good)?.index.orIfNull { task.value?.baskets?.size?.plus(1) }
-                            index?.run { "$index" }.orEmpty()
-                        } else ""
+                        good.takeIf { isProviderSelected }
+                                ?.run { getBasket(this)?.index?.toString() }
+                                .orIfNull {
+                                    task.value?.baskets?.size?.plus(1)?.toString()
+                                }.orEmpty()
                     }
                 }
     }
@@ -103,11 +103,13 @@ abstract class BaseGoodInfoCreateViewModel : CoreViewModel(), IBaseGoodInfoCreat
                         val enteredQuantity = it.first.second
                         val isProviderSelected = it.second
 
-                        if (isProviderSelected) {
-                            getBasket(good)?.run {
+                        good.takeIf { isProviderSelected }?.run {
+                            getBasket(this)?.run {
                                 getQuantityOfGood(good).sumWith(enteredQuantity)
-                            }.orIfNull { enteredQuantity }
-                        } else ZERO_QUANTITY
+                            }.orIfNull {
+                                enteredQuantity
+                            }
+                        }.orIfNull { ZERO_QUANTITY }
                     }
                 }
     }
