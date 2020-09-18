@@ -136,7 +136,7 @@
             app:layout_constraintTop_toTopOf="@id/b_scan"
             app:layout_constraintBottom_toBottomOf="@id/b_scan"
             android:layout_marginStart="@dimen/size_8dp"
-            alcoIcon="@{vm.productInfo.type}"
+            app:goodTypeIcon="@{vm.productInfo.type}"
             tools:src="@drawable/ic_excise_alcohol_white_32dp"
             android:contentDescription="@string/alco_good" />
 
