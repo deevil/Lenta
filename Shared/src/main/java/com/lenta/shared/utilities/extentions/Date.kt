@@ -5,31 +5,21 @@ import com.lenta.shared.utilities.date_time.DateTimeUtil
 import java.util.*
 
 fun Date?.getFormattedDate(): String {
-    return if (this != null) {
-        DateTimeUtil.formatDate(this, Constants.DATE_FORMAT_ddmmyy)
-    } else ""
+    return this?.run {  DateTimeUtil.formatDate(this, Constants.DATE_FORMAT_ddmmyy) }.orEmpty()
 }
 
 fun Date?.getFormattedDateLongYear(): String {
-    return if (this != null) {
-        DateTimeUtil.formatDate(this, Constants.DATE_FORMAT_dd_mm_yyyy)
-    } else ""
+    return this?.run {  DateTimeUtil.formatDate(this, Constants.DATE_FORMAT_dd_mm_yyyy) }.orEmpty()
 }
-
+/*this, pattern*/
 fun Date?.getFormattedTime(): String {
-    return if (this != null) {
-        DateTimeUtil.formatDate(this, Constants.TIME_FORMAT_HHmm)
-    } else ""
+    return this?.run {  DateTimeUtil.formatDate(this, Constants.TIME_FORMAT_HHmm) }.orEmpty()
 }
 
 fun Date?.getFormattedTimeForPriceTag(): String {
-    return if (this != null) {
-        DateTimeUtil.formatDate(this, Constants.PRICE_TAG_DATE_TIME_ONE)
-    } else ""
+    return this?.run {  DateTimeUtil.formatDate(this, Constants.PRICE_TAG_DATE_TIME_ONE) }.orEmpty()
 }
 
 fun Date?.getFormattedDate(pattern: String): String {
-    return if (this != null) {
-        DateTimeUtil.formatDate(this, pattern)
-    } else ""
+    return this?.run {  DateTimeUtil.formatDate(this, pattern) }.orEmpty()
 }
