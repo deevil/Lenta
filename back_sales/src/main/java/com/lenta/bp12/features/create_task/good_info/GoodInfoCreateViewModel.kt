@@ -1,5 +1,7 @@
 package com.lenta.bp12.features.create_task.good_info
 
+import android.text.Editable
+import androidx.databinding.adapters.TextViewBindingAdapter
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
@@ -16,10 +18,7 @@ import com.lenta.bp12.model.pojo.extentions.addPosition
 import com.lenta.bp12.platform.DEFAULT_POSITION
 import com.lenta.bp12.platform.DEFAULT_QUANTITY
 import com.lenta.bp12.platform.ZERO_VOLUME
-import com.lenta.bp12.platform.extention.extractAlcoCode
-import com.lenta.bp12.platform.extention.getControlType
-import com.lenta.bp12.platform.extention.getGoodKind
-import com.lenta.bp12.platform.extention.isDateCorrectAndNotAfterToday
+import com.lenta.bp12.platform.extention.*
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -46,7 +45,7 @@ import kotlinx.coroutines.withContext
 import java.util.*
 import javax.inject.Inject
 
-class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
+class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAdapter.AfterTextChanged {
 
     @Inject
     override lateinit var navigator: IScreenNavigator
@@ -460,7 +459,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
                         commonUnits = database.getUnitsByCode(materialInfo?.commonUnitsCode.orEmpty()),
                         innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
                         innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull() ?: 1.0,
-                        providers = providers.orEmpty().toMutableList(),
+                        providers = providers.takeIf { manager.isWholesaleTaskType.not() }.orEmpty().toMutableList(),
                         producers = producers.orEmpty().toMutableList(),
                         volume = materialInfo?.volume?.toDoubleOrNull() ?: ZERO_VOLUME,
                         purchaseGroup = materialInfo?.purchaseGroup.orEmpty()
@@ -840,5 +839,9 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
 
     companion object {
         private const val DEFAULT_QUANTITY_FIELD = "0"
+    }
+
+    override fun afterTextChanged(s: Editable?) {
+        quantityField.value = s.returnWithNoSecondMinus()
     }
 }

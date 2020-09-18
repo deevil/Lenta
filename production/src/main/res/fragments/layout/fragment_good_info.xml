@@ -58,11 +58,11 @@
 
             <View
                 style="@style/HorizontalDivider"
-                android:visibility="@{vm.ZPartFlag ? View.VISIBLE : View.GONE}" />
+                android:visibility="@{vm.ZPartFlag}" />
 
             <LinearLayout
                 style="@style/LinearRowStyle"
-                android:visibility="@{vm.ZPartFlag ? View.VISIBLE : View.GONE}">
+                android:visibility="@{vm.ZPartFlag}">
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
@@ -83,11 +83,11 @@
 
             <View
                 style="@style/HorizontalDivider"
-                android:visibility="@{vm.ZPartFlag ? View.VISIBLE : View.GONE}" />
+                android:visibility="@{vm.ZPartFlag}" />
 
             <LinearLayout
                 style="@style/LinearRowStyle"
-                android:visibility="@{vm.ZPartFlag ? View.VISIBLE : View.GONE}">
+                android:visibility="@{vm.ZPartFlag}">
 
                 <LinearLayout style="@style/LinearCellStyle">
 
@@ -181,11 +181,11 @@
 
             <View
                 style="@style/HorizontalDivider"
-                android:visibility="@{vm.proIncludeCond || vm.ZPartFlag ? View.VISIBLE : View.GONE}" />
+                android:visibility="@{vm.proIncludeCond || vm.ZPartFlag}" />
 
             <LinearLayout
                 style="@style/LinearRowStyle"
-                android:visibility="@{vm.proIncludeCond || vm.ZPartFlag ? View.VISIBLE : View.GONE}">
+                android:visibility="@{vm.proIncludeCond || vm.ZPartFlag}">
 
                 <LinearLayout style="@style/LinearCellStyle">
 

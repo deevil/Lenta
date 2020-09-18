@@ -57,6 +57,7 @@ object Constants {
     const val CIGARETTES_BOX_PATTERN = "^.?(?<blockBarcode>01(?<gtin2>\\d{14})21(?<serial>\\S{7})).?8005(?<MRC>\\d{6}).?93(?<verificationKey>\\S{4}).?(?<other>\\S{1,})?\$"
     const val SHOES_MARK_PATTERN = "^(?<barcode>01(?<gtin>\\d{14})21(?<serial>\\S{13})).?(?:240(?<tradeCode>\\d{4}))?.?(?:91(?<verificationKey>\\S{4}))?.?(?:92(?<verificationCode>\\S{88}))?\$"
     const val GTIN_REGEX_PATTERN = "(0{6}(?<ean8gs1>\\d{8})|0(?<ean13gs1>\\d{13}))"
+    const val STRING_WITH_ONLY_ONE_MINUS_IN_BEGINNING_PATTERN = "^-?\$|^\\d+\$|^(-?\\d+)\$"
 
     // ERP Requests
     const val OPERATING_SYSTEM_WINDOWS = "1"
