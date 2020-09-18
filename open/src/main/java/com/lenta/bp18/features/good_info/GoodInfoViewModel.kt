@@ -2,7 +2,6 @@ package com.lenta.bp18.features.good_info
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp18.model.pojo.Good
 import com.lenta.bp18.platform.Constants
 import com.lenta.bp18.platform.navigation.IScreenNavigator
@@ -22,10 +21,7 @@ import com.lenta.shared.requests.network.ServerTimeRequestParam
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.*
-import com.lenta.shared.utilities.getFormattedDate
-import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
 import javax.inject.Inject
@@ -75,23 +71,12 @@ class GoodInfoViewModel : CoreViewModel() {
     }
     val selectedGroup = MutableLiveData(0)
 
-    val selectedGroupClickListener = object : OnPositionClickListener {
-        override fun onClickPosition(position: Int) {
-            selectedGroup.value = position
-        }
-    }
-
     /**Выбор условий хранения*/
     private val conditions: MutableLiveData<List<ConditionInfo>> = MutableLiveData()
     val conditionNames: MutableLiveData<List<String?>> = conditions.map { conditions ->
         conditions?.map { it.name }.orEmpty()
     }
     val selectedCondition = MutableLiveData(0)
-    val selectedConditionClickListener = object : OnPositionClickListener {
-        override fun onClickPosition(position: Int) {
-            selectedCondition.value = position
-        }
-    }
 
     private val selectedGood = MutableLiveData<Good>()
 
@@ -99,7 +84,7 @@ class GoodInfoViewModel : CoreViewModel() {
     private var currentCondition: ConditionInfo by Delegates.notNull()
 
     val suffix: MutableLiveData<String> = MutableLiveData(Uom.KG.name)
-    val buom by unsafeLazy { MutableLiveData<String>() }
+    private val buom by unsafeLazy { MutableLiveData<String>() }
 
     val completeButtonEnabled = partNumberField.map { !it.isNullOrBlank() }
 
