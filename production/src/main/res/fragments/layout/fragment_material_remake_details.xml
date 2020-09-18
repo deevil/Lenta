@@ -137,10 +137,10 @@
         </LinearLayout>
 
         <View style="@style/HorizontalDivider"
-            android:visibility="@{vm.producerVisibleCondition ? View.VISIBLE : View.GONE}"/>
+            android:visibility="@{vm.producerVisibleCondition}"/>
 
         <LinearLayout style="@style/LinearRowStyle"
-            android:visibility="@{vm.producerVisibleCondition ? View.VISIBLE : View.GONE}">
+            android:visibility="@{vm.producerVisibleCondition}">
 
             <com.lenta.shared.view.ClickableSpinner
                 android:enabled="@{vm.disableSpinner}"
@@ -152,11 +152,11 @@
         </LinearLayout>
 
         <View
-            android:visibility="@{vm.dateVisibleCondition ? View.VISIBLE : View.GONE}"
+            android:visibility="@{vm.dateVisibleCondition}"
             style="@style/HorizontalDivider"/>
 
         <LinearLayout
-            android:visibility="@{vm.dateVisibleCondition ? View.VISIBLE : View.GONE}"
+            android:visibility="@{vm.dateVisibleCondition}"
             style="@style/LinearRowStyle">
 
             <LinearLayout
@@ -204,42 +204,45 @@
 
     </LinearLayout>
 
-        <ImageView
+        <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/size_8dp"
             android:layout_marginStart="@dimen/size_8dp"
+            android:onClick="@{(v) -> vm.chooseGoodInfoScreen()}"
             android:src="@drawable/ic_mercury_white_32dp"
+            android:background="?selectableItemBackground"
             app:goodTypeIcon="@{vm.goodTypeIcon}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
         <ImageButton
-            android:visibility="@{vm.vetIconInfoCondition ? View.VISIBLE : View.GONE}"
-            android:id="@+id/ib_scan"
+            android:visibility="@{vm.vetIconInfoCondition}"
+            android:id="@+id/ib_scan_code_128"
             android:layout_margin="@dimen/size_8dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/ib_scan_barcode_vet"
+            app:layout_constraintEnd_toStartOf="@id/ib_scan_barcode_gs1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/size_8dp"
+            android:onClick="@{(v) -> vm.navigator.openCode128InfoScreen()}"
             android:background="?selectableItemBackground"
-            android:src="@drawable/ic_barcode_white_32dp" />
+            android:src="@drawable/ic_scan_barcode_code128_white_32dp" />
 
         <ImageButton
-            android:id="@+id/ib_scan_barcode_vet"
+            android:id="@+id/ib_scan_barcode_gs1"
             android:layout_margin="@dimen/size_8dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/ib_scan_barcode"
+            app:layout_constraintEnd_toStartOf="@id/ib_scan_barcode_ean"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/size_8dp"
-            android:onClick="@{(v) -> vm.navigator.openGS128InfoScreen()}"
+            android:onClick="@{(v) -> vm.navigator.openGS1InfoScreen()}"
             android:background="?selectableItemBackground"
-            android:src="@drawable/ic_scan_barcode_vet_white_32dp" />
+            android:src="@drawable/ic_scan_barcode_gs1_white_32dp" />
 
         <ImageButton
-            android:id="@+id/ib_scan_barcode"
+            android:id="@+id/ib_scan_barcode_ean"
             android:layout_margin="@dimen/size_8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

@@ -19,8 +19,24 @@ object Constants {
     const val QUANTITY_DEFAULT_VALUE_1 = 1.0
     const val QUANTITY_DEFAULT_VALUE_0 = 0.0
 
-    const val CHOOSE_PRODUCER = "Выберите производителя"
-    const val CHOOSE_PRODUCTION_DATE = "Выберите дату производства"
+    const val CHOOSE_ITEM = "Выберите пункт из списка"
+
+    const val HOURS_IN_DAY = 24
+    const val MINUTES_IN_HOUR = 60
+    const val SECOND_IN_MINUTE = 60
+    const val MILLISECOND_IN_SECOND = 1000
+    const val CONVERT_TO_MILLISECOND_VALUE  = 86_400_000
+
+    //Date constants
+    val YEAR_RANGE_2000_TO_2100 = 2000..2100
+    const val MONTH_WITH_31_DAY = 31
+    const val MONTH_WITH_30_DAY = 30
+    const val MONTH_WITH_29_DAY = 29
+    const val MONTH_WITH_28_DAY = 28
+
+    //Time constants
+    val HOUR_RANGE = 0..23
+    val MINUTES_RANGE = 0..59
 }
 
 
