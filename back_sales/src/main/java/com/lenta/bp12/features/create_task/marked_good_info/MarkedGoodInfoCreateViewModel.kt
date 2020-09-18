@@ -109,7 +109,7 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
 
     val isBasketNumberVisible by unsafeLazy {
         tempMarks.mapSkipNulls {
-            it.isNotEmpty()
+            it.takeIf { manager.currentGood.value?.isTobacco() == true }?.isNotEmpty() ?: true
         }
     }
 
@@ -164,7 +164,7 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
     Кнопки нижнего тулбара
      */
     override val applyEnabled by lazy {
-        isProviderSelected.switchMap {isProviderSelected ->
+        isProviderSelected.switchMap { isProviderSelected ->
             quantity.switchMap { enteredQuantity ->
                 totalQuantity.switchMap { totalQuantity ->
                     basketQuantity.switchMap { basketQuantity ->
@@ -179,7 +179,6 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
             }
         }
     }
-
 
     val rollbackEnabled = tempMarks.map {
         it?.isEmpty()?.not()
@@ -480,10 +479,6 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
                 if (size != null && size > 0) {
                     isExistUnsavedData = true
                     lastScannedMarks = tempMarksValue
-                }
-
-                Logg.e {
-                    it.maxRetailPrice.toString()
                 }
             }.orIfNull {
                 Logg.e { "good null" }
