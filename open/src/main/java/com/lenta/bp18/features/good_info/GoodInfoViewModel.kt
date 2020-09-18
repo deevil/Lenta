@@ -2,7 +2,6 @@ package com.lenta.bp18.features.good_info
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp18.model.pojo.Good
 import com.lenta.bp18.platform.Constants
 import com.lenta.bp18.platform.navigation.IScreenNavigator
@@ -11,6 +10,7 @@ import com.lenta.bp18.request.model.params.GoodInfoParams
 import com.lenta.bp18.request.network.GoodInfoNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.Uom
+import com.lenta.shared.platform.constants.Constants.DATE_FORMAT_yyyyMMdd
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.ConditionInfo
@@ -20,15 +20,12 @@ import com.lenta.shared.requests.network.ServerTimeRequest
 import com.lenta.shared.requests.network.ServerTimeRequestParam
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
-import com.lenta.shared.utilities.extentions.isSapTrue
-import com.lenta.shared.utilities.extentions.launchUITryCatch
-import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.view.OnPositionClickListener
+import com.lenta.shared.utilities.extentions.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
 import javax.inject.Inject
+import kotlin.properties.Delegates
 
 class GoodInfoViewModel : CoreViewModel() {
 
@@ -74,30 +71,20 @@ class GoodInfoViewModel : CoreViewModel() {
     }
     val selectedGroup = MutableLiveData(0)
 
-    val selectedGroupClickListener = object : OnPositionClickListener {
-        override fun onClickPosition(position: Int) {
-            selectedGroup.value = position
-        }
-    }
-
     /**Выбор условий хранения*/
     private val conditions: MutableLiveData<List<ConditionInfo>> = MutableLiveData()
     val conditionNames: MutableLiveData<List<String?>> = conditions.map { conditions ->
         conditions?.map { it.name }.orEmpty()
     }
     val selectedCondition = MutableLiveData(0)
-    val selectedConditionClickListener = object : OnPositionClickListener {
-        override fun onClickPosition(position: Int) {
-            selectedCondition.value = position
-        }
-    }
 
     private val selectedGood = MutableLiveData<Good>()
 
     private var currentGroup: String? = ""
-    private var currentCondition: String? = ""
+    private var currentCondition: ConditionInfo by Delegates.notNull()
 
-    var suffix: MutableLiveData<String> = MutableLiveData(Uom.KG.name)
+    val suffix: MutableLiveData<String> = MutableLiveData(Uom.KG.name)
+    private val buom = MutableLiveData<String>()
 
     val completeButtonEnabled = partNumberField.map { !it.isNullOrBlank() }
 
@@ -143,25 +130,26 @@ class GoodInfoViewModel : CoreViewModel() {
 
     private suspend fun getQuantityFieldFromGood(good: Good) {
         val weightValue = weight.value
-        val (quantity: Double?, uom: String?) = if (weightValue != 0.0) {
-            weightValue?.div(Constants.CONVERT_TO_KG) to Uom.KG.name
+        val (quantity: Double?, uom: Uom) = if (weightValue != 0.0) {
+            weightValue?.div(Constants.CONVERT_TO_KG) to Uom.KG
         } else {
             when (good.uom) {
-                Uom.ST -> Constants.QUANTITY_DEFAULT_VALUE_1 to Uom.ST.name
+                Uom.ST -> Constants.QUANTITY_DEFAULT_VALUE_1 to Uom.ST
                 Uom.KAR -> {
                     val uomInfo = database.getEanInfoByEan(good.ean)
                     val uomDiv = uomInfo?.umrez?.div(uomInfo.umren.toDouble())
                             ?: Constants.QUANTITY_DEFAULT_VALUE_0
-                    uomDiv to Uom.KAR.name
+                    uomDiv to Uom.KAR
                 }
                 else -> {
-                    Constants.QUANTITY_DEFAULT_VALUE_0 to Uom.KG.name
+                    Constants.QUANTITY_DEFAULT_VALUE_0 to Uom.KG
                 }
             }
         }
 
         quantityField.value = quantity.toString()
-        suffix.value = uom
+        suffix.value = uom.name
+        buom.value = uom.code
     }
 
     private suspend fun findSelectedIndexForGroup(groupList: List<GroupInfo>): Int = withContext(Dispatchers.IO) {
@@ -183,7 +171,7 @@ class GoodInfoViewModel : CoreViewModel() {
         var selectedIndex = 0
         conditionList.forEachIndexed { index, conditionInfo ->
             if (conditionInfo.defCondition.isSapTrue()) {
-                currentCondition = conditionInfo.name
+                currentCondition = conditionInfo
                 selectedIndex = index
                 return@forEachIndexed
             }
@@ -230,19 +218,20 @@ class GoodInfoViewModel : CoreViewModel() {
 
     private fun onConfirmationYesHandler() = launchUITryCatch {
         navigator.showProgressLoadingData()
-        val guid = UUID.randomUUID().toString()
+        val dateOpen = timeMonitor.getServerDate().getFormattedDate(DATE_FORMAT_yyyyMMdd)
+        val guid = UUID.randomUUID().toString().toUpperCase(Locale.getDefault())
         val result = goodInfoNetRequest(
                 params = GoodInfoParams(
                         marketNumber = sessionInfo.market.orEmpty(),
                         sapCode = selectedGood.value?.getFormattedMatcode(),
                         grNum = currentGroup,
-                        stdCond = currentCondition,
+                        stdCond = currentCondition.number.orEmpty(),
                         quantity = quantityField.value,
-                        buom = suffix.value.orEmpty(),
+                        buom = buom.value.orEmpty(),
                         partNumber = partNumberField.value,
                         /**Уникальный идентификатор, потом заменить на генерацию GUID*/
                         guid = guid,
-                        dateOpen = timeMonitor.getServerDate().toString(),
+                        dateOpen = dateOpen,
                         timeOpen = timeMonitor.getUnixTime().toString(),
                         ean = selectedEan.value
                 )

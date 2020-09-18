@@ -11,7 +11,7 @@ fun Date?.getFormattedDate(): String {
 fun Date?.getFormattedDateLongYear(): String {
     return this?.run {  DateTimeUtil.formatDate(this, Constants.DATE_FORMAT_dd_mm_yyyy) }.orEmpty()
 }
-/*this, pattern*/
+
 fun Date?.getFormattedTime(): String {
     return this?.run {  DateTimeUtil.formatDate(this, Constants.TIME_FORMAT_HHmm) }.orEmpty()
 }
