@@ -116,7 +116,7 @@ class ProcessZBatchesPGEService
                 )
     }
 
-    fun addWithoutUnderload(typeDiscrepancies: String, count: String, manufactureCode: String, shelfLifeDate: String, shelfLifeTime: String, partySignsType: PartySignsTypeOfZBatches, processingUnit: String) {
+    fun addWithoutUnderload(typeDiscrepancies: String, count: String, manufactureCode: String, shelfLifeDate: String, shelfLifeTime: String, productionDate: String, partySignsType: PartySignsTypeOfZBatches) {
         val productDiscrepancy =
                 taskRepository
                         ?.getProductsDiscrepancies()
@@ -128,7 +128,7 @@ class ProcessZBatchesPGEService
                     ?.getProductsDiscrepancies()
                     ?.changeProductDiscrepancy(productDiscrepancy.copy(numberDiscrepancies = count))
         } else {
-            add(count, typeDiscrepancies, manufactureCode, shelfLifeDate, shelfLifeTime, partySignsType, processingUnit)
+            add(count, typeDiscrepancies, manufactureCode, shelfLifeDate, shelfLifeTime, productionDate, partySignsType)
         }
     }
 
@@ -142,16 +142,24 @@ class ProcessZBatchesPGEService
         return productInfo.origQuantity.toDouble() < totalCount
     }
 
-    fun add(count: String, typeDiscrepancies: String, manufactureCode: String, shelfLifeDate: String, shelfLifeTime: String, partySignsType: PartySignsTypeOfZBatches, processingUnit: String) {
-        changeProductDiscrepancy(count, typeDiscrepancies)
+    fun add(count: String,
+            typeDiscrepancies: String,
+            manufactureCode: String,
+            shelfLifeDate: String,
+            shelfLifeTime: String,
+            productionDate: String,
+            processingUnit: String,
+            partySignsType: PartySignsTypeOfZBatches
+    ) {
+        changeProductDiscrepancy(count, typeDiscrepancies, processingUnit)
 
         if (typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM) {
-            changeZBatchDiscrepancy(count, typeDiscrepancies, manufactureCode, shelfLifeDate, shelfLifeTime)
-            changePartySign(typeDiscrepancies, manufactureCode, shelfLifeDate, shelfLifeTime, partySignsType)
+            changeZBatchDiscrepancy(count, typeDiscrepancies, manufactureCode, shelfLifeDate, shelfLifeTime, processingUnit)
+            changePartySign(typeDiscrepancies, manufactureCode, shelfLifeDate, shelfLifeTime, productionDate, processingUnit, partySignsType)
         }
     }
 
-    private fun changeProductDiscrepancy(count: String, typeDiscrepancies: String) {
+    private fun changeProductDiscrepancy(count: String, typeDiscrepancies: String, processingUnit: String) {
         val countAdd = getCountOfDiscrepanciesOfProduct(typeDiscrepancies) + count.toDouble()
 
         var foundDiscrepancy =
@@ -179,7 +187,7 @@ class ProcessZBatchesPGEService
                 ?.changeProductDiscrepancy(foundDiscrepancy)
     }
 
-    private fun changeZBatchDiscrepancy(count: String, typeDiscrepancies: String, manufactureCode: String, shelfLifeDate: String, shelfLifeTime: String) {
+    private fun changeZBatchDiscrepancy(count: String, typeDiscrepancies: String, manufactureCode: String, shelfLifeDate: String, shelfLifeTime: String, processingUnit: String) {
         val countAdd = getCountOfDiscrepanciesOfProductOfZBatch(typeDiscrepancies, manufactureCode, shelfLifeDate, shelfLifeTime) + count.toDouble()
 
         var foundDiscrepancy =
@@ -214,7 +222,7 @@ class ProcessZBatchesPGEService
                 ?.changeZBatchDiscrepancy(foundDiscrepancy)
     }
 
-    private fun changePartySign(typeDiscrepancies: String, manufactureCode: String, shelfLifeDate: String, shelfLifeTime: String, partySignsType: PartySignsTypeOfZBatches) {
+    private fun changePartySign(typeDiscrepancies: String, manufactureCode: String, shelfLifeDate: String, shelfLifeTime: String, productionDate: String, processingUnit: String, partySignsType: PartySignsTypeOfZBatches) {
 
         var foundDiscrepancy =
                 taskRepository
@@ -223,9 +231,9 @@ class ProcessZBatchesPGEService
                         ?.findLast {
                             it.typeDiscrepancies == typeDiscrepancies
                                     && it.manufactureCode == manufactureCode
-                                    && it.manufactureCode == manufactureCode
                                     && it.shelfLifeDate == shelfLifeDate
                                     && it.shelfLifeTime == shelfLifeTime
+                                    && it.productionDate == productionDate
                         }
 
         foundDiscrepancy =
@@ -239,7 +247,7 @@ class ProcessZBatchesPGEService
                                 manufactureCode = manufactureCode,
                                 shelfLifeDate = shelfLifeDate,
                                 shelfLifeTime = shelfLifeTime,
-                                productionDate = "", //todo скопировать из ППП
+                                productionDate = productionDate,
                                 partySign = partySignsType
                         )
 
@@ -297,9 +305,9 @@ class ProcessZBatchesPGEService
         } ?: 0.0
         countNormAndParam += count
         taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.deleteProductDiscrepancy(materialNumber =  productInfo.materialNumber, typeDiscrepancies = "1")
-        add(productInfo.orderQuantity, "1", manufactureCode, shelfLifeDate, shelfLifeTime, partySignsType, processingUnit)
+        add(productInfo.orderQuantity, "1", manufactureCode, shelfLifeDate, shelfLifeTime, processingUnit, partySignsType)
         taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.deleteProductDiscrepancy(materialNumber =  productInfo.materialNumber, typeDiscrepancies = paramGrwOlGrundcat)
-        add((countNormAndParam - productInfo.orderQuantity.toDouble()).toString(), paramGrwOlGrundcat, manufactureCode, shelfLifeDate, shelfLifeTime, partySignsType, processingUnit)
+        add((countNormAndParam - productInfo.orderQuantity.toDouble()).toString(), paramGrwOlGrundcat, manufactureCode, shelfLifeDate, shelfLifeTime, processingUnit, partySignsType)
     }
 
 }

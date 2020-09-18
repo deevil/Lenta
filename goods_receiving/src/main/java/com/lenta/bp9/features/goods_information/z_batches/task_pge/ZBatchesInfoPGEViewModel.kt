@@ -50,6 +50,7 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
     val suffix: MutableLiveData<String> = MutableLiveData()
     val generalShelfLife: MutableLiveData<String> = MutableLiveData()
     val remainingShelfLife: MutableLiveData<String> = MutableLiveData()
+    val alternativeUnitMeasure: MutableLiveData<String> = MutableLiveData()
     val count: MutableLiveData<String> = MutableLiveData("0")
     val isDiscrepancy: MutableLiveData<Boolean> = MutableLiveData(false)
 
