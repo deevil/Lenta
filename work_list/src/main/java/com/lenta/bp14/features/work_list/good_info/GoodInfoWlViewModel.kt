@@ -4,6 +4,7 @@ import android.widget.EditText
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp14.models.check_price.IPriceInfoParser
 import com.lenta.bp14.models.data.GoodType
+import com.lenta.bp14.models.data.ScanInfoMode
 import com.lenta.bp14.models.data.ShelfLifeType
 import com.lenta.bp14.models.ui.*
 import com.lenta.bp14.models.work_list.AdditionalGoodInfo
@@ -385,7 +386,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
                         tkNumber = sessionInfo.market.orEmpty(),
                         material = good.material,
                         markNumber = markNumber,
-                        mode = "2"
+                        mode = ScanInfoMode.MARKED_GOOD.mode
                 )).also {
                     navigator.hideProgress()
                 }.either(::handleFailure) {
@@ -415,7 +416,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
                     tkNumber = sessionInfo.market.orEmpty(),
                     material = good.value?.material.orEmpty(),
                     markNumber = exciseMark,
-                    mode = "1"
+                    mode = ScanInfoMode.EXCISE_ALCOHOL.mode
             )).also {
                 navigator.hideProgress()
             }.either(::handleFailure) {

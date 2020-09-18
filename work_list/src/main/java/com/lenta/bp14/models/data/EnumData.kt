@@ -25,6 +25,11 @@ enum class ShelfLifeType(val position: Int) {
     EXPIRATION(1)
 }
 
+enum class ScanInfoMode(val mode: Int){
+    EXCISE_ALCOHOL(1),
+    MARKED_GOOD(2)
+}
+
 enum class GoodType {
     COMMON,
     ALCOHOL,

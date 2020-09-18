@@ -41,7 +41,7 @@ data class CheckMarkParams(
         val markNumber: String,
         /** Режим обработки: 1 - Алкогольная марка, 2 - Контрольная марка */
         @SerializedName("IV_MODE")
-        val mode: String
+        val mode: Int
 )
 
 class CheckMarkStatus : ObjectRawStatus<CheckMarkResult>()
