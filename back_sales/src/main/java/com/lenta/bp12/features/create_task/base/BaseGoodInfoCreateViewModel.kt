@@ -1,6 +1,7 @@
-package com.lenta.bp12.features.create_task.base_good_info
+package com.lenta.bp12.features.create_task.base
 
 import androidx.lifecycle.MutableLiveData
+import com.lenta.bp12.features.create_task.base.interfaces.IBaseGoodInfoCreateViewModel
 import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.extentions.getQuantityOfGood

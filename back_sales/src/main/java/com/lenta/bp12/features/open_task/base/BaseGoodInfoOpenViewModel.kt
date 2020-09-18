@@ -1,5 +1,6 @@
-package com.lenta.bp12.features.open_task.base_good_info
+package com.lenta.bp12.features.open_task.base
 import androidx.lifecycle.MutableLiveData
+import com.lenta.bp12.features.open_task.base.interfaces.IBaseGoodInfoOpenViewModel
 import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.extentions.getQuantityOfGood
 import com.lenta.bp12.platform.DEFAULT_POSITION

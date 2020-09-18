@@ -1,9 +1,10 @@
-package com.lenta.bp12.features.open_task.base_good_info
+package com.lenta.bp12.features.create_task.base.interfaces
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.lenta.bp12.managers.interfaces.IOpenTaskManager
+import com.lenta.bp12.managers.interfaces.ICreateTaskManager
 import com.lenta.bp12.model.pojo.Basket
+import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -12,19 +13,20 @@ import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.account.ISessionInfo
 
 /**
- * Базовый интерфейс для viewmodel карточки товара в разделе Работа с заданиями
+ * Базовый интерфейс для viewmodel карточки товара в разделе Создание задания
  * Имплементации:
- * @see BaseGoodInfoOpenViewModel
- * @see com.lenta.bp12.features.open_task.marked_good_info.MarkedGoodInfoOpenViewModel
- * @see com.lenta.bp12.features.open_task.good_info.GoodInfoOpenViewModel
+ * @see BaseGoodInfoCreateViewModel
+ * @see com.lenta.bp12.features.create_task.good_info.GoodInfoCreateViewModel
+ * @see com.lenta.bp12.features.create_task.marked_good_info.MarkedGoodInfoCreateViewModel
  * */
-interface IBaseGoodInfoOpenViewModel {
+interface IBaseGoodInfoCreateViewModel {
     var database: IDatabaseRepository
+
     var navigator: IScreenNavigator
     var resource: IResourceManager
     var scanInfoNetRequest: ScanInfoNetRequest
     var sessionInfo: ISessionInfo
-    var manager: IOpenTaskManager
+    var manager: ICreateTaskManager
 
     val isWholesaleTaskType: MutableLiveData<Boolean>
 
@@ -57,8 +59,9 @@ interface IBaseGoodInfoOpenViewModel {
     fun onScanResult(number: String)
 
     fun checkSearchNumber(number: String)
-    fun getBasket(): Basket?
+    fun getBasket(good: Good): Basket?
 
+    fun updateData()
     fun onClickApply()
     fun saveChangesAndExit()
 
@@ -73,6 +76,4 @@ interface IBaseGoodInfoOpenViewModel {
     fun getProvider(): ProviderInfo
 
     fun loadBoxInfo(number: String)
-
-    fun isPlannedQuantityActual(): Boolean
 }

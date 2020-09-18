@@ -3,7 +3,7 @@ package com.lenta.bp12.features.open_task.good_info
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
-import com.lenta.bp12.features.open_task.base_good_info.BaseGoodInfoOpenViewModel
+import com.lenta.bp12.features.open_task.base.BaseGoodInfoOpenViewModel
 import com.lenta.bp12.managers.interfaces.IOpenTaskManager
 import com.lenta.bp12.model.*
 import com.lenta.bp12.model.pojo.Good

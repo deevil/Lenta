@@ -10,7 +10,7 @@
             type="com.lenta.bp12.features.create_task.marked_good_info.MarkedGoodInfoCreateViewModel" />
         <variable
             name="parentVm"
-            type="com.lenta.bp12.features.create_task.base_good_info.BaseGoodInfoCreateViewModel" />
+            type="com.lenta.bp12.features.create_task.base.BaseGoodInfoCreateViewModel" />
     </data>
 
     <FrameLayout
