@@ -203,7 +203,11 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
     }
 
     private fun getKeyHandler(key: Int): RecyclerViewKeyHandler<*>? {
-        return keyHandlers[key]
+        return try {
+            keyHandlers[key]
+        } catch (e: Exception) {
+            null
+        }
     }
 
     protected open fun <Item : Any> initRecyclerViewKeyHandler(
@@ -239,7 +243,7 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
 
     protected fun getCurrentKeyHandler(): RecyclerViewKeyHandler<*>? {
         return vm.selectedPage.value?.let { position ->
-            keyHandlers.getOrDefault(position, null)
+            getKeyHandler(position)
         }
     }
 
