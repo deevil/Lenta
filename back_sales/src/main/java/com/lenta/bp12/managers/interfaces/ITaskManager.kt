@@ -49,4 +49,8 @@ interface ITaskManager{
     fun prepareSendTaskDataParams(deviceIp: String, tkNumber: String, userNumber: String)
 
     fun removeMarksFromGoods(mappedMarks: List<Mark>)
+
+    fun getEan(): String
+    fun setEan(ean: String)
+    fun clearEan()
 }

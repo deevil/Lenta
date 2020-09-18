@@ -9,6 +9,8 @@ import com.lenta.bp12.BR
 import com.lenta.bp12.R
 import com.lenta.bp12.databinding.*
 import com.lenta.bp12.platform.extention.getAppComponent
+import com.lenta.shared.keys.KeyCode
+import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -22,7 +24,7 @@ import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class TaskContentFragment : CoreFragment<FragmentTaskContentBinding, TaskContentViewModel>(),
-        ToolbarButtonsClickListener, ViewPagerSettings, OnBackPresserListener, OnScanResultListener/*, OnKeyDownListener*/ {
+        ToolbarButtonsClickListener, ViewPagerSettings, OnBackPresserListener, OnScanResultListener, OnKeyDownListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_task_content
 
@@ -211,34 +213,38 @@ class TaskContentFragment : CoreFragment<FragmentTaskContentBinding, TaskContent
     }
 
 //// FOR TESTING: press digit to scan barcode
-//    override fun onKeyDown(keyCode: KeyCode): Boolean {
-//        when (keyCode) {
-//            KeyCode.KEYCODE_0 -> { // Блок
-//                vm.onScanResult("01046002660113672100000Ce.8005021200.938000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
-//                return true
-//            }
-//            KeyCode.KEYCODE_1 -> { // Пачка
-//                vm.onScanResult("00000046203564000001A01238000")
-//                return true
-//            }
-//            KeyCode.KEYCODE_2 -> { // Тапки
-//                vm.onScanResult("010871947716364521Gl8hHnSNy0SsN91800092NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
-//                return true
-//            }
-//            KeyCode.KEYCODE_3 -> { // Тапки
-//                vm.onScanResult("8719477163645")
-//                return true
-//            }
-//            KeyCode.KEYCODE_4 -> { // Коробка 082682
-//                vm.onScanResult("03000042907513119000404111")
-//                return true
-//            }
-//            KeyCode.KEYCODE_5 -> { // ШК товара 335533
-//                vm.onScanResult("4606068253837")
-//                return true
-//            }
-//        }
-//        return false
-//    }
+    override fun onKeyDown(keyCode: KeyCode): Boolean {
+        when (keyCode) {
+            KeyCode.KEYCODE_0 -> { // Блок
+                vm.onScanResult("01046002660113672100000Ce.8005021200.938000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
+                return true
+            }
+            KeyCode.KEYCODE_1 -> { // Пачка
+                vm.onScanResult("00000046203564000001A01238000")
+                return true
+            }
+            KeyCode.KEYCODE_2 -> { // Тапки
+                vm.onScanResult("010871947716364521Gl8hHnSNy0SsN91800092NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
+                return true
+            }
+            KeyCode.KEYCODE_3 -> { // Тапки
+                vm.onScanResult("8719477163645")
+                return true
+            }
+            KeyCode.KEYCODE_4 -> { // Коробка 082682
+                vm.onScanResult("03000042907513119000404111")
+                return true
+            }
+            KeyCode.KEYCODE_5 -> { // ШК товара 335533
+                vm.onScanResult("4606068253837")
+                return true
+            }
+            KeyCode.KEYCODE_6 -> { //011189 граммовый ШК: 2811189054009 (вес 5.4 кг)
+                vm.onScanResult("2811189054009")
+                return true
+            }
+        }
+        return false
+    }
 
 }

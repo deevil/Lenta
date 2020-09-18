@@ -55,6 +55,8 @@ class OpenTaskManager @Inject constructor(
 
     private var startStateHashOfCurrentTask = -1
 
+    private var ean = ""
+
     /** Метод добавляет обычные в товары в корзину */
     override suspend fun addGoodToBasket(good: Good, part: Part?, provider: ProviderInfo, count: Double) {
         currentTask.value?.let { taskValue ->
@@ -660,6 +662,16 @@ class OpenTaskManager @Inject constructor(
 
             updateCurrentTask(task)
         }
+    }
+
+    override fun getEan() = ean
+
+    override fun setEan(ean: String) {
+        this.ean = ean
+    }
+
+    override fun clearEan() {
+        this.ean = ""
     }
 
     override fun saveStartTaskInfo() {

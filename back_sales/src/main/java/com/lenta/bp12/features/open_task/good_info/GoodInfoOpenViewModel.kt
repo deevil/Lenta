@@ -13,11 +13,11 @@ import com.lenta.bp12.model.pojo.Position
 import com.lenta.bp12.model.pojo.extentions.addMark
 import com.lenta.bp12.model.pojo.extentions.addMarks
 import com.lenta.bp12.model.pojo.extentions.addPosition
-import com.lenta.bp12.platform.DEFAULT_POSITION
-import com.lenta.bp12.platform.DEFAULT_QUANTITY
-import com.lenta.bp12.platform.ZERO_VOLUME
+import com.lenta.bp12.model.pojo.extentions.getScreenStatus
+import com.lenta.bp12.platform.*
 import com.lenta.bp12.platform.extention.extractAlcoCode
 import com.lenta.bp12.platform.extention.getControlType
+import com.lenta.bp12.platform.extention.getConvertedQuantityString
 import com.lenta.bp12.platform.extention.getGoodKind
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
@@ -37,7 +37,10 @@ import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.utilities.Logg
-import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
+import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.unsafeLazy
 import com.lenta.shared.utilities.getDateFromString
 import com.lenta.shared.utilities.getFormattedDate
 import com.lenta.shared.utilities.orIfNull
@@ -182,14 +185,11 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
     val date = MutableLiveData("")
 
     private val isCorrectDate = date.map { date ->
-        date?.length ?: 0 == DEFAULT_DATE_LENGTH
+        (date?.length ?: 0) == DEFAULT_DATE_LENGTH
     }
 
     val dateEnabled = screenStatus.map { status ->
-        when (status) {
-            ScreenStatus.ALCOHOL, ScreenStatus.PART -> true
-            else -> false
-        }
+        (status == ScreenStatus.ALCOHOL || status == ScreenStatus.PART)
     }
 
 
@@ -312,7 +312,6 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
 
     override fun checkSearchNumber(number: String) {
         originalSearchNumber = number
-
         actionByNumber(
                 number = number,
                 funcForEan = ::getGoodByEan,
@@ -398,28 +397,34 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
     }
 
     private fun setDefaultQuantity(good: Good) {
-        quantityField.value = if (good.kind == GoodKind.COMMON) {
-            if (good.isDifferentUnits()) {
-                with(ScanCodeInfo(originalSearchNumber)) {
-                    val converted =
-                            if (weight > 0.0) getConvertedQuantity(good.innerQuantity)
-                            else DEFAULT_QUANTITY
-                    converted.dropZeros()
-                }
-            } else {
-                if (isEanLastScanned) DEFAULT_QUANTITY_STRING_FOR_EAN else DEFAULT_QUANTITY_STRING
-            }
-        } else DEFAULT_QUANTITY_STRING
+        quantityField.value = if (good.isCommon()) {
+            getQuantityForCommonGood(good)
+        } else {
+            DEFAULT_QUANTITY_STRING
+        }
+        manager.clearEan()
+    }
+
+    private fun getQuantityForCommonGood(good: Good): String {
+        val ean = manager.getEan()
+        val isEanLastScanned = ean.isNotEmpty()
+        return if (good.isDifferentUnits() && isEanLastScanned) {
+            ScanCodeInfo(ean).getConvertedQuantityString(good.innerQuantity)
+        } else {
+            chooseOneOrZeroQuantity(isEanLastScanned)
+        }
+    }
+
+    private fun chooseOneOrZeroQuantity(isEanLastScanned: Boolean): String {
+        return if (isEanLastScanned) {
+            DEFAULT_QUANTITY_STRING_FOR_EAN
+        } else {
+            DEFAULT_QUANTITY_STRING
+        }
     }
 
     private fun setScreenStatus(good: Good) {
-        screenStatus.value = when (good.kind) {
-            GoodKind.COMMON -> ScreenStatus.COMMON
-            GoodKind.ALCOHOL -> ScreenStatus.ALCOHOL
-            GoodKind.EXCISE -> ScreenStatus.EXCISE
-            GoodKind.MARK -> ScreenStatus.MARK
-            GoodKind.VET -> ScreenStatus.VET
-        }
+        screenStatus.value = good.getScreenStatus()
     }
 
     private fun clearSpinnerPositions() {
@@ -873,11 +878,4 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
             }
         }
     }
-
-    companion object {
-        private const val DEFAULT_QUANTITY_STRING_FOR_EAN = "1"
-        private const val DEFAULT_QUANTITY_STRING = "0"
-        private const val DEFAULT_DATE_LENGTH = 10
-    }
-
 }

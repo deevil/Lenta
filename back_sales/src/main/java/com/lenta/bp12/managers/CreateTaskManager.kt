@@ -38,6 +38,8 @@ class CreateTaskManager @Inject constructor(
     override val currentGood = MutableLiveData<Good>()
     override val currentBasket = MutableLiveData<Basket>()
 
+    private var ean: String = ""
+
     /** Метод добавляет обычные в товары в корзину */
     override suspend fun addGoodToBasket(
             good: Good,
@@ -445,6 +447,16 @@ class CreateTaskManager @Inject constructor(
 
             updateCurrentTask(task)
         }
+    }
+
+    override fun getEan() = ean
+
+    override fun setEan(ean: String) {
+        this.ean = ean
+    }
+
+    override fun clearEan() {
+        this.ean = ""
     }
 
     companion object {

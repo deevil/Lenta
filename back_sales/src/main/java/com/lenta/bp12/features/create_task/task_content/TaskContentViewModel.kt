@@ -170,7 +170,7 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     val deleteEnabled by unsafeLazy {
         selectedPage.switchMap { tab ->
             goodSelectionsHelper.selectedPositions.switchMap { selectedGoods ->
-                basketSelectionsHelper.selectedPositions.switchMap {  selectedBaskets ->
+                basketSelectionsHelper.selectedPositions.switchMap { selectedBaskets ->
                     liveData {
                         val isGoodSelected = selectedGoods.isNotEmpty()
                         val isBasketSelected = selectedBaskets.isNotEmpty()
@@ -216,11 +216,10 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
      * Метод проверяет длину отсканированного/введенного кода
      * */
     private fun checkSearchNumber(number: String) {
+        manager.setEan(number)
         actionByNumber(
                 number = number,
-                funcForEan = {
-                    getGoodByEan(number)
-                },
+                funcForEan = ::getGoodByEan,
                 funcForMaterial = ::getGoodByMaterial,
                 funcForSapOrBar = navigator::showTwelveCharactersEntered,
                 funcForMark = ::checkMark,
@@ -231,6 +230,7 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     private fun checkMark(number: String) {
         launchUITryCatch {
+            manager.clearEan()
             navigator.showProgressLoadingData()
             val screenStatus = markManager.checkMark(number, WorkType.CREATE)
             Logg.e { screenStatus.name }
@@ -279,6 +279,7 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
      * */
     private fun getGoodByMaterial(material: String) {
         launchUITryCatch {
+            manager.clearEan()
             navigator.showProgressLoadingData()
             val foundGood = withContext(Dispatchers.IO) { manager.findGoodByMaterial(material) }
             navigator.hideProgress()
@@ -302,11 +303,13 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     private suspend fun loadGoodInfoByEan(ean: String) {
         navigator.showProgressLoadingData(::handleFailure)
-        goodInfoNetRequest(GoodInfoParams(
-                tkNumber = sessionInfo.market.orEmpty(),
-                ean = ean,
-                taskType = task.value?.type?.code.orEmpty()
-        )).also {
+        goodInfoNetRequest(
+                GoodInfoParams(
+                        tkNumber = sessionInfo.market.orEmpty(),
+                        ean = ean,
+                        taskType = task.value?.type?.code.orEmpty()
+                )
+        ).also {
             navigator.hideProgress()
         }.either(::handleFailure) {
             handleLoadGoodInfoResult(it)
@@ -315,11 +318,13 @@ class TaskContentViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     private suspend fun loadGoodInfoByMaterial(material: String) {
         navigator.showProgressLoadingData(::handleFailure)
-        goodInfoNetRequest(GoodInfoParams(
-                tkNumber = sessionInfo.market.orEmpty(),
-                material = material,
-                taskType = task.value?.type?.code.orEmpty()
-        )).also {
+        goodInfoNetRequest(
+                GoodInfoParams(
+                        tkNumber = sessionInfo.market.orEmpty(),
+                        material = material,
+                        taskType = task.value?.type?.code.orEmpty()
+                )
+        ).also {
             navigator.hideProgress()
         }.either(::handleFailure) { result ->
             handleLoadGoodInfoResult(result)

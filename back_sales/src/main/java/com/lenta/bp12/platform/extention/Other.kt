@@ -3,13 +3,17 @@ package com.lenta.bp12.platform.extention
 import com.lenta.bp12.R
 import com.lenta.bp12.model.*
 import com.lenta.bp12.model.pojo.TaskType
+import com.lenta.bp12.platform.DEFAULT_QUANTITY
 import com.lenta.bp12.request.pojo.CreateTaskBasketInfo
 import com.lenta.bp12.request.pojo.TaskInfo
 import com.lenta.bp12.request.pojo.good_info.GoodInfoResult
 import com.lenta.bp12.request.pojo.markCartonBoxGoodInfoNetRequest.MarkCartonBoxGoodInfoNetRequestResult
 import com.lenta.bp12.request.pojo.markCartonBoxGoodInfoNetRequest.MarkRequestStatus
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
+import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.utilities.enumValueOrNull
+import com.lenta.shared.utilities.extentions.dropZeros
+import com.lenta.shared.utilities.extentions.getConvertedQuantity
 import com.lenta.shared.utilities.extentions.isSapTrue
 import com.lenta.shared.utilities.orIfNull
 import java.math.BigInteger
@@ -146,4 +150,13 @@ fun ControlType.isMark(): Boolean {
 
 fun TaskType.isWholesaleType(): Boolean {
     return this.code == TypeCode.WHOLESALE.code
+}
+
+fun ScanCodeInfo.getConvertedQuantityString(divider: Double): String {
+    val converted = if (weight > 0.0) {
+        getConvertedQuantity(divider)
+    } else {
+        DEFAULT_QUANTITY
+    }
+    return converted.dropZeros()
 }

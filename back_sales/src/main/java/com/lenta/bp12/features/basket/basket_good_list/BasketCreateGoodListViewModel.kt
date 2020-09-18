@@ -155,6 +155,7 @@ class BasketCreateGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
     }
 
     private fun checkEnteredNumber(number: String) {
+        manager.setEan(number)
         actionByNumber(
                 number = number,
                 funcForEan = {
@@ -170,6 +171,7 @@ class BasketCreateGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
 
     private fun getGoodByMaterial(material: String) {
         launchUITryCatch {
+            manager.clearEan()
             navigator.showProgressLoadingData()
             val foundGood = withContext(Dispatchers.IO) { manager.findGoodByMaterial(material) }
             navigator.hideProgress()
@@ -237,6 +239,7 @@ class BasketCreateGoodListViewModel : CoreViewModel(), OnOkInSoftKeyboardListene
     private fun checkMark(number: String) {
         launchUITryCatch {
             with(navigator) {
+                manager.clearEan()
                 showProgressLoadingData()
                 val screenStatus = markManager.checkMark(number, WorkType.CREATE)
                 hideProgress()

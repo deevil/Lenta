@@ -302,6 +302,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
      * Метод проверяет длину отсканированного/введенного кода
      * */
     private fun checkSearchNumber(number: String) {
+        manager.setEan(number)
         actionByNumber(
                 number = number,
                 funcForEan = {
@@ -362,6 +363,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
      * */
     private fun getGoodByMaterial(material: String) {
         launchUITryCatch {
+            manager.clearEan()
             navigator.showProgressLoadingData()
             val foundGood = withContext(Dispatchers.IO) { manager.findGoodByMaterial(material) }
             navigator.hideProgress()
@@ -464,6 +466,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     private fun checkMark(number: String) {
         launchUITryCatch {
             with(navigator) {
+                manager.clearEan()
                 showProgressLoadingData()
                 val screenStatus = markManager.checkMark(number, WorkType.CREATE)
                 Logg.e { screenStatus.name }

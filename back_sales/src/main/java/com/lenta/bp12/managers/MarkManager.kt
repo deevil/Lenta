@@ -31,6 +31,9 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.platform.constants.Constants
+import com.lenta.shared.platform.constants.Constants.MARK_TOBACCO_PACK_29
+import com.lenta.shared.platform.constants.Constants.TOBACCO_BOX_MARK_RANGE_21_28
+import com.lenta.shared.platform.constants.Constants.TOBACCO_MARK_BLOCK_OR_BOX_RANGE_30_44
 import com.lenta.shared.utilities.*
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.unsafeLazy
@@ -107,17 +110,17 @@ class MarkManager @Inject constructor(
         return if (isShoesMark(number)) {
             openMarkedGoodWithShoe(number)
         } else when (number.length) {
-            in Constants.TOBACCO_BOX_MARK_RANGE_21_28 -> {
+            in TOBACCO_BOX_MARK_RANGE_21_28 -> {
                 loadBoxInfo(number)
             }
-            Constants.MARK_TOBACCO_PACK_29 -> {
+            MARK_TOBACCO_PACK_29 -> {
                 if (isCigarettesMark(number))
                     return MarkScreenStatus.CANT_SCAN_PACK
                 else {
                     loadBoxInfo(number)
                 }
             }
-            in Constants.TOBACCO_MARK_BLOCK_OR_BOX_RANGE_30_44 -> {
+            in TOBACCO_MARK_BLOCK_OR_BOX_RANGE_30_44 -> {
                 if (isCigarettesBox(number)) {
                     openMarkedGoodWithCarton(number)
                 } else {
@@ -480,7 +483,6 @@ class MarkManager @Inject constructor(
             }
         }
     }
-
 
     /**
      * Метод вызывает ФМ ZMP_UTZ_WOB_07_V001
