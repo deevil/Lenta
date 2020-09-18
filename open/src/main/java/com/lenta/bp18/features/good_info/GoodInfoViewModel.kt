@@ -84,7 +84,7 @@ class GoodInfoViewModel : CoreViewModel() {
     private var currentCondition: ConditionInfo by Delegates.notNull()
 
     val suffix: MutableLiveData<String> = MutableLiveData(Uom.KG.name)
-    val buom = MutableLiveData<String>()
+    private val buom = MutableLiveData<String>()
 
     val completeButtonEnabled = partNumberField.map { !it.isNullOrBlank() }
 
