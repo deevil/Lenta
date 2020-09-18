@@ -230,7 +230,7 @@ class GoodInfoViewModel : CoreViewModel() {
 
     private fun onConfirmationYesHandler() = launchUITryCatch {
         navigator.showProgressLoadingData()
-        val guid = UUID.randomUUID().toString()
+        val guid = UUID.randomUUID().toString().toUpperCase(Locale.getDefault())
         val result = goodInfoNetRequest(
                 params = GoodInfoParams(
                         marketNumber = sessionInfo.market.orEmpty(),
