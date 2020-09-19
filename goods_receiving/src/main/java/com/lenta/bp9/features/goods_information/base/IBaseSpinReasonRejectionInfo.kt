@@ -1,6 +1,6 @@
 package com.lenta.bp9.features.goods_information.base
 
-interface IBaseReasonRejectionInfo : IBaseVariables {
+interface IBaseSpinReasonRejectionInfo : IBaseVariables {
     val currentReasonRejectionInfoCode: String
         get() {
             val position = spinReasonRejectionSelectedPosition.value ?: -1

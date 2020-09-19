@@ -5,17 +5,16 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
 import com.lenta.bp9.features.goods_information.base.BaseGoodsInfo
-import com.lenta.bp9.features.delegates.SearchProductDelegate
 import com.lenta.bp9.model.processing.*
 import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_MARRIAGE_SHIPMENT
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_UNDERLOAD
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_WAREHOUSE_MARRIAGE
 import com.lenta.shared.models.core.Uom
-import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
@@ -133,22 +132,22 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
                                 ?.takeIf { !it }
                                 ?.run {
                                     if (taskType != TaskType.RecalculationCargoUnit) {
-                                        currentQualityInfoCode != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
+                                        currentQualityInfoCode != TYPE_DISCREPANCIES_QUALITY_NORM
                                     } else {
-                                        currentQualityInfoCode != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
-                                                && currentQualityInfoCode != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS
+                                        currentQualityInfoCode != TYPE_DISCREPANCIES_QUALITY_NORM
+                                                && currentQualityInfoCode != TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS
                                     }
                                 }
                                 ?: true
                     }
-    val isEizUnit: MutableLiveData<Boolean> by lazy {
+    override val isEizUnit: MutableLiveData<Boolean> by lazy {
         MutableLiveData(isDiscrepancy.value == false && isGoodsAddedAsSurplus.value == false)
     }
 
     val isPerishable: MutableLiveData<Boolean> = MutableLiveData()
     private val addGoods: MutableLiveData<Boolean> = MutableLiveData(false)
 
-    val acceptTotalCount: MutableLiveData<Double> by lazy {
+    val acceptTotalCountVet: MutableLiveData<Double> by lazy {
         countValue.combineLatest(spinQualitySelectedPosition).map {
             val countAccept =
                     isTaskPGE.value
@@ -173,7 +172,7 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
         }
     }
 
-    val acceptTotalCountWithUom: MutableLiveData<String> = acceptTotalCount.map {
+    override val acceptTotalCountWithUom: MutableLiveData<String> = acceptTotalCountVet.map {
         val countAccept =
                 isTaskPGE.value
                         ?.takeIf { isTaskPGEVal ->  isTaskPGEVal }
@@ -187,7 +186,7 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
         }
     }
 
-    val refusalTotalCount: MutableLiveData<Double> by lazy {
+    val refusalTotalCountVet: MutableLiveData<Double> by lazy {
         countValue.combineLatest(spinQualitySelectedPosition).map {
             val countRefusal =
                     isTaskPGE.value
@@ -196,15 +195,15 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
                             ?: processMercuryProductService.getCountRefusal()
 
             if (isTaskPGE.value!!) {
-                if (currentQualityInfoCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_UNDERLOAD
-                        || currentQualityInfoCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_MARRIAGE_SHIPMENT
-                        || currentQualityInfoCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_WAREHOUSE_MARRIAGE) {
+                if (currentQualityInfoCode == TYPE_DISCREPANCIES_QUALITY_PGE_UNDERLOAD
+                        || currentQualityInfoCode == TYPE_DISCREPANCIES_QUALITY_PGE_MARRIAGE_SHIPMENT
+                        || currentQualityInfoCode == TYPE_DISCREPANCIES_QUALITY_PGE_WAREHOUSE_MARRIAGE) {
                     convertEizToBei() + countRefusal
                 } else {
                     countRefusal
                 }
             } else {
-                if (currentQualityInfoCode != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
+                if (currentQualityInfoCode != TYPE_DISCREPANCIES_QUALITY_NORM) {
                     val totalCount = it?.first ?: 0.0
                     totalCount + countRefusal
                 } else {
@@ -214,7 +213,7 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
         }
     }
 
-    val refusalTotalCountWithUom: MutableLiveData<String> = refusalTotalCount.map {
+    override val refusalTotalCountWithUom: MutableLiveData<String> = refusalTotalCountVet.map {
         val countRefusal =
                 isTaskPGE.value
                         ?.takeIf { isTaskPGEVal ->  isTaskPGEVal }
@@ -774,7 +773,7 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
         }
     }
 
-    private fun convertEizToBei() : Double {
+    override fun convertEizToBei() : Double {
         var addNewCount = countValue.value!!.toDouble()
         if (isEizUnit.value!!) {
             addNewCount *= productInfo.value?.quantityInvest?.toDouble() ?: 1.0

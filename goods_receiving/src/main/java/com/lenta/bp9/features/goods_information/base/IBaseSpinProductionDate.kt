@@ -1,6 +1,6 @@
 package com.lenta.bp9.features.goods_information.base
 
-interface IBaseCurrentProductionDate : IBaseVariables {
+interface IBaseSpinProductionDate : IBaseVariables {
     val currentProductionDate: String
         get() {
             val position = spinProductionDateSelectedPosition.value ?: -1

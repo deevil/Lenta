@@ -14,6 +14,7 @@ import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_DELIVERY_ERRORS
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
@@ -36,15 +37,13 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
     @Inject
     lateinit var processZBatchesPGEService: ProcessZBatchesPGEService
 
-    private val termControlType: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     private val processingUnitsOfProduct: MutableLiveData<List<TaskProductInfo>?> by lazy {
         MutableLiveData(getProcessingUnitsOfProduct(productMaterialNumber))
     }
 
     val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData(false)
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
-    val spinEnteredDate: MutableLiveData<List<String>> = MutableLiveData()
-    val spinEnteredDateSelectedPosition: MutableLiveData<Int> = MutableLiveData(-1)
+    val spinTermControl: MutableLiveData<List<String>> = MutableLiveData()
     val spinProcessingUnit: MutableLiveData<List<String>> = MutableLiveData()
     val spinProcessingUnitSelectedPosition: MutableLiveData<Int> = MutableLiveData(-1)
     val enteredDate: MutableLiveData<String> = MutableLiveData("")
@@ -55,23 +54,6 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
     val remainingShelfLife: MutableLiveData<String> = MutableLiveData()
     val tvRemainingShelfLife: MutableLiveData<String> = MutableLiveData("")
     val tvAlternativeUnitMeasure: MutableLiveData<String> = MutableLiveData()
-
-    val isEizUnit: MutableLiveData<Boolean> by lazy {
-        MutableLiveData(isDiscrepancy.value == false && isGoodsAddedAsSurplus.value == false)
-    }
-
-    private val currentTermControlCode: String
-        get() {
-            val position = spinEnteredDateSelectedPosition.value ?: -1
-            return position
-                    .takeIf { it >= 0 }
-                    ?.let {
-                        termControlType.value
-                                ?.getOrNull(it)
-                                ?.code
-                                .orEmpty()
-                    }.orEmpty()
-        }
 
     val tvAccept: MutableLiveData<String> by lazy {
         val isEizUnit = productInfo.value?.purchaseOrderUnits?.code != productInfo.value?.uom?.code
@@ -140,50 +122,6 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
                     .orEmpty()
         }
 
-    val acceptTotalCount: MutableLiveData<Double> =
-            countValue
-                    .combineLatest(spinQualitySelectedPosition)
-                    .map {
-                        val enteredCount = it?.first ?: 0.0
-                        if (currentQualityInfoCode == TYPE_DISCREPANCIES_QUALITY_NORM) {
-                            enteredCount + countAcceptOfProduct
-                        } else {
-                            countAcceptOfProduct
-                        }
-                    }
-
-    val acceptTotalCountWithUom: MutableLiveData<String> = acceptTotalCount.map {
-        val acceptTotalCountValue = it ?: 0.0
-        val purchaseOrderUnits = productInfo.value?.purchaseOrderUnits?.name.orEmpty()
-
-        acceptTotalCountValue
-                .takeIf { count -> count > 0.0 }
-                ?.run { "+ ${this.toStringFormatted()} $purchaseOrderUnits" }
-                ?: "0 $purchaseOrderUnits"
-    }
-
-    val refusalTotalCount: MutableLiveData<Double> =
-            countValue
-                    .combineLatest(spinQualitySelectedPosition)
-                    .map {
-                        val enteredCount = it?.first ?: 0.0
-                        if (currentQualityInfoCode != TYPE_DISCREPANCIES_QUALITY_NORM) {
-                            enteredCount + countRefusalOfProduct
-                        } else {
-                            countRefusalOfProduct
-                        }
-                    }
-
-    val refusalTotalCountWithUom: MutableLiveData<String> = refusalTotalCount.map {
-        val refusalTotalCountValue = it ?: 0.0
-        val purchaseOrderUnits = productInfo.value?.purchaseOrderUnits?.name.orEmpty()
-
-        refusalTotalCountValue
-                .takeIf { count -> count > 0.0 }
-                ?.let { count -> "- ${count.toStringFormatted()} $purchaseOrderUnits" }
-                ?: "0 $purchaseOrderUnits"
-    }
-
     init {
         launchUITryCatch {
             productInfo.value
@@ -220,7 +158,7 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
                     }
                 }
                 else -> {
-                    suffix.value = productInfo.value?.purchaseOrderUnits?.name.orEmpty()
+                    suffix.value = orderUnitName
                     if (isNotRecountCargoUnit.value == true) {
                         qualityInfo.value = dataBase.getQualityInfoZBatchesTaskPGENotRecountBreaking().orEmpty()
                     } else {
@@ -242,7 +180,7 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
                             ?: listOf(context.getString(R.string.no_manufacturer_selection_required))
 
             termControlType.value = dataBase.getTermControlInfo()
-            spinEnteredDate.value = termControlType.value?.map { it.name }.orEmpty()
+            spinTermControl.value = termControlType.value?.map { it.name }.orEmpty()
 
             /** Z-партии всегда скоропорт */
             val productGeneralShelfLife = productInfo.value?.generalShelfLife?.toInt() ?: 0
@@ -331,14 +269,6 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
         }
     }
 
-    private fun convertEizToBei() : Double {
-        var addNewCount = countValue.value!!.toDouble()
-        if (isEizUnit.value!!) {
-            addNewCount *= productInfo.value?.quantityInvest?.toDouble() ?: 1.0
-        }
-        return addNewCount
-    }
-
     fun onClickPositionSpinQuality(position: Int) {
         spinQualitySelectedPosition.value = position
     }
@@ -347,12 +277,22 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
         spinManufacturersSelectedPosition.value = position
     }
 
-    fun onClickPositionSpinsEnteredDate(position: Int) {
-        spinEnteredDateSelectedPosition.value = position
+    fun onClickPositionSpinTermControl(position: Int) {
+        spinTermControlSelectedPosition.value = position
     }
 
     fun onClickPositionSpinProcessingUnit(position: Int) {
         spinProcessingUnitSelectedPosition.value = position
+    }
+
+    fun onClickUnitChange() {
+        isEizUnit.value = isEizUnit.value?.let { !it } ?: false //todo !isEizUnit.value!!
+        suffix.value = if (isEizUnit.value == true) {
+            orderUnitName
+        } else {
+            baseUnitName
+        }
+        count.value = count.value
     }
 
     fun onBackPressed() {
@@ -423,7 +363,7 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
         }
 
         //блок 7.134
-        if (spinEnteredDateSelectedPosition.value == termControlType.value?.indexOfLast {it.code == TERM_CONTROL_CODE_SHELF_LIFE}) {
+        if (spinTermControlSelectedPosition.value == termControlType.value?.indexOfLast {it.code == TERM_CONTROL_CODE_SHELF_LIFE}) {
             //блок 7.154
             expirationDate.value?.time = formatterRU.parse(enteredDate.value)
         } else {

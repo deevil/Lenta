@@ -3,18 +3,19 @@ package com.lenta.bp9.features.goods_information.base
 import com.lenta.bp9.features.base.IBaseTaskManager
 import com.lenta.bp9.model.task.TaskType
 
-interface IBaseCountAcceptOfProductByTaskType : IBaseTaskManager, IBaseProductInfo {
-    val countAcceptOfProduct: Double
+interface IBaseCountAcceptOfProductByTaskType : IBaseVariables,
+        IBaseTaskManager,
+        IBaseProductInfo
+{
+    val countAcceptOfProductByTaskType: Double
         get()
         {
-            val productsDiscrepancies = taskRepository?.getProductsDiscrepancies()
-
             return productInfo.value
                     ?.let { product ->
                         if (taskType == TaskType.RecalculationCargoUnit) {
-                            productsDiscrepancies?.getCountAcceptOfProductPGE(product)
+                            getCountAcceptOfProductPGE(product)
                         } else {
-                            productsDiscrepancies?.getCountAcceptOfProduct(product)
+                            getCountAcceptOfProduct(product)
                         }
                     }
                     ?: 0.0

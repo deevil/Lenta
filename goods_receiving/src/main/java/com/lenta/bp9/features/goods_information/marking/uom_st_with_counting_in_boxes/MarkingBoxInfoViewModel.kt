@@ -66,8 +66,6 @@ class MarkingBoxInfoViewModel : BaseGoodsInfo(),  OnPositionClickListener {
         MutableLiveData(productInfo.value?.isControlGTIN == true)
     }
 
-    val count: MutableLiveData<String> = MutableLiveData("0")
-    private val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
     val isUnitBox: MutableLiveData<Boolean> = MutableLiveData(true)
 
     private val enteredCountInBlockUnits: Double
@@ -86,21 +84,21 @@ class MarkingBoxInfoViewModel : BaseGoodsInfo(),  OnPositionClickListener {
             return addNewCount
         }
 
-    val acceptTotalCount: MutableLiveData<Double> =
+    private val acceptTotalCountBox: MutableLiveData<Double> =
             isUnitBox
                     .combineLatest(countValue)
                     .combineLatest(spinQualitySelectedPosition)
                     .map {
                         currentQualityInfoCode
                                 .takeIf { code -> code == TYPE_DISCREPANCIES_QUALITY_NORM }
-                                ?.run { enteredCountInBlockUnits + countAcceptOfProduct }
-                                ?: countAcceptOfProduct
+                                ?.run { enteredCountInBlockUnits + countAcceptOfProductByTaskType }
+                                ?: countAcceptOfProductByTaskType
                     }
 
-    val acceptTotalCountWithUom: MutableLiveData<String> = acceptTotalCount.map {
+    override val acceptTotalCountWithUom: MutableLiveData<String> = acceptTotalCountBox.map {
         val acceptTotalCount = it ?: 0.0
         val purchaseOrderUnits = productInfo.value?.purchaseOrderUnits?.name.orEmpty()
-        val countAcceptOfProductValue = countAcceptOfProduct
+        val countAcceptOfProductValue = countAcceptOfProductByTaskType
         val totalCountAcceptOfProduct =
                 countAcceptOfProductValue
                         .takeIf { count -> count > 0.0 }
@@ -113,25 +111,25 @@ class MarkingBoxInfoViewModel : BaseGoodsInfo(),  OnPositionClickListener {
                 ?: "$totalCountAcceptOfProduct $purchaseOrderUnits"
     }
 
-    val refusalTotalCount: MutableLiveData<Double> =
+    private val refusalTotalCountBox: MutableLiveData<Double> =
             isUnitBox
                     .combineLatest(countValue)
                     .combineLatest(spinQualitySelectedPosition)
                     .map {
                         currentQualityInfoCode
                                 .takeIf { code -> code != TYPE_DISCREPANCIES_QUALITY_NORM }
-                                ?.run { enteredCountInBlockUnits + countRefusalOfProduct }
-                                ?: countRefusalOfProduct
+                                ?.run { enteredCountInBlockUnits + countRefusalOfProductByTaskType }
+                                ?: countRefusalOfProductByTaskType
                     }
 
-    val refusalTotalCountWithUom: MutableLiveData<String> = refusalTotalCount.map {
+    override val refusalTotalCountWithUom: MutableLiveData<String> = refusalTotalCountBox.map {
         val refusalTotalCount = it ?: 0.0
         val purchaseOrderUnits = productInfo.value?.purchaseOrderUnits?.name.orEmpty()
         val totalCountRefusalOfProduct =
-                countRefusalOfProduct
+                countRefusalOfProductByTaskType
                         .takeIf { count -> count > 0.0 }
                         ?.run { "- ${this.toStringFormatted()}" }
-                        ?: countRefusalOfProduct.toStringFormatted()
+                        ?: countRefusalOfProductByTaskType.toStringFormatted()
 
         refusalTotalCount
                 .takeIf { count -> count > 0.0 }
@@ -141,7 +139,7 @@ class MarkingBoxInfoViewModel : BaseGoodsInfo(),  OnPositionClickListener {
 
     val checkStampControlVisibility: MutableLiveData<Boolean> = MutableLiveData()
 
-    val tvStampControlVal: MutableLiveData<String> = acceptTotalCount
+    val tvStampControlVal: MutableLiveData<String> = acceptTotalCountBox
             .combineLatest(spinQualitySelectedPosition)
             .combineLatest(countScannedBlocks)
             .map {
@@ -149,7 +147,7 @@ class MarkingBoxInfoViewModel : BaseGoodsInfo(),  OnPositionClickListener {
             }
 
     private fun getTvStampControlVal() : String {
-        val acceptTotalCountVal = acceptTotalCount.value ?: 0.0
+        val acceptTotalCountVal = acceptTotalCountBox.value ?: 0.0
         val countBlockScanned =
                 productInfo.value
                         ?.let { processMarkingBoxProductService.getCountProcessedBlockForDiscrepancies(TYPE_DISCREPANCIES_QUALITY_NORM).toDouble() }
@@ -207,7 +205,7 @@ class MarkingBoxInfoViewModel : BaseGoodsInfo(),  OnPositionClickListener {
 
     val checkBoxStampListVisibility: MutableLiveData<Boolean> = MutableLiveData()
 
-    val tvStampListVal: MutableLiveData<String> = refusalTotalCount
+    val tvStampListVal: MutableLiveData<String> = refusalTotalCountBox
             .combineLatest(spinQualitySelectedPosition)
             .combineLatest(spinReasonRejectionSelectedPosition)
             .combineLatest(countScannedBlocks)
@@ -258,7 +256,7 @@ class MarkingBoxInfoViewModel : BaseGoodsInfo(),  OnPositionClickListener {
             spinQualitySelectedPosition
                     .combineLatest(checkStampControl)
                     .combineLatest(checkBoxStampList)
-                    .combineLatest(acceptTotalCount)
+                    .combineLatest(acceptTotalCountBox)
                     .map {
                         getEnabledApplyButton()
                     }
@@ -266,7 +264,7 @@ class MarkingBoxInfoViewModel : BaseGoodsInfo(),  OnPositionClickListener {
     private fun getEnabledApplyButton() : Boolean {
         val checkStampControlValue = checkStampControl.value ?: false
         val checkBoxStampListValue = checkBoxStampList.value ?: false
-        val acceptTotalCountValue = acceptTotalCount.value ?: 0.0
+        val acceptTotalCountValue = acceptTotalCountBox.value ?: 0.0
 
         return (enteredCountInBlockUnits > 0.0 || (acceptTotalCountValue > 0.0 && currentTypeDiscrepanciesCodeByTaskType == TYPE_DISCREPANCIES_QUALITY_NORM))
                 && (currentTypeDiscrepanciesCodeByTaskType == TYPE_DISCREPANCIES_QUALITY_NORM
@@ -484,7 +482,7 @@ class MarkingBoxInfoViewModel : BaseGoodsInfo(),  OnPositionClickListener {
 
     //https://trello.com/c/vl9wQg0Y https://trello.com/c/N6t51jru https://trello.com/c/vl9wQg0Y
     fun onScanResult(data: String) {
-        val acceptTotalCountValue = acceptTotalCount.value ?: 0.0
+        val acceptTotalCountValue = acceptTotalCountBox.value ?: 0.0
         if (enteredCountInBlockUnits <= 0.0) {
             if (!(currentTypeDiscrepanciesCodeByTaskType == TYPE_DISCREPANCIES_QUALITY_NORM && acceptTotalCountValue > 0.0)) {
                 screenNavigator.openAlertMustEnterQuantityInfoGreenScreen()

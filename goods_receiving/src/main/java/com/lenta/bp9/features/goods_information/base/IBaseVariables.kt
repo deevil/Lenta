@@ -16,6 +16,11 @@ interface IBaseVariables {
     val isGoodsAddedAsSurplus: MutableLiveData<Boolean>
     val count: MutableLiveData<String> //todo сменить название на enteredCount после того, как все ViewModel будут переведены на базовый класс
     val countValue: MutableLiveData<Double> //todo возможно тоже сменить название
+    val acceptTotalCount: MutableLiveData<Double> //todo сменить название на acceptTotalCountByTaskType после того, как все ViewModel будут переведены на базовый класс
+    val acceptTotalCountWithUom: MutableLiveData<String> //todo сменить название на acceptTotalCountWithUnitByTaskType после того, как все ViewModel будут переведены на базовый класс
+    val refusalTotalCount: MutableLiveData<Double> //todo сменить название на refusalTotalCountByTaskType после того, как все ViewModel будут переведены на базовый класс
+    val refusalTotalCountWithUom: MutableLiveData<String> //todo сменить название на refusalTotalCountWithUnitByTaskType после того, как все ViewModel будут переведены на базовый класс
+    val isEizUnit: MutableLiveData<Boolean> //todo сменить название на isOrderUnit после того, как все ViewModel будут переведены на базовый класс (в GoodsMercuryInfoViewModel она сейчас переопределена, там другая логика, уточнить у аналитиков, скорее везде должна быть одинаковая логика)
     val isDiscrepancy: MutableLiveData<Boolean> //todo сменить название на isMovedFromScreenDiscrepanciesFound после того, как все ViewModel будут переведены на базовый класс
 
     val formatterRU: SimpleDateFormat
@@ -33,4 +38,7 @@ interface IBaseVariables {
 
     val spinManufacturers: MutableLiveData<List<String>>
     val spinManufacturersSelectedPosition: MutableLiveData<Int>
+
+    val termControlType: MutableLiveData<List<QualityInfo>>
+    val spinTermControlSelectedPosition: MutableLiveData<Int>
 }
