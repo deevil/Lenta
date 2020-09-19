@@ -32,12 +32,18 @@ interface IBaseUnit : IBaseVariables, IBaseTaskManager {
     val orderUnitName: String
         get() = productInfo.value?.purchaseOrderUnits?.name.orEmpty()
 
+    val orderUnitCode: String
+        get() = productInfo.value?.purchaseOrderUnits?.code.orEmpty()
+
     val baseUnitName: String
         get() = productInfo.value?.uom?.name.orEmpty()
 
+    val baseUnitCode: String
+        get() = productInfo.value?.uom?.code.orEmpty()
+
     fun convertEizToBei() : Double { //todo сменить название на convertOrderUnitToBaseUnit после того, как все ViewModel будут переведены на базовый класс
         var convertCount = countValue.value ?: 0.0
-        if (isEizUnit.value == true) {
+        if (isSelectedOrderUnit.value == true) {
             convertCount *= productInfo.value?.quantityInvest?.toDoubleOrNull() ?: 1.0
         }
         return convertCount

@@ -140,7 +140,7 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
                                 }
                                 ?: true
                     }
-    override val isEizUnit: MutableLiveData<Boolean> by lazy {
+    val isEizUnit: MutableLiveData<Boolean> by lazy {
         MutableLiveData(isDiscrepancy.value == false && isGoodsAddedAsSurplus.value == false)
     }
 

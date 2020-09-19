@@ -4,21 +4,14 @@ import android.annotation.SuppressLint
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
-import com.lenta.bp9.features.delegates.SearchProductDelegate
 import com.lenta.bp9.features.goods_information.base.BaseGoodsInfo
-import com.lenta.bp9.features.goods_information.z_batches.task_ppp.ZBatchesInfoPPPViewModel
 import com.lenta.bp9.model.processing.ProcessZBatchesPGEService
-import com.lenta.bp9.model.processing.ProcessZBatchesPPPService
 import com.lenta.bp9.model.task.PartySignsTypeOfZBatches
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants
-import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_DELIVERY_ERRORS
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
-import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS
 import com.lenta.shared.platform.constants.Constants
-import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
-import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.date_time.DateTimeUtil
 import com.lenta.shared.utilities.extentions.combineLatest
@@ -37,15 +30,10 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
     @Inject
     lateinit var processZBatchesPGEService: ProcessZBatchesPGEService
 
-    private val processingUnitsOfProduct: MutableLiveData<List<TaskProductInfo>?> by lazy {
-        MutableLiveData(getProcessingUnitsOfProduct(productMaterialNumber))
-    }
-
     val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData(false)
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
     val spinTermControl: MutableLiveData<List<String>> = MutableLiveData()
     val spinProcessingUnit: MutableLiveData<List<String>> = MutableLiveData()
-    val spinProcessingUnitSelectedPosition: MutableLiveData<Int> = MutableLiveData(-1)
     val enteredDate: MutableLiveData<String> = MutableLiveData("")
     val enteredTime: MutableLiveData<String> = MutableLiveData("")
     val suffix: MutableLiveData<String> = MutableLiveData()
@@ -54,14 +42,12 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
     val remainingShelfLife: MutableLiveData<String> = MutableLiveData()
     val tvRemainingShelfLife: MutableLiveData<String> = MutableLiveData("")
     val tvAlternativeUnitMeasure: MutableLiveData<String> = MutableLiveData()
+    val isVisibilityEnteredTime: MutableLiveData<Boolean> = MutableLiveData(false)
 
     val tvAccept: MutableLiveData<String> by lazy {
-        val isEizUnit = productInfo.value?.purchaseOrderUnits?.code != productInfo.value?.uom?.code
-        if (!isEizUnit) {
+        if (isOrderUnitAndBaseUnitDifferent.value == false) {
             MutableLiveData(context.getString(R.string.accept_txt))
         } else {
-            val purchaseOrderUnitsName = productInfo.value?.purchaseOrderUnits?.name.orEmpty()
-            val uomName = productInfo.value?.uom?.name.orEmpty()
             val numeratorConvertBaseUnitMeasure =
                     productInfo.value
                             ?.numeratorConvertBaseUnitMeasure
@@ -78,7 +64,7 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
                             ?.let { numeratorConvertBaseUnitMeasure / denominatorConvertBaseUnitMeasure }
                             ?: 0.0
 
-            MutableLiveData(context.getString(R.string.accept, "$purchaseOrderUnitsName=${quantity.toStringFormatted()} $uomName"))
+            MutableLiveData(context.getString(R.string.accept, "$orderUnitName=${quantity.toStringFormatted()} $baseUnitName"))
         }
     }
 
@@ -88,6 +74,17 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
     private val isClickApply: MutableLiveData<Boolean> = MutableLiveData(false)
     private val paramGrwOlGrundcat: MutableLiveData<String> = MutableLiveData("")
     private val paramGrwUlGrundcat: MutableLiveData<String> = MutableLiveData("")
+    private val isShelfLifeObtainedFromEWM: MutableLiveData<Boolean> = MutableLiveData(false)
+
+    val isDisabledButtonUnitType: MutableLiveData<Boolean> = spinQualitySelectedPosition.map {
+        if (isSelectedOrderUnit.value == true
+                && currentTypeDiscrepanciesCodeByTaskType.isNotEmpty()
+                && currentTypeDiscrepanciesCodeByTaskType != TYPE_DISCREPANCIES_QUALITY_NORM) {
+            onClickUnitChange()
+        }
+
+        currentTypeDiscrepanciesCodeByTaskType != TYPE_DISCREPANCIES_QUALITY_NORM
+    }
 
     val enabledApplyButton: MutableLiveData<Boolean> =
             countValue
@@ -104,8 +101,6 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
                         enteredCount > 0.0
                                 && (isNorm || isDefect.value == true)
                     }
-
-    val isVisibilityEnteredTime: MutableLiveData<Boolean> = MutableLiveData(false)
 
     private val currentManufactureCode: String
         get() {
@@ -149,7 +144,8 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
                 }
                 isDiscrepancy.value == true -> {
                     suffix.value = unitNameByTaskType
-                    count.value =  getQuantityByProductForMarriageOfProcessingUnits()
+                    count.value = getQuantityByProductForMarriageOfProcessingUnits()
+
 
                     if (isNotRecountCargoUnit.value == true) {
                         qualityInfo.value = dataBase.getQualityInfoZBatchesTaskPGENotRecountBreaking().orEmpty()
@@ -181,6 +177,7 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
 
             termControlType.value = dataBase.getTermControlInfo()
             spinTermControl.value = termControlType.value?.map { it.name }.orEmpty()
+            processingUnitsOfProduct.value = getProcessingUnitsOfProduct(productMaterialNumber)
 
             /** Z-партии всегда скоропорт */
             val productGeneralShelfLife = productInfo.value?.generalShelfLife?.toInt() ?: 0
@@ -198,9 +195,16 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
 
             tvGeneralShelfLife.value = "${context.getString(R.string.general_shelf_life_abbr)}: ${generalShelfLife.value} ${context.getString(R.string.day_abbreviated)}"
             tvRemainingShelfLife.value = "${context.getString(R.string.remaining_shelf_life_abbr)}: ${remainingShelfLife.value} ${context.getString(R.string.day_abbreviated)}"
-            tvAlternativeUnitMeasure.value = "${context.getString(R.string.alternative_unit_measure_abbr)}: 100 кор"
 
-            val paramGrzPerishableHH = (dataBase.getParamGrzPerishableHH()?.toDoubleOrNull() ?: 0.0) / 24
+            tvAlternativeUnitMeasure.value = buildString {
+                append(context.getString(R.string.alternative_unit_measure_abbr))
+                append(": ")
+                append(productInfo.value?.quantityAlternativeUnitMeasure?.toDoubleOrNull().toStringFormatted())
+                append(productInfo.value?.alternativeUnitMeasure.orEmpty())
+            }
+
+            val paramGrzPerishableHH = (dataBase.getParamGrzPerishableHH()?.toDoubleOrNull()
+                    ?: 0.0) / 24
             val generalShelfLifeValue = generalShelfLife.value?.toDoubleOrNull() ?: 0.0
             isVisibilityEnteredTime.value = generalShelfLifeValue <= paramGrzPerishableHH
         }
@@ -271,6 +275,12 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
 
     fun onClickPositionSpinQuality(position: Int) {
         spinQualitySelectedPosition.value = position
+        updateDataSpinReasonRejection()
+    }
+
+    private fun updateDataSpinReasonRejection() {
+        spinProcessingUnitSelectedPosition.value = 0
+        spinProcessingUnit.value = processingUnitsOfProduct.value?.map { "ЕО - " + it.processingUnit }
     }
 
     fun onClickPositionSpinManufacturers(position: Int) {
@@ -283,16 +293,38 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
 
     fun onClickPositionSpinProcessingUnit(position: Int) {
         spinProcessingUnitSelectedPosition.value = position
+
+        productInfo.value = processingUnitsOfProduct.value?.getOrNull(position)
+
+        isShelfLifeObtainedFromEWM.value =
+                taskZBatchesInfo
+                        ?.findLast {
+                            it.materialNumber == productMaterialNumber
+                                    && it.processingUnit == productInfo.value?.processingUnit
+                        }
+                        ?.shelfLifeDate
+                        ?.isNotEmpty()
+                        ?: false
+
+        productInfo.value
+                ?.let {
+                    if (processZBatchesPGEService.newProcessZBatchesPGEService(it) == null) {
+                        screenNavigator.goBackAndShowAlertWrongProductType()
+                    }
+                }
+                ?.orIfNull {
+                    screenNavigator.goBackAndShowAlertWrongProductType()
+                }
     }
 
     fun onClickUnitChange() {
-        isEizUnit.value = isEizUnit.value?.let { !it } ?: false //todo !isEizUnit.value!!
-        suffix.value = if (isEizUnit.value == true) {
+        isSelectedOrderUnit.value = isSelectedOrderUnit.value?.let { !it } ?: true
+        suffix.value = if (isSelectedOrderUnit.value == true) {
             orderUnitName
         } else {
             baseUnitName
         }
-        count.value = count.value
+        count.value = count.value //чтобы обновилась переменная countValue (зависит от count)  и соответственно данные в поле Принять/Отказать
     }
 
     fun onBackPressed() {
@@ -326,22 +358,22 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
 
     fun onClickAdd() {
         //todo временно закомичено, т.к. по Добавлению товара, который не числится в задании и не пересчетной ГЕ будет дорабатываться позже
-        /**if (isGoodsAddedAsSurplus.value == true) { //GRZ. ПГЕ. Добавление товара, который не числится в задании https://trello.com/c/im9rJqrU
-            processGeneralProductService.setProcessingUnitNumber(enteredProcessingUnitNumber.value!!)
-            processGeneralProductService.add(convertEizToBei().toString(), qualityInfo.value!![spinQualitySelectedPosition.value!!].code, enteredProcessingUnitNumber.value!!)
+        if (isGoodsAddedAsSurplus.value == true) { //GRZ. ПГЕ. Добавление товара, который не числится в задании https://trello.com/c/im9rJqrU
+            processZBatchesPGEService.setProcessingUnitNumber(enteredProcessingUnitNumber.value!!)
+            processZBatchesPGEService.add(convertEizToBei().toString(), currentTypeDiscrepanciesCodeByTaskType, enteredProcessingUnitNumber.value!!)
             clickBtnApply()
         } else if (isNotRecountCargoUnit.value == true) { //не пересчетная ГЕ
             if ((convertEizToBei() +
                             acceptTotalCount.value!! +
                             taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProductPGE(productInfo.value!!)) <= productInfo.value!!.orderQuantity.toDouble()) {
-                processGeneralProductService.addNotRecountPGE(acceptTotalCount.value.toString(), convertEizToBei().toString(), qualityInfo.value!![spinQualitySelectedPosition.value!!].code, spinReasonRejection.value!![spinReasonRejectionSelectedPosition.value!!].substring(5))
+                processZBatchesPGEService.addNotRecountPGE(acceptTotalCount.value.toString(), convertEizToBei().toString(), currentTypeDiscrepanciesCodeByTaskType, currentProcessingUnitNumber)
                 clickBtnApply()
             } else {
                 screenNavigator.openAlertUnableSaveNegativeQuantity()
-            }*/
-        //} else {
+            }
+        } else {
             addPerishablePGE()
-        //}
+        }
     }
 
     //Z-партии скоропорт расчитываются как и ПГЕ(обычный товар)-скоропорт. в блок-схеме лист 7 "Карточка товара ПГЕ" блок - 7.2
@@ -363,7 +395,7 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
         }
 
         //блок 7.134
-        if (spinTermControlSelectedPosition.value == termControlType.value?.indexOfLast {it.code == TERM_CONTROL_CODE_SHELF_LIFE}) {
+        if (spinTermControlSelectedPosition.value == termControlType.value?.indexOfLast { it.code == TERM_CONTROL_CODE_SHELF_LIFE }) {
             //блок 7.154
             expirationDate.value?.time = formatterRU.parse(enteredDate.value)
         } else {
@@ -385,7 +417,7 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
                     //блок 7.180
                     yesCallbackFunc = {
                         //блок 7.183
-                        spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast {it.code == "5"} //устанавливаем брак складской, Маша Стоян
+                        spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast { it.code == "5" } //устанавливаем брак складской, Маша Стоян
                         //spinShelfLifeSelectedPosition.value = shelfLifeInfo.value!!.indexOfLast {it.code == "001"} закомичено, т.к. данное поле активно только при категориях Норма и Излишек
                     }
             )
@@ -393,7 +425,7 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
         }
 
         //блоки 7.167 и 7.190
-        if ( Days.daysBetween(DateTime(currentDate.value), DateTime(expirationDate.value!!.time)).days > remainingShelfLife.value?.toLong() ?: 0 ) {
+        if (Days.daysBetween(DateTime(currentDate.value), DateTime(expirationDate.value!!.time)).days > remainingShelfLife.value?.toLong() ?: 0) {
             //блок 7.203
             addOrdinaryGoodsPGE()
             return
@@ -404,7 +436,7 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
                 //блок 7.200
                 noCallbackFunc = {
                     //блок 7.201
-                    spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast {it.code == "5"} //устанавливаем брак складской
+                    spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast { it.code == "5" } //устанавливаем брак складской
                 },
                 //блок 7.199
                 yesCallbackFunc = {
@@ -483,7 +515,7 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
                             shelfLifeDate = getShelfLifeDate(),
                             shelfLifeTime = getShelfLifeTime(),
                             productionDate = getProductionDate(),
-                            processingUnit = "", //todo spinReasonRejection.value!![spinReasonRejectionSelectedPosition.value!!].substring(5),
+                            processingUnit = currentProcessingUnitNumber,
                             partySignsType = getPartySignsType()
                     )
                     //блок 7.177
@@ -543,9 +575,9 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
                         yesCallbackFunc = {
                             //блок 7.209
                             processZBatchesPGEService.addCountMoreCargoUnit(
-                                    paramGrwOlGrundcat = paramGrwOlGrundcat.value!!,
+                                    paramGrwOlGrundcat = paramGrwOlGrundcat.value.orEmpty(),
                                     count = convertEizToBei(),
-                                    processingUnit = "", //todo spinReasonRejection.value!![spinReasonRejectionSelectedPosition.value!!].substring(5),
+                                    processingUnit = currentProcessingUnitNumber,
                                     manufactureCode = currentManufactureCode,
                                     shelfLifeDate = getShelfLifeDate(),
                                     shelfLifeTime = getShelfLifeTime(),
@@ -580,7 +612,7 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
                     shelfLifeDate = getShelfLifeDate(),
                     shelfLifeTime = getShelfLifeTime(),
                     productionDate = getProductionDate(),
-                    processingUnit = "", //todo spinReasonRejection.value!![spinReasonRejectionSelectedPosition.value!!].substring(5),
+                    processingUnit = currentProcessingUnitNumber,
                     partySignsType = getPartySignsType()
             )
         }
@@ -627,8 +659,7 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
                         ?.let { formatterERP.format(formatterRU.parse(it)) }
                         .orEmpty()
             }
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             Logg.e { "Get production date exception: $e" }
             return ""
         }

@@ -27,7 +27,8 @@ abstract class BaseGoodsInfo : BaseFeatures(),
         IBaseSpinQualityInfo,
         IBaseSpinReasonRejectionInfo,
         IBaseUnit,
-        IBaseTermControl
+        IBaseTermControl,
+        IBaseSpinProcessingUnits
 {
     @SuppressLint("SimpleDateFormat")
     override val formatterRU = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy)
@@ -55,6 +56,9 @@ abstract class BaseGoodsInfo : BaseFeatures(),
     override val termControlType: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     override val spinTermControlSelectedPosition: MutableLiveData<Int> = MutableLiveData(DEFAULT_SPINNER_POSITION)
 
+    override val processingUnitsOfProduct: MutableLiveData<List<TaskProductInfo>> = MutableLiveData()
+    override val spinProcessingUnitSelectedPosition: MutableLiveData<Int> = MutableLiveData(DEFAULT_SPINNER_POSITION)
+
     final override val count: MutableLiveData<String> = MutableLiveData(DEFAULT_ENTERED_COUNT)
     final override val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
 
@@ -75,8 +79,8 @@ abstract class BaseGoodsInfo : BaseFeatures(),
     }
 
     private fun getAcceptTotalCountTaskPGE(): Double {
-        return if (currentQualityInfoCode == TYPE_DISCREPANCIES_QUALITY_NORM
-                || currentQualityInfoCode == TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS) {
+        return if (currentTypeDiscrepanciesCodeByTaskType == TYPE_DISCREPANCIES_QUALITY_NORM
+                || currentTypeDiscrepanciesCodeByTaskType == TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS) {
             convertEizToBei() + countAcceptOfProductByTaskType
         } else {
             countAcceptOfProductByTaskType
@@ -84,7 +88,7 @@ abstract class BaseGoodsInfo : BaseFeatures(),
     }
 
     private fun getAcceptTotalCountTaskPPP(): Double {
-        return if (currentQualityInfoCode == TYPE_DISCREPANCIES_QUALITY_NORM) {
+        return if (currentTypeDiscrepanciesCodeByTaskType == TYPE_DISCREPANCIES_QUALITY_NORM) {
             val enteredCount = countValue.value ?: 0.0
             enteredCount + countAcceptOfProductByTaskType
         } else {
@@ -118,8 +122,8 @@ abstract class BaseGoodsInfo : BaseFeatures(),
     }
 
     private fun getRefusalTotalCountTaskPGE(): Double {
-        return if (!(currentQualityInfoCode == TYPE_DISCREPANCIES_QUALITY_NORM
-                        || currentQualityInfoCode == TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS)) {
+        return if (!(currentTypeDiscrepanciesCodeByTaskType == TYPE_DISCREPANCIES_QUALITY_NORM
+                        || currentTypeDiscrepanciesCodeByTaskType == TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS)) {
             convertEizToBei() + countRefusalOfProductByTaskType
         } else {
             countRefusalOfProductByTaskType
@@ -127,7 +131,7 @@ abstract class BaseGoodsInfo : BaseFeatures(),
     }
 
     private fun getRefusalTotalCountTaskPPP(): Double {
-        return if (currentQualityInfoCode != TYPE_DISCREPANCIES_QUALITY_NORM) {
+        return if (currentTypeDiscrepanciesCodeByTaskType != TYPE_DISCREPANCIES_QUALITY_NORM) {
             val enteredCount = countValue.value ?: 0.0
             enteredCount + countRefusalOfProductByTaskType
         } else {
@@ -145,10 +149,10 @@ abstract class BaseGoodsInfo : BaseFeatures(),
 
     override val isDefect: MutableLiveData<Boolean> = spinQualitySelectedPosition.map {
         if (taskType == TaskType.RecalculationCargoUnit) {
-            currentQualityInfoCode != TYPE_DISCREPANCIES_QUALITY_NORM
-                    && currentQualityInfoCode != TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS
+            currentTypeDiscrepanciesCodeByTaskType != TYPE_DISCREPANCIES_QUALITY_NORM
+                    && currentTypeDiscrepanciesCodeByTaskType != TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS
         } else {
-            currentQualityInfoCode != TYPE_DISCREPANCIES_QUALITY_NORM
+            currentTypeDiscrepanciesCodeByTaskType != TYPE_DISCREPANCIES_QUALITY_NORM
         }
     }
 
@@ -162,11 +166,14 @@ abstract class BaseGoodsInfo : BaseFeatures(),
 
     override val isDiscrepancy: MutableLiveData<Boolean> = MutableLiveData(false)
 
-    override val isEizUnit: MutableLiveData<Boolean> = spinQualitySelectedPosition.map {
-        //todo bиз ТП ПГЕ Z-партии 2.4.	Рядом с полем «Количество» отображать пиктограмму ЕИЗ/БЕИ. Пиктограмма доступна для нажатия если ЕИЗ товара не равно БЕИ при выбранной категории «Норма»
-        //в некоторых экранах другая логика (см. IBaseVariables и ExciseAlcoBoxListPGEViewModel) MutableLiveData(isDiscrepancy.value == false && isGoodsAddedAsSurplus.value == false)
-        productInfo.value?.purchaseOrderUnits?.code != productInfo.value?.uom?.code
-                && currentQualityInfoCode == TYPE_DISCREPANCIES_QUALITY_NORM
+    override val isOrderUnitAndBaseUnitDifferent: MutableLiveData<Boolean> by lazy {
+        //todo из ТП ПГЕ Z-партии 2.4.	Рядом с полем «Количество» отображать пиктограмму ЕИЗ/БЕИ. Пиктограмма доступна для нажатия если ЕИЗ товара не равно БЕИ при выбранной категории «Норма»
+        //на некоторых экранах другая логика (см. IBaseVariables и ExciseAlcoBoxListPGEViewModel) MutableLiveData(isDiscrepancy.value == false && isGoodsAddedAsSurplus.value == false)
+        MutableLiveData(orderUnitCode != baseUnitCode)
+    }
+
+    override val isSelectedOrderUnit: MutableLiveData<Boolean> by lazy {
+        MutableLiveData(isOrderUnitAndBaseUnitDifferent.value ?: true)
     }
 
     companion object {

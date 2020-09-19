@@ -204,6 +204,7 @@ class ProcessZBatchesPGEService
                         ?.findZBatchDiscrepanciesOfProduct(productInfo.materialNumber)
                         ?.findLast {
                             it.typeDiscrepancies == typeDiscrepancies
+                                    && it.processingUnit == processingUnit
                                     && it.manufactureCode == manufactureCode
                                     && it.shelfLifeDate == shelfLifeDate
                                     && it.shelfLifeTime == shelfLifeTime
@@ -213,7 +214,7 @@ class ProcessZBatchesPGEService
                 foundDiscrepancy
                         ?.copy(numberDiscrepancies = countAdd.toString())
                         ?: TaskZBatchesDiscrepancies(
-                                processingUnit = "",
+                                processingUnit = processingUnit,
                                 materialNumber = productInfo.materialNumber,
                                 batchNumber = "",
                                 numberDiscrepancies = countAdd.toString(),
@@ -238,6 +239,7 @@ class ProcessZBatchesPGEService
                         ?.findPartySignsOfProduct(productInfo.materialNumber)
                         ?.findLast {
                             it.typeDiscrepancies == typeDiscrepancies
+                                    && it.processingUnit == processingUnit
                                     && it.manufactureCode == manufactureCode
                                     && it.shelfLifeDate == shelfLifeDate
                                     && it.shelfLifeTime == shelfLifeTime
@@ -248,7 +250,7 @@ class ProcessZBatchesPGEService
                 foundDiscrepancy
                         ?.copy(partySign = partySignsType)
                         ?: PartySignsOfZBatches(
-                                processingUnit = "",
+                                processingUnit = processingUnit,
                                 materialNumber = productInfo.materialNumber,
                                 batchNumber = "",
                                 typeDiscrepancies = typeDiscrepancies,

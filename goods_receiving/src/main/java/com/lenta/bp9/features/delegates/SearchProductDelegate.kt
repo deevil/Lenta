@@ -200,7 +200,9 @@ class SearchProductDelegate @Inject constructor(
                 numeratorConvertBaseUnitMeasure = eanInfo?.umrez?.toDouble() ?: 0.0,
                 denominatorConvertBaseUnitMeasure = eanInfo?.umren?.toDouble() ?: 0.0,
                 isZBatches = false,
-                isNeedPrint = false
+                isNeedPrint = false,
+                alternativeUnitMeasure = "",
+                quantityAlternativeUnitMeasure = ""
         )
         taskManager
                 .getReceivingTask()
