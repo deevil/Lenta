@@ -207,7 +207,6 @@ class GoodListViewModel : BaseGoodListOpenViewModel(), PageSelectionListener, On
 
                             emit(result)
                         }
-
                     }
                 }
             }
@@ -357,7 +356,6 @@ class GoodListViewModel : BaseGoodListOpenViewModel(), PageSelectionListener, On
                     tkNumber = sessionInfo.market.orEmpty(),
                     userNumber = sessionInfo.personnelNumber.orEmpty()
             )
-
             navigator.openSaveDataScreen()
         }
     }
@@ -415,12 +413,10 @@ class GoodListViewModel : BaseGoodListOpenViewModel(), PageSelectionListener, On
                         handlePrintSuccess(baskets)
                     }
             )
-
         }
     }
 
     private fun handlePrintSuccess(baskets: List<Basket>) {
-
         baskets.forEach {
             it.isPrinted = true
         }
@@ -432,7 +428,6 @@ class GoodListViewModel : BaseGoodListOpenViewModel(), PageSelectionListener, On
         private const val PROCESSING_PAGE_INDEX = 0
         private const val PROCESSED_PAGE_INDEX = 1
         private const val BASKETS_PAGE_INDEX = 2
-
         private const val COUNT_TAB = 3
     }
 
