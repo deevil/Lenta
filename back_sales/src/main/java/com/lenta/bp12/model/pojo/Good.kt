@@ -28,7 +28,7 @@ class Good(
         val kind: GoodKind,
         val section: String,
         val matrix: MatrixType,
-        val volume: Double,
+        private val volume: Double,
         val control: ControlType = ControlType.COMMON,
         val purchaseGroup: String,
 
@@ -114,6 +114,14 @@ class Good(
     fun isCommon() = kind == GoodKind.COMMON
 
     fun isNotDeletedAndQuantityNotActual() = !this.isDeleted && !isQuantityActual()
+
+    fun getVolume(): Double {
+        return if (commonUnits == Uom.G) {
+            volume * 1000
+        } else {
+            volume
+        }
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
