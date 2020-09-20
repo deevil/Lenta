@@ -437,8 +437,8 @@
 
             <ImageView
                 style="@style/BottomIconStyle"
-                android:onClick="@{(v) -> vm.screenNavigator.openGS128InfoScreen()}"
-                android:src="@drawable/ic_scan_barcode_vet_white_32dp"
+                android:onClick="@{(v) -> vm.screenNavigator.openCode128InfoScreen()}"
+                android:src="@drawable/ic_scan_barcode_gs1_white_32dp"
                 android:visibility="@{!vm.isDefect}" />
 
             <ImageView

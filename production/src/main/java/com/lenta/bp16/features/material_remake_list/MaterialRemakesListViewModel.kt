@@ -8,10 +8,12 @@ import com.lenta.bp16.model.data_storage.IIngredientDataPersistStorage
 import com.lenta.bp16.model.ingredients.IngredientInfo
 import com.lenta.bp16.model.ingredients.MaterialIngredientDataInfo
 import com.lenta.bp16.model.ingredients.MercuryPartDataInfo
+import com.lenta.bp16.model.ingredients.TechOrderDataInfo
 import com.lenta.bp16.model.ingredients.params.GetIngredientDataParams
 import com.lenta.bp16.model.ingredients.params.UnblockIngredientsParams
 import com.lenta.bp16.model.ingredients.params.WarehouseParam
 import com.lenta.bp16.model.ingredients.ui.*
+import com.lenta.bp16.model.managers.ITechOrderManager
 import com.lenta.bp16.model.warehouse.IWarehousePersistStorage
 import com.lenta.bp16.platform.extention.getFieldWithSuffix
 import com.lenta.bp16.platform.extention.getModeType
@@ -26,6 +28,7 @@ import com.lenta.bp16.request.ingredients_use_case.set_data.SetZPartDataInfoUseC
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.asyncLiveData
+import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.unsafeLazy
 import javax.inject.Inject
@@ -40,6 +43,9 @@ class MaterialRemakesListViewModel : CoreViewModel() {
 
     @Inject
     lateinit var resourceManager: IResourceManager
+
+    @Inject
+    lateinit var techOrderManager: ITechOrderManager
 
     @Inject
     lateinit var getIngredientDataList: GetIngredientsDataListNetRequest
@@ -70,6 +76,7 @@ class MaterialRemakesListViewModel : CoreViewModel() {
     private val allProducersList = MutableLiveData<List<ProducerDataInfoUI>>()
     private val allMercuryPartDataInfoList = MutableLiveData<List<MercuryPartDataInfoUI>>()
     private val zPartDataInfoList = MutableLiveData<List<ZPartDataInfoUI>>()
+    private val techOrdersDataInfoList = MutableLiveData<List<TechOrderDataInfoUI>>()
 
     // суффикс
     val suffix: String by unsafeLazy {
@@ -107,6 +114,7 @@ class MaterialRemakesListViewModel : CoreViewModel() {
             allProducersList.value = ingredientsDataListResult.producerDataInfoList
             allMercuryPartDataInfoList.value = ingredientsDataListResult.mercuryPartDataInfoList
             zPartDataInfoList.value = ingredientsDataListResult.zPartDataInfoList
+            techOrdersDataInfoList.value = ingredientsDataListResult.techOrdersDataInfoList
             Unit
         }
     }
@@ -119,8 +127,8 @@ class MaterialRemakesListViewModel : CoreViewModel() {
                             lgort = materialIngredientDataInfo.lgort,
                             desc = materialIngredientDataInfo.ltxa1,
                             position = (index + 1).toString(),
-                            plan = getFieldWithSuffix(materialIngredientDataInfo.plan_qnt, suffix),
-                            fact = getFieldWithSuffix(materialIngredientDataInfo.done_qnt, suffix)
+                            plan = getFieldWithSuffix(materialIngredientDataInfo.plan_qnt.toDouble().dropZeros(), suffix),
+                            fact = getFieldWithSuffix(materialIngredientDataInfo.done_qnt.toDouble().dropZeros(), suffix)
                     )
                 })
             }
@@ -163,6 +171,8 @@ class MaterialRemakesListViewModel : CoreViewModel() {
                 val warehouse = ingredient.value?.lgort.orEmpty()
                 setWarehouseForSelectedItemUseCase(listOf(warehouse))
                 allEanMaterialIngredients.value?.getOrNull(0)?.let { barcode ->
+                    val techOrder = techOrdersDataInfoList.value.orEmpty()
+                    techOrderManager.updateCurrentTechOrder(techOrder)
                     navigator.openMaterialRemakeDetailsScreen(selectedMaterial, code, name, barcode)
                 }
             }

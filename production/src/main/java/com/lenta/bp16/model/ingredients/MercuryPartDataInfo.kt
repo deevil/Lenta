@@ -37,7 +37,7 @@ data class MercuryPartDataInfo(
         return MercuryPartDataInfoUI(
                 matnr = matnr.orEmpty(),
                 entryId = entryId.orEmpty(),
-                zProd = zProd.orEmpty(),
+                prodCode = zProd.orEmpty(),
                 prodName = prodName.orEmpty(),
                 prodDate = prodDate.orEmpty()
         )

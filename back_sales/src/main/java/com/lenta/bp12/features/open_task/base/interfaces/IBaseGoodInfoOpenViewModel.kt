@@ -1,4 +1,4 @@
-package com.lenta.bp12.features.open_task.base_good_info
+package com.lenta.bp12.features.open_task.base.interfaces
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -35,8 +35,8 @@ interface IBaseGoodInfoOpenViewModel {
     val totalQuantity: MutableLiveData<Double>
     val totalWithUnits: MutableLiveData<String>
 
-    val basketNumber: MutableLiveData<String>
-    val basketQuantity: MutableLiveData<Double>
+    val basketNumber: LiveData<String>
+    val basketQuantity: LiveData<Double>
     val basketQuantityWithUnits: MutableLiveData<String>
 
     val sourceProviders: MutableLiveData<MutableList<ProviderInfo>>
@@ -57,7 +57,7 @@ interface IBaseGoodInfoOpenViewModel {
     fun onScanResult(number: String)
 
     fun checkSearchNumber(number: String)
-    fun getBasket(): Basket?
+    suspend fun getBasket(): Basket?
 
     fun onClickApply()
     fun saveChangesAndExit()

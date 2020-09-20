@@ -8,14 +8,6 @@ data class IngredientDataCompleteParams(
         @SerializedName("IV_WERKS")
         val tkMarket: String,
 
-        /** Ip адрес ТСД */
-        @SerializedName("IV_IP")
-        val deviceIP: String,
-
-        /** Ключ образца */
-        @SerializedName("IV_KTSCH")
-        val ktsch: String? = null, //Не используется в ZTM_UTZ_PRO_04_V001 интерфейсе, но необходим в ZTM_UTZ_PRO_12_V001 интерфейсе
-
         /**
         Тип родительской связи для создания тары:
         1 – ЕО
@@ -28,6 +20,10 @@ data class IngredientDataCompleteParams(
         /** Номер родительской связи */
         @SerializedName("IV_PARENT")
         val parent: String,
+
+        /** Ip адрес ТСД */
+        @SerializedName("IV_IP")
+        val deviceIP: String,
 
         /** Номер технологического заказа */
         @SerializedName("IV_AUFNR")
@@ -54,11 +50,12 @@ data class IngredientDataCompleteParams(
         val batchId: String,
 
         /** Таблица партионных признаков для создания новой партии */
-        val batchNewParam : List<BatchNewDataInfoParam>
+        @SerializedName("IS_BATCH_NEW")
+        val batchNewParam: List<BatchNewDataInfoParam>
 
 ) {
-        companion object {
-                const val MODE_INGREDIENT = "4"
-                const val MODE_MATERIAL = "5"
-        }
+    companion object {
+        const val MODE_INGREDIENT = "4"
+        const val MODE_MATERIAL = "5"
+    }
 }

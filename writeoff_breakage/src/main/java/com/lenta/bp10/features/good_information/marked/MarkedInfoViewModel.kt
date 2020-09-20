@@ -2,22 +2,18 @@ package com.lenta.bp10.features.good_information.marked
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.features.good_information.base.BaseProductInfoViewModel
 import com.lenta.bp10.models.MarkedGoodStampCollector
 import com.lenta.bp10.models.repositories.ITaskRepository
 import com.lenta.bp10.models.task.ProcessMarkedGoodProductService
 import com.lenta.bp10.models.task.TaskDescription
-import com.lenta.bp10.models.task.WriteOffReason
 import com.lenta.bp10.repos.DatabaseRepository
 import com.lenta.bp10.requests.network.pojo.MarkInfo
 import com.lenta.bp10.requests.network.pojo.Property
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.actionByNumber
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.launchUITryCatch
-import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.toStringFormatted
+import com.lenta.shared.utilities.extentions.*
 import javax.inject.Inject
 
 class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
@@ -63,6 +59,13 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
 
     val rollBackEnabled: LiveData<Boolean> by lazy {
         markedGoodStampCollector.isCanBeRollback.map { it }
+    }
+
+    val damagedEnabled: LiveData<Boolean> by lazy {
+        enabledApplyButton.combineLatest(isSpecialMode).mapSkipNulls {
+            val (enabledApplyButton, isSpecialMode) = it
+            if (isSpecialMode) isSpecialMode else enabledApplyButton
+        }
     }
 
     /**

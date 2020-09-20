@@ -111,6 +111,7 @@ class Good(
 
     fun isExciseAlco() = kind == GoodKind.EXCISE
     fun isMarked() = markType != MarkType.UNKNOWN
+    fun isCommon() = kind == GoodKind.COMMON
 
     fun isNotDeletedAndQuantityNotActual() = !this.isDeleted && !isQuantityActual()
 

@@ -75,9 +75,9 @@ class MarkedInfoFragment : CoreFragment<FragmentMarkedInfoBinding, MarkedInfoVie
         })
 
         connectLiveData(vm.rollBackEnabled, bottomToolbarUiModel.uiModelButton2.enabled)
-        connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton4.enabled)
-        connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
         connectLiveData(vm.enabledDetailsButton, bottomToolbarUiModel.uiModelButton3.enabled)
+        connectLiveData(vm.damagedEnabled, bottomToolbarUiModel.uiModelButton4.enabled)
+        connectLiveData(vm.enabledApplyButton, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -94,6 +94,7 @@ class MarkedInfoFragment : CoreFragment<FragmentMarkedInfoBinding, MarkedInfoVie
             //R.id.b_3 -> vm.onScanResult("010460606832938921SkBoU)pIP8hKg91pqrs92ZfetuVyAMPGOpWAWcpKZDOCZIpKcvMTxzlwdtOuqhdnXBhGMswLgWAhbDfThrjBrXXnbgKVZGQZhTGIsvcuvfBKg") // обувь 521460
             //R.id.b_3 -> vm.onScanResult("00000046207999000001lySEIZZut") // пачка сигарет 436094
             //R.id.b_3 -> vm.onScanResult("010460026601165721000001C800508768593kKBf") // блок сигарет 436094
+            //R.id.b_3 -> vm.onScanResult("010460026601165721000001G800512683393JEPq") // блок сигарет 436094
             R.id.b_4 -> if (vm.isSpecialMode.value == true) vm.onClickDamaged() else vm.onClickAdd()
             R.id.b_5 -> vm.onClickApply()
         }

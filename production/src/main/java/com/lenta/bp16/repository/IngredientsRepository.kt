@@ -49,8 +49,8 @@ class IngredientsRepository @Inject constructor(
         }
     }
 
-    override suspend fun completeToPackMaterialData(params: IngredientDataCompleteParams): Either<Failure, Boolean> {
-        val result = fmpRequestsHelper.restRequest(FMP_MATERIAL_COMPLETE, params, IngredientDataCompleteStatus::class.java)
+    override suspend fun completeToPackMaterialData(params: MaterialDataCompleteParams): Either<Failure, Boolean> {
+        val result = fmpRequestsHelper.restRequest(FMP_MATERIAL_COMPLETE, params, MaterialDataCompleteStatus::class.java)
                 .getResult()
 
         return result.flatMap {
@@ -94,6 +94,7 @@ class IngredientsRepository @Inject constructor(
     internal class IngredientsDataListStatus : ObjectRawStatus<IngredientsDataListResult>()
     internal class UnlockOrderIngredientsDataStatus : ObjectRawStatus<UnblockOrderIngredientsResult>()
     internal class IngredientDataCompleteStatus : ObjectRawStatus<IngredientDataCompleteResult>()
+    internal class MaterialDataCompleteStatus : ObjectRawStatus<MaterialDataCompleteResult>()
     internal class MercuryDataInfoStatus : ObjectRawStatus<MercuryDataInfoResult>()
 }
 
@@ -129,9 +130,9 @@ interface IIngredientsRepository {
     /**
      * Сохранение данных для материала ингредиента
      *
-     * @param params - [IngredientDataCompleteParams]
+     * @param params - [MaterialDataCompleteParams]
      */
-    suspend fun completeToPackMaterialData(params: IngredientDataCompleteParams): Either<Failure, Boolean>
+    suspend fun completeToPackMaterialData(params: MaterialDataCompleteParams): Either<Failure, Boolean>
 
     /**
      * Получаем список переделов

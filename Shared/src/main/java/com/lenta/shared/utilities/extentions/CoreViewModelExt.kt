@@ -42,7 +42,7 @@ inline fun <reified T> CoreViewModel.asyncLiveData(
 
 fun <T> CoreViewModel.asyncTryCatchLiveData(
         catchBlock: ((Throwable) -> Unit)? = null,
-        tryBlock: () -> T
+        tryBlock: suspend () -> T
 ) = liveData(context = viewModelScope.coroutineContext + Dispatchers.IO) {
     try {
         emit(tryBlock())
