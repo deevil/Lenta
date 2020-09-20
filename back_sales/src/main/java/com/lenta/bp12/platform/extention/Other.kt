@@ -4,7 +4,8 @@ import android.text.Editable
 import com.lenta.bp12.R
 import com.lenta.bp12.model.*
 import com.lenta.bp12.model.pojo.TaskType
-import com.lenta.bp12.platform.DATE_STRING_LENGTH
+import com.lenta.bp12.platform.DEFAULT_DATE_LENGTH
+import com.lenta.bp12.platform.ZERO_QUANTITY
 import com.lenta.bp12.request.pojo.CreateTaskBasketInfo
 import com.lenta.bp12.request.pojo.TaskInfo
 import com.lenta.bp12.request.pojo.good_info.GoodInfoResult
@@ -12,7 +13,10 @@ import com.lenta.bp12.request.pojo.markCartonBoxGoodInfoNetRequest.MarkCartonBox
 import com.lenta.bp12.request.pojo.markCartonBoxGoodInfoNetRequest.MarkRequestStatus
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.platform.constants.Constants
+import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.utilities.enumValueOrNull
+import com.lenta.shared.utilities.extentions.dropZeros
+import com.lenta.shared.utilities.extentions.getConvertedQuantity
 import com.lenta.shared.utilities.extentions.isSapTrue
 import com.lenta.shared.utilities.orIfNull
 import java.math.BigInteger
@@ -60,8 +64,7 @@ fun MarkCartonBoxGoodInfoNetRequestResult.getMarkStatus(): MarkStatus {
 
         MarkRequestStatus.MARK_NOT_FOUND_IN_TASK,
         MarkRequestStatus.MARK_NOT_FOUND_OR_PROBLEMATIC,
-        MarkRequestStatus.MARK_OF_DIFFERENT_GOOD
-        -> MarkStatus.BAD_MARK
+        MarkRequestStatus.MARK_OF_DIFFERENT_GOOD -> MarkStatus.BAD_MARK
 
         MarkRequestStatus.CARTON_FOUND_OR_GRAYZONE -> MarkStatus.GOOD_CARTON
 
@@ -137,7 +140,7 @@ fun String.addZerosToStart(targetLength: Int): String {
 /** Проверка даты на корректность
  * если дата в формате dd.mm.yyyy */
 private fun String.isDateInFormatDdMmYyyyWithDotsCorrect(): Boolean {
-    return if (this.isNotEmpty() && (this.length == DATE_STRING_LENGTH)) {
+    return if (this.isNotEmpty() && (this.length == DEFAULT_DATE_LENGTH)) {
         try {
             val splitCheckDate = this.split(".")
             val day = splitCheckDate[0].toInt()
@@ -170,7 +173,7 @@ fun String.isDateCorrectAndNotAfterToday(): Boolean {
                     Constants.DATE_FORMAT_dd_mm_yyyy,
                     Locale.getDefault()
             ).parse(this)
-            
+
             date <= Date()
         } catch (e: RuntimeException) {
             false
@@ -231,4 +234,13 @@ fun ControlType.isMark(): Boolean {
 
 fun TaskType.isWholesaleType(): Boolean {
     return this.code == TypeCode.WHOLESALE.code
+}
+
+fun ScanCodeInfo.getConvertedQuantityString(divider: Double): String {
+    val converted = if (weight > 0.0) {
+        getConvertedQuantity(divider)
+    } else {
+        ZERO_QUANTITY
+    }
+    return converted.dropZeros()
 }

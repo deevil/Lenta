@@ -5,7 +5,7 @@ import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
 import com.lenta.bp12.features.create_task.marked_good_info.GoodProperty
 import com.lenta.bp12.features.create_task.marked_good_info.GoodPropertyItem
-import com.lenta.bp12.features.open_task.base_good_info.BaseGoodInfoOpenViewModel
+import com.lenta.bp12.features.open_task.base.BaseGoodInfoOpenViewModel
 import com.lenta.bp12.managers.interfaces.IMarkManager
 import com.lenta.bp12.managers.interfaces.IOpenTaskManager
 import com.lenta.bp12.model.MarkScreenStatus
@@ -15,7 +15,7 @@ import com.lenta.bp12.model.actionByNumber
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.extentions.addMarks
-import com.lenta.bp12.platform.DEFAULT_QUANTITY
+import com.lenta.bp12.platform.ZERO_QUANTITY
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -128,7 +128,7 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
     }
 
     override val quantity = quantityField.map {
-        it?.toDoubleOrNull() ?: DEFAULT_QUANTITY
+        it?.toDoubleOrNull() ?: ZERO_QUANTITY
     }
 
     /**
@@ -160,10 +160,10 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
                 totalQuantity.switchMap { totalQuantity ->
                     basketQuantity.switchMap { basketQuantity ->
                         liveData {
-                            val isEnteredQuantityNotZero = enteredQuantity != DEFAULT_QUANTITY
-                            val isTotalQuantityMoreThenZero = totalQuantity > DEFAULT_QUANTITY
+                            val isEnteredQuantityNotZero = enteredQuantity != ZERO_QUANTITY
+                            val isTotalQuantityMoreThenZero = totalQuantity > ZERO_QUANTITY
 
-                            val result = isProviderSelected && isEnteredQuantityNotZero && isTotalQuantityMoreThenZero && basketQuantity > DEFAULT_QUANTITY
+                            val result = isProviderSelected && isEnteredQuantityNotZero && isTotalQuantityMoreThenZero && basketQuantity > ZERO_QUANTITY
                             emit(result)
                         }
                     }

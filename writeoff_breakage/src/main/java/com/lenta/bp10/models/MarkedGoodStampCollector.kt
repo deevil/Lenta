@@ -90,6 +90,8 @@ class MarkedGoodStampCollector(private val processMarkedGoodProductService: Proc
                 boxes.remove(foundMark?.boxNumber)
             }
 
+            isCanBeRollback.value = false
+
             onDataChanged()
         }
     }
