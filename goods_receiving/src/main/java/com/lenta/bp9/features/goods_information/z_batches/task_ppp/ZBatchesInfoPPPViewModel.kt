@@ -560,8 +560,8 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
     }
 
     private fun getShelfLifeDate(): String {
-        try {
-            return if (currentTermControlCode == TERM_CONTROL_CODE_PRODUCTION_DATE
+        return try {
+            if (currentTermControlCode == TERM_CONTROL_CODE_PRODUCTION_DATE
                     && currentQualityInfoCode == TYPE_DISCREPANCIES_QUALITY_NORM) {
                 val shelfLife = Calendar.getInstance()
                 shelfLife.time = formatterRU.parse(enteredDate.value)
@@ -573,16 +573,15 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
                         ?.let { formatterERP.format(formatterRU.parse(it)) }
                         .orEmpty()
             }
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             Logg.e { "Get shelf life date exception: $e" }
-            return ""
+            ""
         }
     }
 
     private fun getProductionDate(): String {
-        try {
-            return if (currentTermControlCode == TERM_CONTROL_CODE_SHELF_LIFE
+        return try {
+            if (currentTermControlCode == TERM_CONTROL_CODE_SHELF_LIFE
                     && currentQualityInfoCode == TYPE_DISCREPANCIES_QUALITY_NORM) {
                 val productionDate = Calendar.getInstance()
                 val generalShelfLifeValue = generalShelfLife.value?.toInt() ?: 0
@@ -595,10 +594,9 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
                         ?.let { formatterERP.format(formatterRU.parse(it)) }
                         .orEmpty()
             }
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             Logg.e { "Get production date exception: $e" }
-            return ""
+            ""
         }
     }
 

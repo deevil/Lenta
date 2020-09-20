@@ -357,4 +357,6 @@
     <string name="general_shelf_life_abbr">ОБЩ СГ</string>
     <string name="remaining_shelf_life_abbr">ОСТ СГ</string>
     <string name="alternative_unit_measure_abbr">АЕИ</string>
+    <string name="zbatch_with_production_date">Партия с датой производства</string>
+    <string name="zbatch_quantity_with_production_date">Партия (%1$s) с датой производства</string>
 </resources>

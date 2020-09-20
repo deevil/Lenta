@@ -140,10 +140,6 @@ class ProcessZBatchesPGEService
         }
     }
 
-    fun getQuantityAllCategory(): Double {
-        return getCountAcceptOfProduct() + getCountRefusalOfProduct()
-    }
-
     fun overLimit(count: Double): Boolean {
         val totalCount = getCountAcceptOfProduct() + getCountRefusalOfProduct() + count
 

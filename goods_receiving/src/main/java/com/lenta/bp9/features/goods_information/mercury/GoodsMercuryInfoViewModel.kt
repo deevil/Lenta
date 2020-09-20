@@ -53,13 +53,13 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
             MutableLiveData(context.getString(R.string.accept, "${productInfo.value?.purchaseOrderUnits?.name}=${productInfo.value?.quantityInvest?.toDouble().toStringFormatted()} ${productInfo.value?.uom?.name}"))
         }
     }
-    val productionDate: MutableLiveData<String> = MutableLiveData("")
 
-    private val currentDate: MutableLiveData<Date> = MutableLiveData()
-    private val expirationDate: MutableLiveData<Calendar> = MutableLiveData()
+    val productionDate: MutableLiveData<String> = MutableLiveData("")
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
     val spinReasonRejection: MutableLiveData<List<String>> = MutableLiveData()
-
+    val suffix: MutableLiveData<String> = MutableLiveData()
+    val generalShelfLife: MutableLiveData<String> = MutableLiveData()
+    val remainingShelfLife: MutableLiveData<String> = MutableLiveData()
 
     override val spinProductionDate: MutableLiveData<List<String>> =
             spinManufacturersSelectedPosition
@@ -89,9 +89,8 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
                     .orEmpty()
         }
 
-    val suffix: MutableLiveData<String> = MutableLiveData()
-    val generalShelfLife: MutableLiveData<String> = MutableLiveData()
-    val remainingShelfLife: MutableLiveData<String> = MutableLiveData()
+    private val currentDate: MutableLiveData<Date> = MutableLiveData()
+    private val expirationDate: MutableLiveData<Calendar> = MutableLiveData()
     private val paramGrzRoundLackRatio: MutableLiveData<String> = MutableLiveData()
     private val paramGrzRoundLackUnit: MutableLiveData<String> = MutableLiveData()
     private val paramGrzRoundHeapRatio: MutableLiveData<String> = MutableLiveData()

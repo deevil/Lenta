@@ -104,6 +104,15 @@ class ZBatchesInfoPGEFragment : CoreFragment<FragmentZBatchesInfoPgeBinding, ZBa
             }
         }
 
+        binding?.spinnerProductionDate?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(adapterView: AdapterView<*>, view: View?, position: Int, l: Long) {
+                vm.onClickPositionSpinProductionDate(position)
+            }
+
+            override fun onNothingSelected(adapterView: AdapterView<*>) {
+            }
+        }
+
         binding?.etCount?.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
                 if (vm.enabledApplyButton.value == true) {

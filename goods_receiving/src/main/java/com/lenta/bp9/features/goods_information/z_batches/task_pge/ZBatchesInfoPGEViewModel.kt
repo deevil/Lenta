@@ -43,6 +43,7 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
     val tvRemainingShelfLife: MutableLiveData<String> = MutableLiveData("")
     val tvAlternativeUnitMeasure: MutableLiveData<String> = MutableLiveData()
     val isVisibilityEnteredTime: MutableLiveData<Boolean> = MutableLiveData(false)
+    val isShelfLifeObtainedFromEWM: MutableLiveData<Boolean> = MutableLiveData(false)
 
     val tvAccept: MutableLiveData<String> by lazy {
         if (isOrderUnitAndBaseUnitDifferent.value == false) {
@@ -68,13 +69,48 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
         }
     }
 
+    private val quantityByZBatchWithProductionDate: MutableLiveData<String> =
+            spinManufacturersSelectedPosition
+                    .combineLatest(spinProductionDateSelectedPosition)
+                    .map {
+                        val quantityAlternativeUnitMeasure = productInfo.value?.quantityAlternativeUnitMeasure?.toDoubleOrNull().toStringFormatted()
+                        buildString {
+                            append(getZBatchQuantityBaseUnit())
+                            append(" ")
+                            append(baseUnitName)
+                            append("/")
+                            append(quantityAlternativeUnitMeasure)
+                            append(" ")
+                            append(productInfo.value?.alternativeUnitMeasure.orEmpty())
+                        }
+                    }
+
+    private fun getZBatchQuantityBaseUnit(): String {
+        return taskZBatchesInfo
+                ?.findLast {
+                    it.materialNumber == productMaterialNumber
+                            && it.processingUnit == productInfo.value?.processingUnit
+                            && it.manufactureCode == currentManufactureCode
+                            && it.productionDate == currentProductionDate
+                }
+                ?.purchaseOrderScope
+                .toStringFormatted()
+    }
+
+    val tvProductionDate: MutableLiveData<String> = quantityByZBatchWithProductionDate.map {
+        if (isGoodsAddedAsSurplus.value == true) {
+            context.getString(R.string.zbatch_with_production_date)
+        } else {
+            context.getString(R.string.zbatch_quantity_with_production_date, it.orEmpty())
+        }
+    }
+
     private val currentDate: MutableLiveData<Date> = MutableLiveData()
     private val expirationDate: MutableLiveData<Calendar> = MutableLiveData()
     private val addGoods: MutableLiveData<Boolean> = MutableLiveData(false)
     private val isClickApply: MutableLiveData<Boolean> = MutableLiveData(false)
     private val paramGrwOlGrundcat: MutableLiveData<String> = MutableLiveData("")
     private val paramGrwUlGrundcat: MutableLiveData<String> = MutableLiveData("")
-    private val isShelfLifeObtainedFromEWM: MutableLiveData<Boolean> = MutableLiveData(false)
 
     val isDisabledButtonUnitType: MutableLiveData<Boolean> = spinQualitySelectedPosition.map {
         if (isSelectedOrderUnit.value == true
@@ -95,11 +131,11 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
                         val isEnteredTime = isVisibilityEnteredTime.value == false
                                 || (isVisibilityEnteredTime.value == true && enteredTime.value.orEmpty().length == 5)
 
-                        val isNorm = enteredDate.value.orEmpty().length == 10
+                        val isCheckTermControl = enteredDate.value.orEmpty().length == 10
                                 && isEnteredTime
 
                         enteredCount > 0.0
-                                && (isNorm || isDefect.value == true)
+                                && (isCheckTermControl || isDefect.value == true || isShelfLifeObtainedFromEWM.value == true)
                     }
 
     private val currentManufactureCode: String
@@ -117,6 +153,27 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
                     .orEmpty()
         }
 
+    override val spinProductionDate: MutableLiveData<List<String>> =
+            spinManufacturersSelectedPosition
+                    .map {
+                        taskZBatchesInfo
+                                ?.filter { batch ->
+                                    batch.materialNumber == productMaterialNumber
+                                            && batch.processingUnit == productInfo.value?.processingUnit
+                                            && batch.manufactureCode == currentManufactureCode
+                                }
+                                ?.groupBy { it.productionDate }
+                                ?.map {
+                                    try {
+                                        formatterRU.format(formatterEN.parse(it.key))
+                                    } catch (e: Exception) {
+                                        Logg.e { "e: $e" }
+                                        ""
+                                    }
+                                }
+                                .orEmpty()
+                    }
+
     init {
         launchUITryCatch {
             productInfo.value
@@ -132,6 +189,16 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
 
             searchProductDelegate.init(viewModelScope = this@ZBatchesInfoPGEViewModel::viewModelScope,
                     scanResultHandler = this@ZBatchesInfoPGEViewModel::handleProductSearchResult)
+
+            isShelfLifeObtainedFromEWM.value =
+                    taskZBatchesInfo
+                            ?.findLast {
+                                it.materialNumber == productMaterialNumber
+                                        && it.processingUnit == productInfo.value?.processingUnit
+                            }
+                            ?.shelfLifeDate
+                            ?.isNotEmpty()
+                            ?: false
 
             paramGrwOlGrundcat.value = dataBase.getParamGrwOlGrundcat().orEmpty()
             paramGrwUlGrundcat.value = dataBase.getParamGrwUlGrundcat().orEmpty()
@@ -317,6 +384,10 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
                 }
     }
 
+    fun onClickPositionSpinProductionDate(position: Int) {
+        spinProductionDateSelectedPosition.value = position
+    }
+
     fun onClickUnitChange() {
         isSelectedOrderUnit.value = isSelectedOrderUnit.value?.let { !it } ?: true
         suffix.value = if (isSelectedOrderUnit.value == true) {
@@ -358,16 +429,17 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
 
     fun onClickAdd() {
         //todo временно закомичено, т.к. по Добавлению товара, который не числится в задании и не пересчетной ГЕ будет дорабатываться позже
-        if (isGoodsAddedAsSurplus.value == true) { //GRZ. ПГЕ. Добавление товара, который не числится в задании https://trello.com/c/im9rJqrU
-            processZBatchesPGEService.setProcessingUnitNumber(enteredProcessingUnitNumber.value!!)
-            processZBatchesPGEService.add(convertEizToBei().toString(), currentTypeDiscrepanciesCodeByTaskType, enteredProcessingUnitNumber.value!!)
-            clickBtnApply()
+        if (isGoodsAddedAsSurplus.value == true) { //GRZ. ПГЕ. Добавление товара, который не числится в задании
+            //todo processZBatchesPGEService.setProcessingUnitNumber(enteredProcessingUnitNumber.value!!)
+            //todo processZBatchesPGEService.add(convertEizToBei().toString(), currentTypeDiscrepanciesCodeByTaskType, enteredProcessingUnitNumber.value!!)
+            //todo clickBtnApply()
         } else if (isNotRecountCargoUnit.value == true) { //не пересчетная ГЕ
-            if ((convertEizToBei() +
-                            acceptTotalCount.value!! +
-                            taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProductPGE(productInfo.value!!)) <= productInfo.value!!.orderQuantity.toDouble()) {
-                processZBatchesPGEService.addNotRecountPGE(acceptTotalCount.value.toString(), convertEizToBei().toString(), currentTypeDiscrepanciesCodeByTaskType, currentProcessingUnitNumber)
-                clickBtnApply()
+            val acceptTotalCountValue = acceptTotalCount.value ?: 0.0
+            val totalCount = convertEizToBei() + acceptTotalCountValue + countRefusalOfProductByTaskType
+            val productOrderQuantity = productInfo.value?.orderQuantity?.toDoubleOrNull() ?: 0.0
+            if (totalCount <= productOrderQuantity) {
+                //todo processZBatchesPGEService.addNotRecountPGE(acceptTotalCount.value.toString(), convertEizToBei().toString(), currentTypeDiscrepanciesCodeByTaskType, currentProcessingUnitNumber)
+                //todo clickBtnApply()
             } else {
                 screenNavigator.openAlertUnableSaveNegativeQuantity()
             }
@@ -378,73 +450,76 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
 
     //Z-партии скоропорт расчитываются как и ПГЕ(обычный товар)-скоропорт. в блок-схеме лист 7 "Карточка товара ПГЕ" блок - 7.2
     private fun addPerishablePGE() {
-        //блок 7.103
-        if (currentQualityInfoCode != TYPE_DISCREPANCIES_QUALITY_NORM) {
-            addOrdinaryGoodsPGE()
-            return
-        }
+        try {
+            //блок 7.103
+            if (currentQualityInfoCode != TYPE_DISCREPANCIES_QUALITY_NORM || isShelfLifeObtainedFromEWM.value == true) {
+                addOrdinaryGoodsPGE()
+                return
+            }
 
-        if (!isCorrectDate(enteredDate.value)) {
-            screenNavigator.openAlertNotCorrectDate()
-            return
-        }
+            if (!isCorrectDate(enteredDate.value)) {
+                screenNavigator.openAlertNotCorrectDate()
+                return
+            }
 
-        if (!isCorrectTime(enteredTime.value) && isVisibilityEnteredTime.value == true) {
-            screenNavigator.openAlertNotCorrectTime()
-            return
-        }
+            if (!isCorrectTime(enteredTime.value) && isVisibilityEnteredTime.value == true) {
+                screenNavigator.openAlertNotCorrectTime()
+                return
+            }
 
-        //блок 7.134
-        if (spinTermControlSelectedPosition.value == termControlType.value?.indexOfLast { it.code == TERM_CONTROL_CODE_SHELF_LIFE }) {
-            //блок 7.154
-            expirationDate.value?.time = formatterRU.parse(enteredDate.value)
-        } else {
-            //блок 7.153
-            expirationDate.value?.time = formatterRU.parse(enteredDate.value)
-            expirationDate.value?.add(Calendar.DATE, generalShelfLife.value?.toInt() ?: 0)
-        }
+            //блок 7.134
+            if (spinTermControlSelectedPosition.value == termControlType.value?.indexOfLast { it.code == TERM_CONTROL_CODE_SHELF_LIFE }) {
+                //блок 7.154
+                expirationDate.value?.time = formatterRU.parse(enteredDate.value)
+            } else {
+                //блок 7.153
+                expirationDate.value?.time = formatterRU.parse(enteredDate.value)
+                expirationDate.value?.add(Calendar.DATE, generalShelfLife.value?.toInt() ?: 0)
+            }
 
-        //блок 7.160
-        val currentTypeDiscrepancies =
-                qualityInfo.value
-                        ?.get(spinQualitySelectedPosition.value ?: 0)
-                        ?.code
-                        .orEmpty()
-        if (expirationDate.value!!.time <= currentDate.value
-                && currentTypeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
-            //блок 7.168
-            screenNavigator.openShelfLifeExpiredDialog(
-                    //блок 7.180
+            //блок 7.160
+            val currentTypeDiscrepancies =
+                    qualityInfo.value
+                            ?.get(spinQualitySelectedPosition.value ?: 0)
+                            ?.code
+                            .orEmpty()
+            if (expirationDate.value!!.time <= currentDate.value
+                    && currentTypeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM) {
+                //блок 7.168
+                screenNavigator.openShelfLifeExpiredDialog(
+                        //блок 7.180
+                        yesCallbackFunc = {
+                            //блок 7.183
+                            spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast { it.code == "5" } //устанавливаем брак складской, Маша Стоян
+                        }
+                )
+                return
+            }
+
+            //блоки 7.167 и 7.190
+            if (Days.daysBetween(DateTime(currentDate.value), DateTime(expirationDate.value!!.time)).days > remainingShelfLife.value?.toLong() ?: 0) {
+                //блок 7.203
+                addOrdinaryGoodsPGE()
+                return
+            }
+
+            //блок 7.194
+            screenNavigator.openShelfLifeExpiresDialog(
+                    //блок 7.200
+                    noCallbackFunc = {
+                        //блок 7.201
+                        spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast { it.code == "5" } //устанавливаем брак складской
+                    },
+                    //блок 7.199
                     yesCallbackFunc = {
-                        //блок 7.183
-                        spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast { it.code == "5" } //устанавливаем брак складской, Маша Стоян
-                        //spinShelfLifeSelectedPosition.value = shelfLifeInfo.value!!.indexOfLast {it.code == "001"} закомичено, т.к. данное поле активно только при категориях Норма и Излишек
-                    }
+                        //блок 7.203
+                        addOrdinaryGoodsPGE()
+                    },
+                    expiresThrough = Days.daysBetween(DateTime(currentDate.value), DateTime(expirationDate.value!!.time)).days.toString()
             )
-            return
+        } catch (e: Exception) {
+            Logg.e { "Z-batch fun addPerishablePGE: $e" }
         }
-
-        //блоки 7.167 и 7.190
-        if (Days.daysBetween(DateTime(currentDate.value), DateTime(expirationDate.value!!.time)).days > remainingShelfLife.value?.toLong() ?: 0) {
-            //блок 7.203
-            addOrdinaryGoodsPGE()
-            return
-        }
-
-        //блок 7.194
-        screenNavigator.openShelfLifeExpiresDialog(
-                //блок 7.200
-                noCallbackFunc = {
-                    //блок 7.201
-                    spinQualitySelectedPosition.value = qualityInfo.value!!.indexOfLast { it.code == "5" } //устанавливаем брак складской
-                },
-                //блок 7.199
-                yesCallbackFunc = {
-                    //блок 7.203
-                    addOrdinaryGoodsPGE()
-                },
-                expiresThrough = Days.daysBetween(DateTime(currentDate.value), DateTime(expirationDate.value!!.time)).days.toString()
-        )
     }
 
     //как и в ПГЕ-обычный товар. в блок-схеме лист 7 "Карточка товара ПГЕ" блок - 7.6
@@ -622,31 +697,65 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
     }
 
     private fun getShelfLifeDate(): String {
-        return if (currentTermControlCode == TERM_CONTROL_CODE_PRODUCTION_DATE
-                && currentQualityInfoCode == TYPE_DISCREPANCIES_QUALITY_NORM) {
-            val shelfLife = Calendar.getInstance()
-            shelfLife.time = formatterRU.parse(enteredDate.value)
-            shelfLife.add(Calendar.DATE, generalShelfLife.value?.toInt() ?: 0)
-            shelfLife.time?.let { formatterERP.format(it) }.orEmpty()
+        return if (isShelfLifeObtainedFromEWM.value == true) {
+            getShelfLifeWhenObtainedFromEWM()
         } else {
-            enteredDate.value
-                    ?.takeIf { it.isNotEmpty() }
-                    ?.let { formatterERP.format(formatterRU.parse(it)) }
-                    .orEmpty()
+            getShelfLifeWhenNotObtainedFromEWM()
         }
     }
 
-    private fun getShelfLifeTime(): String {
-        return if (isVisibilityEnteredTime.value == true) {
-            enteredTime.value.orEmpty().replace(":", "") + "00"
-        } else {
+    private fun getShelfLifeWhenObtainedFromEWM(): String {
+        return try {
+            val shelfLife = Calendar.getInstance()
+            shelfLife.time = formatterRU.parse(currentProductionDate)
+            shelfLife.add(Calendar.DATE, generalShelfLife.value?.toInt() ?: 0)
+            shelfLife.time?.let { formatterERP.format(it) }.orEmpty()
+        } catch (e: Exception) {
+            Logg.e { "Get shelf life date when obtained from EWM exception: $e" }
+            ""
+        }
+    }
+
+    private fun getShelfLifeWhenNotObtainedFromEWM(): String {
+        return try {
+            if (currentTermControlCode == TERM_CONTROL_CODE_PRODUCTION_DATE
+                    && currentQualityInfoCode == TYPE_DISCREPANCIES_QUALITY_NORM) {
+                val shelfLife = Calendar.getInstance()
+                shelfLife.time = formatterRU.parse(enteredDate.value)
+                shelfLife.add(Calendar.DATE, generalShelfLife.value?.toInt() ?: 0)
+                shelfLife.time?.let { formatterERP.format(it) }.orEmpty()
+            } else {
+                enteredDate.value
+                        ?.takeIf { it.isNotEmpty() }
+                        ?.let { formatterERP.format(formatterRU.parse(it)) }
+                        .orEmpty()
+            }
+        } catch (e: Exception) {
+            Logg.e { "Get shelf life date exception: $e" }
             ""
         }
     }
 
     private fun getProductionDate(): String {
-        try {
-            return if (currentTermControlCode == "001" // todo ZBatchesInfoPPPViewModel.TERM_CONTROL_CODE_SHELF_LIFE
+        return if (isShelfLifeObtainedFromEWM.value == true) {
+            getProductionDateWhenObtainedFromEWM()
+        } else {
+            getProductionDateWhenNotObtainedFromEWM()
+        }
+    }
+
+    private fun getProductionDateWhenObtainedFromEWM(): String {
+        return try {
+            formatterERP.format(formatterRU.parse(currentProductionDate))
+        } catch (e: Exception) {
+            Logg.e { "Get shelf life date when obtained from EWM exception: $e" }
+            ""
+        }
+    }
+
+    private fun getProductionDateWhenNotObtainedFromEWM(): String {
+        return try {
+            if (currentTermControlCode == TERM_CONTROL_CODE_SHELF_LIFE
                     && currentQualityInfoCode == TYPE_DISCREPANCIES_QUALITY_NORM) {
                 val productionDate = Calendar.getInstance()
                 val generalShelfLifeValue = generalShelfLife.value?.toInt() ?: 0
@@ -661,7 +770,15 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
             }
         } catch (e: Exception) {
             Logg.e { "Get production date exception: $e" }
-            return ""
+            ""
+        }
+    }
+
+    private fun getShelfLifeTime(): String {
+        return if (isVisibilityEnteredTime.value == true) {
+            enteredTime.value.orEmpty().replace(":", "") + "00"
+        } else {
+            ""
         }
     }
 
@@ -669,7 +786,13 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
         return when (currentTermControlCode) {
             TERM_CONTROL_CODE_SHELF_LIFE -> PartySignsTypeOfZBatches.ShelfLife
             TERM_CONTROL_CODE_PRODUCTION_DATE -> PartySignsTypeOfZBatches.ProductionDate
-            else -> PartySignsTypeOfZBatches.None
+            else -> {
+                if (isShelfLifeObtainedFromEWM.value == true) {
+                    PartySignsTypeOfZBatches.ProductionDate
+                } else {
+                    PartySignsTypeOfZBatches.None
+                }
+            }
         }
     }
 
