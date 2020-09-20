@@ -1,13 +1,13 @@
 package com.lenta.bp9.features.goods_information.base
 
-interface IBaseQualityInfo : IBaseVariables {
-    val currentQualityInfoCode: String
+interface IBaseTermControl : IBaseVariables {
+    val currentTermControlCode: String
         get() {
-            val position = spinQualitySelectedPosition.value ?: -1
+            val position = spinTermControlSelectedPosition.value ?: -1
             return position
                     .takeIf { it >= 0 }
                     ?.let {
-                        qualityInfo.value
+                        termControlType.value
                                 ?.getOrNull(it)
                                 ?.code
                                 .orEmpty()

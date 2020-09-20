@@ -1,6 +1,6 @@
 package com.lenta.bp9.features.goods_information.base
 
-interface IBaseCurrentManufacture : IBaseVariables {
+interface IBaseSpinManufacture : IBaseVariables {
     val currentManufactureName: String
         get() {
             val position = spinManufacturersSelectedPosition.value ?: -1

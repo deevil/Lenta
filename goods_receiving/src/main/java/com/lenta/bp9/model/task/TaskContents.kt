@@ -285,7 +285,9 @@ class TaskContents
                     numeratorConvertBaseUnitMeasure = eanInfo?.umrez?.toDouble() ?: 0.0,
                     denominatorConvertBaseUnitMeasure = eanInfo?.umren?.toDouble() ?: 0.0,
                     isZBatches = it.isZBatches == "X",
-                    isNeedPrint = it.isNeedPrint == "X"
+                    isNeedPrint = it.isNeedPrint == "X",
+                    alternativeUnitMeasure = it.alternativeUnitMeasure.orEmpty(),
+                    quantityAlternativeUnitMeasure = it.quantityAlternativeUnitMeasure.orEmpty()
             )
         }
     }
