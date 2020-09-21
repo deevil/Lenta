@@ -63,24 +63,28 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkI
     }
 
     val enabledHandleGoodsButton: MutableLiveData<Boolean> = notProcessedSelectionsHelper.selectedPositions.map {
-        !it.isNullOrEmpty() && selectQualityCode.value != "1"
+        !it.isNullOrEmpty() && selectQualityCode.value != SELECT_QUALITY_CODE
     }
 
     fun getDescription(): String {
-        return if (selectQualityCode.value == "1") {
-            if (taskManager.getReceivingTask()?.controlExciseStampsOfProduct(productInfo.value!!) == true && taskManager.getReceivingTask()?.controlBoxesOfProduct(productInfo.value!!) == true) { //https://trello.com/c/HjxtG4Ca
-                context.getString(R.string.norm_control_performed) //Контроль нормы выполнен
+        productInfo.value?.let {
+            return if (selectQualityCode.value == SELECT_QUALITY_CODE) {
+                if (taskManager.getReceivingTask()?.controlExciseStampsOfProduct(it) == true && taskManager.getReceivingTask()?.controlBoxesOfProduct(it) == true) { //https://trello.com/c/HjxtG4Ca
+                    context.getString(R.string.norm_control_performed) //Контроль нормы выполнен
+                } else {
+                    "${context.getString(R.string.norm_control)} ${it.numberBoxesControl.toDouble().toStringFormatted()} ${context.getString(R.string.box_abbreviated)}" //Контроль нормы. Z кор.
+                }
             } else {
-                "${context.getString(R.string.norm_control)} ${productInfo.value?.numberBoxesControl?.toDouble().toStringFormatted()} ${context.getString(R.string.box_abbreviated)}" //Контроль нормы. Z кор.
-            }
-        } else {
-            if (processExciseAlcoBoxAccService.getCountUntreatedBoxes() == 0) {
-                context.getString(R.string.accounting_of_marriage_completed) //Учет брака выполнен
-            } else {
-                "${context.getString(R.string.accounting_for_marriage)} ${initialCount.value?.toDouble().toStringFormatted()} ${context.getString(R.string.box_abbreviated)}" //Учет брака. Q кор.
+                if (processExciseAlcoBoxAccService.getCountUntreatedBoxes() == 0) {
+                    context.getString(R.string.accounting_of_marriage_completed) //Учет брака выполнен
+                } else {
+                    "${context.getString(R.string.accounting_for_marriage)} ${initialCount.value?.toDouble().toStringFormatted()} ${context.getString(R.string.box_abbreviated)}" //Учет брака. Q кор.
+                }
             }
         }
+        return ""
     }
+
 
     fun onResume() {
         updateData()
@@ -100,7 +104,7 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkI
                             .mapIndexed { index, boxInfo ->
                                 BoxListItem(
                                         number = index + 1,
-                                        name = "${boxInfo.boxNumber.substring(0, 10)} ${boxInfo.boxNumber.substring(10, 20)} ${boxInfo.boxNumber.substring(20, 26)}",
+                                        name = boxInfo.boxNumber?.takeIf { it.length >= 26 }?.run { "${substring(0, 10)} ${substring(10, 20)} ${substring(20, 26)}" }.orEmpty(),
                                         productInfo = productInfo.value,
                                         productDiscrepancies = null,
                                         boxInfo = boxInfo,
@@ -123,7 +127,7 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkI
                                         ?: ""
                                 BoxListItem(
                                         number = index + 1,
-                                        name = "${boxInfo.boxNumber.substring(0, 10)} ${boxInfo.boxNumber.substring(10, 20)} ${boxInfo.boxNumber.substring(20, 26)}",
+                                        name = boxInfo.boxNumber.takeIf { it.length >= 26 }?.run { "${substring(0, 10)} ${substring(10, 20)} ${substring(20, 26)}" }.orEmpty(),
                                         productInfo = productInfo.value,
                                         productDiscrepancies = null,
                                         boxInfo = boxInfo,
@@ -161,22 +165,28 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkI
         -Если X<Y, то выводить экран с сообщением <Выбрано больше элементов, чем введено>.
         -Если X>=Y, то переходить на экран карточки короба*/
         val countSelectedBoxes = notProcessedSelectionsHelper.selectedPositions.value?.size ?: 0
-        if (initialCount.value!!.toInt() < countSelectedBoxes) {
+        if (initialCount.value?.toInt() ?: 0 < countSelectedBoxes) {
             screenNavigator.openAlertMoreBoxesSelectedThanSnteredScreen()
         } else {
-            screenNavigator.openExciseAlcoBoxCardScreen(
-                    productInfo = productInfo.value!!,
-                    boxInfo = if (countSelectedBoxes > 1) null else countNotProcessed.value?.get(notProcessedSelectionsHelper.selectedPositions.value?.last()
-                            ?: 0)?.boxInfo,
-                    massProcessingBoxesNumber = if (countSelectedBoxes > 1) notProcessedSelectionsHelper.selectedPositions.value?.map {
-                        countNotProcessed.value!![it].boxInfo.boxNumber
-                    } else null,
-                    exciseStampInfo = null,
-                    selectQualityCode = selectQualityCode.value!!,
-                    selectReasonRejectionCode = selectReasonRejectionCode.value,
-                    initialCount = initialCount.value!!,
-                    isScan = false
-            )
+            productInfo.value?.let { productInfoValue ->
+                countNotProcessed.value?.let { countNotProcessedValue ->
+                    screenNavigator.openExciseAlcoBoxCardScreen(
+                            productInfo = productInfoValue,
+                            boxInfo = if (countSelectedBoxes > 1) null else countNotProcessed.value?.get(notProcessedSelectionsHelper.selectedPositions.value?.last()
+                                    ?: 0)?.boxInfo,
+                            massProcessingBoxesNumber = if (countSelectedBoxes > 1 && !(countNotProcessed.value.isNullOrEmpty())) notProcessedSelectionsHelper.selectedPositions.value?.map {
+                                countNotProcessedValue[it].boxInfo.boxNumber
+                            } else null,
+                            exciseStampInfo = null,
+                            selectQualityCode = selectQualityCode.value.orEmpty(),
+                            selectReasonRejectionCode = selectReasonRejectionCode.value,
+                            initialCount = initialCount.value.orEmpty(),
+                            isScan = false
+                    )
+                }.orIfNull {
+                    Logg.e { "productInfo.value  or countNotProcessed is null" }
+                }
+            }
         }
     }
 
@@ -185,30 +195,34 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkI
     }
 
     fun onClickItemPosition(position: Int) {
-        if (selectedPage.value == 0) {
-            screenNavigator.goBack()
-            screenNavigator.openExciseAlcoBoxCardScreen(
-                    productInfo = productInfo.value!!,
-                    boxInfo = countNotProcessed.value?.get(position)?.boxInfo,
-                    massProcessingBoxesNumber = null,
-                    exciseStampInfo = null,
-                    selectQualityCode = selectQualityCode.value!!,
-                    selectReasonRejectionCode = selectReasonRejectionCode.value,
-                    initialCount = initialCount.value!!,
-                    isScan = false
-            )
-        } else {
-            screenNavigator.goBack()
-            screenNavigator.openExciseAlcoBoxCardScreen(
-                    productInfo = productInfo.value!!,
-                    boxInfo = countProcessed.value?.get(position)?.boxInfo,
-                    massProcessingBoxesNumber = null,
-                    exciseStampInfo = null,
-                    selectQualityCode = selectQualityCode.value!!,
-                    selectReasonRejectionCode = selectReasonRejectionCode.value,
-                    initialCount = initialCount.value!!,
-                    isScan = false
-            )
+        productInfo.value?.let {
+            if (selectedPage.value == 0) {
+                screenNavigator.goBack()
+                screenNavigator.openExciseAlcoBoxCardScreen(
+                        productInfo = it,
+                        boxInfo = countNotProcessed.value?.get(position)?.boxInfo,
+                        massProcessingBoxesNumber = null,
+                        exciseStampInfo = null,
+                        selectQualityCode = selectQualityCode.value.orEmpty(),
+                        selectReasonRejectionCode = selectReasonRejectionCode.value,
+                        initialCount = initialCount.value.orEmpty(),
+                        isScan = false
+                )
+            } else {
+                screenNavigator.goBack()
+                screenNavigator.openExciseAlcoBoxCardScreen(
+                        productInfo = it,
+                        boxInfo = countProcessed.value?.get(position)?.boxInfo,
+                        massProcessingBoxesNumber = null,
+                        exciseStampInfo = null,
+                        selectQualityCode = selectQualityCode.value.orEmpty(),
+                        selectReasonRejectionCode = selectReasonRejectionCode.value,
+                        initialCount = initialCount.value.orEmpty(),
+                        isScan = false
+                )
+            }.orIfNull {
+                Logg.e { "productInfo.value is null" }
+            }
         }
     }
 
@@ -247,7 +261,7 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkI
     }
 
     private fun isAllBoxesProcessed(exciseStampInfo: TaskExciseStampInfo) {
-        if (processExciseAlcoBoxAccService.getCountBoxOfProductOfDiscrepancies(exciseStampInfo.boxNumber.orEmpty(), "1") >= processExciseAlcoBoxAccService.getCountAccept()) {
+        if (processExciseAlcoBoxAccService.getCountBoxOfProductOfDiscrepancies(exciseStampInfo.boxNumber.orEmpty(), SELECT_QUALITY_CODE) >= processExciseAlcoBoxAccService.getCountAccept()) {
             screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
         } else {
             productInfo.value?.let { productInfoValue ->
@@ -259,7 +273,7 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkI
                             exciseStampInfo = exciseStampInfo,
                             selectQualityCode = SELECT_QUALITY_CODE,
                             selectReasonRejectionCode = null,
-                            initialCount = "1",
+                            initialCount = INITIAL_COUNT,
                             isScan = isScanValue
                     )
                             .orIfNull {
@@ -343,6 +357,7 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkI
 
     companion object {
         private const val SELECT_QUALITY_CODE = "1"
+        private const val INITIAL_COUNT = "1"
     }
 
 }
