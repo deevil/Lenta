@@ -8,6 +8,7 @@ import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.constants.Constants
+import com.lenta.shared.platform.constants.Constants.DIV_TO_KG
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.sumList
 import com.lenta.shared.utilities.extentions.sumWith
@@ -117,7 +118,7 @@ class Good(
 
     fun getVolume(): Double {
         return if (commonUnits == Uom.G) {
-            volume * 1000
+            volume * DIV_TO_KG
         } else {
             volume
         }

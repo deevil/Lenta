@@ -64,4 +64,7 @@ object Constants {
     const val OPERATING_SYSTEM_ANDROID = "2"
     const val REQUEST_DEFAULT_FALSE = "X"
 
+    //Other
+    const val DIV_TO_KG = 1000
+
 }
