@@ -117,25 +117,13 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardLis
 
             processServiceManager.getWriteOffTask()?.let {
                 getTaskDescription().moveTypes.let { reasons ->
-                    if (reasons.isEmpty()) {
-                        writeOffReasons.value = listOf(WriteOffReason.emptyWithTitle(resourceManager.emptyCategory()))
+                    writeOffReasons.value = if (reasons.isEmpty()) {
+                        listOf(WriteOffReason.emptyWithTitle(resourceManager.emptyCategory()))
                     } else {
-                        productInfo.value?.let { it ->
-                            val defaultReason = goodInformationRepo.getDefaultReason(
-                                    taskType = processServiceManager.getWriteOffTask()!!.taskDescription.taskType.code,
-                                    sectionId = it.sectionId,
-                                    materialNumber = it.materialNumber
-                            )
-
-                            writeOffReasons.value = mutableListOf(WriteOffReason.empty)
-                                    .apply {
-                                        addAll(reasons)
-                                    }.filter { filterReason(it) }
-
-                            writeOffReasons.value!!.indexOfFirst { reason -> reason.code == defaultReason }.let { position ->
-                                reasonPosition.value = position
-                                requestFocusToQuantity.value = true
-                            }
+                        mutableListOf(WriteOffReason.empty).apply {
+                            addAll(reasons)
+                        }.filter { writeOffReason ->
+                            filterReason(writeOffReason)
                         }
                     }
                 }
