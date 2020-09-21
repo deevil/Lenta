@@ -15,6 +15,8 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.fmp.resources.dao_ext.getUomInfo
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
 import com.lenta.shared.platform.constants.Constants
+import com.lenta.shared.platform.constants.Constants.TIME_FORMAT_ERP_hhmmss
+import com.lenta.shared.platform.constants.Constants.TIME_FORMAT_hhmmss
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
@@ -159,8 +161,8 @@ class LabelPrintingViewModel : CoreViewModel() {
                         } else {
                             partySign.shelfLifeTime
                         }
-                        val formatterTime = SimpleDateFormat("HH:mm:ss")
-                        val formatterTimeERP = SimpleDateFormat("HHmmss")
+                        val formatterTime = SimpleDateFormat(TIME_FORMAT_hhmmss)
+                        val formatterTimeERP = SimpleDateFormat(TIME_FORMAT_ERP_hhmmss)
                         partySignTime = formatterTime.format(formatterTimeERP.parse(partySignTime))
                         partySign.processingUnit == label.processingUnit
                                 && partySign.manufactureCode == label.manufactureCode
