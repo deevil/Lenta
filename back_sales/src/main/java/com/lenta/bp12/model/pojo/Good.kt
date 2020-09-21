@@ -3,6 +3,7 @@ package com.lenta.bp12.model.pojo
 import com.lenta.bp12.model.ControlType
 import com.lenta.bp12.model.GoodKind
 import com.lenta.bp12.model.MarkType
+import com.lenta.bp12.platform.ZERO_QUANTITY
 import com.lenta.bp12.request.pojo.ProducerInfo
 import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.models.core.MatrixType
@@ -43,13 +44,14 @@ class Good(
         val parts: MutableList<Part> = mutableListOf(),
         val markType: MarkType = MarkType.UNKNOWN,
         val markTypeGroup: MarkTypeGroup? = null,
-        var maxRetailPrice: String = "",
+        val maxRetailPrice: String = "",
+        var mprGroup: Int = 1,
 
         val type: String,
         val providers: MutableList<ProviderInfo> = mutableListOf(),
 
-        val planQuantity: Double = 0.0,
-        val factQuantity: Double = 0.0,
+        val planQuantity: Double = ZERO_QUANTITY,
+        val factQuantity: Double = ZERO_QUANTITY,
         var isCounted: Boolean = false,
         var isDeleted: Boolean = false,
         val provider: ProviderInfo = ProviderInfo.getEmptyProvider()

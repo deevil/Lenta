@@ -108,8 +108,13 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
     }
 
     val isBasketNumberVisible by unsafeLazy {
-        tempMarks.mapSkipNulls {
-            it.takeIf { manager.currentGood.value?.isTobacco() == true }?.isNotEmpty() ?: true
+        tempMarks.mapSkipNulls { tempMarksValue ->
+            good.mapSkipNulls { goodValue ->
+                goodValue.maxRetailPrice.isEmpty().not() ||
+                        tempMarksValue.takeIf { goodValue.isTobacco() }
+                                ?.isNotEmpty()
+                                .orIfNull { true }
+            }
         }
     }
 
@@ -216,27 +221,28 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
 
     override fun loadBoxInfo(number: String) {
         launchUITryCatch {
-            when (markManager.loadBoxInfo(number)) {
-                MarkScreenStatus.OK -> {
-                    handleOkMark()
-                }
-                MarkScreenStatus.INTERNAL_ERROR -> {
-                    handleInternalError()
-                }
-                MarkScreenStatus.FAILURE -> {
-                    handleMarkFailure()
-                }
-                MarkScreenStatus.MARK_ALREADY_SCANNED -> {
-                    handleMarkAlreadyScanned()
-                }
-                MarkScreenStatus.CARTON_ALREADY_SCANNED -> {
-                    handleCartonAlreadyScanned()
-                }
-                MarkScreenStatus.BOX_ALREADY_SCANNED -> {
-                    handleBoxAlreadyScanned()
-                }
-                else -> {
-                    handleIncorrectEanFormat()
+            with(navigator) {
+                showProgressLoadingData()
+                val result = markManager.loadBoxInfo(number)
+                hideProgress()
+                when (result) {
+                    MarkScreenStatus.OK -> setMarksAndProperties()
+
+                    MarkScreenStatus.INTERNAL_ERROR ->
+                        showInternalError(markManager.getInternalErrorMessage())
+
+                    MarkScreenStatus.FAILURE -> handleFailure(markManager.getMarkFailure())
+
+                    MarkScreenStatus.MARK_ALREADY_SCANNED ->
+                        showMarkAlreadyScannedDelete(::handleYesDeleteMappedMarksFromTempCallBack)
+
+                    MarkScreenStatus.CARTON_ALREADY_SCANNED ->
+                        showCartonAlreadyScannedDelete(::handleYesDeleteMappedMarksFromTempCallBack)
+
+                    MarkScreenStatus.BOX_ALREADY_SCANNED ->
+                        showBoxAlreadyScannedDelete(::handleYesDeleteMappedMarksFromTempCallBack)
+
+                    else -> showIncorrectEanFormat()
                 }
             }
         }
@@ -247,102 +253,65 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
      * */
     private fun checkMark(number: String) {
         launchUITryCatch {
-            navigator.showProgressLoadingData()
-            when (markManager.checkMark(number, WorkType.CREATE, true)) {
-                MarkScreenStatus.OK -> {
-                    tempMarks.value = markManager.getTempMarks()
-                    properties.value = markManager.getProperties()
-                    navigator.hideProgress()
-                }
-                MarkScreenStatus.CARTON_ALREADY_SCANNED -> {
-                    navigator.hideProgress()
-                    navigator.showCartonAlreadyScannedDelete(
-                            yesCallback = ::handleYesDeleteMappedMarksFromTempCallBack
-                    )
-                }
-                MarkScreenStatus.MARK_ALREADY_SCANNED -> {
-                    navigator.hideProgress()
-                    navigator.showMarkAlreadyScannedDelete(
-                            yesCallback = ::handleYesDeleteMappedMarksFromTempCallBack
-                    )
-                }
-                MarkScreenStatus.BOX_ALREADY_SCANNED -> {
-                    navigator.hideProgress()
-                    navigator.showBoxAlreadyScannedDelete(
-                            yesCallback = ::handleYesDeleteMappedMarksFromTempCallBack
-                    )
-                }
-                MarkScreenStatus.FAILURE -> {
-                    navigator.hideProgress()
-                    handleFailure(markManager.getMarkFailure())
-                }
-                MarkScreenStatus.INCORRECT_EAN_FORMAT -> {
-                    navigator.hideProgress()
-                    navigator.showIncorrectEanFormat()
-                }
-                MarkScreenStatus.GOOD_CANNOT_BE_ADDED -> {
-                    navigator.hideProgress()
-                    navigator.showGoodCannotBeAdded()
-                }
-                MarkScreenStatus.INTERNAL_ERROR -> {
-                    navigator.hideProgress()
-                    navigator.showInternalError(
-                            cause = markManager.getInternalErrorMessage()
-                    )
-                }
-                MarkScreenStatus.CANT_SCAN_PACK -> {
-                    navigator.hideProgress()
-                    navigator.showCantScanPackAlert()
-                }
-                MarkScreenStatus.GOOD_IS_MISSING_IN_TASK -> {
-                    navigator.hideProgress()
-                    navigator.showGoodIsMissingInTask()
-                }
-                MarkScreenStatus.MRC_NOT_SAME -> {
-                    navigator.hideProgress()
-                    markManager.getCreatedGoodForError()?.let {
-                        navigator.showMrcNotSameAlert(it)
-                    }
-                }
-                MarkScreenStatus.MRC_NOT_SAME_IN_BASKET -> {
-                    handleMrcNotSameInBasket()
-                }
-                MarkScreenStatus.NOT_MARKED_GOOD -> {
-                    navigator.hideProgress()
-                    navigator.showIncorrectEanFormat()
-                }
-                MarkScreenStatus.OK_BUT_NEED_TO_SCAN_MARK -> {
-                    Unit
-                }
-                MarkScreenStatus.NOT_SAME_GOOD -> {
-                    navigator.hideProgress()
-                    navigator.showScannedMarkBelongsToProduct(
-                            markManager.getCreatedGoodForError()?.name.orEmpty()
-                    )
-                }
-                else -> {
-                    navigator.hideProgress()
-                    navigator.showIncorrectEanFormat()
+            with(navigator) {
+                showProgressLoadingData()
+                val result = markManager.checkMark(number, WorkType.CREATE)
+                hideProgress()
+                when (result) {
+                    MarkScreenStatus.OK -> setMarksAndProperties()
+
+                    MarkScreenStatus.CARTON_ALREADY_SCANNED ->
+                        showCartonAlreadyScannedDelete(::handleYesDeleteMappedMarksFromTempCallBack)
+
+                    MarkScreenStatus.MARK_ALREADY_SCANNED ->
+                        showMarkAlreadyScannedDelete(::handleYesDeleteMappedMarksFromTempCallBack)
+
+                    MarkScreenStatus.BOX_ALREADY_SCANNED ->
+                        showBoxAlreadyScannedDelete(::handleYesDeleteMappedMarksFromTempCallBack)
+
+                    MarkScreenStatus.FAILURE -> handleFailure(markManager.getMarkFailure())
+
+                    MarkScreenStatus.INCORRECT_EAN_FORMAT -> showIncorrectEanFormat()
+
+                    MarkScreenStatus.GOOD_CANNOT_BE_ADDED -> showGoodCannotBeAdded()
+
+                    MarkScreenStatus.INTERNAL_ERROR -> showInternalError(markManager.getInternalErrorMessage())
+
+                    MarkScreenStatus.CANT_SCAN_PACK -> showCantScanPackAlert()
+
+                    MarkScreenStatus.GOOD_IS_MISSING_IN_TASK -> showGoodIsMissingInTask()
+
+                    MarkScreenStatus.MRC_NOT_SAME ->
+                        markManager.getCreatedGoodForError()?.let(::showMrcNotSameAlert)
+
+                    MarkScreenStatus.MRC_NOT_SAME_IN_BASKET ->
+                        showMrcNotSameInBasketAlert(::handleYesSaveCurrentMarkToBasketAndOpenAnother)
+
+                    MarkScreenStatus.NOT_MARKED_GOOD -> showIncorrectEanFormat()
+
+                    MarkScreenStatus.OK_BUT_NEED_TO_SCAN_MARK -> Unit
+
+                    MarkScreenStatus.NOT_SAME_GOOD ->
+                        showScannedMarkBelongsToProduct(
+                                markManager.getCreatedGoodForError()?.name.orEmpty()
+                        )
+
+                    else -> showIncorrectEanFormat()
+
                 }
             }
         }
     }
 
-    private fun handleMrcNotSameInBasket() {
-        navigator.hideProgress()
-        navigator.showMrcNotSameInBasketAlert(
-                yesCallback = ::handleYesSaveCurrentMarkToBasketAndOpenAnother
-        )
+    private fun setMarksAndProperties() {
+        tempMarks.value = markManager.getTempMarks()
+        properties.value = markManager.getProperties()
     }
 
     private fun handleYesSaveCurrentMarkToBasketAndOpenAnother() {
         launchUITryCatch {
-
-            Logg.e { "tempMarks: ${tempMarks.value}, tempMarksFromManager: ${markManager.getTempMarks()}" }
             saveChanges()
-
             markManager.handleYesSaveAndOpenAnotherBox()
-
             tempMarks.value = markManager.getTempMarks()
         }
     }
@@ -354,7 +323,6 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
             tempMarks.postValue(tempMarksFromMarkManager)
         }
     }
-
 
     override suspend fun saveChanges() {
         good.value?.let { good ->
@@ -380,14 +348,16 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
      */
 
     override fun onBackPressed() {
-        if (isExistUnsavedData) {
-            navigator.showUnsavedDataWillBeLost {
-                navigator.goBack()
+        with(navigator) {
+            if (isExistUnsavedData) {
+                showUnsavedDataWillBeLost {
+                    goBack()
+                }
+            } else {
+                goBack()
             }
-        } else {
-            navigator.goBack()
+            markManager.clearData()
         }
-        markManager.clearData()
     }
 
     override fun onClickRollback() {
@@ -402,61 +372,19 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
 
     override fun saveChangesAndExit() {
         launchUITryCatch {
-            navigator.showProgressLoadingData()
-            saveChanges()
-            navigator.hideProgress()
-            navigator.openBasketCreateGoodListScreen()
-            manager.isBasketsNeedsToBeClosed = false
-            markManager.clearData()
+            with(navigator) {
+                showProgressLoadingData()
+                saveChanges()
+                hideProgress()
+                openBasketCreateGoodListScreen()
+                manager.isBasketsNeedsToBeClosed = false
+                markManager.clearData()
+            }
         }
     }
 
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
-    }
-
-    private fun handleCartonAlreadyScanned() {
-        navigator.hideProgress()
-        navigator.showCartonAlreadyScannedDelete(
-                yesCallback = ::handleYesDeleteMappedMarksFromTempCallBack
-        )
-    }
-
-    private fun handleMarkAlreadyScanned() {
-        navigator.hideProgress()
-        navigator.showMarkAlreadyScannedDelete(
-                yesCallback = ::handleYesDeleteMappedMarksFromTempCallBack
-        )
-    }
-
-    private fun handleBoxAlreadyScanned() {
-        navigator.hideProgress()
-        navigator.showBoxAlreadyScannedDelete(
-                yesCallback = ::handleYesDeleteMappedMarksFromTempCallBack
-        )
-    }
-
-    private fun handleInternalError() {
-        navigator.hideProgress()
-        navigator.showInternalError(
-                cause = markManager.getInternalErrorMessage()
-        )
-    }
-
-    private fun handleMarkFailure() {
-        navigator.hideProgress()
-        handleFailure(markManager.getMarkFailure())
-    }
-
-    private fun handleIncorrectEanFormat() {
-        navigator.hideProgress()
-        navigator.showIncorrectEanFormat()
-    }
-
-    private fun handleOkMark() {
-        tempMarks.value = markManager.getTempMarks()
-        properties.value = markManager.getProperties()
-        navigator.hideProgress()
     }
 
     fun setupData(marksFromBundle: List<Mark>?, propertiesFromBundle: List<GoodProperty>?) {

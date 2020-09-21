@@ -25,10 +25,7 @@ import com.lenta.bp12.request.ScanInfoNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.launchAsyncTryCatch
-import com.lenta.shared.utilities.extentions.launchUITryCatch
-import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.unsafeLazy
+import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.orIfNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -100,6 +97,17 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
                     )
                 }
                 emit(items)
+            }
+        }
+    }
+
+    val isBasketNumberVisible by unsafeLazy {
+        tempMarks.mapSkipNulls { tempMarksValue ->
+            good.mapSkipNulls { goodValue ->
+                goodValue.maxRetailPrice.isEmpty().not() ||
+                        tempMarksValue.takeIf { goodValue.isTobacco() }
+                                ?.isNotEmpty()
+                                .orIfNull { true }
             }
         }
     }
@@ -209,110 +217,89 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
      * */
     private fun checkMark(number: String) {
         launchUITryCatch {
-            navigator.showProgressLoadingData()
-            val status = markManager.checkMark(number, WorkType.OPEN, true)
-            Logg.e { status.name }
-            when (status) {
-                MarkScreenStatus.OK -> {
-                    handleOkMark()
-                }
-                MarkScreenStatus.CARTON_ALREADY_SCANNED -> {
-                    handleCartonAlreadyScanned()
-                }
-                MarkScreenStatus.MARK_ALREADY_SCANNED -> {
-                    handleMarkAlreadyScanned()
-                }
-                MarkScreenStatus.BOX_ALREADY_SCANNED -> {
-                    handleBoxAlreadyScanned()
-                }
-                MarkScreenStatus.FAILURE -> {
-                    handleMarkFailure()
-                }
-                MarkScreenStatus.INCORRECT_EAN_FORMAT -> {
-                    handleIncorrectEanFormat()
-                }
-                MarkScreenStatus.GOOD_CANNOT_BE_ADDED -> {
-                    navigator.hideProgress()
-                    navigator.showGoodCannotBeAdded()
-                }
-                MarkScreenStatus.INTERNAL_ERROR -> {
-                    handleInternalError()
-                }
-                MarkScreenStatus.CANT_SCAN_PACK -> {
-                    navigator.hideProgress()
-                    navigator.showCantScanPackAlert()
-                }
-                MarkScreenStatus.GOOD_IS_MISSING_IN_TASK -> {
-                    navigator.hideProgress()
-                    navigator.showGoodIsMissingInTask()
-                }
-                MarkScreenStatus.MRC_NOT_SAME -> {
-                    navigator.hideProgress()
-                    markManager.getCreatedGoodForError()?.let {
-                        navigator.showMrcNotSameAlert(it)
+            with(navigator) {
+                showProgressLoadingData()
+                val status = markManager.checkMark(number, WorkType.OPEN)
+                Logg.d { status.name }
+                hideProgress()
+                when (status) {
+                    MarkScreenStatus.OK -> setMarksAndProperties()
+
+                    MarkScreenStatus.CARTON_ALREADY_SCANNED ->
+                        showCartonAlreadyScannedDelete(::handleYesDeleteMappedMarksFromTempCallBack)
+
+                    MarkScreenStatus.MARK_ALREADY_SCANNED ->
+                        showMarkAlreadyScannedDelete(::handleYesDeleteMappedMarksFromTempCallBack)
+
+                    MarkScreenStatus.BOX_ALREADY_SCANNED ->
+                        showBoxAlreadyScannedDelete(::handleYesDeleteMappedMarksFromTempCallBack)
+
+                    MarkScreenStatus.FAILURE -> handleFailure(markManager.getMarkFailure())
+
+                    MarkScreenStatus.GOOD_CANNOT_BE_ADDED -> showGoodCannotBeAdded()
+
+                    MarkScreenStatus.INTERNAL_ERROR ->
+                        showInternalError(markManager.getInternalErrorMessage())
+
+                    MarkScreenStatus.CANT_SCAN_PACK -> showCantScanPackAlert()
+
+                    MarkScreenStatus.GOOD_IS_MISSING_IN_TASK -> navigator.showGoodIsMissingInTask()
+
+                    MarkScreenStatus.MRC_NOT_SAME ->
+                        markManager.getCreatedGoodForError()?.let (::showMrcNotSameAlert)
+
+                    MarkScreenStatus.MRC_NOT_SAME_IN_BASKET ->
+                        showMrcNotSameInBasketAlert(::handleYesSaveCurrentMarkToBasketAndOpenAnother)
+
+                    MarkScreenStatus.OK_BUT_NEED_TO_SCAN_MARK -> {
+                        Unit
                     }
-                }
-                MarkScreenStatus.MRC_NOT_SAME_IN_BASKET -> {
-                    handleMrcNotSameInBasket()
-                }
-                MarkScreenStatus.NOT_MARKED_GOOD -> {
-                    handleIncorrectEanFormat()
-                }
-                MarkScreenStatus.OK_BUT_NEED_TO_SCAN_MARK -> {
-                    Unit
-                }
-                MarkScreenStatus.NO_MARKTYPE_IN_SETTINGS -> {
-                    handleNoMarkTypeInSettings()
-                }
-                MarkScreenStatus.NOT_SAME_GOOD -> {
-                    navigator.hideProgress()
-                    navigator.showScannedMarkBelongsToProduct(
-                            markManager.getCreatedGoodForError()?.name.orEmpty()
-                    )
+
+                    MarkScreenStatus.NO_MARKTYPE_IN_SETTINGS -> showNoMarkTypeInSettings()
+
+                    MarkScreenStatus.NOT_SAME_GOOD ->
+                        showScannedMarkBelongsToProduct(
+                                productName = markManager.getCreatedGoodForError()?.name.orEmpty()
+                        )
+
+                    else -> showIncorrectEanFormat()
                 }
             }
         }
     }
 
-    private fun handleMrcNotSameInBasket() {
-        navigator.hideProgress()
-        navigator.showMrcNotSameInBasketAlert(
-                yesCallback = ::handleYesSaveCurrentMarkToBasketAndOpenAnother
-        )
-    }
-
     private fun handleYesSaveCurrentMarkToBasketAndOpenAnother() {
         launchUITryCatch {
             saveChanges()
-            tempMarks.value = markManager.getTempMarks()
             markManager.handleYesSaveAndOpenAnotherBox()
+            tempMarks.value = markManager.getTempMarks()
         }
     }
 
     override fun loadBoxInfo(number: String) {
         launchUITryCatch {
-            val screenStatus = markManager.loadBoxInfo(number)
-            when (screenStatus) {
-                MarkScreenStatus.OK -> {
-                    handleOkMark()
-                }
-                MarkScreenStatus.INTERNAL_ERROR -> {
-                    handleInternalError()
-                }
-                MarkScreenStatus.FAILURE -> {
-                    handleMarkFailure()
-                }
-                MarkScreenStatus.MARK_ALREADY_SCANNED -> {
-                    handleMarkAlreadyScanned()
-                }
-                MarkScreenStatus.CARTON_ALREADY_SCANNED -> {
-                    handleCartonAlreadyScanned()
-                }
-                MarkScreenStatus.BOX_ALREADY_SCANNED -> {
-                    handleBoxAlreadyScanned()
-                }
-                else -> {
-                    handleIncorrectEanFormat()
+            with(navigator) {
+                showProgressLoadingData()
+                val screenStatus = markManager.loadBoxInfo(number)
+                hideProgress()
+                when (screenStatus) {
+                    MarkScreenStatus.OK -> setMarksAndProperties()
+
+                    MarkScreenStatus.INTERNAL_ERROR ->
+                        showInternalError(markManager.getInternalErrorMessage())
+
+                    MarkScreenStatus.FAILURE -> handleFailure(markManager.getMarkFailure())
+
+                    MarkScreenStatus.MARK_ALREADY_SCANNED ->
+                        showMarkAlreadyScannedDelete(::handleYesDeleteMappedMarksFromTempCallBack)
+
+                    MarkScreenStatus.CARTON_ALREADY_SCANNED ->
+                        showCartonAlreadyScannedDelete(::handleYesDeleteMappedMarksFromTempCallBack)
+
+                    MarkScreenStatus.BOX_ALREADY_SCANNED ->
+                        showBoxAlreadyScannedDelete(::handleYesDeleteMappedMarksFromTempCallBack)
+
+                    else -> showIncorrectEanFormat()
                 }
             }
         }
@@ -355,14 +342,16 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
      */
 
     override fun onBackPressed() {
-        if (isExistUnsavedData) {
-            navigator.showUnsavedDataWillBeLost {
-                navigator.goBack()
+        with(navigator) {
+            if (isExistUnsavedData) {
+                showUnsavedDataWillBeLost {
+                    goBack()
+                }
+            } else {
+                goBack()
             }
-        } else {
-            navigator.goBack()
+            markManager.clearData()
         }
-        markManager.clearData()
     }
 
     override fun onClickRollback() {
@@ -383,12 +372,14 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
 
     override fun saveChangesAndExit() {
         launchUITryCatch {
-            navigator.showProgressLoadingData()
-            saveChanges()
-            navigator.hideProgress()
-            navigator.openBasketCreateGoodListScreen()
-            manager.isBasketsNeedsToBeClosed = false
-            markManager.clearData()
+            with(navigator){
+                showProgressLoadingData()
+                saveChanges()
+                hideProgress()
+                openBasketOpenGoodListScreen()
+                manager.isBasketsNeedsToBeClosed = false
+                markManager.clearData()
+            }
         }
     }
 
@@ -396,64 +387,18 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
         selectedPage.value = position
     }
 
-    private fun handleCartonAlreadyScanned() {
-        navigator.hideProgress()
-        navigator.showCartonAlreadyScannedDelete(
-                yesCallback = ::handleYesDeleteMappedMarksFromTempCallBack
-        )
-    }
-
-    private fun handleMarkAlreadyScanned() {
-        navigator.hideProgress()
-        navigator.showMarkAlreadyScannedDelete(
-                yesCallback = ::handleYesDeleteMappedMarksFromTempCallBack
-        )
-    }
-
-    private fun handleBoxAlreadyScanned() {
-        navigator.hideProgress()
-        navigator.showBoxAlreadyScannedDelete(
-                yesCallback = ::handleYesDeleteMappedMarksFromTempCallBack
-        )
-    }
-
-    private fun handleInternalError() {
-        navigator.hideProgress()
-        navigator.showInternalError(
-                cause = markManager.getInternalErrorMessage()
-        )
-    }
-
-    private fun handleMarkFailure() {
-        navigator.hideProgress()
-        handleFailure(markManager.getMarkFailure())
-    }
-
-    private fun handleIncorrectEanFormat() {
-        navigator.hideProgress()
-        navigator.showIncorrectEanFormat()
-    }
-
-    private fun handleOkMark() {
+    private fun setMarksAndProperties() {
         isExistUnsavedData = true
         tempMarks.value = markManager.getTempMarks()
         properties.value = markManager.getProperties()
-        navigator.hideProgress()
-    }
-
-    private fun handleNoMarkTypeInSettings() {
-        navigator.hideProgress()
-        navigator.showNoMarkTypeInSettings()
     }
 
     fun setupData(marksFromBundle: List<Mark>?, propertiesFromBundle: List<GoodProperty>?) {
         marksFromBundle?.let { listOfMarks ->
             tempMarks.value?.addAll(listOfMarks)
-            Logg.e { marksFromBundle.toString() }
         } ?: Logg.e { "marks empty " }
         propertiesFromBundle?.let { listOfProperties ->
             properties.value?.addAll(listOfProperties)
-            Logg.e { propertiesFromBundle.toString() }
         } ?: Logg.e { "properties empty " }
     }
 

@@ -204,7 +204,7 @@ abstract class BaseGoodInfoCreateViewModel : CoreViewModel(), IBaseGoodInfoCreat
     }
 
     override suspend fun getBasket(good: Good): Basket? {
-        return manager.getBasket(ProviderInfo.getEmptyCode(), good)
+        return manager.getBasket(ProviderInfo.getEmptyCode(), good, false)
     }
 
     override fun updateData() {
