@@ -1,5 +1,7 @@
 package com.lenta.bp12.features.open_task.good_list
 
+import androidx.lifecycle.liveData
+import androidx.lifecycle.switchMap
 import com.lenta.bp12.features.basket.ItemWholesaleBasketUi
 import com.lenta.bp12.features.create_task.task_content.ItemCommonBasketUi
 import com.lenta.bp12.features.open_task.base.BaseGoodListOpenViewModel
@@ -10,11 +12,6 @@ import com.lenta.bp12.model.pojo.extentions.getDescription
 import com.lenta.bp12.model.pojo.extentions.getQuantityFromGoodList
 import com.lenta.bp12.model.pojo.extentions.isAnyNotLocked
 import com.lenta.bp12.model.pojo.extentions.isAnyPrinted
-import com.lenta.bp12.platform.ZERO_QUANTITY
-import com.lenta.bp12.platform.ZERO_VOLUME
-import com.lenta.bp12.platform.extention.getControlType
-import com.lenta.bp12.platform.extention.getGoodKind
-import com.lenta.bp12.platform.extention.getMarkType
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -26,7 +23,10 @@ import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.extentions.dropZeros
+import com.lenta.shared.utilities.extentions.launchUITryCatch
+import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.unsafeLazy
 import com.lenta.shared.utilities.orIfNull
 import javax.inject.Inject
 
@@ -188,18 +188,30 @@ class GoodListViewModel : BaseGoodListOpenViewModel(), PageSelectionListener, On
         }
     }
 
-    val deleteEnabled = basketSelectionsHelper.selectedPositions.combineLatest(selectedPage).combineLatest(processingSelectionsHelper.selectedPositions)
-            .combineLatest(processedSelectionsHelper.selectedPositions).map {
-                it?.let {
-                    val isSelectedBaskets = it.first.first.first.isNotEmpty()
-                    val page = it.first.first.second
-                    val isSelectedProcessing = it.first.second.isNotEmpty()
-                    val isSelectedProcessed = it.second.isNotEmpty()
+    val deleteEnabled by unsafeLazy {
+        basketSelectionsHelper.selectedPositions.switchMap { selectedBaskets ->
+            processedSelectionsHelper.selectedPositions.switchMap { selectedProcessed ->
+                processingSelectionsHelper.selectedPositions.switchMap { selectedProcessing ->
+                    selectedPage.switchMap { page ->
+                        liveData {
+                            val isSelectedBaskets = selectedBaskets.isNotEmpty()
+                            val isSelectedProcessed = selectedProcessed.isNotEmpty()
 
-                    (page == PROCESSING_PAGE_INDEX && isSelectedProcessing) || (page == PROCESSED_PAGE_INDEX && isSelectedProcessed)
-                            || (page == BASKETS_PAGE_INDEX && isSelectedBaskets)
+                            val processingSize = processing.value?.size ?: 0
+                            val isSelectedProcessing = selectedProcessing.isNotEmpty()
+                                    && (selectedProcessing.size < processingSize)
+
+                            val result = (page == PROCESSING_PAGE_INDEX && isSelectedProcessing) ||
+                                    (page == PROCESSED_PAGE_INDEX && isSelectedProcessed) ||
+                                    (page == BASKETS_PAGE_INDEX && isSelectedBaskets)
+
+                            emit(result)
+                        }
+                    }
                 }
             }
+        }
+    }
 
     val printVisibility by lazy {
         selectedPage.map { tab ->
@@ -285,13 +297,15 @@ class GoodListViewModel : BaseGoodListOpenViewModel(), PageSelectionListener, On
         selectedPage.value?.let { page ->
             when (page) {
                 PROCESSING_PAGE_INDEX -> {
-                    val materials = mutableListOf<String>()
-                    processingSelectionsHelper.selectedPositions.value?.mapNotNullTo(materials) { position ->
-                        processing.value?.get(position)?.material
-                    }
+                    if (isTaskStrict.not()) {
+                        val materials = mutableListOf<String>()
+                        processingSelectionsHelper.selectedPositions.value?.mapNotNullTo(materials) { position ->
+                            processing.value?.get(position)?.material
+                        }
 
-                    processingSelectionsHelper.clearPositions()
-                    manager.markGoodsDeleted(materials)
+                        processingSelectionsHelper.clearPositions()
+                        manager.markGoodsDeleted(materials)
+                    }
                 }
                 PROCESSED_PAGE_INDEX -> {
                     val materials = processedSelectionsHelper.selectedPositions.value?.mapNotNullTo(mutableListOf()) { position ->
@@ -342,7 +356,6 @@ class GoodListViewModel : BaseGoodListOpenViewModel(), PageSelectionListener, On
                     tkNumber = sessionInfo.market.orEmpty(),
                     userNumber = sessionInfo.personnelNumber.orEmpty()
             )
-
             navigator.openSaveDataScreen()
         }
     }
@@ -400,12 +413,10 @@ class GoodListViewModel : BaseGoodListOpenViewModel(), PageSelectionListener, On
                         handlePrintSuccess(baskets)
                     }
             )
-
         }
     }
 
     private fun handlePrintSuccess(baskets: List<Basket>) {
-
         baskets.forEach {
             it.isPrinted = true
         }
@@ -417,7 +428,6 @@ class GoodListViewModel : BaseGoodListOpenViewModel(), PageSelectionListener, On
         private const val PROCESSING_PAGE_INDEX = 0
         private const val PROCESSED_PAGE_INDEX = 1
         private const val BASKETS_PAGE_INDEX = 2
-
         private const val COUNT_TAB = 3
     }
 
