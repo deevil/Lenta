@@ -4,6 +4,7 @@ import android.widget.EditText
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp14.models.check_price.IPriceInfoParser
 import com.lenta.bp14.models.data.GoodType
+import com.lenta.bp14.models.data.ScanInfoMode
 import com.lenta.bp14.models.data.ShelfLifeType
 import com.lenta.bp14.models.ui.*
 import com.lenta.bp14.models.work_list.AdditionalGoodInfo
@@ -19,8 +20,8 @@ import com.lenta.bp14.requests.work_list.ICheckMarkNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.requests.combined.scan_info.analyseCode
 import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.actionByNumber
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.*
@@ -318,27 +319,20 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
     }
 
     fun onScanResult(data: String) {
-        analyseCode(
-                code = data,
-                funcForEan = { ean ->
-                    searchCode(ean = ean)
-                },
-                funcForMatNr = { material ->
-                    searchCode(material = material)
-                },
+        actionByNumber(
+                number = data,
+                funcForEan = { ean -> searchCode(ean = ean) },
+                funcForMaterial = { material -> searchCode(material = material) },
+                funcForSapOrBar = navigator::showTwelveCharactersEntered,
                 funcForPriceQrCode = { qrCode ->
                     priceInfoParser.getPriceInfoFromRawCode(qrCode)?.let {
                         searchCode(ean = it.eanCode)
-                        return@analyseCode
                     }
                 },
-                funcForMarkCode = { mark ->
-                    searchGoodMark(mark)
-                },
-                funcForExciseCode = { excise ->
-                    searchExciseMark(excise)
-                },
-                funcForSapOrBar = navigator::showTwelveCharactersEntered,
+                funcForExcise = ::actionForExciseGood,
+                funcForShoes = ::actionForMarkedGood,
+                funcForCigarettes = ::actionForMarkedGood,
+                funcForCigaretteBox = ::actionForMarkedGood,
                 funcForNotValidFormat = navigator::showGoodNotFound
         )
     }
@@ -371,35 +365,38 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
         }
     }
 
-    private fun searchGoodMark(goodMark: String) {
-        if (good.value?.options?.goodType != GoodType.MARKED) {
-            navigator.showWrongBarcodeFormat()
-            return
-        }
-
-        if (task.isMarkAlreadyAdded(goodMark)) {
-            navigator.showScannedMarkAlreadyAddedToList {
-                task.deleteMark(goodMark)
+    private fun actionForMarkedGood(markNumber: String) {
+        good.value?.let { good ->
+            if (good.options.goodType != GoodType.MARKED) {
+                navigator.showWrongBarcodeFormat()
+                return
             }
-        } else {
+
+            if (task.isMarkAlreadyAdded(markNumber)) {
+                navigator.showScannedMarkAlreadyAddedToList {
+                    task.deleteMark(markNumber)
+                }
+                return
+            }
+
             launchUITryCatch {
                 navigator.showProgressLoadingData(::handleFailure)
 
                 checkMarkNetRequest(CheckMarkParams(
                         tkNumber = sessionInfo.market.orEmpty(),
-                        material = good.value?.material.orEmpty(),
-                        markNumber = goodMark,
-                        mode = "2"
+                        material = good.material,
+                        markNumber = markNumber,
+                        mode = ScanInfoMode.MARKED_GOOD.mode
                 )).also {
                     navigator.hideProgress()
                 }.either(::handleFailure) {
-                    addMarkToList(goodMark, it.markStatus[0])
+                    addMarkToList(markNumber, it.markStatus[0])
                 }
             }
         }
     }
 
-    private fun searchExciseMark(exciseMark: String) {
+    private fun actionForExciseGood(exciseMark: String) {
         if (good.value?.options?.goodType != GoodType.EXCISE) {
             navigator.showWrongBarcodeFormat()
             return
@@ -409,20 +406,21 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
             navigator.showScannedMarkAlreadyAddedToList {
                 task.deleteMark(exciseMark)
             }
-        } else {
-            launchUITryCatch {
-                navigator.showProgressLoadingData(::handleFailure)
+            return
+        }
 
-                checkMarkNetRequest(CheckMarkParams(
-                        tkNumber = sessionInfo.market.orEmpty(),
-                        material = good.value?.material.orEmpty(),
-                        markNumber = exciseMark,
-                        mode = "1"
-                )).also {
-                    navigator.hideProgress()
-                }.either(::handleFailure) {
-                    addMarkToList(exciseMark, it.markStatus[0])
-                }
+        launchUITryCatch {
+            navigator.showProgressLoadingData(::handleFailure)
+
+            checkMarkNetRequest(CheckMarkParams(
+                    tkNumber = sessionInfo.market.orEmpty(),
+                    material = good.value?.material.orEmpty(),
+                    markNumber = exciseMark,
+                    mode = ScanInfoMode.EXCISE_ALCOHOL.mode
+            )).also {
+                navigator.hideProgress()
+            }.either(::handleFailure) {
+                addMarkToList(exciseMark, it.markStatus[0])
             }
         }
     }

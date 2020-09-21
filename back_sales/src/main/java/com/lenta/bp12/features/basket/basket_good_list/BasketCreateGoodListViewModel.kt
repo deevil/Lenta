@@ -195,7 +195,7 @@ class BasketCreateGoodListViewModel : BaseGoodListCreateViewModel(), OnOkInSoftK
         //Если корзина пуста удалим ее из задания и вернемся назад
         if (basket.goods.isEmpty()) {
             task.removeEmptyBaskets()
-            navigator.goBack()
+            navigator.goBackTo(TaskContentFragment::class.simpleName)
         }
     }
 

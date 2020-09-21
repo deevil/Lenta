@@ -38,8 +38,6 @@ object Constants {
     const val SAP_OR_BAR_12 = 12
 
     // Mark code length
-    const val MARK_134 = 134 // Эта марка используется в wkl для алкоголя, непонятно почему она такого размера...
-    const val MARK_39 = 39 // Эта марка используется в wkl для алкоголя, непонятно почему она такого размера...
     const val EXCISE_MARK_150 = 150
     const val EXCISE_MARK_68 = 68
     const val EXCISE_BOX_26 = 26
@@ -63,5 +61,8 @@ object Constants {
     const val OPERATING_SYSTEM_WINDOWS = "1"
     const val OPERATING_SYSTEM_ANDROID = "2"
     const val REQUEST_DEFAULT_FALSE = "X"
+
+    //Other
+    const val DIV_TO_KG = 1000
 
 }

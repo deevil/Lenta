@@ -16,9 +16,9 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.requests.combined.scan_info.analyseCode
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
+import com.lenta.shared.utilities.actionByNumber
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.launchUITryCatch
@@ -120,18 +120,13 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     private fun checkEnteredNumber(number: String) {
-        analyseCode(
-                code = number,
-                funcForEan = { ean ->
-                    searchCode(ean = ean)
-                },
-                funcForMatNr = { material ->
-                    searchCode(material = material)
-                },
+        actionByNumber(
+                number = number,
+                funcForEan = { ean -> searchCode(ean = ean) },
+                funcForMaterial = { material -> searchCode(material = material) },
                 funcForPriceQrCode = { qrCode ->
                     priceInfoParser.getPriceInfoFromRawCode(qrCode)?.let {
                         searchCode(ean = it.eanCode)
-                        return@analyseCode
                     }
                 },
                 funcForSapOrBar = navigator::showTwelveCharactersEntered,
@@ -167,11 +162,6 @@ class GoodsListClViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
             navigator.showGoodNotFound()
         }
-    }
-
-    fun onDigitPressed(digit: Int) {
-        numberField.postValue(numberField.value.orEmpty() + digit)
-        requestFocusToNumberField.value = true
     }
 
     fun onClickVideo() {

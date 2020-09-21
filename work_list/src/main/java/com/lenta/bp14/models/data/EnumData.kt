@@ -25,6 +25,11 @@ enum class ShelfLifeType(val position: Int) {
     EXPIRATION(1)
 }
 
+enum class ScanInfoMode(val mode: Int){
+    EXCISE_ALCOHOL(1),
+    MARKED_GOOD(2)
+}
+
 enum class GoodType {
     COMMON,
     ALCOHOL,
@@ -47,7 +52,7 @@ fun ProductInfo.getGoodType(): GoodType {
     return when {
         this.isExcise.isSapTrue() -> GoodType.EXCISE
         this.isAlco.isSapTrue() -> GoodType.ALCOHOL
-        this.isMarked.isSapTrue() -> GoodType.MARKED
+        this.isMark.isSapTrue() -> GoodType.MARKED
         this.isRusWine.isSapTrue() -> GoodType.RUS_WINE
         else -> GoodType.COMMON
     }
