@@ -29,12 +29,12 @@ class Good(
         val kind: GoodKind,
         val section: String,
         val matrix: MatrixType,
-        private val volume: Double,
+        val volume: Double,
         val control: ControlType = ControlType.COMMON,
         val purchaseGroup: String,
 
         val commonUnits: Uom,
-        private val innerUnits: Uom,
+        val innerUnits: Uom,
         val innerQuantity: Double,
 
         val producers: MutableList<ProducerInfo> = mutableListOf(),
@@ -116,7 +116,7 @@ class Good(
 
     fun isNotDeletedAndQuantityNotActual() = !this.isDeleted && !isQuantityActual()
 
-    fun getVolume(): Double {
+    fun getVolumeCorrespondingToUom(): Double {
         return if (commonUnits == Uom.G) {
             volume * DIV_TO_KG
         } else {

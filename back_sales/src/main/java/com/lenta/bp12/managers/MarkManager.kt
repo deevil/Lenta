@@ -11,6 +11,7 @@ import com.lenta.bp12.model.MarkStatus
 import com.lenta.bp12.model.WorkType
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.Mark
+import com.lenta.bp12.model.pojo.extentions.copyWithDifferentMrc
 import com.lenta.bp12.model.pojo.extentions.isAnyAlreadyIn
 import com.lenta.bp12.model.pojo.extentions.mapToMarkList
 import com.lenta.bp12.platform.ZERO_VOLUME
@@ -149,9 +150,13 @@ class MarkManager @Inject constructor(
 
             if (isScanFromGoodCard) {
                 chooseGood()?.let { good ->
-                    //TODO для одного и того же товара мрц перезаписывается
-                    good.maxRetailPrice = mrc.getFormattedMrc(good.ean)
-                    setFoundGood(good, container)
+                    val newMrc = mrc.getFormattedMrc(good.ean)
+                    if (good.maxRetailPrice.isEmpty()) {
+                        good.maxRetailPrice = newMrc
+                        setFoundGood(good, container)
+                    } else {
+                        setFoundGood(good.copyWithDifferentMrc(newMrc), container)
+                    }
                 }
             } else {
                 val ean = gtin.getEANfromGTIN()
@@ -242,6 +247,7 @@ class MarkManager @Inject constructor(
                     setFoundGood(foundGood, container)
                 } ?: loadGoodInfoByEan(ean, container, formattedMrc)
             }
+
             WorkType.OPEN -> {
                 val good = openManager.findGoodByEanAndMRC(ean, formattedMrc)
 
