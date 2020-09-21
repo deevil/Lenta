@@ -30,7 +30,7 @@ interface ITaskManager<T : Taskable>{
     val currentTask: MutableLiveData<T>
 
     fun addBasket(basket: Basket)
-    suspend fun getBasket(providerCode: String, goodToAdd: Good): Basket?
+    suspend fun getBasket(providerCode: String, goodToAdd: Good, isSaveToTask: Boolean): Basket?
 
     suspend fun addOrDeleteGoodToBasket(good: Good, part: Part? = null, provider: ProviderInfo, count: Double)
     suspend fun addGoodToBasketWithMark(good: Good, mark: Mark, provider: ProviderInfo)

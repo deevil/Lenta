@@ -33,33 +33,6 @@ abstract class BaseTaskManager<T : Taskable> : ITaskManager<T> {
         }
     }
 
-    /** Метод ищет корзины в списке корзин задания,
-     * и проверяет подходят ли параметры (divs), закрыта она или нет, и есть ли свободный объём
-     */
-    override suspend fun getBasket(providerCode: String, goodToAdd: Good): Basket? {
-        return currentTask.value?.let { task ->
-            val allBaskets = ArrayList(task.baskets)
-            currentGood.value?.let { good ->
-                task.type?.run {
-                    allBaskets.find { basket ->
-                        //Если в задании есть деление по параметру (task.type), то сравниваем,
-                        //Если нет — то просто пропускаем как подходящий для корзины
-                        val divByMark = if (isDivByMark) basket.markTypeGroup == good.markTypeGroup else true
-                        val divByMrc = if (isDivByMinimalPrice) isSameMrcGroup(basket, goodToAdd) else true
-                        val divBySection = if (isDivBySection) basket.section == good.section else true
-                        val divByType = if (isDivByGoodType) basket.goodType == good.type else true
-                        val divByProviders = if (isDivByProvider) basket.provider?.code == providerCode else true
-                        val divByControl = basket.control == good.control
-                        val divs = divByMark && divByMrc && divBySection && divByType && divByProviders && divByControl
-                        isLastBasketMatches(basket, good, divs)
-                    }?.also {
-                        updateCurrentBasket(it)
-                    }
-                }
-            }
-        }
-    }
-
     /** Метод ищет корзины или создает их в зависимости от того что вернет getBasket() */
     private suspend fun getOrCreateSuitableBasket(
             task: T,
@@ -71,24 +44,87 @@ abstract class BaseTaskManager<T : Taskable> : ITaskManager<T> {
             val basketList = task.baskets
 
             //Найдем корзину в списке корзин задания
-            getBasket(provider.code.orEmpty(), good) //Функция возвращает либо корзину с подходящими параметрами и достаточным объемом или возвращает null
+            getBasket(
+                    providerCode = provider.code.orEmpty(),
+                    goodToAdd = good,
+                    isSaveToTask = true
+            ) //Функция возвращает либо корзину с подходящими параметрами и достаточным объемом или возвращает null
                     .orIfNull {
                         //Если корзина не найдена - создадим ее
                         val index = basketList.lastOrNull()?.index?.plus(1) ?: INDEX_OF_FIRST_BASKET
+                        val taskType = task.type
                         Basket(
                                 index = index,
-                                section = good.section.takeIf { task.type?.isDivBySection == true },
                                 volume = basketVolume,
-                                provider = provider.takeIf { task.type?.isDivByProvider == true },
-                                control = good.control,
-                                goodType = good.type.takeIf { task.type?.isDivByGoodType == true },
-                                markTypeGroup = good.markTypeGroup,
-                                purchaseGroup = good.purchaseGroup.takeIf { task.type?.isDivByPurchaseGroup == true }
+                                section = good.section
+                                        .takeIf { taskType?.isDivBySection == true },
+                                provider = provider
+                                        .takeIf { taskType?.isDivByProvider == true },
+                                control = good.control
+                                        .takeIf { taskType?.isDivByGis == true },
+                                goodType = good.type
+                                        .takeIf { taskType?.isDivByGoodType == true },
+                                markTypeGroup = good.markTypeGroup
+                                        .takeIf { taskType?.isDivByMark == true },
+                                purchaseGroup = good.purchaseGroup
+                                        .takeIf { taskType?.isDivByPurchaseGroup == true },
+                                mprGroup = good.mprGroup.toString()
+                                        .takeIf { taskType?.isDivByMinimalPrice == true }
+                                        ?.padStart(2, '0')
                         ).also {
                             it.maxRetailPrice = good.maxRetailPrice
                             addBasket(it)
+                            Logg.e { it.toString() }
                         }
                     }
+        }
+    }
+
+    /** Метод ищет корзины в списке корзин задания,
+     * и проверяет подходят ли параметры (divs), закрыта она или нет, и есть ли свободный объём
+     */
+    override suspend fun getBasket(
+            providerCode: String,
+            goodToAdd: Good,
+            isSaveToTask: Boolean
+    ): Basket? {
+        return currentTask.value?.let { task ->
+            val allBaskets = task.baskets.toMutableList()
+            currentGood.value?.let { good ->
+                task.type?.run {
+                    allBaskets.find { basket ->
+                        //Если в задании есть деление по параметру (task.type), то сравниваем,
+                        //Если нет — то просто пропускаем как подходящий для корзины
+                        val divByMark = (basket.markTypeGroup == good.markTypeGroup)
+                                .takeIf { isDivByMark }
+                                .orIfNull { true }
+                        val divByMrc = isSameMrcGroup(basket, goodToAdd, isSaveToTask)
+                                .takeIf { isDivByMinimalPrice }
+                                .orIfNull { true }
+                        val divBySection = (basket.section == good.section)
+                                .takeIf { isDivBySection }
+                                .orIfNull { true }
+                        val divByType = (basket.goodType == good.type)
+                                .takeIf { isDivByGoodType }
+                                .orIfNull { true }
+                        val divByProviders = (basket.provider?.code == providerCode)
+                                .takeIf { isDivByProvider }
+                                .orIfNull { true }
+                        val divByPurchaseGroup = (basket.purchaseGroup == good.purchaseGroup)
+                                .takeIf { isDivByPurchaseGroup }
+                                .orIfNull { true }
+                        val divByControl = (basket.control == good.control)
+                                .takeIf { isDivByGis }
+                                .orIfNull { true }
+                        val divs = divByMark && divByMrc && divBySection && divByType &&
+                                divByProviders && divByControl && divByPurchaseGroup
+
+                        isLastBasketMatches(basket, good, divs)
+                    }?.also {
+                        updateCurrentBasket(it)
+                    }
+                }
+            }
         }
     }
 
@@ -141,10 +177,14 @@ abstract class BaseTaskManager<T : Taskable> : ITaskManager<T> {
      * разные товары с одинаковым мрц в одну корзину
      * разные товары с разными мрц в одну корзину
      * */
-    private fun isSameMrcGroup(basket: Basket, goodToAdd: Good): Boolean {
+    private fun isSameMrcGroup(basket: Basket, goodToAdd: Good, saveToTask: Boolean): Boolean {
         val sameGood = basket.goods.keys.firstOrNull { it.material == goodToAdd.material }
         return sameGood?.run {
-            maxRetailPrice == goodToAdd.maxRetailPrice
+            val isSameMaxRetailPrice = maxRetailPrice == goodToAdd.maxRetailPrice
+            if (!isSameMaxRetailPrice && saveToTask) {
+                goodToAdd.mprGroup++
+            }
+            isSameMaxRetailPrice
         } ?: true
     }
 
@@ -280,8 +320,8 @@ abstract class BaseTaskManager<T : Taskable> : ITaskManager<T> {
             task.goods.find {
                 (it.material == good.material) && (it.maxRetailPrice == good.maxRetailPrice)
             }?.let { good ->
-                        task.goods.remove(good)
-                    }
+                task.goods.remove(good)
+            }
             task.goods.add(0, good)
             updateCurrentTask(task)
         }

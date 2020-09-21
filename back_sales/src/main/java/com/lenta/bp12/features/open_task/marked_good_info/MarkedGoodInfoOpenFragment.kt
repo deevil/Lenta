@@ -128,7 +128,6 @@ class MarkedGoodInfoOpenFragment : CoreFragment<FragmentMarkedGoodInfoOpenBindin
                 container,
                 false)
 
-        // todo Здесь точно нужен KeyHandler?
         layoutBinding.rvConfig = initRecycleAdapterDataBinding<GoodPropertyItem, ItemGoodInfoPropertyBinding>(
                 layoutId = R.layout.item_good_info_property,
                 itemId = BR.item,

@@ -15,8 +15,6 @@ import com.lenta.bp12.model.pojo.open_task.TaskOpen
 import com.lenta.bp12.platform.ZERO_QUANTITY
 import com.lenta.bp12.platform.ZERO_VOLUME
 import com.lenta.bp12.platform.extention.getControlType
-import com.lenta.bp12.platform.extention.isAlcohol
-import com.lenta.bp12.platform.extention.isCommon
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.request.SendTaskDataParams
 import com.lenta.bp12.request.TaskContentResult
@@ -174,7 +172,8 @@ class OpenTaskManager @Inject constructor(
                     provider = taskGoods.firstOrNull()?.provider,
                     volume = basketVolume,
                     markTypeGroup = markTypeGroup,
-                    purchaseGroup = restBasket.purchaseGroup
+                    purchaseGroup = restBasket.purchaseGroup,
+                    mprGroup = restBasket.groupMpr
             ).apply {
                 isLocked = restBasket.isClose.isSapTrue()
                 isPrinted = restBasket.isPrint.isSapTrue()

@@ -25,10 +25,7 @@ import com.lenta.bp12.request.ScanInfoNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.launchAsyncTryCatch
-import com.lenta.shared.utilities.extentions.launchUITryCatch
-import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.unsafeLazy
+import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.orIfNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -100,6 +97,17 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
                     )
                 }
                 emit(items)
+            }
+        }
+    }
+
+    val isBasketNumberVisible by unsafeLazy {
+        tempMarks.mapSkipNulls { tempMarksValue ->
+            good.mapSkipNulls { goodValue ->
+                goodValue.maxRetailPrice.isEmpty().not() ||
+                        tempMarksValue.takeIf { goodValue.isTobacco() }
+                                ?.isNotEmpty()
+                                .orIfNull { true }
             }
         }
     }
