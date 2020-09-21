@@ -108,10 +108,15 @@
     <string name="deleted_matrix">Удаленная матрица</string>
     <string name="unknown_matrix">Неизвестная матрица</string>
     <string name="section">Секция %s</string>
+    <string name="purchase_group">Группа закупок</string>
     <string name="ean_info">Доступно сканирование штрихкода EAN</string>
     <string name="es_info">Доступно сканирование акцизной марки</string>
     <string name="box_info">Доступно сканирование номера коробки</string>
-    <string name="gs128_info">Доступно сканирование штрихкода GS1 Databar</string>
+    <string name="gs1_info">Доступно сканирование штрихкода GS1 Databar</string>
+    <string name="code128_info">Доступно сканирование штрихкода Code-128</string>
+    <string name="fact_info">Данный материал списывается в заказ "по факту"</string>
+    <string name="plan_info">Данный материал списывается в заказ "по плану"</string>
+    <string name="vet_info">Товар ветеринарного контроля</string>
     <string name="empty_category">Пустая категория</string>
     <string name="good_not_found">Товар не найден в справочниках</string>
     <string name="not_valid_format_ean">Неверный формат штрихкода</string>

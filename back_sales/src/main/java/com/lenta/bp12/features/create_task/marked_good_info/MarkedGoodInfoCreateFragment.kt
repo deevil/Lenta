@@ -43,7 +43,6 @@ class MarkedGoodInfoCreateFragment : CoreFragment<FragmentMarkedGoodInfoCreateBi
             vm.setupData(marks, properties)
         }
         return vm
-
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
@@ -128,7 +127,6 @@ class MarkedGoodInfoCreateFragment : CoreFragment<FragmentMarkedGoodInfoCreateBi
                 container,
                 false)
 
-        // todo Здесь точно нужен KeyHandler?
         layoutBinding.rvConfig = initRecycleAdapterDataBinding<GoodPropertyItem, ItemGoodInfoPropertyBinding>(
                 layoutId = R.layout.item_good_info_property,
                 itemId = BR.item,
@@ -146,6 +144,7 @@ class MarkedGoodInfoCreateFragment : CoreFragment<FragmentMarkedGoodInfoCreateBi
         super.onViewCreated(view, savedInstanceState)
         binding?.viewPagerSettings = this
     }
+
 // FOR TESTING: press digit to scan barcode
 //    override fun onKeyDown(keyCode: KeyCode): Boolean {
 //        return when (keyCode) {
@@ -183,6 +182,11 @@ class MarkedGoodInfoCreateFragment : CoreFragment<FragmentMarkedGoodInfoCreateBi
 //            //Марка не из этой коробки
 //            KeyCode.KEYCODE_6 -> {
 //                vm.onScanResult("010460606832938921q8Pk81bQ/9GPR.918000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
+//                true
+//            }
+//            //Марка обуви 198794
+//            KeyCode.KEYCODE_7 -> {
+//                vm.onScanResult("010467003610609821fDiwLb=cO6vkb")
 //                true
 //            }
 //            else -> false

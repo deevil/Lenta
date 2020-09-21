@@ -57,8 +57,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             android:background="?selectableItemBackground"
             app:layout_constraintEnd_toStartOf="@+id/ib_scan"
-            android:src="@drawable/ic_barcode_white_32dp"
-            android:onClick="@{(v) -> vm.navigator.openGS128InfoScreen()}"
+            android:src="@drawable/ic_scan_barcode_gs1_white_32dp"
+            android:onClick="@{(v) -> vm.navigator.openGS1InfoScreen()}"
             android:layout_marginEnd="@dimen/size_8dp"
             android:layout_height="wrap_content"/>
 

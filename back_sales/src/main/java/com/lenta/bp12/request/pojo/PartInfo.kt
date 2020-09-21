@@ -2,6 +2,10 @@ package com.lenta.bp12.request.pojo
 
 import com.google.gson.annotations.SerializedName
 
+/**
+ * @see com.lenta.bp12.request.SendTaskDataNetRequest
+ * IT_TASK_PARTS
+ * */
 data class PartInfo(
         /** SAP-код родителя */
         @SerializedName("MATNR_OSN")
