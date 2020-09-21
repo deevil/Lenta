@@ -16,9 +16,9 @@ import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.bp14.requests.check_price.CheckPriceReportNetRequest
 import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.requests.combined.scan_info.analyseCode
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
+import com.lenta.shared.utilities.actionByNumber
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
@@ -34,14 +34,19 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     @Inject
     lateinit var navigator: IScreenNavigator
+
     @Inject
     lateinit var task: ICheckPriceTask
+
     @Inject
     lateinit var checkPriceReportNetRequest: CheckPriceReportNetRequest
+
     @Inject
     lateinit var deviceInfo: DeviceInfo
+
     @Inject
     lateinit var generalTaskManager: IGeneralTaskManager
+
     @Inject
     lateinit var printTask: IPrintTask
 
@@ -161,17 +166,11 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     private fun checkCode(code: String?) {
-        analyseCode(
-                code = code.orEmpty(),
-                funcForEan = { eanCode ->
-                    searchCode(eanCode = eanCode)
-                },
-                funcForMatNr = { matNr ->
-                    searchCode(matNr = matNr)
-                },
-                funcForPriceQrCode = { qrCode ->
-                    searchCode(qrCode = qrCode)
-                },
+        actionByNumber(
+                number = code.orEmpty(),
+                funcForEan = { ean -> searchCode(eanCode = ean) },
+                funcForMaterial = { material -> searchCode(matNr = material) },
+                funcForPriceQrCode = { qrCode -> searchCode(qrCode = qrCode) },
                 funcForSapOrBar = navigator::showTwelveCharactersEntered,
                 funcForNotValidFormat = navigator::showGoodNotFound
         )
@@ -366,11 +365,6 @@ class GoodsListPcViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     fun getCorrectedPagePosition(position: Int?): Int {
         return if (getPagesCount() == 3) position ?: 0 else (position ?: 0) + 1
-    }
-
-    fun onDigitPressed(digit: Int) {
-        numberField.postValue(numberField.value.orEmpty() + digit)
-        requestFocusToNumberField.value = true
     }
 
     fun onScanResult(data: String) {

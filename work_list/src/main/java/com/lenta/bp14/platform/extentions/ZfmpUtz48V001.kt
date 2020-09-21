@@ -48,7 +48,7 @@ data class WorkListGoodInfo(
         val section: String,
         val isExcise: String,
         val isAlcohol: String,
-        val isRusWine: String,
+        val isRusWine: String?, // todo Что это такое, оно реально используется?
         val isMark: String,
         val healthFood: String,
         val novelty: String
