@@ -21,10 +21,12 @@ import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
+import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
@@ -334,14 +336,9 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     private fun getBottlingDate(batchNumber: String): String {
-        return taskManager
-                .getReceivingTask()
-                ?.let { task ->
-                    task.getProcessedBatches()
-                            .findLast { it.batchNumber == batchNumber }
-                            ?.bottlingDate
-                }
-                .orEmpty()
+        return taskManager.getReceivingTask()?.run {
+            getProcessedBatches().findLast { it.batchNumber == batchNumber }?.bottlingDate
+        }.orEmpty()
     }
 
     fun onClickDetails() {
@@ -575,8 +572,8 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
-    private fun isBoxSAP(boxInfo: TaskBoxInfo) {
-        if (boxInfo.materialNumber != productInfo.value!!.materialNumber) {
+    private fun isBoxSAP(boxInfo: TaskBoxInfo)  = launchUITryCatch {
+        if (boxInfo.materialNumber != productInfo.value?.materialNumber) {
             //Отсканированная коробка принадлежит товару <SAP-код> <Название>
             screenNavigator.openAlertScannedBoxBelongsAnotherProductScreen(
                     materialNumber = boxInfo.materialNumber,
@@ -589,7 +586,7 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
                     }
                     ?.also { typeDiscrepancies ->
                         processExciseAlcoBoxAccPGEService.addBoxDiscrepancy(
-                                boxNumber = boxInfo.boxNumber,
+                                boxNumber = boxInfo.boxNumber.orEmpty(),
                                 typeDiscrepancies = typeDiscrepancies,
                                 isScan = true
                         )
@@ -597,15 +594,20 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
             isScan.value = true
             isScanOtherBox.value = true
             onClickApply()
-            screenNavigator.openExciseAlcoBoxCardPGEScreen(
-                    productInfo = productInfo.value!!,
-                    boxInfo = boxInfo,
-                    massProcessingBoxesNumber = null,
-                    exciseStampInfo = null,
-                    selectQualityCode = selectQualityCode.value.orEmpty(),
-                    isScan = true,
-                    isBoxNotIncludedInNetworkLenta = false
-            )
+            productInfo.value?.let {
+                screenNavigator.openExciseAlcoBoxCardPGEScreen(
+                        productInfo = it,
+                        boxInfo = boxInfo,
+                        massProcessingBoxesNumber = null,
+                        exciseStampInfo = null,
+                        selectQualityCode = selectQualityCode.value.orEmpty(),
+                        isScan = true,
+                        isBoxNotIncludedInNetworkLenta = false
+
+                )
+            }.orIfNull {
+                Logg.e { "productInfo.value  is null" }
+            }
             /**spinQualitySelectedPosition.value?.let { position ->
             qualityInfo.value?.get(position)?.code
             }?.let {typeDiscrepancies ->

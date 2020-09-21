@@ -42,8 +42,8 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo(), OnPositionClickListener {
             val uomName = paramGrzAlternMeins.value?.name?.toLowerCase()
 
             var nestingInOneBlock = productInfo.value?.countPiecesBox?.toDouble().toStringFormatted()
-            if (nestingInOneBlock == "0") {
-                nestingInOneBlock = "1"
+            if (nestingInOneBlock == COUNT_PIECES_BOX_IS_ZERO) {
+                nestingInOneBlock = COUNT_PIECES_BOX
             }
             val productUomName = productInfo.value?.uom?.name.orEmpty()
             context.getString(R.string.accept, "$uomName=$nestingInOneBlock $productUomName")
@@ -171,7 +171,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo(), OnPositionClickListener {
                     append(" ")
                     append(paramGrzAlternMeins.value?.name?.toLowerCase())
                     append(" ")
-                    append("x")
+                    append(MULTIPLY)
                     append(" ")
                     append(countStampsControl.toInt())
                 }
@@ -262,37 +262,40 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo(), OnPositionClickListener {
 
     init {
         launchUITryCatch {
-            productInfo.value
-                    ?.let {
-                        if (processMarkingBoxProductService.newProcessMarkingProductService(it) == null) {
-                            screenNavigator.goBackAndShowAlertWrongProductType()
-                            return@launchUITryCatch
-                        }
-                    }.orIfNull {
-                        screenNavigator.goBackAndShowAlertWrongProductType()
-                        return@launchUITryCatch
-                    }
-
-            searchProductDelegate.init(viewModelScope = this@MarkingInfoBoxPGEViewModel::viewModelScope,
-                    scanResultHandler = this@MarkingInfoBoxPGEViewModel::handleProductSearchResult)
-
-            val paramGrzAlternMeinsCode = dataBase.getGrzAlternMeins().orEmpty()
-            val uomInfo = ZmpUtz07V001(hyperHive).getUomInfo(paramGrzAlternMeinsCode)
-            paramGrzAlternMeins.value = Uom(
-                    code = uomInfo?.uom.orEmpty(),
-                    name = uomInfo?.name.orEmpty()
-            )
-
-            qualityInfo.value = dataBase.getQualityInfo().orEmpty()
-            spinQuality.value = qualityInfo.value?.map { it.name }.orEmpty()
-
-            suffix.value = paramGrzAlternMeins.value?.name?.toLowerCase()
-
-
-            val qualityInfoValue = qualityInfo.value.orEmpty()
-            val allReasonRejectionInfo = dataBase.getAllReasonRejectionInfo()?.map { it.convertToQualityInfo() }.orEmpty()
-            allTypeDiscrepancies.value = qualityInfoValue + allReasonRejectionInfo
+            initProduct()
+            return@launchUITryCatch
         }
+    }
+
+    private suspend fun initProduct(){
+        productInfo.value
+                ?.let {
+                    if (processMarkingBoxProductService.newProcessMarkingProductService(it) == null) {
+                        screenNavigator.goBackAndShowAlertWrongProductType()
+                    }
+                }.orIfNull {
+                    screenNavigator.goBackAndShowAlertWrongProductType()
+                }
+
+        searchProductDelegate.init(viewModelScope = this@MarkingInfoBoxPGEViewModel::viewModelScope,
+                scanResultHandler = this@MarkingInfoBoxPGEViewModel::handleProductSearchResult)
+
+        val paramGrzAlternMeinsCode = dataBase.getGrzAlternMeins().orEmpty()
+        val uomInfo = ZmpUtz07V001(hyperHive).getUomInfo(paramGrzAlternMeinsCode)
+        paramGrzAlternMeins.value = Uom(
+                code = uomInfo?.uom.orEmpty(),
+                name = uomInfo?.name.orEmpty()
+        )
+
+        qualityInfo.value = dataBase.getQualityInfo().orEmpty()
+        spinQuality.value = qualityInfo.value?.map { it.name }.orEmpty()
+
+        suffix.value = paramGrzAlternMeins.value?.name?.toLowerCase()
+
+
+        val qualityInfoValue = qualityInfo.value.orEmpty()
+        val allReasonRejectionInfo = dataBase.getAllReasonRejectionInfo()?.map { it.convertToQualityInfo() }.orEmpty()
+        allTypeDiscrepancies.value = qualityInfoValue + allReasonRejectionInfo
     }
 
     private fun handleProductSearchResult(@Suppress("UNUSED_PARAMETER") scanInfoResult: ScanInfoResult?): Boolean {
@@ -352,7 +355,13 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo(), OnPositionClickListener {
     }
 
     fun onClickApply() {
-        if (processMarkingBoxProductService.isOverLimit(enteredCountInBlockUnits)) screenNavigator.goBack()
+        val isAll = if (processMarkingBoxProductService.isOverLimit(enteredCountInBlockUnits)) {
+            screenNavigator.openAlertOverLimitPlannedScreen()
+            false
+        } else {
+            addInfo()
+        }
+         if (isAll) screenNavigator.goBack()
     }
 
     fun onScanResult(data: String) {
@@ -582,6 +591,9 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo(), OnPositionClickListener {
     }
 
     companion object {
+        private const val COUNT_PIECES_BOX = "1"
+        private const val COUNT_PIECES_BOX_IS_ZERO = "0"
+        private const val MULTIPLY = "x"
         const val REGEX_BARCODE_PACK = """^(?<packBarcode>(?<gtin>\d{14})(?<serial>\S{7}))(?<MRC>\S{4})(?:\S{4})${'$'}"""
         const val REGEX_BARCODE_BLOCK = """^.?(?<blockBarcode>01(?<gtin2>\d{14})21(?<serial>\S{7})).?8005(?<MRC>\d{6}).?93(?<verificationKey>\S{4}).?(?<other>\S{1,})?${'$'}"""
     }

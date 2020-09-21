@@ -195,7 +195,7 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
 
     val tvListStampVal: MutableLiveData<String> = countValue.combineLatest(countExciseStampsScanned).map {
         val enteredCount = it?.first ?: 0.0
-        val countExciseStampsScannedValue = it?.second.toString()
+        val countExciseStampsScannedValue = it?.second?.toString().orEmpty()
         val acceptTotalCountValue = acceptTotalCount.value ?: 0.0
         val refusalTotalCountValue = refusalTotalCount.value ?: 0.0
         val productOrderQuantity = productInfo.value?.orderQuantity?.toDoubleOrNull() ?: 0.0
