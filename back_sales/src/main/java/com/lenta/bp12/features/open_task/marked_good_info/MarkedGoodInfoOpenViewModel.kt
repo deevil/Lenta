@@ -238,17 +238,15 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
 
                     MarkScreenStatus.GOOD_CANNOT_BE_ADDED -> showGoodCannotBeAdded()
 
-                    MarkScreenStatus.INTERNAL_ERROR -> showInternalError(markManager.getInternalErrorMessage())
+                    MarkScreenStatus.INTERNAL_ERROR ->
+                        showInternalError(markManager.getInternalErrorMessage())
 
                     MarkScreenStatus.CANT_SCAN_PACK -> showCantScanPackAlert()
 
                     MarkScreenStatus.GOOD_IS_MISSING_IN_TASK -> navigator.showGoodIsMissingInTask()
 
-                    MarkScreenStatus.MRC_NOT_SAME -> {
-                        markManager.getCreatedGoodForError()?.let {
-                            navigator.showMrcNotSameAlert(it)
-                        }
-                    }
+                    MarkScreenStatus.MRC_NOT_SAME ->
+                        markManager.getCreatedGoodForError()?.let (::showMrcNotSameAlert)
 
                     MarkScreenStatus.MRC_NOT_SAME_IN_BASKET ->
                         showMrcNotSameInBasketAlert(::handleYesSaveCurrentMarkToBasketAndOpenAnother)
