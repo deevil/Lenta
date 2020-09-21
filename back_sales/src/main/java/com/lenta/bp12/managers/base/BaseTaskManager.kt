@@ -156,7 +156,7 @@ abstract class BaseTaskManager<T : Taskable> : ITaskManager<T> {
             !basket.isLocked && isBasketHasEnoughVolume(basket, good)
 
     private fun isBasketHasEnoughVolume(basket: Basket, good: Good): Boolean {
-        return basket.freeVolume > good.volume
+        return basket.freeVolume > good.getVolume()
     }
 
     private suspend fun addGoodToBaskets(task: T, good: Good, provider: ProviderInfo, part: Part?, count: Double) {
@@ -168,7 +168,7 @@ abstract class BaseTaskManager<T : Taskable> : ITaskManager<T> {
             val suitableBasket = getOrCreateSuitableBasket(task, good, provider)
 
             //Максимальное количество этого товара, которе может влезть в эту корзину, учитывая оставшийся объем в ней
-            val maxQuantity = floor(suitableBasket.freeVolume.div(good.volume))
+            val maxQuantity = floor(suitableBasket.freeVolume.div(good.getVolume()))
             //Если макс количество больше чем нужно добавить
             val quantity = if (maxQuantity >= leftToAdd) {
                 leftToAdd // то добавляем все что осталось добавить

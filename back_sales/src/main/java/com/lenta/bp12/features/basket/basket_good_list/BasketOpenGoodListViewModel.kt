@@ -12,11 +12,6 @@ import com.lenta.bp12.model.MarkType
 import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.extentions.*
 import com.lenta.bp12.model.pojo.open_task.TaskOpen
-import com.lenta.bp12.platform.ZERO_QUANTITY
-import com.lenta.bp12.platform.ZERO_VOLUME
-import com.lenta.bp12.platform.extention.getControlType
-import com.lenta.bp12.platform.extention.getGoodKind
-import com.lenta.bp12.platform.extention.getMarkType
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -210,7 +205,7 @@ class BasketOpenGoodListViewModel : BaseGoodListOpenViewModel(), OnOkInSoftKeybo
         //Если корзина пуста удалим ее из задания и вернемся назад
         if (basket.goods.isEmpty()) {
             task.removeEmptyBaskets()
-            navigator.goBack()
+            navigator.goBackTo(GoodListFragment::class.simpleName)
         }
     }
 

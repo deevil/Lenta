@@ -8,6 +8,7 @@ import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.constants.Constants
+import com.lenta.shared.platform.constants.Constants.DIV_TO_KG
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.sumList
 import com.lenta.shared.utilities.extentions.sumWith
@@ -28,7 +29,7 @@ class Good(
         val kind: GoodKind,
         val section: String,
         val matrix: MatrixType,
-        val volume: Double,
+        private val volume: Double,
         val control: ControlType = ControlType.COMMON,
         val purchaseGroup: String,
 
@@ -114,6 +115,14 @@ class Good(
     fun isCommon() = kind == GoodKind.COMMON
 
     fun isNotDeletedAndQuantityNotActual() = !this.isDeleted && !isQuantityActual()
+
+    fun getVolume(): Double {
+        return if (commonUnits == Uom.G) {
+            volume * DIV_TO_KG
+        } else {
+            volume
+        }
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
