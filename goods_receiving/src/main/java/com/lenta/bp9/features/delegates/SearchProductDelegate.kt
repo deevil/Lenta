@@ -268,7 +268,7 @@ class SearchProductDelegate @Inject constructor(
         when(getMarkingGoodsRegime(taskManager, taskProductInfo)) {
             MarkingGoodsRegime.UomStWithoutBoxes -> screenNavigator.openMarkingInfoScreen(taskProductInfo)
             MarkingGoodsRegime.UomStWithBoxes -> screenNavigator.openMarkingBoxInfoScreen(taskProductInfo)
-            MarkingGoodsRegime.UomStPGE -> screenNavigator.openMarkingBoxInfoPGEScreen(taskProductInfo)
+            MarkingGoodsRegime.UomSTWithBoxesPGE -> screenNavigator.openMarkingBoxInfoPGEScreen(taskProductInfo)
             else -> screenNavigator.openInfoScreen(context.getString(R.string.data_retrieval_error))
         }
     }

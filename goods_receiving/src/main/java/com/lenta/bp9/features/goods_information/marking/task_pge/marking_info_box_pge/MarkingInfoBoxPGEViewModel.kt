@@ -39,7 +39,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo(), OnPositionClickListener {
 
     val tvAccept: MutableLiveData<String> by lazy {
         paramGrzAlternMeins.map {
-            val uomName = paramGrzAlternMeins.value?.name.orEmpty()
+            val uomName = paramGrzAlternMeins.value?.name?.toLowerCase()
 
             var nestingInOneBlock = productInfo.value?.countPiecesBox?.toDouble().toStringFormatted()
             if (nestingInOneBlock == "0") {
@@ -258,7 +258,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo(), OnPositionClickListener {
                 || checkBoxStampListValue)
     }
 
-    val enabledRollbackBtn: MutableLiveData<Boolean> = countScannedStamps.map { (it ?: 0) > 0 }
+    val enabledBox: MutableLiveData<Boolean> = MutableLiveData(true)
 
     init {
         launchUITryCatch {
@@ -286,7 +286,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo(), OnPositionClickListener {
             qualityInfo.value = dataBase.getQualityInfo().orEmpty()
             spinQuality.value = qualityInfo.value?.map { it.name }.orEmpty()
 
-            suffix.value = paramGrzAlternMeins.value?.name.orEmpty()
+            suffix.value = paramGrzAlternMeins.value?.name?.toLowerCase()
 
 
             val qualityInfoValue = qualityInfo.value.orEmpty()
@@ -311,37 +311,10 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo(), OnPositionClickListener {
         processMarkingBoxProductService.initProduct(initProduct)
     }
 
-    fun onClickRollback() {
-        //сначала проверяем, неотсканирован ли последним блок
-        val lastScannedTypesStamps = processMarkingBoxProductService.getLastScannedTypesStamps()
-        if (lastScannedTypesStamps == TypeLastStampScanned.BOX) {
-            val countDelBlocksForBox = processMarkingBoxProductService.rollbackTypeLastStampScanned()
-            //уменьшаем кол-во отсканированных блоков на кол-во удаленных в текущей сессии
-            minusScannedBlocks(countDelBlocksForBox)
-            //уменьшаем кол-во отсканированных марок (блок/gtin) на единицу в текущей сессии
-            minusScannedStamps(1)
+    fun onClickBoxes() {
+        if (processMarkingBoxProductService.isOverLimit(enteredCountInBlockUnits)){
+//            screenNavigator.openAlertMustEnterQuantityScreen()
             return
-        }
-
-        processMarkingBoxProductService.rollbackTypeLastStampScanned()
-        //уменьшаем кол-во отсканированных блоков на единицу в текущей сессии
-        minusScannedBlocks()
-        //уменьшаем кол-во отсканированных марок (блок/gtin) на единицу в текущей сессии
-        minusScannedStamps(1)
-    }
-
-
-    private fun minusScannedStamps(count: Int) {
-        val countScannedStampsValue = countScannedStamps.value ?: 0
-        if (countScannedStampsValue >= count) {
-            countScannedStamps.value = countScannedStamps.value?.minus(count)
-        }
-    }
-
-    private fun minusScannedBlocks(count: Int = 1) {
-        val countScannedBlocksValue = countScannedBlocks.value ?: 0
-        if (countScannedBlocksValue >= count) {
-            countScannedBlocks.value = countScannedBlocks.value?.minus(1)
         }
     }
 
@@ -378,17 +351,8 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo(), OnPositionClickListener {
         }
     }
 
-    fun onClickAdd(): Boolean {
-        return if (processMarkingBoxProductService.isOverLimit(enteredCountInBlockUnits)) {
-            screenNavigator.openAlertOverLimitPlannedScreen()
-            false
-        } else {
-            addInfo()
-        }
-    }
-
     fun onClickApply() {
-        if (onClickAdd()) screenNavigator.goBack()
+        if (processMarkingBoxProductService.isOverLimit(enteredCountInBlockUnits)) screenNavigator.goBack()
     }
 
     fun onScanResult(data: String) {
@@ -595,7 +559,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo(), OnPositionClickListener {
         suffix.value =
                 isUnitBox.value
                         ?.takeIf { it }
-                        ?.run { paramGrzAlternMeins.value?.name.orEmpty() }
+                        ?.run { paramGrzAlternMeins.value?.name?.toLowerCase() }
                         ?: productInfo.value
                                 ?.purchaseOrderUnits
                                 ?.name

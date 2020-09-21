@@ -39,7 +39,7 @@ class ProcessMarkingBoxPGEProductService
         return this
                 .takeIf {
                     inputProductInfo.type == ProductType.General
-                            && getMarkingGoodsRegime(taskManager,inputProductInfo) == MarkingGoodsRegime.UomStPGE
+                            && getMarkingGoodsRegime(taskManager,inputProductInfo) == MarkingGoodsRegime.UomSTWithBoxesPGE
                 }
                 ?.apply {
                     this.productInfo = inputProductInfo.copy()
