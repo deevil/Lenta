@@ -79,7 +79,7 @@ class SearchProductDelegate @Inject constructor(
         this.scanResultHandler = scanResultHandler
     }
 
-    fun searchCode(code: String, fromScan: Boolean, isBarCode: Boolean? = null, isDiscrepancy:  Boolean? = false) {
+    fun searchCode(code: String, fromScan: Boolean, isBarCode: Boolean? = null, isDiscrepancy: Boolean? = false) {
         searchFromScan = fromScan
         this.isDiscrepancy = isDiscrepancy!!
         if (isBarCode == null && code.length == 12) {
@@ -121,7 +121,8 @@ class SearchProductDelegate @Inject constructor(
                 true
             }
             requestCodeTypeBarCode -> {
-                searchCode(code = codeWith12Digits ?: "", fromScan = false, isBarCode = true, isDiscrepancy = isDiscrepancy!!)
+                searchCode(code = codeWith12Digits
+                        ?: "", fromScan = false, isBarCode = true, isDiscrepancy = isDiscrepancy!!)
                 codeWith12Digits = null
                 true
             }
@@ -213,7 +214,7 @@ class SearchProductDelegate @Inject constructor(
     private fun searchProduct() {
         Logg.d { "searchProduct ${scanInfoResult?.productInfo?.materialNumber}" }
         scanInfoResult?.let { infoResult ->
-            val taskProductInfo = taskManager.getReceivingTask()!!.taskRepository.getProducts().findProduct(infoResult.productInfo.materialNumber)
+            val taskProductInfo = taskManager.getReceivingTask()?.taskRepository?.getProducts()?.findProduct(infoResult.productInfo.materialNumber)
             if (taskProductInfo == null) {
                 if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
                     screenNavigator.openAddGoodsSurplusDialog(requestCodeAddGoodsSurplus) //эта проверка только для ПГЕ, карточки трелло https://trello.com/c/8P4mPlGN, https://trello.com/c/im9rJqrU, https://trello.com/c/WQg659Ww
@@ -267,6 +268,7 @@ class SearchProductDelegate @Inject constructor(
         when(getMarkingGoodsRegime(taskManager, taskProductInfo)) {
             MarkingGoodsRegime.UomStWithoutBoxes -> screenNavigator.openMarkingInfoScreen(taskProductInfo)
             MarkingGoodsRegime.UomStWithBoxes -> screenNavigator.openMarkingBoxInfoScreen(taskProductInfo)
+            MarkingGoodsRegime.UomStPGE -> screenNavigator.openMarkingBoxInfoPGEScreen(taskProductInfo)
             else -> screenNavigator.openInfoScreen(context.getString(R.string.data_retrieval_error))
         }
     }
