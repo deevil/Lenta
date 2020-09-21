@@ -31,7 +31,7 @@
     <string name="select_task_type">Выберите тип задания</string>
     <string name="cannot_save_negative_quantity">Невозможно сохранить отрицательные количества</string>
     <string name="select_type_code_description">Введено 12 знаков. Какой код вы ввели?</string>
-    <string name="alert_double_scan_stamp">Эта АМ уже была отсканирована</string>
+    <string name="alert_double_scan_stamp">Данная марка добавлена в задание</string>
     <string name="scan_barcode_or_enter_sapcode">Отсканируйте штрихкод или введите SAP-код</string>
     <string name="not_valid_format_stamp">Отсканированный ШК не соответствует формату марки</string>
     <string name="fail_detect_product_for_stamp">Не удалось определить принадлежность марки к компоненту. Отсканируйте EAN компонента из списка и попробуйте снова</string>
