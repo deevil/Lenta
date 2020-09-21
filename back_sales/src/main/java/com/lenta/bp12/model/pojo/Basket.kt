@@ -21,7 +21,8 @@ data class Basket(
         val volume: Double = 0.0,
         val goods: MutableMap<Good, Double> = mutableMapOf(),
         val markTypeGroup: MarkTypeGroup?,
-        val purchaseGroup: String?
+        val purchaseGroup: String?,
+        val mprGroup: String?
 ) {
     /**
      * МРЦ
@@ -48,6 +49,6 @@ data class Basket(
     var freeVolume: Double = volume
 
     override fun toString(): String {
-        return "Basket(index=$index, section=$section, goodType=$goodType, control=$control, provider=$provider, volume=$volume, goods=$goods, markTypeGroup=$markTypeGroup, maxRetailPrice='$maxRetailPrice', isPrinted=$isPrinted, isLocked=$isLocked, markedForLock=$markedForLock, freeVolume=$freeVolume)"
+        return "Basket(index=$index, section=$section, goodType=$goodType, control=$control, provider=$provider, volume=$volume, goods=$goods, markTypeGroup=$markTypeGroup, purchaseGroup=$purchaseGroup, mprGroup=$mprGroup, maxRetailPrice='$maxRetailPrice', isPrinted=$isPrinted, isLocked=$isLocked, markedForLock=$markedForLock, freeVolume=$freeVolume)"
     }
 }

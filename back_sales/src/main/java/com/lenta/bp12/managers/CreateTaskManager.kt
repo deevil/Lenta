@@ -10,8 +10,6 @@ import com.lenta.bp12.model.pojo.create_task.TaskCreate
 import com.lenta.bp12.model.pojo.extentions.getGoodList
 import com.lenta.bp12.model.pojo.extentions.getQuantityOfGood
 import com.lenta.bp12.platform.ZERO_QUANTITY
-import com.lenta.bp12.platform.extention.isAlcohol
-import com.lenta.bp12.platform.extention.isCommon
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.request.SendTaskDataParams
 import com.lenta.bp12.request.pojo.*
@@ -77,7 +75,13 @@ class CreateTaskManager @Inject constructor(
                                 isAlcohol = basket.control?.isAlcohol().toSapBooleanString(),
                                 providerCode = basket.provider?.code,
                                 goodType = basket.goodType,
-                                section = basket.section
+                                section = basket.section,
+                                marktypeGroup = basket.markTypeGroup?.code,
+                                isMark = basket.control?.isMark().toSapBooleanString(),
+                                isVet = basket.control?.isVet().toSapBooleanString(),
+                                purchaseGroup = basket.purchaseGroup,
+                                isPrint = basket.isPrinted.toSapBooleanString(),
+                                isClose = basket.isLocked.toSapBooleanString()
                         )
                 )
 
