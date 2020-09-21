@@ -44,7 +44,7 @@ class Good(
         val parts: MutableList<Part> = mutableListOf(),
         val markType: MarkType = MarkType.UNKNOWN,
         val markTypeGroup: MarkTypeGroup? = null,
-        val maxRetailPrice: String = "",
+        var maxRetailPrice: String = "",
         var mprGroup: Int = 1,
 
         val type: String,
@@ -125,6 +125,31 @@ class Good(
             volume
         }
     }
+
+    fun copyWithDifferentMrc(mrc: String) = Good(
+            ean,
+            eans.toList(),
+            material,
+            name,
+            kind,
+            section,
+            matrix,
+            volume,
+            control,
+            purchaseGroup,
+            commonUnits.copy(),
+            innerUnits.copy(),
+            innerQuantity,
+            producers.toMutableList(),
+            positions.toMutableList(),
+            marks.toMutableList(),
+            parts.toMutableList(),
+            markType,
+            markTypeGroup?.copy(),
+            mrc,
+            mprGroup,
+            type
+    )
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

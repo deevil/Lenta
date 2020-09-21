@@ -11,7 +11,6 @@ import com.lenta.bp12.model.MarkStatus
 import com.lenta.bp12.model.WorkType
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.Mark
-import com.lenta.bp12.model.pojo.extentions.copyWithDifferentMrc
 import com.lenta.bp12.model.pojo.extentions.isAnyAlreadyIn
 import com.lenta.bp12.model.pojo.extentions.mapToMarkList
 import com.lenta.bp12.platform.ZERO_VOLUME
@@ -148,6 +147,9 @@ class MarkManager @Inject constructor(
             val (blocBarcode, gtin, _, mrc, _, _) = it.destructured // blockBarcode, gtin, serial, mrc, verificationKey, other
             val container = Pair(blocBarcode, Mark.Container.CARTON)
 
+//            val ean = gtin.getEANfromGTIN()
+//            getGoodByEan(ean, container, mrc)
+
             if (isScanFromGoodCard) {
                 chooseGood()?.let { good ->
                     val newMrc = mrc.getFormattedMrc(good.ean)
@@ -155,7 +157,8 @@ class MarkManager @Inject constructor(
                         good.maxRetailPrice = newMrc
                         setFoundGood(good, container)
                     } else {
-                        setFoundGood(good.copyWithDifferentMrc(newMrc), container)
+                        val newGood = good.copyWithDifferentMrc(newMrc)
+                        setFoundGood(newGood, container)
                     }
                 }
             } else {
@@ -247,7 +250,6 @@ class MarkManager @Inject constructor(
                     setFoundGood(foundGood, container)
                 } ?: loadGoodInfoByEan(ean, container, formattedMrc)
             }
-
             WorkType.OPEN -> {
                 val good = openManager.findGoodByEanAndMRC(ean, formattedMrc)
 
@@ -294,11 +296,13 @@ class MarkManager @Inject constructor(
             formattedMrc: String = ""
     ): MarkScreenStatus {
         var screenStatus = MarkScreenStatus.FAILURE
-        goodInfoNetRequest(GoodInfoParams(
-                tkNumber = sessionInfo.market.orEmpty(),
-                ean = ean,
-                taskType = taskTypeCode
-        )).either(::handleFailure) {
+        goodInfoNetRequest(
+                GoodInfoParams(
+                        tkNumber = sessionInfo.market.orEmpty(),
+                        ean = ean,
+                        taskType = taskTypeCode
+                )
+        ).either(::handleFailure) {
             screenStatus = handleLoadGoodInfoResult(it, container, formattedMrc)
             Unit
         }
@@ -633,6 +637,7 @@ class MarkManager @Inject constructor(
 
     override fun getTempMarks(): MutableList<Mark> = tempMarks
     override fun getProperties(): MutableList<GoodProperty> = properties
+
     override fun getCreatedGoodForError(): Good? {
         return createdGoodToShowError.value?.let {
             return it

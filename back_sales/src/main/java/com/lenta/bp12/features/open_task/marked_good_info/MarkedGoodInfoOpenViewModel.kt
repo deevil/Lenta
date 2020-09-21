@@ -219,7 +219,7 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
         launchUITryCatch {
             with(navigator) {
                 showProgressLoadingData()
-                val status = markManager.checkMark(number, WorkType.OPEN)
+                val status = markManager.checkMark(number, WorkType.OPEN, true)
                 Logg.d { status.name }
                 hideProgress()
                 when (status) {

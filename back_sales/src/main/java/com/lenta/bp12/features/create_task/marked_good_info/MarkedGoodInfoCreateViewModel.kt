@@ -255,7 +255,7 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
         launchUITryCatch {
             with(navigator) {
                 showProgressLoadingData()
-                val result = markManager.checkMark(number, WorkType.CREATE)
+                val result = markManager.checkMark(number, WorkType.CREATE, true)
                 hideProgress()
                 when (result) {
                     MarkScreenStatus.OK -> setMarksAndProperties()
@@ -338,7 +338,7 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
     private suspend fun addMarks(changedGood: Good) {
         tempMarks.value?.let { tempMarksValue ->
             changedGood.addMarks(tempMarksValue)
-            Logg.e { "$changedGood" }
+            Logg.e { "--> ADD MARKS: ${changedGood.hashCode()}" }
             manager.addGoodToBasketWithMarks(changedGood, tempMarksValue, getProvider())
         }
     }

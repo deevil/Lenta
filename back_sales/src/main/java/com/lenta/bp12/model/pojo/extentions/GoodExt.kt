@@ -19,7 +19,7 @@ fun Good.addMark(mark: Mark) {
 
 fun Good.addMarks(marksToAdd: List<Mark>) {
     marksToAdd.forEach { mark ->
-        if (marks.find { it.number == mark.number } == null) {
+        if (marks.find { it.number == mark.number } == null && !marks.contains(mark)) {
             marks.add(mark)
         }
     }
@@ -103,7 +103,3 @@ fun Good.getScreenStatus(): ScreenStatus {
 
 fun Good.isGoodHasSameEan(otherEan: String) = this.ean == otherEan || this.eans.contains(otherEan)
 fun Good.isGoodHasSameMaxRetailPrice(otherMrc: String) = this.maxRetailPrice == otherMrc
-
-fun Good.copyWithDifferentMrc(mrc: String) = Good(
-        ean, eans, material, name, kind, section, matrix, volume, control, purchaseGroup, commonUnits, innerUnits, innerQuantity, producers, positions, marks, parts, markType, markTypeGroup, mrc, type
-)
