@@ -6,6 +6,7 @@ import com.lenta.bp15.features.enter_employee_number.EnterEmployeeNumberFragment
 import com.lenta.bp15.features.loading.FastDataLoadingFragment
 import com.lenta.bp15.features.main_menu.MainMenuFragment
 import com.lenta.bp15.features.select_market.SelectMarketFragment
+import com.lenta.bp15.features.task_list.TaskListFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
@@ -65,7 +66,11 @@ class ScreenNavigator @Inject constructor(
 
 
     // Основные экраны
-
+    override fun openTaskListScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(TaskListFragment())
+        }
+    }
 
 
     // Информационные экраны
@@ -81,5 +86,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openSelectMarketScreen()
     fun openEnterEmployeeNumberScreen()
     fun openMainMenuScreen()
+
+    fun openTaskListScreen()
 
 }

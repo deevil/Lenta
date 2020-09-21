@@ -29,8 +29,7 @@ class MainMenuViewModel : CoreViewModel() {
     }
 
     fun workWithTask() {
-        // Открыть список заданий
-
+        navigator.openTaskListScreen()
     }
 
 }

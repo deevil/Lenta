@@ -3,10 +3,11 @@
     <string name="app_name">Постановка на баланс</string>
 
     // Заголовки экранов
-
+    <string name="setting_tasks">Задания на постановку</string>
 
     // Наименование вкладок
-
+    <string name="to_processing">К обработке</string>
+    <string name="search">Поиск</string>
 
     // Наименования колонок
 

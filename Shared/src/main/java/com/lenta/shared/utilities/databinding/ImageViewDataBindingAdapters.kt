@@ -5,12 +5,29 @@ import androidx.databinding.BindingAdapter
 import com.lenta.shared.R
 import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.models.core.getDescriptionResId
+import com.lenta.shared.utilities.BlockType
 import com.lenta.shared.utilities.extentions.selectableItemBackgroundResId
 import com.lenta.shared.utilities.extentions.setVisible
 
 @BindingAdapter("android:src")
 fun setImageSrc(imageView: ImageView, imageRes: Int) {
     imageView.setImageResource(imageRes)
+}
+
+@BindingAdapter("blockTypeIcon")
+fun setBlockTypeIcon(imageView: ImageView, blockType: BlockType) {
+    imageView.apply {
+        if (blockType == BlockType.UNLOCK) {
+            setVisible(false)
+        } else {
+            setImageResource(when (blockType) {
+                BlockType.SELF_LOCK -> R.drawable.ic_self_lock_status_gray_24dp
+                BlockType.LOCK -> R.drawable.ic_lock_status_gray_24dp
+                else -> R.drawable.ic_play_arrow_gray_24dp
+            })
+            setVisible()
+        }
+    }
 }
 
 @BindingAdapter("goodTypeIcon")

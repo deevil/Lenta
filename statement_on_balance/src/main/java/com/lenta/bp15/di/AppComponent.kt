@@ -6,6 +6,7 @@ import com.lenta.bp15.features.select_market.SelectMarketViewModel
 import com.lenta.bp15.ExceptionHandler
 import com.lenta.bp15.features.auth.AuthViewModel
 import com.lenta.bp15.features.loading.FastLoadingViewModel
+import com.lenta.bp15.features.task_list.TaskListViewModel
 import com.lenta.bp15.main.MainViewModel
 import com.lenta.bp15.main.MainActivity
 import com.lenta.bp15.platform.navigation.IScreenNavigator
@@ -32,5 +33,7 @@ interface AppComponent : CoreComponent {
     fun inject(it: FastLoadingViewModel)
     fun inject(it: EnterEmployeeNumberViewModel)
     fun inject(it: MainMenuViewModel)
+
+    fun inject(it: TaskListViewModel)
 
 }

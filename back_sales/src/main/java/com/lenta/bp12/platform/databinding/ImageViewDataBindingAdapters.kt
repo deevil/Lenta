@@ -3,28 +3,10 @@ package com.lenta.bp12.platform.databinding
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.lenta.bp12.R
-import com.lenta.bp12.model.BlockType
 import com.lenta.bp12.model.GoodKind
 import com.lenta.bp12.platform.extention.getDescriptionResId
 import com.lenta.shared.utilities.databinding.dataBindingHelpHolder
 import com.lenta.shared.utilities.extentions.setInvisible
-import com.lenta.shared.utilities.extentions.setVisible
-
-@BindingAdapter("blockTypeIcon")
-fun setBlockTypeIcon(imageView: ImageView, blockType: BlockType) {
-    imageView.apply {
-        if (blockType == BlockType.UNLOCK) {
-            setVisible(false)
-        } else {
-            setImageResource(when (blockType) {
-                BlockType.SELF_LOCK -> R.drawable.ic_self_lock_status_gray_24dp
-                BlockType.LOCK -> R.drawable.ic_lock_status_gray_24dp
-                else -> R.drawable.ic_play_arrow_gray_24dp
-            })
-            setVisible()
-        }
-    }
-}
 
 @BindingAdapter("goodKindIcon")
 fun setGoodKindIcon(imageView: ImageView, goodKind: GoodKind?) {

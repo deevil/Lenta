@@ -2,7 +2,6 @@ package com.lenta.bp12.features.open_task.task_list
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.managers.interfaces.IOpenTaskManager
-import com.lenta.bp12.model.BlockType
 import com.lenta.bp12.model.TaskSearchMode
 import com.lenta.bp12.model.pojo.open_task.TaskOpen
 import com.lenta.bp12.platform.navigation.IScreenNavigator
@@ -13,6 +12,7 @@ import com.lenta.bp12.request.TaskListResult
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
+import com.lenta.shared.utilities.BlockType
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest

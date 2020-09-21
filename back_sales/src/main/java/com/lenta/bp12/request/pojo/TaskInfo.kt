@@ -1,12 +1,12 @@
 package com.lenta.bp12.request.pojo
 
 import com.google.gson.annotations.SerializedName
-import com.lenta.bp12.model.BlockType
 import com.lenta.bp12.model.pojo.Block
 import com.lenta.bp12.model.pojo.ReturnReason
 import com.lenta.bp12.model.pojo.TaskType
 import com.lenta.bp12.model.pojo.open_task.TaskOpen
 import com.lenta.bp12.platform.extention.getControlType
+import com.lenta.shared.utilities.BlockType
 import com.lenta.shared.utilities.extentions.isSapTrue
 
 /**

@@ -15,3 +15,19 @@ enum class TabIndicatorColor {
     YELLOW,
     RED
 }
+
+enum class BlockType {
+    SELF_LOCK,
+    LOCK,
+    UNLOCK;
+
+    companion object {
+        fun from(code: String): BlockType {
+            return when (code) {
+                "1" -> SELF_LOCK
+                "2" -> LOCK
+                else -> UNLOCK
+            }
+        }
+    }
+}
