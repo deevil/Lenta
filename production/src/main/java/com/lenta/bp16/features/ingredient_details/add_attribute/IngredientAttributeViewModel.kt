@@ -160,7 +160,7 @@ class IngredientAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
             val monthWith30Days = listOf(4, 6, 9, 11)
             val leapYear = (year % 4 == 0) //Условие високосного года
             when {
-                year in YEAR_RANGE_2000_TO_2100 -> false
+                year !in YEAR_RANGE_2000_TO_2100 -> false
                 monthWith31Days.contains(month) -> day <= MONTH_WITH_31_DAY
                 monthWith30Days.contains(month) && month != 2 -> day <= MONTH_WITH_30_DAY
                 leapYear  -> day <= MONTH_WITH_29_DAY
