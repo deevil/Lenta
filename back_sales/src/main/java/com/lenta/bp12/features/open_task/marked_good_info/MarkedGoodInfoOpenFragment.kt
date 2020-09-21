@@ -31,7 +31,7 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 
 class MarkedGoodInfoOpenFragment : CoreFragment<FragmentMarkedGoodInfoOpenBinding, MarkedGoodInfoOpenViewModel>(),
         ViewPagerSettings, ToolbarButtonsClickListener, OnScanResultListener, OnBackPresserListener
-/*, OnKeyDownListener */{
+/*, OnKeyDownListener*/ {
 
     override fun getLayoutId(): Int = R.layout.fragment_marked_good_info_open
 
@@ -202,8 +202,12 @@ class MarkedGoodInfoOpenFragment : CoreFragment<FragmentMarkedGoodInfoOpenBindin
 //                vm.onScanResult("010460606832938921q8Pk81bQ/9GPR.918000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
 //                true
 //            }
+//            //Марка 198794
+//            KeyCode.KEYCODE_7 -> {
+//                vm.onScanResult("010467003610609821fDiwLb=cO6vkb")
+//                true
+//            }
 //            else -> false
 //        }
 //    }
-
 }
