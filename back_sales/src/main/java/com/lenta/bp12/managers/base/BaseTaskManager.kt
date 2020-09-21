@@ -47,20 +47,30 @@ abstract class BaseTaskManager<T : Taskable> : ITaskManager<T> {
             getBasket(
                     providerCode = provider.code.orEmpty(),
                     goodToAdd = good,
-                    isSaveToTask = true) //Функция возвращает либо корзину с подходящими параметрами и достаточным объемом или возвращает null
+                    isSaveToTask = true
+            ) //Функция возвращает либо корзину с подходящими параметрами и достаточным объемом или возвращает null
                     .orIfNull {
                         //Если корзина не найдена - создадим ее
                         val index = basketList.lastOrNull()?.index?.plus(1) ?: INDEX_OF_FIRST_BASKET
+                        val taskType = task.type
                         Basket(
                                 index = index,
-                                section = good.section.takeIf { task.type?.isDivBySection == true },
                                 volume = basketVolume,
-                                provider = provider.takeIf { task.type?.isDivByProvider == true },
-                                control = good.control,
-                                goodType = good.type.takeIf { task.type?.isDivByGoodType == true },
-                                markTypeGroup = good.markTypeGroup,
-                                purchaseGroup = good.purchaseGroup.takeIf { task.type?.isDivByPurchaseGroup == true },
-                                mprGroup = good.mprGroup.toString().padStart(2, '0')
+                                section = good.section
+                                        .takeIf { taskType?.isDivBySection == true },
+                                provider = provider
+                                        .takeIf { taskType?.isDivByProvider == true },
+                                control = good.control
+                                        .takeIf { taskType?.isDivByGis == true },
+                                goodType = good.type
+                                        .takeIf { taskType?.isDivByGoodType == true },
+                                markTypeGroup = good.markTypeGroup
+                                        .takeIf { taskType?.isDivByMark == true },
+                                purchaseGroup = good.purchaseGroup
+                                        .takeIf { taskType?.isDivByPurchaseGroup == true },
+                                mprGroup = good.mprGroup.toString()
+                                        .takeIf { taskType?.isDivByMinimalPrice == true }
+                                        ?.padStart(2, '0')
                         ).also {
                             it.maxRetailPrice = good.maxRetailPrice
                             addBasket(it)
@@ -73,7 +83,11 @@ abstract class BaseTaskManager<T : Taskable> : ITaskManager<T> {
     /** Метод ищет корзины в списке корзин задания,
      * и проверяет подходят ли параметры (divs), закрыта она или нет, и есть ли свободный объём
      */
-    override suspend fun getBasket(providerCode: String, goodToAdd: Good, isSaveToTask: Boolean): Basket? {
+    override suspend fun getBasket(
+            providerCode: String,
+            goodToAdd: Good,
+            isSaveToTask: Boolean
+    ): Basket? {
         return currentTask.value?.let { task ->
             val allBaskets = task.baskets.toMutableList()
             currentGood.value?.let { good ->
@@ -81,14 +95,30 @@ abstract class BaseTaskManager<T : Taskable> : ITaskManager<T> {
                     allBaskets.find { basket ->
                         //Если в задании есть деление по параметру (task.type), то сравниваем,
                         //Если нет — то просто пропускаем как подходящий для корзины
-                        val divByMark = if (isDivByMark) basket.markTypeGroup == good.markTypeGroup else true
-                        val divByMrc = if (isDivByMinimalPrice) isSameMrcGroup(basket, goodToAdd, isSaveToTask) else true
-                        val divBySection = if (isDivBySection) basket.section == good.section else true
-                        val divByType = if (isDivByGoodType) basket.goodType == good.type else true
-                        val divByProviders = if (isDivByProvider) basket.provider?.code == providerCode else true
-                        val divByPurchaseGroup = if (isDivByPurchaseGroup) basket.purchaseGroup == good.purchaseGroup else true
-                        val divByControl = basket.control == good.control
-                        val divs = divByMark && divByMrc && divBySection && divByType && divByProviders && divByControl && divByPurchaseGroup
+                        val divByMark = (basket.markTypeGroup == good.markTypeGroup)
+                                .takeIf { isDivByMark }
+                                .orIfNull { true }
+                        val divByMrc = isSameMrcGroup(basket, goodToAdd, isSaveToTask)
+                                .takeIf { isDivByMinimalPrice }
+                                .orIfNull { true }
+                        val divBySection = (basket.section == good.section)
+                                .takeIf { isDivBySection }
+                                .orIfNull { true }
+                        val divByType = (basket.goodType == good.type)
+                                .takeIf { isDivByGoodType }
+                                .orIfNull { true }
+                        val divByProviders = (basket.provider?.code == providerCode)
+                                .takeIf { isDivByProvider }
+                                .orIfNull { true }
+                        val divByPurchaseGroup = (basket.purchaseGroup == good.purchaseGroup)
+                                .takeIf { isDivByPurchaseGroup }
+                                .orIfNull { true }
+                        val divByControl = (basket.control == good.control)
+                                .takeIf { isDivByGis }
+                                .orIfNull { true }
+                        val divs = divByMark && divByMrc && divBySection && divByType &&
+                                divByProviders && divByControl && divByPurchaseGroup
+
                         isLastBasketMatches(basket, good, divs)
                     }?.also {
                         updateCurrentBasket(it)

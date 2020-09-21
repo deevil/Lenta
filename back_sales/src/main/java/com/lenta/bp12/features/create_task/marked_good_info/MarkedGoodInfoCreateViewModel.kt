@@ -109,7 +109,10 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
 
     val isBasketNumberVisible by unsafeLazy {
         tempMarks.mapSkipNulls {
-            it.takeIf { manager.currentGood.value?.isTobacco() == true }?.isNotEmpty() ?: true
+            good.value?.maxRetailPrice.isNullOrEmpty().not() ||
+                    it.takeIf {
+                        manager.currentGood.value?.isTobacco() == true
+                    }?.isNotEmpty().orIfNull { true }
         }
     }
 
@@ -305,6 +308,7 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
 
     private fun handleYesSaveCurrentMarkToBasketAndOpenAnother() {
         launchUITryCatch {
+            saveChanges()
             markManager.handleYesSaveAndOpenAnotherBox()
             tempMarks.value = markManager.getTempMarks()
         }

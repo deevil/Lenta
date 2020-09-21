@@ -10,18 +10,4 @@ data class TaskType(
         val isDivByMinimalPrice: Boolean,
         val isDivByProvider: Boolean,
         val isDivByGoodType: Boolean
-) {
-    companion object {
-        fun empty(): TaskType = TaskType(
-                code = "",
-                description = "",
-                isDivBySection = false,
-                isDivByPurchaseGroup = false,
-                isDivByMark = false,
-                isDivByGis = false,
-                isDivByMinimalPrice = false,
-                isDivByProvider = false,
-                isDivByGoodType = false
-        )
-    }
-}
+)
