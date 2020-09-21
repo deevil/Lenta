@@ -18,7 +18,7 @@ class GoodListFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.good_list_fragment, container, false)
+        return inflater.inflate(R.layout.fragment_good_list, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

@@ -18,7 +18,7 @@ class SearchTaskFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.search_task_fragment, container, false)
+        return inflater.inflate(R.layout.fragment_search_task, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
