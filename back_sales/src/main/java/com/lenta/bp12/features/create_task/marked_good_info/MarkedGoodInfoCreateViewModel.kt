@@ -248,7 +248,7 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
     private fun checkMark(number: String) {
         launchUITryCatch {
             navigator.showProgressLoadingData()
-            when (markManager.checkMark(number, WorkType.CREATE)) {
+            when (markManager.checkMark(number, WorkType.CREATE, true)) {
                 MarkScreenStatus.OK -> {
                     tempMarks.value = markManager.getTempMarks()
                     properties.value = markManager.getProperties()

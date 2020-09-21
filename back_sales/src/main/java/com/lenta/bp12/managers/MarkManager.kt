@@ -22,6 +22,7 @@ import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.request.GoodInfoNetRequest
 import com.lenta.bp12.request.MarkCartonBoxGoodInfoNetRequest
+import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.bp12.request.pojo.good_info.GoodInfoParams
 import com.lenta.bp12.request.pojo.good_info.GoodInfoResult
 import com.lenta.bp12.request.pojo.markCartonBoxGoodInfoNetRequest.MarkCartonBoxGoodInfoNetRequestParams
@@ -105,10 +106,10 @@ class MarkManager @Inject constructor(
     /**
      * Метод уже конкретно определяет Марка обуви, Коробка, или Блок
      * */
-    override suspend fun checkMark(number: String, workType: WorkType): MarkScreenStatus {
+    override suspend fun checkMark(number: String, workType: WorkType, isCheckFromGoodCard: Boolean): MarkScreenStatus {
         this.workType = workType
         return if (isShoesMark(number)) {
-            openMarkedGoodWithShoe(number)
+            openMarkedGoodWithShoe(number, isCheckFromGoodCard)
         } else when (number.length) {
             in TOBACCO_BOX_MARK_RANGE_21_28 -> {
                 loadBoxInfo(number)
@@ -122,14 +123,14 @@ class MarkManager @Inject constructor(
             }
             in TOBACCO_MARK_BLOCK_OR_BOX_RANGE_30_44 -> {
                 if (isCigarettesBox(number)) {
-                    openMarkedGoodWithCarton(number)
+                    openMarkedGoodWithCarton(number, isCheckFromGoodCard)
                 } else {
                     loadBoxInfo(number)
                 }
             }
             else -> {
                 if (isCigarettesBox(number)) {
-                    openMarkedGoodWithCarton(number)
+                    openMarkedGoodWithCarton(number, isCheckFromGoodCard)
                 } else {
                     MarkScreenStatus.INCORRECT_EAN_FORMAT
                 }
@@ -140,13 +141,22 @@ class MarkManager @Inject constructor(
     /**
      * Метод вычленяет регулярным выражением шк(barcode), гтин и мрц из марки блока
      * */
-    private suspend fun openMarkedGoodWithCarton(number: String): MarkScreenStatus {
+    private suspend fun openMarkedGoodWithCarton(number: String, isScanFromGoodCard: Boolean): MarkScreenStatus {
         val regex = Regex(Constants.CIGARETTES_BOX_PATTERN).find(number)
         return regex?.let {
             val (blocBarcode, gtin, _, mrc, _, _) = it.destructured // blockBarcode, gtin, serial, mrc, verificationKey, other
             val container = Pair(blocBarcode, Mark.Container.CARTON)
-            val ean = gtin.getEANfromGTIN()
-            getGoodByEan(ean, container, mrc)
+
+            if (isScanFromGoodCard) {
+                chooseGood()?.let { good ->
+                    //TODO для одного и того же товара мрц перезаписывается
+                    good.maxRetailPrice = mrc.getFormattedMrc(good.ean)
+                    setFoundGood(good, container)
+                }
+            } else {
+                val ean = gtin.getEANfromGTIN()
+                getGoodByEan(ean, container, mrc)
+            }
         }.orIfNull {
             internalErrorMessage = "carton regex null"
             Logg.e { internalErrorMessage }
@@ -179,24 +189,32 @@ class MarkManager @Inject constructor(
         tempMarks.clear()
         properties.clear()
         lastScannedMarks = emptyList()
-        //mappedMarks = emptyList()
         createdGoodToShowError.value = null
         internalErrorMessage = ""
         isExistUnsavedData = false
     }
 
-    private suspend fun openMarkedGoodWithShoe(number: String): MarkScreenStatus {
+    private suspend fun openMarkedGoodWithShoe(number: String, isScanFromGoodCard: Boolean): MarkScreenStatus {
         val regex = Regex(Constants.SHOES_MARK_PATTERN).find(number)
-        return regex?.let {
+        val result = regex?.let {
             val (barcode, gtin, _, _, _, _) = it.destructured // barcode, gtin, serial, tradeCode, verificationKey, verificationCode
             val container = Pair(barcode, Mark.Container.SHOE)
-            val ean = gtin.getEANfromGTIN()
-            getGoodByEan(ean, container)
-        }.orIfNull {
+            if (isScanFromGoodCard) {
+                chooseGood()?.let { good ->
+                    setFoundGood(good, container)
+                }
+            } else {
+                val ean = gtin.getEANfromGTIN()
+                getGoodByEan(ean, container)
+            }
+        }
+
+        return result.orIfNull {
             internalErrorMessage = "shoe regex null"
             Logg.e { internalErrorMessage }
             MarkScreenStatus.INTERNAL_ERROR
         }
+
     }
 
     private fun String.getEANfromGTIN(): String = if (this.startsWith("0")) {
@@ -326,48 +344,48 @@ class MarkManager @Inject constructor(
         val goodFromManager = createManager.currentGood
         val good = goodFromManager.value
         return with(result) {
-                val goodEan = eanInfo?.ean.orEmpty()
-                val markType = getMarkType()
-                val createdGood = Good(
-                        ean = goodEan,
-                        eans = database.getEanListByMaterialUnits(
-                                material = materialInfo?.material.orEmpty(),
-                                unitsCode = materialInfo?.commonUnitsCode.orEmpty()
-                        ),
-                        material = materialInfo?.material.orEmpty(),
-                        name = materialInfo?.name.orEmpty(),
-                        kind = getGoodKind(),
-                        type = materialInfo?.goodType.orEmpty(),
-                        control = getControlType(),
-                        section = materialInfo?.section.orEmpty(),
-                        matrix = getMatrixType(materialInfo?.matrix.orEmpty()),
-                        commonUnits = database.getUnitsByCode(materialInfo?.commonUnitsCode.orEmpty()),
-                        innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
-                        innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull()
-                                ?: 1.0,
-                        providers = providers.orEmpty().toMutableList(),
-                        producers = producers.orEmpty().toMutableList(),
-                        volume = materialInfo?.volume?.toDoubleOrNull() ?: ZERO_VOLUME,
-                        markType = markType,
-                        markTypeGroup = database.getMarkTypeGroupByMarkType(markType),
-                        maxRetailPrice = mrc,
-                        purchaseGroup = materialInfo?.purchaseGroup.orEmpty()
-                )
+            val goodEan = eanInfo?.ean.orEmpty()
+            val markType = getMarkType()
+            val createdGood = Good(
+                    ean = goodEan,
+                    eans = database.getEanListByMaterialUnits(
+                            material = materialInfo?.material.orEmpty(),
+                            unitsCode = materialInfo?.commonUnitsCode.orEmpty()
+                    ),
+                    material = materialInfo?.material.orEmpty(),
+                    name = materialInfo?.name.orEmpty(),
+                    kind = getGoodKind(),
+                    type = materialInfo?.goodType.orEmpty(),
+                    control = getControlType(),
+                    section = materialInfo?.section.orEmpty(),
+                    matrix = getMatrixType(materialInfo?.matrix.orEmpty()),
+                    commonUnits = database.getUnitsByCode(materialInfo?.commonUnitsCode.orEmpty()),
+                    innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
+                    innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull()
+                            ?: 1.0,
+                    providers = providers.takeIf { createManager.isWholesaleTaskType.not() }.orEmpty().toMutableList(),
+                    producers = producers.orEmpty().toMutableList(),
+                    volume = materialInfo?.volume?.toDoubleOrNull() ?: ZERO_VOLUME,
+                    markType = markType,
+                    markTypeGroup = database.getMarkTypeGroupByMarkType(markType),
+                    maxRetailPrice = mrc,
+                    purchaseGroup = materialInfo?.purchaseGroup.orEmpty()
+            )
 
-                if(good != null && createdGood.material != good.material) {
-                    createdGoodToShowError.value = createdGood
-                    MarkScreenStatus.NOT_SAME_GOOD
-                }
+            if (good != null && createdGood.material != good.material) {
+                createdGoodToShowError.value = createdGood
+                MarkScreenStatus.NOT_SAME_GOOD
+            }
 
-                if (database.isMarkTypeInDatabase(createdGood.markType)) {
-                    if (good == null || createdGood.markType == good.markType) {
-                        setFoundGood(createdGood, container)
-                    } else {
-                        MarkScreenStatus.INCORRECT_EAN_FORMAT
-                    }
+            if (database.isMarkTypeInDatabase(createdGood.markType)) {
+                if (good == null || createdGood.markType == good.markType) {
+                    setFoundGood(createdGood, container)
                 } else {
-                    MarkScreenStatus.NO_MARKTYPE_IN_SETTINGS
+                    MarkScreenStatus.INCORRECT_EAN_FORMAT
                 }
+            } else {
+                MarkScreenStatus.NO_MARKTYPE_IN_SETTINGS
+            }
         }
     }
 
@@ -397,7 +415,7 @@ class MarkManager @Inject constructor(
                             innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
                             innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull()
                                     ?: DEFAULT_INNER_QUALITY_VALUE,
-                            provider = task.provider,
+                            provider = task.provider.takeIf { openManager.isWholesaleTaskType.not() }.orIfNull { ProviderInfo.getEmptyProvider() },
                             producers = producers?.toMutableList().orEmpty().toMutableList(),
                             volume = materialInfo?.volume?.toDoubleOrNull() ?: ZERO_VOLUME,
                             markType = markType,
@@ -406,7 +424,7 @@ class MarkManager @Inject constructor(
                             type = materialInfo?.goodType.orEmpty(),
                             purchaseGroup = materialInfo?.purchaseGroup.orEmpty()
                     )
-                    if(createdGood.material != good.material) {
+                    if (createdGood.material != good.material) {
                         createdGoodToShowError.value = createdGood
                         MarkScreenStatus.NOT_SAME_GOOD
                     }
@@ -470,11 +488,11 @@ class MarkManager @Inject constructor(
     ): MarkScreenStatus {
         val manager = chooseManager()
         val currentGood = manager.currentGood.value
-        return if(currentGood != null && foundGood.material != currentGood.material) {
+        return if (currentGood != null && foundGood.material != currentGood.material) {
             createdGoodToShowError.value = foundGood
             MarkScreenStatus.NOT_SAME_GOOD
         } else {
-             if (container != null) {
+            if (container != null) {
                 val params = getMarkParams(foundGood, container)
                 checkMarkNetRequest(params, foundGood)
             } else {

@@ -210,7 +210,7 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
     private fun checkMark(number: String) {
         launchUITryCatch {
             navigator.showProgressLoadingData()
-            val status = markManager.checkMark(number, WorkType.OPEN)
+            val status = markManager.checkMark(number, WorkType.OPEN, true)
             Logg.e { status.name }
             when (status) {
                 MarkScreenStatus.OK -> {

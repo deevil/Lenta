@@ -146,7 +146,7 @@ abstract class BaseGoodListOpenViewModel: CoreViewModel(), IBaseGoodListOpenView
             with(navigator) {
                 manager.clearEan()
                 showProgressLoadingData()
-                val screenStatus = markManager.checkMark(number, WorkType.OPEN)
+                val screenStatus = markManager.checkMark(number, WorkType.OPEN, false)
                 hideProgress()
                 when (screenStatus) {
                     MarkScreenStatus.OK -> openMarkedGoodInfoOpenScreen()
