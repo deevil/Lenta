@@ -18,9 +18,13 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.requests.combined.scan_info.*
+import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
+import com.lenta.shared.requests.combined.scan_info.ScanInfoRequest
+import com.lenta.shared.requests.combined.scan_info.ScanInfoRequestParams
+import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
+import com.lenta.shared.utilities.actionByNumber
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.*
@@ -31,18 +35,25 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     @Inject
     lateinit var navigator: IScreenNavigator
+
     @Inject
     lateinit var task: INotExposedTask
+
     @Inject
     lateinit var deviceInfo: DeviceInfo
+
     @Inject
     lateinit var sentReportRequest: NotExposedSendReportNetRequest
+
     @Inject
     lateinit var generalTaskManager: IGeneralTaskManager
+
     @Inject
     lateinit var priceInfoParser: IPriceInfoParser
+
     @Inject
     lateinit var scanInfoRequest: ScanInfoRequest
+
     @Inject
     lateinit var sessionInfo: ISessionInfo
 
@@ -138,20 +149,14 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
     }
 
     private fun checkCode(code: String?) {
-        analyseCode(
-                code = code.orEmpty(),
-                funcForEan = { eanCode ->
-                    searchCode(eanCode = eanCode)
-                },
-                funcForMatNr = { matNr ->
-                    searchCode(matNr = matNr)
-                },
+        actionByNumber(
+                number = code.orEmpty(),
+                funcForEan = { ean -> searchCode(eanCode = ean) },
+                funcForMaterial = { material -> searchCode(matNr = material) },
                 funcForPriceQrCode = { qrCode ->
                     priceInfoParser.getPriceInfoFromRawCode(qrCode)?.let {
                         searchCode(eanCode = it.eanCode)
-                        return@analyseCode
-                    }
-                    navigator.showGoodNotFound()
+                    } ?: navigator.showGoodNotFound()
                 },
                 funcForSapOrBar = navigator::showTwelveCharactersEntered,
                 funcForNotValidFormat = navigator::showGoodNotFound
@@ -169,7 +174,7 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
             if (eanCode != null) {
                 var failureScanInfoRequest: Failure? = null
-                val  scanCodeInfo = ScanCodeInfo(eanCode)
+                val scanCodeInfo = ScanCodeInfo(eanCode)
 
                 scanInfoRequest(
                         ScanInfoRequestParams(
@@ -286,11 +291,6 @@ class GoodsListNeViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftK
 
     fun getCorrectedPagePosition(position: Int?): Int {
         return if (getPagesCount() == 3) position ?: 0 else (position ?: 0) + 1
-    }
-
-    fun onDigitPressed(digit: Int) {
-        numberField.postValue(numberField.value.orEmpty() + digit)
-        requestFocusToNumberField.value = true
     }
 
     fun applyFilter() {

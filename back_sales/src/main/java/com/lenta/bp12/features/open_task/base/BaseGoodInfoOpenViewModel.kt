@@ -1,7 +1,7 @@
 package com.lenta.bp12.features.open_task.base
 import androidx.lifecycle.MutableLiveData
-import com.lenta.bp12.features.open_task.base.interfaces.IBaseGoodInfoOpenViewModel
 import androidx.lifecycle.switchMap
+import com.lenta.bp12.features.open_task.base.interfaces.IBaseGoodInfoOpenViewModel
 import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.extentions.getQuantityOfGood
 import com.lenta.bp12.platform.FIRST_POSITION
@@ -229,7 +229,7 @@ abstract class BaseGoodInfoOpenViewModel : CoreViewModel(), IBaseGoodInfoOpenVie
     override suspend fun getBasket(): Basket? {
         val good = good.value
         return good?.let {
-            manager.getBasket(it.provider.code.orEmpty(), it)
+            manager.getBasket(it.provider.code.orEmpty(), it, false)
         }
     }
 
