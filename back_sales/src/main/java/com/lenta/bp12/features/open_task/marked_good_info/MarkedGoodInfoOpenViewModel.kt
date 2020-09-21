@@ -102,12 +102,12 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
     }
 
     val isBasketNumberVisible by unsafeLazy {
-        tempMarks.mapSkipNulls {
+        tempMarks.mapSkipNulls { tempMarksValue ->
             good.mapSkipNulls { goodValue ->
                 goodValue.maxRetailPrice.isEmpty().not() ||
-                        it.takeIf {
-                            manager.currentGood.value?.isTobacco() == true
-                        }?.isNotEmpty().orIfNull { true }
+                        tempMarksValue.takeIf { goodValue.isTobacco() }
+                                ?.isNotEmpty()
+                                .orIfNull { true }
             }
         }
     }
