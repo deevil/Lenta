@@ -49,7 +49,7 @@
                     android:text="@={vm.weightField}"
                     app:suffix="@{vm.suffix}"
                     app:cursorToLastPos="@{false}"
-                    app:requestFocus="@{vm.requestFocusToNumberField}"
+                    app:requestFocus="@{vm.requestFocusToCount}"
                     tools:text="0 кг" />
 
             </LinearLayout>
@@ -104,7 +104,7 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@{vm.orderIngredient.planCount}"
+                    android:text="@{vm.planQntWithSuffix}"
                     tools:text="70 кг" />
 
             </LinearLayout>
@@ -131,7 +131,7 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@{vm.orderIngredient.doneCount}"
+                    android:text="@{vm.doneQtnWithSuffix}"
                     tools:text="25 кг" />
 
             </LinearLayout>
@@ -147,7 +147,7 @@
             <com.lenta.shared.view.ClickableSpinner
                 style="@style/CellSpinnerStyle"
                 android:enabled="@{vm.disableSpinner}"
-                app:items="@{vm.producerNameField}"
+                app:items="@{vm.producerNames}"
                 app:position="@={vm.selectedProducerPosition}"
                 tools:entries="@array/manufacturer_list" />
 
@@ -183,7 +183,7 @@
                     android:enabled="@{vm.disableSpinner}"
                     android:layout_margin="@dimen/margin_small"
                     android:layout_weight="1"
-                    app:items="@{vm.productionDateField}"
+                    app:items="@{vm.productionDates}"
                     app:position="@={vm.selectedDateProductionPosition}"
                     tools:entries="@array/date_list" />
 

@@ -63,7 +63,7 @@ class IngredientAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
 
 
     private val producerDataInfo = MutableLiveData<List<ProducerDataInfoUI>>()
-    override val zPartDataInfo = MutableLiveData<List<ZPartDataInfoUI>>()
+    override val zPartDataInfos = MutableLiveData<List<ZPartDataInfoUI>>()
     val orderIngredient = MutableLiveData<OrderIngredientDataInfoUI>()
     val producerNameList = producerDataInfo.switchMap {
         asyncLiveData<List<String>> {
@@ -127,7 +127,7 @@ class IngredientAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
     fun updateData() {
         launchUITryCatch {
             producerDataInfo.value = producerDataInfoUseCase()
-            zPartDataInfo.value = zPartDataInfoUseCase()
+            zPartDataInfos.value = zPartDataInfoUseCase()
             if (alertNotFoundProducerName.value == true) {
                 navigator.goBack()
                 navigator.showAlertProducerCodeNotFound()

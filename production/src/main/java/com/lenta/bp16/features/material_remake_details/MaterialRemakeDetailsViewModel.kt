@@ -1,12 +1,16 @@
 package com.lenta.bp16.features.material_remake_details
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.switchMap
 import com.lenta.bp16.data.IScales
+import com.lenta.bp16.features.ingredient_details.IngredientDetailsViewModel
 import com.lenta.bp16.model.AddAttributeProdInfo
 import com.lenta.bp16.model.BatchNewDataInfoParam
 import com.lenta.bp16.model.GoodTypeIcon
-import com.lenta.bp16.model.ingredients.OrderByBarcode
+import com.lenta.bp16.model.IDataInfo
+import com.lenta.bp16.model.ingredients.OrderByBarcode.Companion.KAR
+import com.lenta.bp16.model.ingredients.OrderByBarcode.Companion.KOR_RUS
+import com.lenta.bp16.model.ingredients.OrderByBarcode.Companion.ST
+import com.lenta.bp16.model.ingredients.OrderByBarcode.Companion.ST_RUS
 import com.lenta.bp16.model.ingredients.params.IngredientDataCompleteParams
 import com.lenta.bp16.model.ingredients.params.MaterialDataCompleteParams
 import com.lenta.bp16.model.ingredients.ui.MaterialIngredientDataInfoUI
@@ -15,6 +19,7 @@ import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
 import com.lenta.bp16.model.ingredients.ui.ZPartDataInfoUI
 import com.lenta.bp16.model.managers.IAttributeManager
 import com.lenta.bp16.platform.Constants
+import com.lenta.bp16.platform.Constants.CHOOSE_ITEM
 import com.lenta.bp16.platform.base.IZpartVisibleConditions
 import com.lenta.bp16.platform.extention.distinctAndAddFirstValue
 import com.lenta.bp16.platform.navigation.IScreenNavigator
@@ -74,26 +79,81 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
     //Список параметров EAN для ингредиента
     val eanInfo = MutableLiveData<OrderByBarcodeUI>()
 
+    private val mercuryDataInfos = MutableLiveData<List<MercuryPartDataInfoUI>>()
+    override val zPartDataInfos = MutableLiveData<List<ZPartDataInfoUI>>()
+    private val addedAttribute = MutableLiveData<AddAttributeProdInfo>()
+    private val warehouseSelected = MutableLiveData<List<String>>()
+
     // Комплектация
     val weightField: MutableLiveData<String> = MutableLiveData(DEFAULT_WEIGHT)
 
     // суффикс
-    val suffix: String by unsafeLazy {
-        resourceManager.kgSuffix()
+    val suffix = materialIngredient.combineLatest(eanInfo).mapSkipNulls {
+        val uom: String =
+                when (eanInfo.value?.ean_nom.orEmpty()) {
+                    KAR, KOR_RUS -> Uom.KAR.name
+                    ST, ST_RUS -> Uom.ST.name
+                    else -> Uom.KG.name
+                }
+        uom
     }
 
-    private val mercuryDataInfo = MutableLiveData<List<MercuryPartDataInfoUI>>()
-    override val zPartDataInfo = MutableLiveData<List<ZPartDataInfoUI>>()
-    private val addedAttribute = MutableLiveData<AddAttributeProdInfo>()
-    private val warehouseSelected = MutableLiveData<List<String>>()
+    // Focus by request
+    val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData(false)
 
-    val producerNameField by unsafeLazy {
-        MutableLiveData<List<String>>()
+    private val entered = weightField.map {
+        it?.toDoubleOrNull() ?: 0.0
+    }
+
+    private val weighted = MutableLiveData(0.0)
+
+    private val total = entered.map {
+        it.sumWith(weighted.value ?: 0.0)
+    }
+
+    val totalWithUnits = total.map {
+        "${it.dropZeros()} ${suffix.value}"
+    }
+
+    val planQntWithSuffix by unsafeLazy {
+        materialIngredient.combineLatest(suffix).mapSkipNulls {
+            MutableLiveData("${materialIngredient.value?.plan_qnt?.toDouble().dropZeros()} ${suffix.value}")
+        }
+    }
+
+    val doneQtnWithSuffix by unsafeLazy {
+        materialIngredient.combineLatest(suffix).mapSkipNulls {
+            MutableLiveData("${materialIngredient.value?.done_qnt?.toDouble().dropZeros()} ${suffix.value}")
+        }
+    }
+
+    private val producerInfos by unsafeLazy {
+        MutableLiveData<List<ProducerInfo>>()
+    }
+
+    val producerNames: MutableLiveData<List<String>> by unsafeLazy {
+        producerInfos.mapSkipNulls { names ->
+            names.mapNotNull {
+                it.name
+            }
+        }
     }
 
     val selectedProducerPosition = MutableLiveData(0)
 
-    val productionDateField by unsafeLazy {
+    val productionDates by unsafeLazy {
+        productionUnformattedDates.mapSkipNulls { unformattedDates ->
+            unformattedDates.map {
+                try {
+                    getFormattedDate(it, DATE_FORMAT_yyyy_mm_dd, DATE_FORMAT_dd_mm_yyyy)
+                } catch (e: Exception) {
+                    CHOOSE_ITEM
+                }
+            }
+        }
+    }
+
+    private val productionUnformattedDates by unsafeLazy {
         MutableLiveData<List<String>>()
     }
 
@@ -145,11 +205,10 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
     val disableSpinner = MutableLiveData<Boolean>()
 
     /** Условие разблокировки кнопок добавить и завершить */
-    val nextAndAddButtonEnabled: MutableLiveData<Boolean> = producerNameField
-            .combineLatest(productionDateField)
-            .map {
-                val producerName = it?.first
-                val productionDate = it?.second
+    val nextAndAddButtonEnabled: MutableLiveData<Boolean> = producerInfos
+            .combineLatest(productionDates)
+            .mapSkipNulls {
+                val (producerName, productionDate) = it
                 if (materialIngredient.value?.isVet.isSapTrue()) {
                     !(producerName.isNullOrEmpty() || productionDate.isNullOrEmpty())
                 } else {
@@ -161,46 +220,6 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
     private val weightValue = listOf(VALUE_23, VALUE_24, VALUE_27, VALUE_28)
 
     val ean = MutableLiveData("")
-
-    // Focus by request
-    val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData(false)
-
-    private val entered = weightField.map {
-        it?.toDoubleOrNull() ?: 0.0
-    }
-
-    private val weighted = MutableLiveData(0.0)
-
-    private val total = entered.map {
-        it.sumWith(weighted.value ?: 0.0)
-    }
-
-    val totalWithUnits = total.map {
-        "${it.dropZeros()} ${resourceManager.kgSuffix()}"
-    }
-
-    val planQntWithSuffix by unsafeLazy {
-        materialIngredient.combineLatest(eanInfo).mapSkipNulls {
-            val uom: String =
-                    when (eanInfo.value?.ean_nom.orEmpty()) {
-                        OrderByBarcode.KAR, OrderByBarcode.KOR_RUS -> Uom.KAR.name
-                        OrderByBarcode.ST, OrderByBarcode.ST_RUS -> Uom.ST.name
-                        else -> Uom.KG.name
-                    }
-            MutableLiveData("${materialIngredient.value?.plan_qnt?.toDouble().dropZeros()} $uom")
-        }
-    }
-
-    val doneQtnWithSuffix by unsafeLazy {
-        materialIngredient.combineLatest(eanInfo).mapSkipNulls {
-            val uom: String = when (eanInfo.value?.ean_nom.orEmpty()) {
-                OrderByBarcode.KAR, OrderByBarcode.KOR_RUS -> Uom.KAR.name
-                OrderByBarcode.ST, OrderByBarcode.ST_RUS -> Uom.ST.name
-                else -> Uom.KG.name
-            }
-            MutableLiveData("${materialIngredient.value?.done_qnt?.toDouble().dropZeros()} $uom")
-        }
-    }
 
     private fun getGoodTypeIcon(materialIngredientDataInfo: MaterialIngredientDataInfoUI): GoodTypeIcon {
         return when {
@@ -220,8 +239,8 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
 
     fun updateData() {
         launchUITryCatch {
-            mercuryDataInfo.value = getMercuryPartDataInfoUseCase()
-            zPartDataInfo.value = getZPartDataInfoUseCase()
+            mercuryDataInfos.value = getMercuryPartDataInfoUseCase()
+            zPartDataInfos.value = getZPartDataInfoUseCase()
             addedAttribute.value = attributeManager.currentAttribute.value
             warehouseSelected.value = warehouseForSelectedItemUseCase()
             if (alertNotFoundProducerName.value == true) {
@@ -236,43 +255,58 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
 
     private fun checkProduceAndDataInfo() {
         /** Если был передан производитель из AddAttributeFragment, то заполнять данными из нее*/
+        val resultProducers = getProducers().toMutableList()
+        if (resultProducers.size > 1) {
+            resultProducers.add(0, ProducerInfo(name = CHOOSE_ITEM))
+        }
+        producerInfos.value = resultProducers
+
+        val resultDates = getUnformattedDates().toMutableList()
+        if (resultDates.size > 1) {
+            resultDates.add(0, Constants.CHOOSE_ITEM)
+        }
+        productionUnformattedDates.value = resultDates
+    }
+
+    private fun getProducers(): List<ProducerInfo> {
         val addedAttributeIsNotEmpty = !addedAttribute.value?.name.isNullOrBlank()
         val orderIngredientIsVet = materialIngredient.value?.isVet.isSapTrue()
-        producerNameField.value = when {
-            addedAttributeIsNotEmpty -> {
-                addedAttribute.value?.run { listOf(name) }
-            }
-            orderIngredientIsVet -> {
-                mercuryDataInfo.value?.distinctAndAddFirstValue({ it.prodName to it.prodCode }, { it.prodName })
-            }
-            else -> {
-                zPartDataInfo.value?.distinctAndAddFirstValue({ it.prodName to it.prodCode }, { it.prodName })
-            }
+        return if (addedAttributeIsNotEmpty) {
+            addedAttribute.value?.run { listOf(ProducerInfo(code, name)) }.orEmpty()
+        } else {
+            val producerToDistinct = getLiveDatesToDistinct(orderIngredientIsVet)
+            producerToDistinct?.distinctAndAddFirstValue({ it.prodCode to it.prodName }, { ProducerInfo(it.prodCode, it.prodName) }).orEmpty()
         }
-        productionDateField.value = when {
-            addedAttributeIsNotEmpty -> {
-                addedAttribute.value?.run { listOf(date) }
-            }
-            orderIngredientIsVet -> {
-                mercuryDataInfo.value?.distinctAndAddFirstValue({ it.prodDate }, { it.prodDate })
-                mercuryDataInfo.value?.map { getFormattedDate(it.prodDate, DATE_FORMAT_yyyy_mm_dd, DATE_FORMAT_dd_mm_yyyy) }
-            }
-            else -> {
-                zPartDataInfo.value?.distinctAndAddFirstValue({ it.prodDate }, { it.prodDate })
-                zPartDataInfo.value?.map { getFormattedDate(it.prodDate, DATE_FORMAT_yyyy_mm_dd, DATE_FORMAT_dd_mm_yyyy) }
-            }
+    }
+
+    private fun getUnformattedDates(): List<String> {
+        val addedAttributeIsNotEmpty = !addedAttribute.value?.name.isNullOrBlank()
+        val orderIngredientIsVet = materialIngredient.value?.isVet.isSapTrue()
+        return if (addedAttributeIsNotEmpty) {
+            addedAttribute.value?.run { listOf(date) }.orEmpty()
+        } else {
+            val datesToDistinct = getLiveDatesToDistinct(orderIngredientIsVet)
+            datesToDistinct?.distinctAndAddFirstValue({ it.prodDate }, { it.prodDate }).orEmpty()
+        }
+    }
+
+    private fun getLiveDatesToDistinct(isOrderIngredientIsVet: Boolean): List<IDataInfo>? {
+        return if (isOrderIngredientIsVet) {
+            mercuryDataInfos.value
+        } else {
+            zPartDataInfos.value
         }
     }
 
     private fun getEntryId(): String {
         return materialIngredient.value?.isVet?.let {
-            mercuryDataInfo.value?.getOrNull(0)?.entryId.orEmpty()
+            mercuryDataInfos.value?.getOrNull(0)?.entryId.orEmpty()
         }.orEmpty()
     }
 
     private suspend fun getZPartInfo(prodCode: String, prodDate: String): ZPartDataInfoUI? = withContext(Dispatchers.IO) {
-            zPartDataInfo.value?.filter { it.prodCode == prodCode && it.prodDate == prodDate }?.getOrNull(0)
-        }
+        zPartDataInfos.value?.findLast { it.prodCode == prodCode && it.prodDate == prodDate }
+    }
 
     private suspend fun setBatchNewInfo(): List<BatchNewDataInfoParam>? {
         return withContext(Dispatchers.IO) {
@@ -280,9 +314,10 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
             val addedAttributeInfo = addedAttribute.value
             val selectedWarehouse = warehouseSelected.value?.getOrNull(0).orEmpty()
             addedAttributeInfo?.let {
+                val prodDate = getFormattedDate(addedAttributeInfo.date, DATE_FORMAT_dd_mm_yyyy, DATE_FORMAT_yyyy_mm_dd)
                 listOf(BatchNewDataInfoParam(
                         prodCode = addedAttributeInfo.code,
-                        prodDate = addedAttributeInfo.date,
+                        prodDate = prodDate,
                         prodTime = addedAttributeInfo.time,
                         lgort = selectedWarehouse
                 ))
@@ -292,16 +327,15 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
 
     fun onCompleteClicked() = launchUITryCatch {
         val weight = total.value ?: 0.0
-
         val ktsch = materialIngredient.value?.ktsch.orEmpty()
 
         val producerIndex = selectedProducerPosition.getOrDefault()
         val productionDateIndex = selectedDateProductionPosition.getOrDefault()
-        val prodCode = producerNameField.getOrEmpty(producerIndex)
-        val prodDate = productionDateField.getOrEmpty(productionDateIndex)
+        val prodCode = producerInfos.value?.getOrNull(producerIndex)?.code.orEmpty()
+        val prodDate = productionUnformattedDates.getOrEmpty(productionDateIndex)
 
         val entryId = getEntryId()
-        val zPartInfo = getZPartInfo(prodDate, prodCode)
+        val zPartInfo = getZPartInfo(prodCode, prodDate)
         val batchId = zPartInfo?.batchId.orEmpty()
 
         val batchNew = if (zPartInfo == null) {
@@ -409,5 +443,10 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
         const val VALUE_27 = "27"
         const val VALUE_28 = "28"
         const val DIV_TO_KG = 1000
+    }
+
+    internal data class ProducerInfo(val code: String? = null, val name: String? = null) {
+        val isEmpty: Boolean
+            get() = code.isNullOrEmpty() && name.isNullOrEmpty()
     }
 }

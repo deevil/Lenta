@@ -64,7 +64,7 @@ class MaterialAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
     lateinit var saveProducerDataInfoUseCase: SetProducerDataInfoUseCase
 
     private val producerDataInfo = MutableLiveData<List<ProducerDataInfoUI>>()
-    override val zPartDataInfo = MutableLiveData<List<ZPartDataInfoUI>>()
+    override val zPartDataInfos = MutableLiveData<List<ZPartDataInfoUI>>()
     val materialIngredient = MutableLiveData<MaterialIngredientDataInfoUI>()
 
     // значение параметра OBJ_CODE из родительского компонента заказа
@@ -131,7 +131,7 @@ class MaterialAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
     fun updateData() {
         launchUITryCatch {
             producerDataInfo.value = producerDataInfoUseCase()
-            zPartDataInfo.value = zPartDataInfoUseCase()
+            zPartDataInfos.value = zPartDataInfoUseCase()
             if (alertNotFoundProducerName.value == true) {
                 navigator.goBack()
                 navigator.showAlertProducerCodeNotFound()
