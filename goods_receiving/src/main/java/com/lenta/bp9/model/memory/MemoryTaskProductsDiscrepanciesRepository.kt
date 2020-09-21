@@ -4,6 +4,7 @@ import com.lenta.bp9.model.repositories.ITaskProductsDiscrepanciesRepository
 import com.lenta.bp9.model.task.TaskMercuryDiscrepancies
 import com.lenta.bp9.model.task.TaskProductDiscrepancies
 import com.lenta.bp9.model.task.TaskProductInfo
+import com.lenta.shared.utilities.Logg
 
 class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepository {
 
@@ -18,6 +19,7 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepo
     }
 
     override fun findProductDiscrepanciesOfProduct(materialNumber: String): List<TaskProductDiscrepancies> {
+        Logg.d { "testddi ${productsDiscrepancies.hashCode()}" }
         val foundDiscrepancies = ArrayList<TaskProductDiscrepancies>()
         for (i in productsDiscrepancies.indices) {
             if (materialNumber == productsDiscrepancies[i].materialNumber) {

@@ -11,6 +11,8 @@ import com.lenta.bp9.data.IPrinter
 import com.lenta.bp9.data.Printer
 import com.lenta.bp9.features.delegates.ISaveProductDelegate
 import com.lenta.bp9.features.delegates.SaveProductDelegate
+import com.lenta.bp9.model.memory.MemoryTaskRepository
+import com.lenta.bp9.model.repositories.ITaskRepository
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.platform.navigation.ScreenNavigator
 import com.lenta.bp9.repos.DataBaseRepo
@@ -28,6 +30,7 @@ import com.mobrun.plugin.api.HyperHive
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
+import javax.inject.Singleton
 
 @Module(includes = [AppModule.Declarations::class])
 class AppModule {
@@ -76,8 +79,8 @@ class AppModule {
 
     @Provides
     @AppScope
-    internal fun provideReceivingTaskManager(): IReceivingTaskManager {
-        return ReceivingTaskManager()
+    internal fun provideReceivingTaskManager(memoryTaskRepository: ITaskRepository): IReceivingTaskManager {
+        return ReceivingTaskManager(memoryTaskRepository)
     }
 
     @Provides
@@ -90,6 +93,12 @@ class AppModule {
     @AppScope
     internal fun provideAppUpdaterConfig(): AppUpdaterConfig {
         return AppUpdaterConfig(folderName = "bp9", applicationId = APPLICATION_ID)
+    }
+
+    @Provides
+    @AppScope
+    internal fun provideMemoryTaskRepository(): ITaskRepository {
+        return MemoryTaskRepository()
     }
 
 }

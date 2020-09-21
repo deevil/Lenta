@@ -676,7 +676,7 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
     //ПГЕ блоки 7.177 и 7.185
     private fun saveCategoryPGE(checkCategoryType: Boolean) {
         //если checkCategoryType==true, значит перед сохранением (блок 7.185) делаем блок 7.177
-        if (checkCategoryType && qualityInfo.value!![spinQualitySelectedPosition.value!!].code == paramGrwOlGrundcat.value) { //блок 7.177 (да)
+        if (checkCategoryType && currentTypeDiscrepanciesCodeByTaskType == paramGrwOlGrundcat.value) { //блок 7.177 (да)
             //блоки 7.181 и 7.185
         } else {
             //блок 7.185

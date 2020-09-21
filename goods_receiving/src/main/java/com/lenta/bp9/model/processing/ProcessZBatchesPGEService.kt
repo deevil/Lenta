@@ -58,53 +58,12 @@ class ProcessZBatchesPGEService
                 ?: 0.0
     }
 
-    private fun getTotalCountDiscrepancies(count: Double): Double {
-        return getCountAcceptOfProduct() + getCountRefusalOfProduct() + count
-    }
-
-    fun countEqualOrigQuantity(count: Double): Boolean {
-        return productInfo.origQuantity.toDouble() == getTotalCountDiscrepancies(count)
-    }
-
-    fun countMoreOrigQuantity(count: Double): Boolean {
-        return productInfo.origQuantity.toDouble() < getTotalCountDiscrepancies(count)
-    }
-
-    fun categNormNotOrderMoreOrigQuantity(): Boolean {
-        val countCategoryNorm =
-                taskRepository
-                        ?.getProductsDiscrepancies()
-                        ?.findProductDiscrepanciesOfProduct(productInfo)
-                        ?.findLast { it.typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM }
-                        ?.numberDiscrepancies?.toDouble()
-                        ?: 0.0
-
-        val countCategoryNotOrder =
-                taskRepository
-                        ?.getProductsDiscrepancies()
-                        ?.findProductDiscrepanciesOfProduct(productInfo)
-                        ?.findLast { it.typeDiscrepancies == "41" }
-                        ?.numberDiscrepancies
-                        ?.toDouble()
-                        ?: 0.0
-
-        return productInfo.origQuantity.toDouble() < (countCategoryNorm + countCategoryNotOrder)
-    }
-
-    fun getRoundingQuantity(): Double {
-        return productInfo.origQuantity.toDouble() - (getCountAcceptOfProduct() + getCountRefusalOfProduct())
-    }
-
     fun checkParam(param: String): Boolean {
         return !taskRepository
                 ?.getProductsDiscrepancies()
                 ?.findProductDiscrepanciesOfProduct(productInfo)
                 ?.filter { it.typeDiscrepancies == param }
                 .isNullOrEmpty()
-    }
-
-    fun countWithoutParamGrsGrundNeg(paramGrsGrundNeg: String): Double {
-        return productInfo.origQuantity.toDouble() - getCountAcceptOfProduct() - getCountRefusalOfProduct() + getCountOfDiscrepanciesOfProduct(paramGrsGrundNeg)
     }
 
     fun removeDiscrepancyFromProduct(typeDiscrepancies: String) {
@@ -170,7 +129,7 @@ class ProcessZBatchesPGEService
                 taskRepository
                         ?.getProductsDiscrepancies()
                         ?.findProductDiscrepanciesOfProduct(productInfo)
-                        ?.findLast { it.typeDiscrepancies == typeDiscrepancies }
+                        ?.findLast { it.typeDiscrepancies == typeDiscrepancies && it.processingUnitNumber == processingUnit}
 
         foundDiscrepancy =
                 foundDiscrepancy
