@@ -25,8 +25,11 @@ import com.lenta.bp16.request.ingredients_use_case.get_data.GetWarehouseForSelec
 import com.lenta.bp16.request.ingredients_use_case.get_data.GetZPartDataInfoUseCase
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.Uom
+import com.lenta.shared.platform.constants.Constants.DATE_FORMAT_dd_mm_yyyy
+import com.lenta.shared.platform.constants.Constants.DATE_FORMAT_yyyy_mm_dd
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.getFormattedDate
 import com.lenta.shared.utilities.orIfNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -252,9 +255,11 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
             }
             orderIngredientIsVet -> {
                 mercuryDataInfo.value?.distinctAndAddFirstValue({ it.prodDate }, { it.prodDate })
+                mercuryDataInfo.value?.map { getFormattedDate(it.prodDate, DATE_FORMAT_yyyy_mm_dd, DATE_FORMAT_dd_mm_yyyy) }
             }
             else -> {
                 zPartDataInfo.value?.distinctAndAddFirstValue({ it.prodDate }, { it.prodDate })
+                zPartDataInfo.value?.map { getFormattedDate(it.prodDate, DATE_FORMAT_yyyy_mm_dd, DATE_FORMAT_dd_mm_yyyy) }
             }
         }
     }
@@ -265,9 +270,9 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
         }.orEmpty()
     }
 
-    private fun getZPartInfo(): ZPartDataInfoUI? {
-        return zPartDataInfo.value?.getOrNull(0)
-    }
+    private suspend fun getZPartInfo(prodCode: String, prodDate: String): ZPartDataInfoUI? = withContext(Dispatchers.IO) {
+            zPartDataInfo.value?.filter { it.prodCode == prodCode && it.prodDate == prodDate }?.getOrNull(0)
+        }
 
     private suspend fun setBatchNewInfo(): List<BatchNewDataInfoParam>? {
         return withContext(Dispatchers.IO) {
@@ -287,10 +292,18 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
 
     fun onCompleteClicked() = launchUITryCatch {
         val weight = total.value ?: 0.0
+
         val ktsch = materialIngredient.value?.ktsch.orEmpty()
+
+        val producerIndex = selectedProducerPosition.getOrDefault()
+        val productionDateIndex = selectedDateProductionPosition.getOrDefault()
+        val prodCode = producerNameField.getOrEmpty(producerIndex)
+        val prodDate = productionDateField.getOrEmpty(productionDateIndex)
+
         val entryId = getEntryId()
-        val zPartInfo = getZPartInfo()
+        val zPartInfo = getZPartInfo(prodDate, prodCode)
         val batchId = zPartInfo?.batchId.orEmpty()
+
         val batchNew = if (zPartInfo == null) {
             setBatchNewInfo()
         } else {

@@ -23,8 +23,11 @@ import com.lenta.bp16.request.ingredients_use_case.get_data.GetMercuryPartDataIn
 import com.lenta.bp16.request.ingredients_use_case.get_data.GetWarehouseForSelectedItemUseCase
 import com.lenta.bp16.request.ingredients_use_case.get_data.GetZPartDataInfoUseCase
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.platform.constants.Constants.DATE_FORMAT_dd_mm_yyyy
+import com.lenta.shared.platform.constants.Constants.DATE_FORMAT_yyyy_mm_dd
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.getFormattedDate
 import com.lenta.shared.utilities.orIfNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -218,9 +221,11 @@ class IngredientDetailsViewModel : CoreViewModel(), IZpartVisibleConditions {
             }
             orderIngredientIsVet -> {
                 mercuryDataInfo.value?.distinctAndAddFirstValue({ it.prodDate }, { it.prodDate })
+                mercuryDataInfo.value?.map { getFormattedDate(it.prodDate, DATE_FORMAT_yyyy_mm_dd, DATE_FORMAT_dd_mm_yyyy) }
             }
             else -> {
                 zPartDataInfo.value?.distinctAndAddFirstValue({ it.prodDate }, { it.prodDate })
+                zPartDataInfo.value?.map { getFormattedDate(it.prodDate, DATE_FORMAT_yyyy_mm_dd, DATE_FORMAT_dd_mm_yyyy) }
             }
         }
     }
@@ -266,11 +271,9 @@ class IngredientDetailsViewModel : CoreViewModel(), IZpartVisibleConditions {
         }.orEmpty()
     }
 
-    private suspend fun getZPartInfo(matnr: String): ZPartDataInfoUI? {
-        return withContext(Dispatchers.IO) {
-            zPartDataInfo.value?.filter { it.matnr == matnr }?.getOrNull(0)
+    private suspend fun getZPartInfo(matnr: String, prodCode: String, prodDate: String): ZPartDataInfoUI? = withContext(Dispatchers.IO) {
+            zPartDataInfo.value?.filter { it.matnr == matnr && it.prodCode == prodCode && it.prodDate == prodDate }?.getOrNull(0)
         }
-    }
 
     private suspend fun setBatchNewInfo(): List<BatchNewDataInfoParam>? {
         return withContext(Dispatchers.IO) {
@@ -288,11 +291,21 @@ class IngredientDetailsViewModel : CoreViewModel(), IZpartVisibleConditions {
         }
     }
 
+    fun setDateInfo(prodCode: String){
+        val formattedDate = prodCode
+    }
+
     fun onCompleteClicked() = launchUITryCatch {
         val weight = total.value ?: 0.0
         val matnr = orderIngredient.value?.matnr.orEmpty()
+
+        val producerIndex = selectedProducerPosition.getOrDefault()
+        val productionDateIndex = selectedDateProductionPosition.getOrDefault()
+        val prodCode = producerNameField.getOrEmpty(producerIndex)
+        val prodDate = productionDateField.getOrEmpty(productionDateIndex)
+
         val entryId = getEntryId(matnr)
-        val zPartInfo = getZPartInfo(matnr)
+        val zPartInfo = getZPartInfo(matnr, prodDate, prodCode)
         val batchId = zPartInfo?.batchId.orEmpty()
         val batchNew = if (zPartInfo == null) {
             setBatchNewInfo()
