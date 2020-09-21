@@ -240,7 +240,7 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
                     MarkScreenStatus.BOX_ALREADY_SCANNED ->
                         showBoxAlreadyScannedDelete(::handleYesDeleteMappedMarksFromTempCallBack)
 
-                    else -> handleIncorrectEanFormat()
+                    else -> showIncorrectEanFormat()
                 }
             }
         }
@@ -384,12 +384,6 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
     }
-
-    private fun handleIncorrectEanFormat() {
-        navigator.hideProgress()
-        navigator.showIncorrectEanFormat()
-    }
-
 
     fun setupData(marksFromBundle: List<Mark>?, propertiesFromBundle: List<GoodProperty>?) {
         marksFromBundle?.let { listOfMarks ->
