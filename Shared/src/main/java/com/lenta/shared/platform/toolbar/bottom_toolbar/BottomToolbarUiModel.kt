@@ -94,7 +94,7 @@ data class ButtonDecorationInfo(
         }
 
         val barcode: ButtonDecorationInfo by lazy {
-            ButtonDecorationInfo(R.drawable.ic_barcode_white_24dp, R.string.barcode)
+            ButtonDecorationInfo(R.drawable.ic_scan_barcode_code128_white_24dp, R.string.barcode)
         }
 
         val no: ButtonDecorationInfo by lazy {
@@ -422,7 +422,7 @@ data class ButtonDecorationInfo(
         }
 
         val damaged: ButtonDecorationInfo by lazy {
-            ButtonDecorationInfo(R.drawable.ic_barcode_white_24dp, R.string.damaged)
+            ButtonDecorationInfo(R.drawable.ic_scan_barcode_code128_white_24dp, R.string.damaged)
         }
 
         val close: ButtonDecorationInfo by lazy {

@@ -66,7 +66,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:background="?selectableItemBackground"
-                android:src="@drawable/ic_scan_barcode_white_32dp" />
+                android:src="@drawable/ic_scan_barcode_code128_white_32dp"
+                android:onClick="@{(v) -> vm.navigator.openCode128InfoScreen()}"/>
 
         </LinearLayout>
 

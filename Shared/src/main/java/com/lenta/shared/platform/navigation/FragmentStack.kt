@@ -91,8 +91,8 @@ class FragmentStack(
     fun pop(fragmentName: String?): Boolean {
         if (fragmentName == null || manager.backStackEntryCount == 0)
             return false
-        manager.popBackStack(fragmentName, FragmentManager.POP_BACK_STACK_INCLUSIVE)
-            return true
+        manager.popBackStack(fragmentName, 0)
+        return true
     }
 
 

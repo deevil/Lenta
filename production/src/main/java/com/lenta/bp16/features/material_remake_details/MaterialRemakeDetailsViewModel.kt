@@ -6,15 +6,17 @@ import com.lenta.bp16.data.IScales
 import com.lenta.bp16.model.AddAttributeProdInfo
 import com.lenta.bp16.model.BatchNewDataInfoParam
 import com.lenta.bp16.model.GoodTypeIcon
-import com.lenta.bp16.model.IAttributeManager
 import com.lenta.bp16.model.ingredients.OrderByBarcode
 import com.lenta.bp16.model.ingredients.params.IngredientDataCompleteParams
+import com.lenta.bp16.model.ingredients.params.MaterialDataCompleteParams
 import com.lenta.bp16.model.ingredients.ui.MaterialIngredientDataInfoUI
 import com.lenta.bp16.model.ingredients.ui.MercuryPartDataInfoUI
 import com.lenta.bp16.model.ingredients.ui.OrderByBarcodeUI
 import com.lenta.bp16.model.ingredients.ui.ZPartDataInfoUI
+import com.lenta.bp16.model.managers.IAttributeManager
 import com.lenta.bp16.platform.Constants
 import com.lenta.bp16.platform.base.IZpartVisibleConditions
+import com.lenta.bp16.platform.extention.distinctAndAddFirstValue
 import com.lenta.bp16.platform.navigation.IScreenNavigator
 import com.lenta.bp16.platform.resource.IResourceManager
 import com.lenta.bp16.request.CompleteIngredientByMaterialNetRequest
@@ -106,18 +108,17 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
 
     /** Условие отображения производителя */
     val producerVisibleCondition by unsafeLazy {
-        materialIngredient.switchMap { ingredient ->
-            asyncLiveData<Boolean> {
+        materialIngredient.mapSkipNulls { ingredient ->
+            producerConditions.mapSkipNulls { cond ->
                 val isVet = ingredient.isVet.isSapTrue()
                 val isZPart = ingredient.isZpart.isSapTrue()
-                val cond = producerConditions
                 val condition = when {
                     isVet -> true
                     !isVet && isZPart -> cond.first
                     else -> false
                 }
-                alertNotFoundProducerName.postValue(cond.second)
-                emit(condition)
+                alertNotFoundProducerName.value = cond.second
+                condition
             }
         }
     }
@@ -146,7 +147,7 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
             .map {
                 val producerName = it?.first
                 val productionDate = it?.second
-                if (!materialIngredient.value?.isVet.isNullOrBlank()) {
+                if (materialIngredient.value?.isVet.isSapTrue()) {
                     !(producerName.isNullOrEmpty() || productionDate.isNullOrEmpty())
                 } else {
                     !productionDate.isNullOrEmpty()
@@ -206,6 +207,14 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
         }
     }
 
+    fun chooseGoodInfoScreen() {
+        when (goodTypeIcon.value) {
+            GoodTypeIcon.VET -> navigator.openVetInfoScreen()
+            GoodTypeIcon.FACT -> navigator.openFactInfoScreen()
+            else -> navigator.openPlanInfoScreen()
+        }
+    }
+
     fun updateData() {
         launchUITryCatch {
             mercuryDataInfo.value = getMercuryPartDataInfoUseCase()
@@ -217,89 +226,47 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
                 navigator.showAlertProducerCodeNotFound()
             } else {
                 disableSpinner.value = addedAttribute.value?.let { false }.orIfNull { true }
-                checkProducerInfo()
-                checkDataInfo()
+                checkProduceAndDataInfo()
             }
         }
     }
 
-    private fun checkProducerInfo() {
+    private fun checkProduceAndDataInfo() {
         /** Если был передан производитель из AddAttributeFragment, то заполнять данными из нее*/
         val addedAttributeIsNotEmpty = !addedAttribute.value?.name.isNullOrBlank()
         val orderIngredientIsVet = materialIngredient.value?.isVet.isSapTrue()
-        when {
+        producerNameField.value = when {
             addedAttributeIsNotEmpty -> {
-                addedAttribute.value?.let { addAttributeDataInfoList ->
-                    val producerName = addAttributeDataInfoList.name
-                    producerNameField.value = listOf(producerName)
-                }
+                addedAttribute.value?.run { listOf(name) }
             }
             orderIngredientIsVet -> {
-                mercuryDataInfo.value?.let { mercuryDataInfoList ->
-                    val producerNameList = mercuryDataInfoList.map { it.prodName }.toMutableList()
-                    if (producerNameList.size > 1) {
-                        producerNameList.add(0, Constants.CHOOSE_PRODUCER)
-                    }
-                    producerNameField.value = producerNameList
-                }
+                mercuryDataInfo.value?.distinctAndAddFirstValue({ it.prodName to it.prodCode }, { it.prodName })
             }
             else -> {
-                zPartDataInfo.value?.let { zpartDataInfoList ->
-                    val producerNameList = zpartDataInfoList.map { it.prodName }.toMutableList()
-                    if (producerNameList.size > 1) {
-                        producerNameList.add(0, Constants.CHOOSE_PRODUCER)
-                    }
-                    producerNameField.value = producerNameList
-                }
+                zPartDataInfo.value?.distinctAndAddFirstValue({ it.prodName to it.prodCode }, { it.prodName })
+            }
+        }
+        productionDateField.value = when {
+            addedAttributeIsNotEmpty -> {
+                addedAttribute.value?.run { listOf(date) }
+            }
+            orderIngredientIsVet -> {
+                mercuryDataInfo.value?.distinctAndAddFirstValue({ it.prodDate }, { it.prodDate })
+            }
+            else -> {
+                zPartDataInfo.value?.distinctAndAddFirstValue({ it.prodDate }, { it.prodDate })
             }
         }
     }
 
-    private fun checkDataInfo() {
-        /** Если была передана дата из AddAttributeFragment, то заполнять данными из нее*/
-        val addedAttributeIsNotEmpty = !addedAttribute.value?.date.isNullOrBlank()
-        val orderIngredientIsVet = materialIngredient.value?.isVet.isSapTrue()
-        when {
-            addedAttributeIsNotEmpty -> {
-                addedAttribute.value?.let { addAttributeDataInfoList ->
-                    val productionDate = addAttributeDataInfoList.date
-                    productionDateField.value = listOf(productionDate)
-                }
-            }
-            orderIngredientIsVet -> {
-                mercuryDataInfo.value?.let { mercuryDataInfoList ->
-                    val productionDate = mercuryDataInfoList.map { it.prodDate }.toMutableList()
-                    if (productionDate.size > 1) {
-                        productionDate.add(0, Constants.CHOOSE_PRODUCTION_DATE)
-                    }
-                    productionDateField.value = productionDate
-                }
-            }
-            else -> {
-                zPartDataInfo.value?.let { zpartDataInfoList ->
-                    val productionDate = zpartDataInfoList.map { it.prodDate }.toMutableList()
-                    if (productionDate.size > 1) {
-                        productionDate.add(0, Constants.CHOOSE_PRODUCTION_DATE)
-                    }
-                    productionDateField.value = productionDate
-                }
-            }
-        }
-    }
-
-    private suspend fun getEntryId(matnr: String): String {
-        return materialIngredient.value?.isVet?.run {
-            val selectedIngredient = withContext(Dispatchers.IO) {
-                mercuryDataInfo.value?.filter { it.matnr == matnr }
-            }
-            selectedIngredient?.getOrNull(0)?.entryId.orEmpty()
+    private fun getEntryId(): String {
+        return materialIngredient.value?.isVet?.let {
+            mercuryDataInfo.value?.getOrNull(0)?.entryId.orEmpty()
         }.orEmpty()
     }
 
-    private suspend fun getZPartInfo(matnr: String): ZPartDataInfoUI? {
-        return withContext(Dispatchers.IO) {
-            zPartDataInfo.value?.filter { it.matnr == matnr }?.getOrNull(0)
-        }
+    private fun getZPartInfo(): ZPartDataInfoUI? {
+        return zPartDataInfo.value?.getOrNull(0)
     }
 
     private suspend fun setBatchNewInfo(): List<BatchNewDataInfoParam>? {
@@ -318,13 +285,11 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
         }
     }
 
-
     fun onCompleteClicked() = launchUITryCatch {
         val weight = total.value ?: 0.0
-
-        val matnr = materialIngredient.value?.name.orEmpty()
-        val entryId = getEntryId(matnr)
-        val zPartInfo = getZPartInfo(matnr)
+        val ktsch = materialIngredient.value?.ktsch.orEmpty()
+        val entryId = getEntryId()
+        val zPartInfo = getZPartInfo()
         val batchId = zPartInfo?.batchId.orEmpty()
         val batchNew = if (zPartInfo == null) {
             setBatchNewInfo()
@@ -337,15 +302,15 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
         } else {
             navigator.showProgressLoadingData()
             val result = completePackMaterialNetRequest(
-                    params = IngredientDataCompleteParams(
+                    params = MaterialDataCompleteParams(
                             tkMarket = sessionInfo.market.orEmpty(),
                             deviceIP = resourceManager.deviceIp,
+                            ktsch = ktsch,
                             parent = parentCode,
                             matnr = parentCode,
                             fact = weight,
                             mode = IngredientDataCompleteParams.MODE_MATERIAL,
                             personnelNumber = sessionInfo.personnelNumber.orEmpty(),
-                            aufnr = matnr,
                             batchId = batchId,
                             batchNewParam = batchNew.orEmpty(),
                             entryId = entryId

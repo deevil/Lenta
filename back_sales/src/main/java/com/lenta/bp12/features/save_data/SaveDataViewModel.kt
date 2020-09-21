@@ -42,8 +42,8 @@ class SaveDataViewModel : CoreViewModel() {
         list?.mapIndexed { index, sentTaskInfo ->
             SaveDataUi(
                     position = "${index + 1}",
-                    name = sentTaskInfo.text1,
-                    description = sentTaskInfo.text2
+                    name = sentTaskInfo.text1.orEmpty(),
+                    description = sentTaskInfo.text2.orEmpty()
             )
         }
     }

@@ -1,5 +1,6 @@
 package com.lenta.bp12.features.create_task.good_info
 
+import android.os.Bundle
 import android.view.View
 import com.lenta.bp12.R
 import com.lenta.bp12.databinding.FragmentGoodInfoCreateBinding
@@ -76,7 +77,16 @@ class GoodInfoCreateFragment : CoreFragment<FragmentGoodInfoCreateBinding, GoodI
     }
 
     companion object {
-        const val SCREEN_NUMBER = "12"
+        fun newInstance(quantity: String): GoodInfoCreateFragment {
+            val args = Bundle()
+            args.putString(QUANTITY_KEY, quantity)
+            val fragment = GoodInfoCreateFragment()
+            fragment.arguments = args
+            return fragment
+        }
+        
+        private const val SCREEN_NUMBER = "12"
+        private const val QUANTITY_KEY = "QUANTITY_KEY"
     }
 
 //    //Для тестов

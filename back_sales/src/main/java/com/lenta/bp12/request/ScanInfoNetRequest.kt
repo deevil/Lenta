@@ -3,6 +3,7 @@ package com.lenta.bp12.request
 import com.google.gson.annotations.SerializedName
 import com.lenta.bp12.request.pojo.ExciseMarkInfo
 import com.lenta.bp12.request.pojo.ProducerInfo
+import com.lenta.bp12.request.pojo.scanInfoNetRequest.PartNumberInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either
@@ -81,7 +82,7 @@ data class ScanInfoResult(
         val producers: List<ProducerInfo>,
         /** Номер партии */
         @SerializedName("ET_ZCHARG")
-        val partNumber: List<String>,
+        val partNumber: List<PartNumberInfo>,
         /** Код возврата */
         @SerializedName("EV_RETCODE")
         override val retCode: Int,

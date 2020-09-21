@@ -1,5 +1,7 @@
 package com.lenta.bp12.model.pojo.extentions
 
+import com.lenta.bp12.model.GoodKind
+import com.lenta.bp12.model.ScreenStatus
 import com.lenta.bp12.model.pojo.*
 import com.lenta.shared.utilities.extentions.sumWith
 
@@ -87,5 +89,17 @@ fun Good.deletePositionsFromTask(goodFromBasket: Good, basketToGetQuantity: Bask
     }
 }
 
-
 fun Good.removeMarks(other: List<Mark>) = this.marks.removeAll(other)
+
+fun Good.getScreenStatus(): ScreenStatus {
+    return when (this.kind) {
+        GoodKind.COMMON -> ScreenStatus.COMMON
+        GoodKind.ALCOHOL -> ScreenStatus.ALCOHOL
+        GoodKind.EXCISE -> ScreenStatus.EXCISE
+        GoodKind.MARK -> ScreenStatus.MARK
+        else -> ScreenStatus.VET
+    }
+}
+
+fun Good.isGoodHasSameEan(otherEan: String) = this.ean == otherEan || this.eans.contains(otherEan)
+fun Good.isGoodHasSameMaxRetailPrice(otherMrc: String) = this.maxRetailPrice == otherMrc

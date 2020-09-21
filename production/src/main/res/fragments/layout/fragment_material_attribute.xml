@@ -38,7 +38,7 @@
     </LinearLayout>
 
     <View style="@style/HorizontalDivider"
-        android:visibility="@{vm.producerVisibleCondition ? View.VISIBLE : View.GONE}"
+        android:visibility="@{vm.producerVisibleCondition}"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/text_view_add_attribute"
@@ -48,7 +48,7 @@
     <LinearLayout
         android:id="@+id/spinner_producer"
         style="@style/LinearRowStyle"
-        android:visibility="@{vm.producerVisibleCondition ? View.VISIBLE : View.GONE}"
+        android:visibility="@{vm.producerVisibleCondition}"
         app:layout_constraintBottom_toTopOf="@id/producer_date"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -118,7 +118,7 @@
 
     <LinearLayout
         android:id="@+id/producer_time"
-        android:visibility="@{vm.timeFieldVisibleCondition ? View.VISIBLE : View.GONE}"
+        android:visibility="@{vm.timeFieldVisibleCondition}"
         style="@style/LinearRowStyle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -158,10 +158,10 @@
     </LinearLayout>
 
     <View style="@style/HorizontalDivider"
-        android:visibility="@{vm.timeFieldVisibleCondition ? View.VISIBLE : View.GONE}"
+        android:visibility="@{vm.timeFieldVisibleCondition}"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/producer_time"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

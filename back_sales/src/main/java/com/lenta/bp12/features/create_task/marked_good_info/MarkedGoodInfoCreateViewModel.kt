@@ -3,7 +3,7 @@ package com.lenta.bp12.features.create_task.marked_good_info
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
-import com.lenta.bp12.features.create_task.base_good_info.BaseGoodInfoCreateViewModel
+import com.lenta.bp12.features.create_task.base.BaseGoodInfoCreateViewModel
 import com.lenta.bp12.managers.interfaces.ICreateTaskManager
 import com.lenta.bp12.managers.interfaces.IMarkManager
 import com.lenta.bp12.model.MarkScreenStatus
@@ -13,7 +13,7 @@ import com.lenta.bp12.model.actionByNumber
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.extentions.addMarks
-import com.lenta.bp12.platform.DEFAULT_QUANTITY
+import com.lenta.bp12.platform.ZERO_QUANTITY
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -109,7 +109,7 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
 
     val isBasketNumberVisible by unsafeLazy {
         tempMarks.mapSkipNulls {
-            it.isNotEmpty()
+            it.takeIf { manager.currentGood.value?.isTobacco() == true }?.isNotEmpty() ?: true
         }
     }
 
@@ -137,7 +137,7 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
     }
 
     override val quantity = quantityField.map {
-        it?.toDoubleOrNull() ?: DEFAULT_QUANTITY
+        it?.toDoubleOrNull() ?: ZERO_QUANTITY
     }
 
     /**
@@ -164,14 +164,14 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
     Кнопки нижнего тулбара
      */
     override val applyEnabled by lazy {
-        isProviderSelected.switchMap {isProviderSelected ->
+        isProviderSelected.switchMap { isProviderSelected ->
             quantity.switchMap { enteredQuantity ->
                 totalQuantity.switchMap { totalQuantity ->
                     basketQuantity.switchMap { basketQuantity ->
                         liveData {
-                            val isEnteredQuantityNotZero = enteredQuantity != DEFAULT_QUANTITY
-                            val isTotalQuantityMoreThenZero = totalQuantity > DEFAULT_QUANTITY
-                            val result = isProviderSelected && isEnteredQuantityNotZero && isTotalQuantityMoreThenZero && basketQuantity > DEFAULT_QUANTITY
+                            val isEnteredQuantityNotZero = enteredQuantity != ZERO_QUANTITY
+                            val isTotalQuantityMoreThenZero = totalQuantity > ZERO_QUANTITY
+                            val result = isProviderSelected && isEnteredQuantityNotZero && isTotalQuantityMoreThenZero && basketQuantity > ZERO_QUANTITY
                             emit(result)
                         }
                     }
@@ -179,7 +179,6 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
             }
         }
     }
-
 
     val rollbackEnabled = tempMarks.map {
         it?.isEmpty()?.not()
@@ -406,7 +405,6 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
             navigator.showProgressLoadingData()
             saveChanges()
             navigator.hideProgress()
-            navigator.goBack()
             navigator.openBasketCreateGoodListScreen()
             manager.isBasketsNeedsToBeClosed = false
             markManager.clearData()
@@ -481,10 +479,6 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
                 if (size != null && size > 0) {
                     isExistUnsavedData = true
                     lastScannedMarks = tempMarksValue
-                }
-
-                Logg.e {
-                    it.maxRetailPrice.toString()
                 }
             }.orIfNull {
                 Logg.e { "good null" }

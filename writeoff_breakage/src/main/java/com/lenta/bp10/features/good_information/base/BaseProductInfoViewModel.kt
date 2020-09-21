@@ -12,7 +12,6 @@ import com.lenta.bp10.models.task.WriteOffReason
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.platform.resources.IStringResourceManager
 import com.lenta.shared.models.core.ProductInfo
-import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
@@ -154,7 +153,7 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardLis
     }
 
     open fun filterReason(writeOffReason: WriteOffReason): Boolean {
-        return writeOffReason === WriteOffReason.empty || writeOffReason.gisControl == (if (productInfo.value!!.type == ProductType.General) "N" else "A")
+        return writeOffReason === WriteOffReason.empty || writeOffReason.gisControl == productInfo.value?.type?.code
     }
 
     fun setProductInfo(productInfo: ProductInfo) {
