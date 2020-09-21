@@ -4,16 +4,14 @@ import com.lenta.bp9.features.base.IBaseTaskManager
 import com.lenta.bp9.model.task.TaskType
 
 interface IBaseCountRefusalOfProductByTaskType : IBaseTaskManager, IBaseProductInfo {
-    val countRefusalOfProduct: Double
+    val countRefusalOfProductByTaskType: Double
         get() {
-            val productsDiscrepancies = taskRepository?.getProductsDiscrepancies()
-
             return productInfo.value
                     ?.let { product ->
                         if (taskType == TaskType.RecalculationCargoUnit) {
-                            productsDiscrepancies?.getCountRefusalOfProductPGE(product)
+                            getCountRefusalOfProductPGE(product)
                         } else {
-                            productsDiscrepancies?.getCountRefusalOfProduct(product)
+                            getCountRefusalOfProduct(product)
                         }
                     }
                     ?: 0.0

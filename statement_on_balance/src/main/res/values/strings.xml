@@ -1,0 +1,37 @@
+<resources>
+
+    <string name="app_name">Постановка на баланс</string>
+
+    // Заголовки экранов
+
+
+    // Наименование вкладок
+
+
+    // Наименования колонок
+
+
+    // Информационные сообщения
+
+
+    // Описание иконок
+    <string name="alcohol_good">Алкогольный товар</string>
+    <string name="common_good">Обычный товар</string>
+    <string name="marked_good">Маркированный товар</string>
+    <string name="vet_good">Товар животного происхождения</string>
+
+    // Наименование кнопок
+    <string name="work_with_tasks">Работа с заданиями</string>
+
+    // Подсказки
+    <string name="enter_sap_or_barcode">Введите SAP-код или штрихкод</string>
+    <string name="enter_task_number_or_login">Введите номер задания или логин</string>
+
+    // Строки в коде
+    <string name="tk_number">ТК - %1$s</string>
+    <string name="total_with_converting_info">Итого %1$s</string>
+
+    // Разное
+
+
+</resources>

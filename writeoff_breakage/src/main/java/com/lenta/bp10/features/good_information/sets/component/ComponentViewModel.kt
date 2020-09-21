@@ -144,7 +144,7 @@ class ComponentViewModel : BaseProductInfoViewModel() {
     }
 
     override fun filterReason(writeOffReason: WriteOffReason): Boolean {
-        return writeOffReason.gisControl == (if (productInfo.value!!.type == ProductType.General) "N" else "A") && writeOffReason.code == componentItem.writeOffReason.code
+        return writeOffReason.gisControl == productInfo.value?.type?.code && writeOffReason.code == componentItem.writeOffReason.code
     }
 
     override fun initCountLiveData(): MutableLiveData<String> {

@@ -89,7 +89,7 @@ class MarkSearchDelegate @Inject constructor(
             updateProperties.invoke(result.properties.orEmpty())
             handleScannedMark.invoke(markNumber)
         } else {
-            navigator.openInfoScreen(result.errorText)
+            navigator.openInfoScreen(result.statusDescription.orEmpty())
         }
     }
 
@@ -98,7 +98,7 @@ class MarkSearchDelegate @Inject constructor(
             updateProperties.invoke(result.properties.orEmpty())
             handleScannedBox(result.marks.orEmpty())
         } else {
-            navigator.openInfoScreen(result.errorText)
+            navigator.openInfoScreen(result.statusDescription.orEmpty())
         }
     }
 

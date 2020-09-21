@@ -406,7 +406,7 @@
 
             <ImageView
                 style="@style/BottomIconStyle"
-                app:alcoIcon="@{vm.productInfo.type}"
+                app:goodTypeIcon="@{vm.productInfo.type}"
                 tools:src="@drawable/ic_excise_alcohol_white_32dp" />
 
             <View style="@style/BottomIconEmptyPlaceStyle" />

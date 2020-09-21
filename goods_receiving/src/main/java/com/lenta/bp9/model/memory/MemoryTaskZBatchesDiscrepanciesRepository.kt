@@ -18,28 +18,18 @@ class MemoryTaskZBatchesDiscrepanciesRepository : ITaskZBatchesDiscrepanciesRepo
     }
 
     override fun findZBatchDiscrepancies(discrepancies: TaskZBatchesDiscrepancies): List<TaskZBatchesDiscrepancies> {
-        val foundDiscrepancies = ArrayList<TaskZBatchesDiscrepancies>()
-        for (i in zBatchesDiscrepancies.indices) {
-            if (discrepancies.materialNumber == zBatchesDiscrepancies[i].materialNumber
-                    && discrepancies.batchNumber == zBatchesDiscrepancies[i].batchNumber
-                    && discrepancies.processingUnit == zBatchesDiscrepancies[i].processingUnit
-                    && discrepancies.manufactureCode == zBatchesDiscrepancies[i].manufactureCode
-                    && discrepancies.shelfLifeDate == zBatchesDiscrepancies[i].shelfLifeDate
-                    && discrepancies.shelfLifeTime == zBatchesDiscrepancies[i].shelfLifeTime) {
-                foundDiscrepancies.add(zBatchesDiscrepancies[i])
-            }
+        return zBatchesDiscrepancies.filter {
+            discrepancies.materialNumber == it.materialNumber
+                    && discrepancies.batchNumber == it.batchNumber
+                    && discrepancies.processingUnit == it.processingUnit
+                    && discrepancies.manufactureCode == it.manufactureCode
+                    && discrepancies.shelfLifeDate == it.shelfLifeDate
+                    && discrepancies.shelfLifeTime == it.shelfLifeTime
         }
-        return foundDiscrepancies
     }
 
     override fun findZBatchDiscrepanciesOfProduct(materialNumber: String): List<TaskZBatchesDiscrepancies> {
-        val foundDiscrepancies = ArrayList<TaskZBatchesDiscrepancies>()
-        for (i in zBatchesDiscrepancies.indices) {
-            if (materialNumber == zBatchesDiscrepancies[i].materialNumber) {
-                foundDiscrepancies.add(zBatchesDiscrepancies[i])
-            }
-        }
-        return foundDiscrepancies
+        return zBatchesDiscrepancies.filter { materialNumber == it.materialNumber }
     }
 
     override fun addZBatchDiscrepancies(discrepancies: TaskZBatchesDiscrepancies): Boolean {
@@ -140,13 +130,7 @@ class MemoryTaskZBatchesDiscrepanciesRepository : ITaskZBatchesDiscrepanciesRepo
     }
 
     override fun findPartySignsOfProduct(materialNumber: String): List<PartySignsOfZBatches> {
-        val foundPartySigns = ArrayList<PartySignsOfZBatches>()
-        for (i in partySignsOfZBatches.indices) {
-            if (materialNumber == partySignsOfZBatches[i].materialNumber) {
-                foundPartySigns.add(partySignsOfZBatches[i])
-            }
-        }
-        return foundPartySigns
+        return partySignsOfZBatches.filter { materialNumber == it.materialNumber }
     }
 
     override fun addPartySignOfZBatches(partySign: PartySignsOfZBatches): Boolean {
@@ -157,7 +141,8 @@ class MemoryTaskZBatchesDiscrepanciesRepository : ITaskZBatchesDiscrepanciesRepo
                     && partySign.processingUnit == partySignsOfZBatches[i].processingUnit
                     && partySign.manufactureCode == partySignsOfZBatches[i].manufactureCode
                     && partySign.shelfLifeDate == partySignsOfZBatches[i].shelfLifeDate
-                    && partySign.shelfLifeTime == partySignsOfZBatches[i].shelfLifeTime) {
+                    && partySign.shelfLifeTime == partySignsOfZBatches[i].shelfLifeTime
+                    && partySign.productionDate == partySignsOfZBatches[i].productionDate) {
                 index = i
             }
         }
@@ -182,6 +167,7 @@ class MemoryTaskZBatchesDiscrepanciesRepository : ITaskZBatchesDiscrepanciesRepo
                     && it.manufactureCode == partySign.manufactureCode
                     && it.shelfLifeDate == partySign.shelfLifeDate
                     && it.shelfLifeTime == partySign.shelfLifeTime
+                    && it.productionDate == partySign.productionDate
         }
     }
 

@@ -11,6 +11,10 @@ import com.lenta.bp16.data.Scales
 import com.lenta.bp16.model.*
 import com.lenta.bp16.model.data_storage.IIngredientDataPersistStorage
 import com.lenta.bp16.model.data_storage.IngredientDataPersistStorage
+import com.lenta.bp16.model.managers.AttributeManager
+import com.lenta.bp16.model.managers.IAttributeManager
+import com.lenta.bp16.model.managers.ITechOrderManager
+import com.lenta.bp16.model.managers.TechOrderManager
 import com.lenta.bp16.model.warehouse.IWarehousePersistStorage
 import com.lenta.bp16.model.warehouse.WarehousePersistStorage
 import com.lenta.bp16.platform.navigation.IScreenNavigator
@@ -64,6 +68,10 @@ class AppModule {
         @Binds
         @AppScope
         fun bindAttributeManager(realisation: AttributeManager): IAttributeManager
+
+        @Binds
+        @AppScope
+        fun bindTechOrderManager(realisation: TechOrderManager): ITechOrderManager
 
         @Binds
         @AppScope

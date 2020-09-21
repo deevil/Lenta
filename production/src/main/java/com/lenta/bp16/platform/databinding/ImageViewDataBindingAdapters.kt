@@ -58,9 +58,9 @@ fun setIngredientStatusWorkIcon(imageView: ImageView, ingredientStatusWork: Ingr
 }
 
 @BindingAdapter("goodTypeIcon")
-fun setGoodTypeIcon(imageView: ImageView, goodTypeIcon: GoodTypeIcon) {
+fun setGoodTypeIcon(imageView: ImageView, goodType: GoodTypeIcon) {
     imageView.apply {
-            setImageResource(when (goodTypeIcon) {
+            setImageResource(when (goodType) {
                 GoodTypeIcon.PLAN ->  R.drawable.ic_plan_attribute_white_32dp
                 GoodTypeIcon.FACT ->  R.drawable.ic_fact_attribute_white_32dp
                 GoodTypeIcon.VET -> R.drawable.ic_mercury_white_32dp

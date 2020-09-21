@@ -20,7 +20,8 @@ data class Basket(
         val provider: ProviderInfo?,
         val volume: Double = 0.0,
         val goods: MutableMap<Good, Double> = mutableMapOf(),
-        val markTypeGroup: MarkTypeGroup?
+        val markTypeGroup: MarkTypeGroup?,
+        val purchaseGroup: String?
 ) {
     /**
      * МРЦ

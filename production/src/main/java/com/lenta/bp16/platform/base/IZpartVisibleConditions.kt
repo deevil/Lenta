@@ -1,13 +1,14 @@
 package com.lenta.bp16.platform.base
 
+import androidx.lifecycle.LiveData
 import com.lenta.bp16.model.ProducerDataStatus
-import com.lenta.shared.utilities.orIfNull
+import com.lenta.shared.utilities.extentions.mapSkipNulls
 
 interface IZpartVisibleConditions : IZpartInfo {
 
-    val producerConditions: Pair<Boolean, Boolean>
+    val producerConditions: LiveData<Pair<Boolean, Boolean>>
         get() {
-            return zPartDataInfo.value?.let { zPartDataInfoValue ->
+            return zPartDataInfo.mapSkipNulls { zPartDataInfoValue ->
 
                 val producersList = zPartDataInfoValue.map { it.prodName }
 
@@ -24,14 +25,11 @@ interface IZpartVisibleConditions : IZpartInfo {
                     else -> ProducerDataStatus.ALERT
                 }
 
-                return when (visibleStatus) {
+                when (visibleStatus) {
                     ProducerDataStatus.GONE -> false to false
                     ProducerDataStatus.VISIBLE -> true to false
                     ProducerDataStatus.ALERT -> true to true
                 }
-
-            }.orIfNull {
-                false to false
             }
         }
 }

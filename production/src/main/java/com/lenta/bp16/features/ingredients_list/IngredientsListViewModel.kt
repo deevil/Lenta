@@ -5,8 +5,6 @@ import androidx.lifecycle.switchMap
 import com.lenta.bp16.features.ingredients_list.IngredientsListFragment.Companion.TAB_BY_MATERIALS
 import com.lenta.bp16.features.ingredients_list.IngredientsListFragment.Companion.TAB_BY_ORDER
 import com.lenta.bp16.model.SearchStatus
-import com.lenta.bp16.model.ingredients.GoodByOrder
-import com.lenta.bp16.model.ingredients.IngredientInfo
 import com.lenta.bp16.model.ingredients.params.GetIngredientsParams
 import com.lenta.bp16.model.ingredients.params.WarehouseParam
 import com.lenta.bp16.model.ingredients.ui.GoodByOrderUI
@@ -26,7 +24,6 @@ import com.lenta.bp16.platform.resource.IResourceManager
 import com.lenta.bp16.request.GetIngredientsNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.asyncLiveData
@@ -215,24 +212,44 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                 else -> null
             }?.let { ingredientUI ->
                 allIngredientsInfo.value?.find { it.code == ingredientUI.code }?.let { selectedIngredient ->
+
                     val positionInList = ingredientUI.position.toInt()
-                    if (selectedIngredient.isByOrder) {
-                        val barcode = allIngredientsEanInfo.value?.getOrNull(positionInList)
-                                .orIfNull {
-                                    OrderByBarcodeUI(
-                                            matnr = FAKE_MATNR,
-                                            ean = FAKE_EAN,
-                                            ean_nom = EAN_NOM,
-                                            ean_umrez = EAN_UMREZ,
-                                            ean_umren = EAN_UMREN
-                                    )
-                                }
-                        navigator.openOrderDetailsScreen(selectedIngredient, barcode)
-                    } else {
-                        navigator.openMaterialRemakesScreen(selectedIngredient)
+                    val barcode = allIngredientsEanInfo.value?.getOrNull(positionInList)
+                            .orIfNull {
+                                OrderByBarcodeUI(
+                                        matnr = FAKE_MATNR,
+                                        ean = FAKE_EAN,
+                                        ean_nom = EAN_NOM,
+                                        ean_umrez = EAN_UMREZ,
+                                        ean_umren = EAN_UMREN
+                                )
+                            }
+
+                    when (selectedIngredient.blockType) {
+                        IngredientInfoUI.BLOCK_BY_MYSELF -> openAlertBlockedTaskByMe(sessionInfo.userName.orEmpty(), selectedIngredient, barcode)
+                        IngredientInfoUI.BLOCK_BY_OTHER -> navigator.showAlertBlockedTaskAnotherUser(selectedIngredient.lockUser, selectedIngredient.lockIp)
+                        else -> openDetailsOrRemakeScreen(selectedIngredient, barcode)
                     }
                 }
             }
+        }
+    }
+
+    private fun openAlertBlockedTaskByMe(userName: String, selectedIngredient: IngredientInfoUI, barcode: OrderByBarcodeUI){
+        navigator.showAlertBlockedTaskByMe(userName) {
+            if (selectedIngredient.isByOrder) {
+                navigator.openOrderDetailsScreen(selectedIngredient, barcode)
+            } else {
+                navigator.openMaterialRemakesScreen(selectedIngredient)
+            }
+        }
+    }
+
+    private fun openDetailsOrRemakeScreen(selectedIngredient: IngredientInfoUI, barcode: OrderByBarcodeUI) {
+        if (selectedIngredient.isByOrder) {
+            navigator.openOrderDetailsScreen(selectedIngredient, barcode)
+        } else {
+            navigator.openMaterialRemakesScreen(selectedIngredient)
         }
     }
 

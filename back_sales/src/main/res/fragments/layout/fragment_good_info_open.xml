@@ -51,6 +51,7 @@
                         app:quantityTypeIcon="@{vm.good.isDifferentUnits()}"
                         app:suffix="@{vm.good.commonUnits.name}"
                         tools:drawableEnd="@drawable/ic_bei_12dp"
+                        android:afterTextChanged="@{vm}"
                         tools:text="1 шт" />
 
                 </LinearLayout>

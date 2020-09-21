@@ -40,7 +40,6 @@ import com.lenta.shared.utilities.extentions.openAnotherApp
 import com.lenta.shared.utilities.extentions.restartApp
 import com.lenta.shared.utilities.extentions.setFragmentResultCode
 import com.mobrun.plugin.api.HyperHive
-import kotlinx.coroutines.CoroutineScope
 import javax.inject.Inject
 import kotlin.system.exitProcess
 
@@ -313,11 +312,53 @@ class CoreNavigator @Inject constructor(
         }
     }
 
-    override fun openGS128InfoScreen() {
+    override fun openGS1InfoScreen() {
         runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(
-                    message = context.getString(R.string.gs128_info),
-                    iconRes = R.drawable.ic_scan_barcode_vet_white_80dp), CustomAnimation.vertical)
+            val message = iconDescriptionHelper.getDescription(IconCode.GS1_CODE)
+                    ?: context.getString(R.string.gs1_info)
+
+            getFragmentStack()?.push(AlertFragment.create(message = message,
+                    iconRes = R.drawable.ic_scan_barcode_gs1_white_80dp), CustomAnimation.vertical)
+        }
+    }
+
+    override fun openPlanInfoScreen() {
+        runOrPostpone {
+            val message = iconDescriptionHelper.getDescription(IconCode.ICON_PLAN)
+                    ?: context.getString(R.string.plan_info)
+
+            getFragmentStack()?.push(AlertFragment.create(message = message,
+                    iconRes = R.drawable.ic_plan_attribute_white_80dp), CustomAnimation.vertical)
+        }
+    }
+
+    override fun openFactInfoScreen() {
+        runOrPostpone {
+            val message = iconDescriptionHelper.getDescription(IconCode.ICON_FACT)
+                    ?: context.getString(R.string.fact_info)
+
+            getFragmentStack()?.push(AlertFragment.create(message = message,
+                    iconRes = R.drawable.ic_fact_attribute_white_80dp), CustomAnimation.vertical)
+        }
+    }
+
+    override fun openVetInfoScreen() {
+        runOrPostpone {
+            val message = iconDescriptionHelper.getDescription(IconCode.ICON_VET)
+                    ?: context.getString(R.string.vet_info)
+
+            getFragmentStack()?.push(AlertFragment.create(message = message,
+                    iconRes = R.drawable.ic_mercury_white_80dp), CustomAnimation.vertical)
+        }
+    }
+
+    override fun openCode128InfoScreen() {
+        runOrPostpone {
+            val message = iconDescriptionHelper.getDescription(IconCode.GS128_CODE)
+                    ?: context.getString(R.string.code128_info)
+
+            getFragmentStack()?.push(AlertFragment.create(message = message,
+                    iconRes = R.drawable.ic_scan_barcode_code128_white_80dp), CustomAnimation.vertical)
         }
     }
 
@@ -489,7 +530,8 @@ class CoreNavigator @Inject constructor(
 
     override fun openMarkingGoodsInfoScreen() {
         runOrPostpone {
-            val inputMessage = iconDescriptionHelper.getDescription(IconCode.MARKING_GOODS) ?: context.getString(R.string.marking_goods)
+            val inputMessage = iconDescriptionHelper.getDescription(IconCode.MARKING_GOODS)
+                    ?: context.getString(R.string.marking_goods)
             getFragmentStack()?.push(AlertFragment.create(
                     message = inputMessage,
                     iconRes = R.drawable.ic_marked_white_80dp), CustomAnimation.vertical)
@@ -498,7 +540,8 @@ class CoreNavigator @Inject constructor(
 
     override fun openExceptionsShelfLifeScreen() {
         runOrPostpone {
-            val inputMessage = iconDescriptionHelper.getDescription(IconCode.EXCEPTIONS_SHELF_LIFE) ?: context.getString(R.string.exceptions_shelf_life)
+            val inputMessage = iconDescriptionHelper.getDescription(IconCode.EXCEPTIONS_SHELF_LIFE)
+                    ?: context.getString(R.string.exceptions_shelf_life)
             getFragmentStack()?.push(AlertFragment.create(
                     message = inputMessage,
                     iconRes = R.drawable.ic_exceptions_shelf_life_48dp), CustomAnimation.vertical)
@@ -590,7 +633,11 @@ interface ICoreNavigator {
     fun showAlertBlockedTaskAnotherUser(userName: String)
     fun showAlertBlockedTaskAnotherUser(userName: String, deviceIp: String)
     fun showAlertBlockedTaskByMe(userName: String, yesCallback: () -> Unit)
-    fun openGS128InfoScreen()
+    fun openCode128InfoScreen()
+    fun openGS1InfoScreen()
+    fun openPlanInfoScreen()
+    fun openFactInfoScreen()
+    fun openVetInfoScreen()
     fun openUpdateAppScreen()
     fun openMarkingGoodsInfoScreen()
     fun openExceptionsShelfLifeScreen()

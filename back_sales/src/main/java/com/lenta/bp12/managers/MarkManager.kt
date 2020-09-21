@@ -13,6 +13,7 @@ import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.extentions.isAnyAlreadyIn
 import com.lenta.bp12.model.pojo.extentions.mapToMarkList
+import com.lenta.bp12.platform.ZERO_VOLUME
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
 import com.lenta.bp12.platform.extention.getMarkStatus
@@ -30,6 +31,9 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.platform.constants.Constants
+import com.lenta.shared.platform.constants.Constants.MARK_TOBACCO_PACK_29
+import com.lenta.shared.platform.constants.Constants.TOBACCO_BOX_MARK_RANGE_21_28
+import com.lenta.shared.platform.constants.Constants.TOBACCO_MARK_BLOCK_OR_BOX_RANGE_30_44
 import com.lenta.shared.utilities.*
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.unsafeLazy
@@ -106,17 +110,17 @@ class MarkManager @Inject constructor(
         return if (isShoesMark(number)) {
             openMarkedGoodWithShoe(number)
         } else when (number.length) {
-            in Constants.TOBACCO_BOX_MARK_RANGE_21_28 -> {
+            in TOBACCO_BOX_MARK_RANGE_21_28 -> {
                 loadBoxInfo(number)
             }
-            Constants.MARK_TOBACCO_PACK_29 -> {
+            MARK_TOBACCO_PACK_29 -> {
                 if (isCigarettesMark(number))
                     return MarkScreenStatus.CANT_SCAN_PACK
                 else {
                     loadBoxInfo(number)
                 }
             }
-            in Constants.TOBACCO_MARK_BLOCK_OR_BOX_RANGE_30_44 -> {
+            in TOBACCO_MARK_BLOCK_OR_BOX_RANGE_30_44 -> {
                 if (isCigarettesBox(number)) {
                     openMarkedGoodWithCarton(number)
                 } else {
@@ -319,7 +323,6 @@ class MarkManager @Inject constructor(
             container: Pair<String, Mark.Container>? = null,
             mrc: String = ""
     ): MarkScreenStatus {
-        val taskFromManager = createManager.currentTask
         val goodFromManager = createManager.currentGood
         val good = goodFromManager.value
         return with(result) {
@@ -344,13 +347,14 @@ class MarkManager @Inject constructor(
                                 ?: 1.0,
                         providers = providers.orEmpty().toMutableList(),
                         producers = producers.orEmpty().toMutableList(),
-                        volume = materialInfo?.volume?.toDoubleOrNull() ?: DEFAULT_VOLUME_VALUE,
+                        volume = materialInfo?.volume?.toDoubleOrNull() ?: ZERO_VOLUME,
                         markType = markType,
                         markTypeGroup = database.getMarkTypeGroupByMarkType(markType),
-                        maxRetailPrice = mrc
+                        maxRetailPrice = mrc,
+                        purchaseGroup = materialInfo?.purchaseGroup.orEmpty()
                 )
 
-                if(createdGood.material != good?.material) {
+                if(good != null && createdGood.material != good.material) {
                     createdGoodToShowError.value = createdGood
                     MarkScreenStatus.NOT_SAME_GOOD
                 }
@@ -395,11 +399,12 @@ class MarkManager @Inject constructor(
                                     ?: DEFAULT_INNER_QUALITY_VALUE,
                             provider = task.provider,
                             producers = producers?.toMutableList().orEmpty().toMutableList(),
-                            volume = materialInfo?.volume?.toDoubleOrNull() ?: DEFAULT_VOLUME_VALUE,
+                            volume = materialInfo?.volume?.toDoubleOrNull() ?: ZERO_VOLUME,
                             markType = markType,
                             markTypeGroup = database.getMarkTypeGroupByMarkType(markType),
                             maxRetailPrice = mrc,
-                            type = materialInfo?.goodType.orEmpty()
+                            type = materialInfo?.goodType.orEmpty(),
+                            purchaseGroup = materialInfo?.purchaseGroup.orEmpty()
                     )
                     if(createdGood.material != good.material) {
                         createdGoodToShowError.value = createdGood
@@ -464,8 +469,8 @@ class MarkManager @Inject constructor(
             container: Pair<String, Mark.Container>? = null
     ): MarkScreenStatus {
         val manager = chooseManager()
-
-        return if(foundGood.material != manager.currentGood.value?.material) {
+        val currentGood = manager.currentGood.value
+        return if(currentGood != null && foundGood.material != currentGood.material) {
             createdGoodToShowError.value = foundGood
             MarkScreenStatus.NOT_SAME_GOOD
         } else {
@@ -478,7 +483,6 @@ class MarkManager @Inject constructor(
             }
         }
     }
-
 
     /**
      * Метод вызывает ФМ ZMP_UTZ_WOB_07_V001
@@ -658,7 +662,7 @@ class MarkManager @Inject constructor(
         manager.updateCurrentGood(tempGood.value)
     }
 
-    private fun chooseManager(): ITaskManager {
+    private fun chooseManager(): ITaskManager<*> {
         return when (workType) {
             WorkType.CREATE -> createManager
             WorkType.OPEN -> openManager
@@ -676,6 +680,5 @@ class MarkManager @Inject constructor(
     companion object {
         private const val DEFAULT_UMREZ = 1.0
         private const val DEFAULT_INNER_QUALITY_VALUE = 1.0
-        private const val DEFAULT_VOLUME_VALUE = 0.0
     }
 }

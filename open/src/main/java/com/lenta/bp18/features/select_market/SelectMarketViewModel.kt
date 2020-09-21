@@ -125,18 +125,16 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     private suspend fun applySelectedPosition() {
-        val selectedPositionIndex = selectedPosition.value ?: -1
-        if (selectedPositionIndex > -1) {
-            markets.value
-                    ?.getOrNull(selectedPositionIndex)
-                    ?.number
-                    ?.let { tkNumber ->
-                        processSelectedMarket(tkNumber)
-                    }
-                    ?: handleFailure(failure = Failure.MessageFailure(
-                            messageResId = R.string.error_market_selected_position
-                    ))
-        }
+        val selectedPositionIndex = selectedPosition.value ?: 0
+        markets.value
+                ?.getOrNull(selectedPositionIndex)
+                ?.number
+                ?.let { tkNumber ->
+                    processSelectedMarket(tkNumber)
+                }
+                ?: handleFailure(failure = Failure.MessageFailure(
+                        messageResId = R.string.error_market_selected_position
+                ))
     }
 
     private suspend fun processSelectedMarket(tkNumber: String) {
