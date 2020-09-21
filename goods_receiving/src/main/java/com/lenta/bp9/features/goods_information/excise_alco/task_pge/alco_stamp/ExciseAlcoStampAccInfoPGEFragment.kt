@@ -85,8 +85,8 @@ class ExciseAlcoStampAccInfoPGEFragment : CoreFragment<FragmentExciseAlcoStampAc
         private const val KEY_MANUFACTURER_POSITION = "manufacturerSelectedPosition"
         private const val KEY_BOTTLING_DATE = "bottlingDate"
 
-        fun create(productInfo: TaskProductInfo): ExciseAlcoStampAccInfoPGEFragment {
-            ExciseAlcoStampAccInfoPGEFragment().let {
+        fun newInstance(productInfo: TaskProductInfo): ExciseAlcoStampAccInfoPGEFragment {
+            ExciseAlcoStampAccInfoPGEFragment().also {
                 it.productInfo = productInfo
                 return it
             }
