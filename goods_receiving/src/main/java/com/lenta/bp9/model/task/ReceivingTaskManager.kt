@@ -1,8 +1,11 @@
 package com.lenta.bp9.model.task
 
-import com.lenta.bp9.model.memory.MemoryTaskRepository
+import com.lenta.bp9.model.repositories.ITaskRepository
 
-class ReceivingTaskManager : IReceivingTaskManager {
+class ReceivingTaskManager
+constructor(
+        private val memoryTaskRepository: ITaskRepository
+) : IReceivingTaskManager {
 
     private var currentReceivingTask: ReceivingTask? = null
 
@@ -12,7 +15,7 @@ class ReceivingTaskManager : IReceivingTaskManager {
 
     override fun newReceivingTask(taskHeader: TaskInfo, taskDescription: TaskDescription) : ReceivingTask?
     {
-        currentReceivingTask = ReceivingTask(taskHeader, taskDescription, taskRepository = MemoryTaskRepository())
+        currentReceivingTask = ReceivingTask(taskHeader, taskDescription, taskRepository = memoryTaskRepository)
         return  currentReceivingTask
     }
 
