@@ -51,7 +51,7 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardLis
         initCountLiveData()
     }
 
-    val suffix: MutableLiveData<String> = MutableLiveData()
+    val suffix = MutableLiveData("")
 
     val requestFocusToQuantity = MutableLiveData(false)
 

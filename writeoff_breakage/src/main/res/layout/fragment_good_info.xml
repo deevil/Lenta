@@ -79,7 +79,7 @@
             app:requestFocus="@{vm.requestFocusToQuantity}"
             app:selectAfterFocus="@{true}"
             app:suffix="@{vm.suffix}"
-            tools:text="1 ШТ" />
+            tools:text="1 шт" />
 
         <View
             android:id="@+id/div_hor2"
