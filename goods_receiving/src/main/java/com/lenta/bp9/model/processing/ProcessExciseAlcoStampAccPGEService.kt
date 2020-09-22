@@ -74,28 +74,28 @@ class ProcessExciseAlcoStampAccPGEService
                 changeProductDiscrepancy(foundDiscrepancy)
     }
 
-    fun addExciseStampDiscrepancy(exciseStamp: TaskExciseStampInfo, typeDiscrepancies: String, isScan: Boolean) {
+    fun addExciseStampDiscrepancy(exciseStamp: TaskExciseStampInfo?, typeDiscrepancies: String, isScan: Boolean) {
         var foundExciseStampDiscrepancy = currentExciseStampsDiscrepancies.findLast {
-            it.code == exciseStamp.code
+            it.code == exciseStamp?.code.orEmpty()
         }
 
         foundExciseStampDiscrepancy = foundExciseStampDiscrepancy?.copy(typeDiscrepancies = typeDiscrepancies, isScan = isScan)
                 ?: TaskExciseStampDiscrepancies(
-                        materialNumber = exciseStamp.materialNumber,
-                        code = exciseStamp.code,
-                        processingUnitNumber = exciseStamp.processingUnitNumber,
+                        materialNumber = exciseStamp?.materialNumber.orEmpty(),
+                        code = exciseStamp?.code.orEmpty(),
+                        processingUnitNumber = exciseStamp?.processingUnitNumber.orEmpty(),
                         typeDiscrepancies = typeDiscrepancies,
                         isScan = isScan,
-                        boxNumber = exciseStamp.boxNumber,
+                        boxNumber = exciseStamp?.boxNumber.orEmpty(),
                         packNumber = "",
                         isMSC = false,
-                        organizationCodeEGAIS = exciseStamp.organizationCodeEGAIS,
-                        bottlingDate = exciseStamp.bottlingDate,
+                        organizationCodeEGAIS = exciseStamp?.organizationCodeEGAIS.orEmpty(),
+                        bottlingDate = exciseStamp?.bottlingDate.orEmpty(),
                         isUnknown = false
                 )
 
         currentExciseStampsDiscrepancies.map { it }.filter {unitInfo ->
-            if (unitInfo.code == exciseStamp.code) {
+            if (unitInfo.code == exciseStamp?.code) {
                 currentExciseStampsDiscrepancies.remove(unitInfo)
                 return@filter true
             }

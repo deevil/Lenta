@@ -143,15 +143,7 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
     МРЦ
      */
 
-    val mrc by unsafeLazy {
-        good.map { goodValue ->
-            goodValue?.let { good ->
-                val mrc = good.maxRetailPrice
-                mrc.takeIf { it.isNotEmpty() }
-                        ?.run { "${good.maxRetailPrice} ${resource.rub}" }.orEmpty()
-            }
-        }
-    }
+    val mrc = MutableLiveData<String>("")
 
     val isMrcVisible by unsafeLazy {
         good.map {
@@ -219,7 +211,7 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
         launchUITryCatch {
             with(navigator) {
                 showProgressLoadingData()
-                val status = markManager.checkMark(number, WorkType.OPEN)
+                val status = markManager.checkMark(number, WorkType.OPEN, true)
                 Logg.d { status.name }
                 hideProgress()
                 when (status) {
@@ -273,6 +265,7 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
             saveChanges()
             markManager.handleYesSaveAndOpenAnotherBox()
             tempMarks.value = markManager.getTempMarks()
+            setMrc()
         }
     }
 
@@ -310,6 +303,7 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
             markManager.handleYesDeleteMappedMarksFromTempCallBack()
             val tempMarksFromMarkManager = markManager.getTempMarks()
             tempMarks.postValue(tempMarksFromMarkManager)
+            setMrc()
         }
     }
 
@@ -391,6 +385,7 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
         isExistUnsavedData = true
         tempMarks.value = markManager.getTempMarks()
         properties.value = markManager.getProperties()
+        setMrc()
     }
 
     fun setupData(marksFromBundle: List<Mark>?, propertiesFromBundle: List<GoodProperty>?) {
@@ -416,5 +411,13 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
                 navigator.showInternalError(resource.goodNotFoundErrorMsg)
             }
         }
+    }
+
+
+    private fun setMrc() {
+        val newMrc = tempMarks.value?.firstOrNull()?.run {
+            resource.mrcSpaceRub(maxRetailPrice)
+        }.orEmpty()
+        mrc.postValue(newMrc)
     }
 }

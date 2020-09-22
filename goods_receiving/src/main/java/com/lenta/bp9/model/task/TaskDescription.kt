@@ -193,7 +193,7 @@ data class TaskDescriptionRestInfo(
         val isMark: String,
         @SerializedName("IS_ZPARTS")
         val isZBatches: String?, // Z-партии
-        @SerializedName("NAME_LIFNR")
+        @SerializedName("LIFNR_NAME")
         val supplierName: String? //Z-партии для печати этикеток
 ) {
 }
