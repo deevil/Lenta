@@ -435,7 +435,7 @@ class MarkManager @Inject constructor(
 
                     //Проверим есть ли такая маркировка в справочнике
                     if (database.isMarkTypeInDatabase(createdGood.markType)) {
-                        checkIsFoundGoodHasSameMarkType(createdGood, good, task, mrc, container)
+                        checkThatFoundGoodHasSameMarkType(createdGood, good, task, mrc, container)
                     } else {
                         MarkScreenStatus.NO_MARKTYPE_IN_SETTINGS
                     }
@@ -455,7 +455,7 @@ class MarkManager @Inject constructor(
     /**
      * Совпадают ли у товара в карточке и найденого товара маркировки
      * */
-    private suspend fun checkIsFoundGoodHasSameMarkType(
+    private suspend fun checkThatFoundGoodHasSameMarkType(
             createdGood: Good,
             currentGood: Good,
             task: TaskOpen,
@@ -463,7 +463,7 @@ class MarkManager @Inject constructor(
             container: Pair<String, Mark.Container>?
     ): MarkScreenStatus {
         return if (createdGood.markType == currentGood.markType) {
-            checkIsGoodTobaccoAndHasDifferentMrc(createdGood, currentGood, task, mrc, container)
+            checkThatGoodTobaccoAndHasDifferentMrc(createdGood, currentGood, task, mrc, container)
         } else {
             MarkScreenStatus.NOT_MARKED_GOOD
         }
@@ -472,7 +472,7 @@ class MarkManager @Inject constructor(
     /**
      * Проверим если товар табак и если его мрц нет в списке мрц задания
      * */
-    private suspend fun checkIsGoodTobaccoAndHasDifferentMrc(
+    private suspend fun checkThatGoodTobaccoAndHasDifferentMrc(
             createdGood: Good,
             currentGood: Good,
             task: TaskOpen,
