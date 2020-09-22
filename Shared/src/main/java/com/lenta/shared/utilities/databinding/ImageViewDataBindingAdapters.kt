@@ -19,6 +19,7 @@ fun setGoodTypeIcon(imageView: ImageView, productType: ProductType?) {
         ProductType.NonExciseAlcohol -> R.drawable.ic_no_excise_alcohol_white_32dp
         ProductType.ExciseAlcohol -> R.drawable.ic_excise_alcohol_white_32dp
         ProductType.Marked -> R.drawable.ic_marked_white_32dp
+        ProductType.ZBatch -> R.drawable.ic_zbatch_white_32dp
         else -> 0
     }).let { iconRes ->
         imageView.setImageResource(iconRes)

@@ -12,7 +12,9 @@ data class TaskZBatchInfo(
         val productionTime: String, //Время  производства
         val shelfLifeDate: String, //Срок годности до (Дата)
         val shelfLifeTime: String, //Срок годности до (время)
-        val purchaseOrderScope: Double //Объем заказа на поставку
+        val purchaseOrderScope: Double, //Объем заказа на поставку
+        val alternativeUnitMeasure: String, // альтернативная единица измерения
+        val quantityAlternativeUnitMeasure: Double // количество в альтернативной единице измерения
 ) {
     companion object {
         fun from(restData: TaskZBatchInfoRestData): TaskZBatchInfo {
@@ -25,7 +27,9 @@ data class TaskZBatchInfo(
                     productionTime = restData.productionTime.orEmpty(),
                     shelfLifeDate = restData.shelfLifeDate.orEmpty(),
                     shelfLifeTime = restData.shelfLifeTime.orEmpty(),
-                    purchaseOrderScope = restData.purchaseOrderScope?.toDouble() ?: 0.0
+                    purchaseOrderScope = restData.purchaseOrderScope?.toDoubleOrNull() ?: 0.0,
+                    alternativeUnitMeasure = restData.alternativeUnitMeasure.orEmpty(),
+                    quantityAlternativeUnitMeasure = restData.quantityAlternativeUnitMeasure?.toDoubleOrNull() ?: 0.0
             )
         }
     }
@@ -49,6 +53,10 @@ data class TaskZBatchInfoRestData(
         @SerializedName("SHELF_LIFE_T")
         val shelfLifeTime: String?,
         @SerializedName("MENGE")
-        val purchaseOrderScope: String?
+        val purchaseOrderScope: String?,
+        @SerializedName("ALTME")
+        val alternativeUnitMeasure: String?, // альтернативная единица измерения
+        @SerializedName("ALTVOLUME")
+        val quantityAlternativeUnitMeasure: String? // количество в альтернативной единице измерения
 ) {
 }

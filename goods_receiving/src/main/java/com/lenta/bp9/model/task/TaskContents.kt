@@ -245,7 +245,7 @@ class TaskContents
                     materialNumber = materialInfo?.material.orEmpty(),
                     description = materialInfo?.name.orEmpty(),
                     uom = Uom(code = uomInfo?.uom.orEmpty(), name = uomInfo?.name.orEmpty()),
-                    type = getProductType(isAlco = it.isAlco == "X", isExcise = it.isExc == "X"),
+                    type = getProductType(isAlco = it.isAlco == "X", isExcise = it.isExc == "X", isZBatch = (it.isZBatches == "X" && it.isVet == "")),
                     isSet = it.isSet == "X",
                     sectionId = materialInfo?.abtnr.orEmpty(),
                     matrixType = getMatrixType(materialInfo?.matrType.orEmpty()),
@@ -287,7 +287,7 @@ class TaskContents
                     isZBatches = it.isZBatches == "X",
                     isNeedPrint = it.isNeedPrint == "X",
                     alternativeUnitMeasure = it.alternativeUnitMeasure.orEmpty(),
-                    quantityAlternativeUnitMeasure = it.quantityAlternativeUnitMeasure.orEmpty()
+                    quantityAlternativeUnitMeasure = it.quantityAlternativeUnitMeasure?.toDoubleOrNull() ?: 0.0
             )
         }
     }

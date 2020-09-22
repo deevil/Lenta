@@ -542,7 +542,10 @@
 
             </LinearLayout>
 
-            <View style="@style/BottomIconEmptyPlaceStyle" />
+            <ImageView
+                style="@style/BottomIconStyle"
+                app:goodTypeIcon="@{vm.productInfo.type}"
+                tools:src="@drawable/ic_zbatch_white_32dp" />
 
             <View style="@style/BottomIconEmptyPlaceStyle" />
 
