@@ -71,7 +71,8 @@ class GoodInfoViewModel : BaseProductInfoViewModel() {
                 processGeneralProductService.add(getSelectedReason(), it)
             }
 
-            count.value = ""
+            count.value = "0"
+            requestFocusToQuantity.value = true
 
             return true
         }
