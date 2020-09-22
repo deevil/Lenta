@@ -77,21 +77,21 @@ class BasketOpenGoodListViewModel : BaseGoodListOpenViewModel(), OnOkInSoftKeybo
     val goods by lazy {
         Logg.e { basket.value.toString() }
         basket.mapSkipNulls { activeBasket ->
-                val list = activeBasket.getGoodList()
-                list.mapIndexed { index, good ->
-                    val units = good.commonUnits.name
-                    val quantity = activeBasket.goods[good]
+            val list = activeBasket.getGoodList()
+            list.mapIndexed { index, good ->
+                val units = good.commonUnits.name
+                val quantity = activeBasket.goods[good]
 
-                    Logg.d { "-> freeVolume: ${activeBasket.freeVolume}, isPrinted: ${activeBasket.isPrinted}, isLocked: ${activeBasket.isLocked} ${activeBasket.goods}" }
+                Logg.d { "-> freeVolume: ${activeBasket.freeVolume}, isPrinted: ${activeBasket.isPrinted}, isLocked: ${activeBasket.isLocked} ${activeBasket.goods}" }
 
-                    ItemGoodUi(
-                            position = "${index + 1}",
-                            name = good.getNameWithMaterial(),
-                            quantity = "${quantity.dropZeros()} $units",
-                            material = good.material,
-                            good = good
-                    )
-                }
+                ItemGoodUi(
+                        position = "${index + 1}",
+                        name = good.getNameWithMaterial(),
+                        quantity = "${quantity.dropZeros()} $units",
+                        material = good.material,
+                        good = good
+                )
+            }
         }
     }
 
@@ -180,7 +180,7 @@ class BasketOpenGoodListViewModel : BaseGoodListOpenViewModel(), OnOkInSoftKeybo
                             goodFromBasket = goodFromBasket,
                             basketToGetQuantity = basket
                     )
-                    if(goodFromBasket.getTotalQuantity() == 0.0) {
+                    if (goodFromBasket.getTotalQuantity() == 0.0) {
                         goodFromBasket.isCounted = false
                     }
                     //Удалим товар из корзины
