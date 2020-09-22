@@ -8,10 +8,7 @@ import com.lenta.bp12.features.open_task.base.BaseGoodListOpenViewModel
 import com.lenta.bp12.managers.interfaces.IMarkManager
 import com.lenta.bp12.managers.interfaces.IOpenTaskManager
 import com.lenta.bp12.model.pojo.Basket
-import com.lenta.bp12.model.pojo.extentions.getDescription
-import com.lenta.bp12.model.pojo.extentions.getQuantityFromGoodList
-import com.lenta.bp12.model.pojo.extentions.isAnyNotLocked
-import com.lenta.bp12.model.pojo.extentions.isAnyPrinted
+import com.lenta.bp12.model.pojo.extentions.*
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -301,17 +298,22 @@ class GoodListViewModel : BaseGoodListOpenViewModel(), PageSelectionListener, On
                         val materials = mutableListOf<String>()
                         processingSelectionsHelper.selectedPositions.value?.mapNotNullTo(materials) { position ->
                             processing.value?.get(position)?.material
-                        }
+                        }.orEmpty()
 
                         processingSelectionsHelper.clearPositions()
                         manager.markGoodsDeleted(materials)
                     }
                 }
                 PROCESSED_PAGE_INDEX -> {
-                    val materials = processedSelectionsHelper.selectedPositions.value?.mapNotNullTo(mutableListOf()) { position ->
-                        processed.value?.get(position)?.material
+                    val itemsToDelete = processedSelectionsHelper.selectedPositions.value?.mapNotNullTo(mutableListOf()) { position ->
+                        processed.value?.get(position)
                     }.orEmpty()
-
+                    val materials = itemsToDelete.map {
+                        it.material
+                    }
+                    itemsToDelete.forEach {
+                        it.good.clearMarksPartsPositions()
+                    }
                     processedSelectionsHelper.clearPositions()
                     manager.markGoodsUncounted(materials)
                     manager.deleteGoodsFromBaskets(materials)
