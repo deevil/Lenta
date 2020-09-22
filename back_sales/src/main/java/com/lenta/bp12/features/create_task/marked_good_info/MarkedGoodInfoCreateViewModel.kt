@@ -150,15 +150,7 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
     МРЦ
      */
 
-    val mrc by unsafeLazy {
-        good.map { goodValue ->
-            goodValue?.let { good ->
-                val mrc = good.maxRetailPrice
-                mrc.takeIf { it.isNotEmpty() }
-                        ?.run { "${good.maxRetailPrice} ${resource.rub}" }.orEmpty()
-            }
-        }
-    }
+    val mrc = MutableLiveData<String>("")
 
     val isMrcVisible by unsafeLazy {
         good.map {
@@ -213,6 +205,7 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
             }
             actionByNumber(
                     number = number,
+                    actionFromGood = true,
                     funcForBox = ::loadBoxInfo,
                     funcForMark = ::checkMark,
                     funcForNotValidBarFormat = navigator::showIncorrectEanFormat
@@ -256,7 +249,7 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
         launchUITryCatch {
             with(navigator) {
                 showProgressLoadingData()
-                val result = markManager.checkMark(number, WorkType.CREATE)
+                val result = markManager.checkMark(number, WorkType.CREATE, true)
                 hideProgress()
                 when (result) {
                     MarkScreenStatus.OK -> setMarksAndProperties()
@@ -316,6 +309,7 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
     private fun setMarksAndProperties() {
         tempMarks.value = markManager.getTempMarks()
         properties.value = markManager.getProperties()
+        setMrc()
     }
 
     private fun handleYesSaveCurrentMarkToBasketAndOpenAnother() {
@@ -323,6 +317,7 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
             saveChanges()
             markManager.handleYesSaveAndOpenAnotherBox()
             tempMarks.value = markManager.getTempMarks()
+            setMrc()
         }
     }
 
@@ -331,7 +326,15 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
             markManager.handleYesDeleteMappedMarksFromTempCallBack()
             val tempMarksFromMarkManager = markManager.getTempMarks()
             tempMarks.postValue(tempMarksFromMarkManager)
+            setMrc()
         }
+    }
+
+    private fun setMrc() {
+        val newMrc = tempMarks.value?.firstOrNull()?.run {
+            resource.mrcSpaceRub(maxRetailPrice)
+        }.orEmpty()
+        mrc.postValue(newMrc)
     }
 
     override suspend fun saveChanges() {
@@ -348,7 +351,6 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
     private suspend fun addMarks(changedGood: Good) {
         tempMarks.value?.let { tempMarksValue ->
             changedGood.addMarks(tempMarksValue)
-            Logg.e { "$changedGood" }
             manager.addGoodToBasketWithMarks(changedGood, tempMarksValue, getProvider())
         }
     }

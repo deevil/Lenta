@@ -4,5 +4,5 @@ import androidx.lifecycle.MutableLiveData
 import com.lenta.bp16.model.ingredients.ui.ZPartDataInfoUI
 
 interface IZpartInfo {
-    val zPartDataInfo: MutableLiveData<List<ZPartDataInfoUI>>
+    val zPartDataInfos: MutableLiveData<List<ZPartDataInfoUI>>
 }

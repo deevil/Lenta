@@ -58,6 +58,12 @@
                         android:text="@{item.name}"
                         tools:text="000021 Масло" />
 
+                    <TextView
+                        style="@style/CellTextStyle"
+                        android:text="@{item.mrc}"
+                        tools:text="МРЦ - 150 руб"
+                        android:visibility="@{!item.mrc.isEmpty()}"/>
+
                 </LinearLayout>
 
                 <ImageView
