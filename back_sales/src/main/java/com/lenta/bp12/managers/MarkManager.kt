@@ -147,9 +147,6 @@ class MarkManager @Inject constructor(
             val (blocBarcode, gtin, _, mrc, _, _) = it.destructured // blockBarcode, gtin, serial, mrc, verificationKey, other
             val container = Pair(blocBarcode, Mark.Container.CARTON)
 
-//            val ean = gtin.getEANfromGTIN()
-//            getGoodByEan(ean, container, mrc)
-
             if (isScanFromGoodCard) {
                 chooseGood()?.let { good ->
                     val newMrc = mrc.getFormattedMrc(good.ean)
@@ -382,11 +379,6 @@ class MarkManager @Inject constructor(
                     purchaseGroup = materialInfo?.purchaseGroup.orEmpty()
             )
 
-            if (good != null && createdGood.material != good.material) {
-                createdGoodToShowError.value = createdGood
-                MarkScreenStatus.NOT_SAME_GOOD
-            }
-
             if (database.isMarkTypeInDatabase(createdGood.markType)) {
                 if (good == null || createdGood.markType == good.markType) {
                     setFoundGood(createdGood, container)
@@ -434,10 +426,6 @@ class MarkManager @Inject constructor(
                             type = materialInfo?.goodType.orEmpty(),
                             purchaseGroup = materialInfo?.purchaseGroup.orEmpty()
                     )
-                    if (createdGood.material != good.material) {
-                        createdGoodToShowError.value = createdGood
-                        MarkScreenStatus.NOT_SAME_GOOD
-                    }
 
                     //Проверим есть ли такая маркировка в справочнике
                     if (database.isMarkTypeInDatabase(createdGood.markType)) {
@@ -497,18 +485,12 @@ class MarkManager @Inject constructor(
             container: Pair<String, Mark.Container>? = null
     ): MarkScreenStatus {
         val manager = chooseManager()
-        val currentGood = manager.currentGood.value
-        return if (currentGood != null && foundGood.material != currentGood.material) {
-            createdGoodToShowError.value = foundGood
-            MarkScreenStatus.NOT_SAME_GOOD
+        return if (container != null) {
+            val params = getMarkParams(foundGood, container)
+            checkMarkNetRequest(params, foundGood)
         } else {
-            if (container != null) {
-                val params = getMarkParams(foundGood, container)
-                checkMarkNetRequest(params, foundGood)
-            } else {
-                manager.updateCurrentGood(foundGood)
-                MarkScreenStatus.OK_BUT_NEED_TO_SCAN_MARK
-            }
+            manager.updateCurrentGood(foundGood)
+            MarkScreenStatus.OK_BUT_NEED_TO_SCAN_MARK
         }
     }
 
@@ -547,26 +529,18 @@ class MarkManager @Inject constructor(
         return marks?.let { resultMarks ->
             tempMarks.let { localTempMarks ->
                 val mappedMarks = resultMarks.mapToMarkList(foundGood)
-                val currentGood = chooseGood()
                 when (status) {
                     MarkStatus.GOOD_CARTON -> {
-                        if (currentGood?.isTobaccoAndFoundGoodHasDifferentMrc(foundGood) == true) {
-                            Logg.e { "foundGood: ${foundGood.maxRetailPrice} currentGood: ${currentGood.maxRetailPrice}" }
-                            this.mappedMarks = mappedMarks
-                            tempGood.value = foundGood
-                            MarkScreenStatus.MRC_NOT_SAME_IN_BASKET
-                        } else {
-                            addOrDeleteMarksFromTemp(
-                                    restProperties = properties,
-                                    localTempMarks = localTempMarks,
-                                    mappedMarks = mappedMarks,
-                                    foundGood = foundGood,
-                                    screenStatusIfAlreadyScanned = MarkScreenStatus.CARTON_ALREADY_SCANNED
-                            )
-                        }
+                        checkIsAnyOfMarksIsAlreadyIn(
+                                restProperties = properties,
+                                localTempMarks = localTempMarks,
+                                mappedMarks = mappedMarks,
+                                foundGood = foundGood,
+                                screenStatusIfAlreadyScanned = MarkScreenStatus.CARTON_ALREADY_SCANNED
+                        )
                     }
                     MarkStatus.GOOD_MARK -> {
-                        addOrDeleteMarksFromTemp(
+                        checkIsAnyOfMarksIsAlreadyIn(
                                 restProperties = properties,
                                 localTempMarks = localTempMarks,
                                 mappedMarks = mappedMarks,
@@ -575,7 +549,7 @@ class MarkManager @Inject constructor(
                         )
                     }
                     MarkStatus.GOOD_BOX -> {
-                        addOrDeleteMarksFromTemp(
+                        checkIsAnyOfMarksIsAlreadyIn(
                                 restProperties = properties,
                                 localTempMarks = localTempMarks,
                                 mappedMarks = mappedMarks,
@@ -603,17 +577,38 @@ class MarkManager @Inject constructor(
      * (кнопка да удаляет марки)
      * Если нет то добавляет, и обновляет лайв дату
      * */
-    private fun addOrDeleteMarksFromTemp(
+    private fun checkIsAnyOfMarksIsAlreadyIn(
             restProperties: List<PropertiesInfo>?,
             localTempMarks: MutableList<Mark>,
             mappedMarks: List<Mark>,
             foundGood: Good,
             screenStatusIfAlreadyScanned: MarkScreenStatus
     ): MarkScreenStatus {
-        Logg.e { "foundGood: $foundGood mappedMarks: $mappedMarks" }
-        return if (localTempMarks.isAnyAlreadyIn(mappedMarks) || foundGood.marks.isAnyAlreadyIn(mappedMarks)) {
+        val manager = chooseManager()
+        val goodThatHasMarks = manager.currentTask.value?.goods?.firstOrNull { it.marks.isAnyAlreadyIn(mappedMarks) }
+        return if (localTempMarks.isAnyAlreadyIn(mappedMarks) || goodThatHasMarks != null) {
             this.mappedMarks = mappedMarks
             screenStatusIfAlreadyScanned
+        } else {
+            addOrDeleteMarksFromTemp(foundGood, restProperties, localTempMarks, mappedMarks)
+        }
+    }
+
+    /**
+     * Метод проверяет одинаковые ли мрц у сигаретных марок
+     * если марка не сигаретная или мрц одинаковые то все ок
+     * */
+    private fun addOrDeleteMarksFromTemp(
+            foundGood: Good,
+            restProperties: List<PropertiesInfo>?,
+            localTempMarks: MutableList<Mark>,
+            mappedMarks: List<Mark>
+    ): MarkScreenStatus {
+        val currentGood = chooseGood()
+        return if (currentGood?.isTobaccoAndFoundGoodHasDifferentMrc(foundGood) == true) {
+            this.mappedMarks = mappedMarks
+            tempGood.value = foundGood
+            MarkScreenStatus.MRC_NOT_SAME_IN_BASKET
         } else {
             val manager = chooseManager()
             manager.updateCurrentGood(foundGood)
@@ -685,10 +680,10 @@ class MarkManager @Inject constructor(
     }
 
     override fun handleYesSaveAndOpenAnotherBox() {
-        tempMarks.clear()
-        tempMarks.addAll(mappedMarks)
         val manager = chooseManager()
         manager.updateCurrentGood(tempGood.value)
+        tempMarks.clear()
+        tempMarks.addAll(mappedMarks)
     }
 
     private fun chooseManager(): ITaskManager<*> {
