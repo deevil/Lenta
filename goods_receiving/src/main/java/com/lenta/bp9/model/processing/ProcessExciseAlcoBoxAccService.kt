@@ -110,16 +110,16 @@ class ProcessExciseAlcoBoxAccService
 
         foundExciseStampDiscrepancy = foundExciseStampDiscrepancy?.copy(typeDiscrepancies = typeDiscrepancies, isScan = isScan)
                 ?: TaskExciseStampDiscrepancies(
-                        materialNumber = exciseStamp.materialNumber,
-                        code = exciseStamp.code,
-                        processingUnitNumber = exciseStamp.processingUnitNumber,
+                        materialNumber = exciseStamp.materialNumber.orEmpty(),
+                        code = exciseStamp.code.orEmpty(),
+                        processingUnitNumber = exciseStamp.processingUnitNumber.orEmpty(),
                         typeDiscrepancies = typeDiscrepancies,
                         isScan = isScan,
-                        boxNumber = exciseStamp.boxNumber,
+                        boxNumber = exciseStamp.boxNumber.orEmpty(),
                         packNumber = "",
                         isMSC = false,
-                        organizationCodeEGAIS = exciseStamp.organizationCodeEGAIS,
-                        bottlingDate = exciseStamp.bottlingDate,
+                        organizationCodeEGAIS = exciseStamp.organizationCodeEGAIS.orEmpty(),
+                        bottlingDate = exciseStamp.bottlingDate.orEmpty(),
                         isUnknown = false
                 )
 

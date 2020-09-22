@@ -14,7 +14,7 @@ import com.lenta.shared.exception.Failure
 interface IMarkManager {
 
     fun setWorkType(workType: WorkType)
-    suspend fun checkMark(number: String, workType: WorkType): MarkScreenStatus
+    suspend fun checkMark(number: String, workType: WorkType, isCheckFromGoodCard: Boolean): MarkScreenStatus
     suspend fun handleYesDeleteMappedMarksFromTempCallBack()
     fun handleYesSaveAndOpenAnotherBox()
     fun getMarkFailure(): Failure

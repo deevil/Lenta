@@ -144,7 +144,7 @@
 
             <com.lenta.shared.view.ClickableSpinner
                 android:enabled="@{vm.disableSpinner}"
-                app:items="@{vm.producerNameField}"
+                app:items="@{vm.producerNames}"
                 app:position="@={vm.selectedProducerPosition}"
                 style="@style/CellSpinnerStyle"
                 tools:entries="@array/manufacturer_list" />
@@ -181,7 +181,7 @@
                     android:layout_margin="@dimen/margin_small"
                     android:layout_weight="1"
                     android:enabled="@{vm.disableSpinner}"
-                    app:items="@{vm.productionDateField}"
+                    app:items="@{vm.productionDates}"
                     app:position="@={vm.selectedDateProductionPosition}"
                     tools:entries="@array/date_list" />
 
