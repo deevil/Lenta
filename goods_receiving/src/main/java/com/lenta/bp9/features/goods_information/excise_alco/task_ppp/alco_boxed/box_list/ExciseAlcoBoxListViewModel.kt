@@ -354,7 +354,7 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkI
                 }
             }
             if (selectQualityCode.value == SELECT_QUALITY_CODE) {
-                if (processExciseAlcoBoxAccService.getCountBoxOfProductOfDiscrepancies(boxInfo.boxNumber, SELECT_QUALITY_CODE) >= processExciseAlcoBoxAccService.getCountAccept()) {
+                if (processExciseAlcoBoxAccService.getCountBoxOfProductOfDiscrepancies(boxInfo?.boxNumber.orEmpty(), SELECT_QUALITY_CODE) >= processExciseAlcoBoxAccService.getCountAccept()) {
                     screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
                 } else {
 

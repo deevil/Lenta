@@ -24,8 +24,7 @@ import com.lenta.shared.utilities.state.state
 class MarkingInfoBoxPGEFragment : CoreFragment<FragmentMarkingInfoBoxPgeBinding, MarkingInfoBoxPGEViewModel>(),
         ToolbarButtonsClickListener,
         OnScanResultListener,
-        OnBackPresserListener,
-        OnKeyDownListener {
+        OnBackPresserListener{
 
     private var productInfo by state<TaskProductInfo?>(null)
 
@@ -112,39 +111,6 @@ class MarkingInfoBoxPGEFragment : CoreFragment<FragmentMarkingInfoBoxPgeBinding,
                 it.productInfo = productInfo
                 return it
             }
-        }
-    }
-
-
-    override fun onKeyDown(keyCode: KeyCode): Boolean {
-        return when (keyCode) {
-            // 504550
-            //Блок Мрц 106
-            KeyCode.KEYCODE_0 -> {
-                vm.onScanResult("346060680015914878")
-                true
-            }
-            //Блок Мрц 100
-            KeyCode.KEYCODE_1 -> {
-                vm.onScanResult("010467003610609821FFf!:sAV<NmhH")
-                true
-            }
-            //пачка
-            KeyCode.KEYCODE_2 -> {
-                vm.onScanResult("010467003610609821FF64D'U7&jY*0")
-                true
-            }
-            //Коробка обуви
-            KeyCode.KEYCODE_3 -> {
-                vm.onScanResult("010290000004865221jKU/\"RG(eUD4N")
-                true
-            }
-            //Марка из этой коробки
-            KeyCode.KEYCODE_4 -> {
-                vm.onScanResult("346060680018702229")
-                true
-            }
-            else -> false
         }
     }
 }
