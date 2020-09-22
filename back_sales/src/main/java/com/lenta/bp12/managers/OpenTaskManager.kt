@@ -110,6 +110,7 @@ class OpenTaskManager @Inject constructor(
                             eans = goodInfo.eans,
                             material = material.orEmpty(),
                             name = goodInfo.name,
+                            control = goodInfo.kind.toControlType(),
                             section = goodInfo.section,
                             matrix = goodInfo.matrix,
                             kind = goodInfo.kind,
