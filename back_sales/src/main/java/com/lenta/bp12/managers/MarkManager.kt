@@ -146,24 +146,31 @@ class MarkManager @Inject constructor(
         return regex?.let {
             val (blocBarcode, gtin, _, mrc, _, _) = it.destructured // blockBarcode, gtin, serial, mrc, verificationKey, other
             val container = Pair(blocBarcode, Mark.Container.CARTON)
-
             if (isScanFromGoodCard) {
-                chooseGood()?.let { good ->
-                    val newMrc = mrc.getFormattedMrc(good.ean)
-                    if (good.maxRetailPrice.isEmpty()) {
-                        good.maxRetailPrice = newMrc
-                        setFoundGood(good, container)
-                    } else {
-                        val newGood = good.copyWithDifferentMrc(newMrc)
-                        setFoundGood(newGood, container)
-                    }
-                }
+                updateCurrentGoodTobaccoMark(mrc, container)
             } else {
                 val ean = gtin.getEANfromGTIN()
                 getGoodByEan(ean, container, mrc)
             }
         }.orIfNull {
             internalErrorMessage = "carton regex null"
+            Logg.e { internalErrorMessage }
+            MarkScreenStatus.INTERNAL_ERROR
+        }
+    }
+
+    private suspend fun updateCurrentGoodTobaccoMark(mrc: String, container: Pair<String, Mark.Container>): MarkScreenStatus {
+        return chooseGood()?.let { good ->
+            val newMrc = mrc.getFormattedMrc(good.ean)
+            if (good.maxRetailPrice.isEmpty()) {
+                good.maxRetailPrice = newMrc
+                setFoundGood(good, container)
+            } else {
+                val newGood = good.copyWithDifferentMrc(newMrc)
+                setFoundGood(newGood, container)
+            }
+        }.orIfNull {
+            internalErrorMessage = resource.goodNotFoundErrorMsg
             Logg.e { internalErrorMessage }
             MarkScreenStatus.INTERNAL_ERROR
         }
