@@ -162,41 +162,39 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                         writeOffTask.deleteProducts(it)
                     }
                 }
-                else -> {
+                1 -> {
                     with(filteredSelectionsHelper) {
-                        if (isSelectedEmpty() && (selectedCategoryPosition.value == 0 &&
-                                        (categories.value?.size ?: 0) > 1)) {
-                            screenNavigator
-                                    .openRemoveLinesConfirmationScreen(
-                                            taskDescription = writeOffTask.taskDescription.taskName,
-                                            count = filteredGoods.value?.size ?: 0,
-                                            codeConfirmation = requestCodeDelete)
-                        } else {
-                            if (isSelectedEmpty()) {
-                                filteredGoods.value?.let {
-                                    addAll(it)
-                                }
-                            }
-                            selectedPositions.value?.map { position ->
-                                filteredGoods.value!![position].let { filterItem ->
-                                    writeOffTask.deleteTaskWriteOffReason(filterItem.taskWriteOffReason)
-                                }
-                            }
+                        val isEmptyCategory = selectedCategoryPosition.value == 0 && categories.value?.size ?: 0 > 1
+                        if (isSelectedEmpty() && isEmptyCategory) {
+                            screenNavigator.openRemoveLinesConfirmationScreen(
+                                    taskDescription = writeOffTask.taskDescription.taskName,
+                                    count = filteredGoods.value?.size ?: 0,
+                                    codeConfirmation = requestCodeDelete
+                            )
 
+                            return
+                        }
+
+                        if (isSelectedEmpty()) {
+                            filteredGoods.value?.let {
+                                addAll(it)
+                            }
+                        }
+
+                        selectedPositions.value?.map { position ->
+                            filteredGoods.value!![position].let { filterItem ->
+                                writeOffTask.deleteTaskWriteOffReason(filterItem.taskWriteOffReason)
+                            }
                         }
                     }
-
-
                 }
-
-
+                else -> throw IllegalArgumentException("Wrong pager position!")
             }
+
             selectedCategoryPosition.value = 0
             updateCounted()
             updateFilter()
-
         }
-
     }
 
     fun onResult(code: Int?) {
