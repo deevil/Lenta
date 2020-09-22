@@ -8,7 +8,7 @@ interface IZpartVisibleConditions : IZpartInfo {
 
     val producerConditions: LiveData<Pair<Boolean, Boolean>>
         get() {
-            return zPartDataInfo.mapSkipNulls { zPartDataInfoValue ->
+            return zPartDataInfos.mapSkipNulls { zPartDataInfoValue ->
 
                 val producersList = zPartDataInfoValue.map { it.prodName }
 
