@@ -64,7 +64,7 @@ class MaterialAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
     lateinit var saveProducerDataInfoUseCase: SetProducerDataInfoUseCase
 
     private val producerDataInfo = MutableLiveData<List<ProducerDataInfoUI>>()
-    override val zPartDataInfo = MutableLiveData<List<ZPartDataInfoUI>>()
+    override val zPartDataInfos = MutableLiveData<List<ZPartDataInfoUI>>()
     val materialIngredient = MutableLiveData<MaterialIngredientDataInfoUI>()
 
     // значение параметра OBJ_CODE из родительского компонента заказа
@@ -131,7 +131,7 @@ class MaterialAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
     fun updateData() {
         launchUITryCatch {
             producerDataInfo.value = producerDataInfoUseCase()
-            zPartDataInfo.value = zPartDataInfoUseCase()
+            zPartDataInfos.value = zPartDataInfoUseCase()
             if (alertNotFoundProducerName.value == true) {
                 navigator.goBack()
                 navigator.showAlertProducerCodeNotFound()
@@ -164,7 +164,7 @@ class MaterialAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
             val monthWith30Days = listOf(4, 6, 9, 11)
             val leapYear = (year % 4 == 0) //Условие високосного года
             when {
-                year in YEAR_RANGE_2000_TO_2100 -> false
+                year !in YEAR_RANGE_2000_TO_2100 -> false
                 monthWith31Days.contains(month) -> day <= MONTH_WITH_31_DAY
                 monthWith30Days.contains(month) && month != 2 -> day <= MONTH_WITH_30_DAY
                 leapYear  -> day <= MONTH_WITH_29_DAY

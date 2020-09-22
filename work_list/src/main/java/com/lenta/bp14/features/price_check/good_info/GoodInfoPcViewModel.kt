@@ -9,7 +9,7 @@ import com.lenta.bp14.models.print.IPrintTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.requests.combined.scan_info.analyseCode
+import com.lenta.shared.utilities.actionByNumber
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -17,8 +17,10 @@ class GoodInfoPcViewModel : CoreViewModel() {
 
     @Inject
     lateinit var navigator: IScreenNavigator
+
     @Inject
     lateinit var task: ICheckPriceTask
+
     @Inject
     lateinit var printTask: IPrintTask
 
@@ -68,17 +70,11 @@ class GoodInfoPcViewModel : CoreViewModel() {
     }
 
     private fun checkCode(code: String?) {
-        analyseCode(
-                code = code.orEmpty(),
-                funcForEan = { eanCode ->
-                    searchCode(eanCode = eanCode)
-                },
-                funcForMatNr = { matNr ->
-                    searchCode(matNr = matNr)
-                },
-                funcForPriceQrCode = { qrCode ->
-                    searchCode(qrCode = qrCode)
-                },
+        actionByNumber(
+                number = code.orEmpty(),
+                funcForEan = { ean -> searchCode(eanCode = ean) },
+                funcForMaterial = { material -> searchCode(matNr = material) },
+                funcForPriceQrCode = { qrCode -> searchCode(qrCode = qrCode) },
                 funcForSapOrBar = navigator::showTwelveCharactersEntered,
                 funcForNotValidFormat = navigator::showGoodNotFound
         )

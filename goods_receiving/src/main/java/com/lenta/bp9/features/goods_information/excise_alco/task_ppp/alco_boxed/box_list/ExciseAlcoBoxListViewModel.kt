@@ -98,7 +98,7 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkI
             !taskManager.getReceivingTask()?.taskRepository?.getBoxesDiscrepancies()?.findBoxesDiscrepanciesOfProduct(productInfo.value!!)?.findLast { it.boxNumber == box.boxNumber }?.boxNumber.isNullOrEmpty()
         }
 
-        boxNotProcessed?.let { boxInfoList ->
+        boxNotProcessed?.let {boxInfoList ->
             countNotProcessed.postValue(
                     boxInfoList
                             .mapIndexed { index, boxInfo ->
@@ -118,13 +118,12 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkI
         }
         notProcessedSelectionsHelper.clearPositions()
 
-        boxProcessed?.let { boxInfoList ->
+        boxProcessed?.let {boxInfoList ->
             countProcessed.postValue(
                     boxInfoList
                             .mapIndexed { index, boxInfo ->
                                 val isDefectiveBox = processExciseAlcoBoxAccService.defectiveBox(boxInfo.boxNumber)
-                                val typeDiscrepancies = taskManager.getReceivingTask()?.taskRepository?.getBoxesDiscrepancies()?.findBoxesDiscrepanciesOfProduct(productInfo.value!!)?.findLast { it.boxNumber == boxInfo.boxNumber }?.typeDiscrepancies
-                                        ?: ""
+                                val typeDiscrepancies = taskManager.getReceivingTask()?.taskRepository?.getBoxesDiscrepancies()?.findBoxesDiscrepanciesOfProduct(productInfo.value!!)?.findLast { it.boxNumber == boxInfo.boxNumber }?.typeDiscrepancies ?: ""
                                 BoxListItem(
                                         number = index + 1,
                                         name = boxInfo.boxNumber.takeIf { it.length >= 26 }?.run { "${substring(0, 10)} ${substring(10, 20)} ${substring(20, 26)}" }.orEmpty(),
@@ -149,18 +148,17 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkI
         isSelectAll.value = false
     }
 
-    fun onClickClean() {
+    fun onClickClean(){
         processedSelectionsHelper.selectedPositions.value?.map { position ->
             processExciseAlcoBoxAccService.cleanBoxInfo(
                     boxNumber = countProcessed.value?.get(position)?.boxInfo?.boxNumber ?: "",
-                    typeDiscrepancies = countProcessed.value?.get(position)?.typeDiscrepancies
-                            ?: "")
+                    typeDiscrepancies = countProcessed.value?.get(position)?.typeDiscrepancies ?: "")
         }
 
         updateData()
     }
 
-    fun onClickHandleGoods() {
+    fun onClickHandleGoods(){
         /** производить сравнение введенного количества в брак на экране карточки товара(X) с выбранным количеством коробов на экране списка коробов на закладке "К обработке"(Y):
         -Если X<Y, то выводить экран с сообщением <Выбрано больше элементов, чем введено>.
         -Если X>=Y, то переходить на экран карточки короба*/
@@ -242,13 +240,13 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkI
         }
     }
 
-    private fun checkScannedExciseStamp(data: String) {
-        val exciseStampInfo = processExciseAlcoBoxAccService.searchExciseStamp(data)
-        if (exciseStampInfo == null) {
-            screenNavigator.openAlertScannedStampNotFoundScreen() //Отсканированная марка не числится в текущей поставке. Перейдите к коробу, в которой находится эта марка и отсканируйте ее снова.
-        } else {
-            isStampBoxSAP(exciseStampInfo)
-        }
+   private fun checkScannedExciseStamp(data: String){
+       val exciseStampInfo = processExciseAlcoBoxAccService.searchExciseStamp(data)
+       if (exciseStampInfo == null) {
+           screenNavigator.openAlertScannedStampNotFoundScreen() //Отсканированная марка не числится в текущей поставке. Перейдите к коробу, в которой находится эта марка и отсканируйте ее снова.
+       } else {
+           isStampBoxSAP(exciseStampInfo)
+       }
     }
 
     private fun isStampBoxSAP(exciseStampInfo: TaskExciseStampInfo) {
@@ -256,12 +254,12 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkI
             //Отсканированная марка принадлежит товару <SAP-код> <Название>"
             screenNavigator.openAlertScannedStampBelongsAnotherProductScreen(exciseStampInfo.materialNumber.orEmpty(), zfmpUtz48V001.getProductInfoByMaterial(exciseStampInfo.materialNumber)?.name.orEmpty())
         } else {
-            isAllBoxesProcessed(exciseStampInfo)
+            checkAllBoxesProcessed(exciseStampInfo)
         }
     }
 
-    private fun isAllBoxesProcessed(exciseStampInfo: TaskExciseStampInfo) {
-        if (processExciseAlcoBoxAccService.getCountBoxOfProductOfDiscrepancies(exciseStampInfo.boxNumber.orEmpty(), SELECT_QUALITY_CODE) >= processExciseAlcoBoxAccService.getCountAccept()) {
+    private fun checkAllBoxesProcessed(exciseStampInfo: TaskExciseStampInfo) {
+        if (processExciseAlcoBoxAccService.getCountBoxOfProductOfDiscrepancies(exciseStampInfo.boxNumber.orEmpty(), "1") >= processExciseAlcoBoxAccService.getCountAccept()) {
             screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
         } else {
             productInfo.value?.let { productInfoValue ->
@@ -282,23 +280,79 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkI
                 }
             }
         }
+
     }
 
-    private fun checkScannedBox(data: String) {
+    private fun checkScannedBox(data:String){
         val boxInfo = processExciseAlcoBoxAccService.searchBox(boxNumber = data)
         if (boxInfo == null) {
             screenNavigator.openAlertScannedBoxNotFoundScreen() //Отсканированная коробка не числится в задании. Отдайте коробку поставщику.
         } else {
-            isBoxSAP(boxInfo)
+            checkBoxSAP(boxInfo)
         }
     }
 
-    private fun isBoxSAP(boxInfo: TaskBoxInfo) {
-        if (boxInfo.materialNumber != productInfo.value?.materialNumber) {
+    private fun checkBoxSAP(boxInfo: TaskBoxInfo) {
+        if (boxInfo.materialNumber != productInfo.value!!.materialNumber) {
             //Отсканированная коробка принадлежит товару <SAP-код> <Название>
-            screenNavigator.openAlertScannedBoxBelongsAnotherProductScreen(materialNumber = boxInfo.materialNumber, materialName = zfmpUtz48V001.getProductInfoByMaterial(boxInfo.materialNumber)?.name
-                    ?: "")
+            screenNavigator.openAlertScannedBoxBelongsAnotherProductScreen(materialNumber = boxInfo.materialNumber, materialName = zfmpUtz48V001.getProductInfoByMaterial(boxInfo.materialNumber)?.name ?: "")
         } else {
+            processBoxInfo(boxInfo)
+        }
+    }
+
+
+    private fun processBoxInfo(boxInfo: TaskBoxInfo?) {
+        if (selectQualityCode.value == "1") {
+            oneQualityCode(boxInfo)
+        } else {
+            twoQualityCode(boxInfo)
+        }
+    }
+
+    private fun oneQualityCode(boxInfo: TaskBoxInfo?) {
+        if (processExciseAlcoBoxAccService.getCountBoxOfProductOfDiscrepancies(boxInfo?.boxNumber.orEmpty(), "1") >= processExciseAlcoBoxAccService.getCountAccept()) {
+            screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
+        } else {
+            productInfo.value?.let { productInfoValue ->
+                isScan.value?.let { isScanValue ->
+                    screenNavigator.openExciseAlcoBoxCardScreen(
+                            productInfo = productInfoValue,
+                            boxInfo = boxInfo,
+                            massProcessingBoxesNumber = null,
+                            exciseStampInfo = null,
+                            selectQualityCode = selectQualityCode.value.orEmpty(),
+                            selectReasonRejectionCode = null,
+                            initialCount = "1",
+                            isScan = isScanValue
+                    )
+                }.orIfNull {
+                    Logg.e { "productInfo.value  is null" }
+                }
+            }
+        }
+    }
+
+    private fun twoQualityCode(boxInfo: TaskBoxInfo?) {
+        if (processExciseAlcoBoxAccService.getCountUntreatedBoxes() == 0) { //см. ExciseAlcoBoxAccInfoViewModel сканирование коробок
+            screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
+        } else {
+            productInfo.value?.let { productInfoValue ->
+                isScan.value?.let { isScanValue ->
+                    screenNavigator.openExciseAlcoBoxCardScreen(
+                            productInfo = productInfoValue,
+                            boxInfo = boxInfo,
+                            massProcessingBoxesNumber = null,
+                            exciseStampInfo = null,
+                            selectQualityCode = selectQualityCode.value.orEmpty(),
+                            selectReasonRejectionCode = selectReasonRejectionCode.value,
+                            initialCount = initialCount.value.orEmpty(),
+                            isScan = isScanValue
+                    )
+                }.orIfNull {
+                    Logg.e { "productInfo.value  is null" }
+                }
+            }
             if (selectQualityCode.value == SELECT_QUALITY_CODE) {
                 if (processExciseAlcoBoxAccService.getCountBoxOfProductOfDiscrepancies(boxInfo.boxNumber, SELECT_QUALITY_CODE) >= processExciseAlcoBoxAccService.getCountAccept()) {
                     screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано

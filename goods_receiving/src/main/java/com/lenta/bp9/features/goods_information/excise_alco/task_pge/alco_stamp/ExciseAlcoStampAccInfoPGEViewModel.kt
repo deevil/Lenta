@@ -34,7 +34,6 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import javax.inject.Inject
 
-
 class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListener {
 
     @Inject
@@ -167,8 +166,7 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
     }
 
     val checkStampControl: MutableLiveData<Boolean> = checkStampControlVisibility.map {
-        (countExciseStampsScanned.value ?: 0) >= (productInfo.value?.numberStampsControl?.toDouble()
-                ?: 0.0)
+        (countExciseStampsScanned.value ?: 0) >= (productInfo.value?.numberStampsControl?.toDouble() ?: 0.0)
     }
 
     val checkSurplusControlVisibility: MutableLiveData<Boolean> = MutableLiveData()
@@ -209,6 +207,7 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
             "$countExciseStampsScannedValue из $totalCount"
         }
     }
+
 
     val checkBoxStampList: MutableLiveData<Boolean> = checkStampListVisibility.map {
         (countValue.value ?: 0.0) > 0.0 && (countExciseStampsScanned.value
@@ -281,7 +280,6 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
             count.value = count.value //почему-то без этой строки не выводится в tvBoxControlVal Не требуется, если включить дебаггер, то все отрабатывается, а без дебаггера пришлось дописать эту строчку
         }
     }
-
 
     private fun handleProductSearchResult(@Suppress("UNUSED_PARAMETER") scanInfoResult: ScanInfoResult?): Boolean {
         screenNavigator.goBack()
@@ -371,7 +369,7 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
                     } else {
                         if (exciseStampInfo.value!!.materialNumber != productInfo.value!!.materialNumber) {
                             //Отсканированная марка принадлежит товару <SAP-код> <Название>"
-                            screenNavigator.openAlertScannedStampBelongsAnotherProductScreen(exciseStampInfo.value?.materialNumber.orEmpty(), zfmpUtz48V001.getProductInfoByMaterial(exciseStampInfo.value!!.materialNumber)?.name.orEmpty())
+                            screenNavigator.openAlertScannedStampBelongsAnotherProductScreen(exciseStampInfo.value?.materialNumber.orEmpty(), zfmpUtz48V001.getProductInfoByMaterial(exciseStampInfo.value?.materialNumber)?.name.orEmpty())
                         } else {
                             addExciseStampDiscrepancy()
                         }
@@ -514,7 +512,7 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
                 batchNumber = "",
                 boxNumber = "",
                 setMaterialNumber = "",
-                organizationCodeEGAIS = manufacturerCode.orEmpty(),
+                organizationCodeEGAIS = manufacturerCode,
                 bottlingDate = bottlingDate
         )
         addExciseStampDiscrepancy()
@@ -525,6 +523,8 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
         val dateOfPour = taskManager.getReceivingTask()?.taskRepository?.getBatches()?.getBatches()?.findLast {
             it.batchNumber == exciseStampInfo.value?.batchNumber.orEmpty()
         }?.bottlingDate.orEmpty()
+
+
         try {
             dateOfPour
                     .takeIf { it.isNotEmpty() }
@@ -536,7 +536,6 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
             Logg.e("Parse formatter in onBatchSignsResult()")
         }
     }
-
 
     fun onBackPressed() {
         val count = count.value?.toInt()
@@ -551,5 +550,4 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
         }
         screenNavigator.goBack()
     }
-
 }

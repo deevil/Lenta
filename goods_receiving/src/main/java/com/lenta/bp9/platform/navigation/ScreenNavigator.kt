@@ -1376,7 +1376,7 @@ class ScreenNavigator(
 
     override fun openExciseAlcoStampAccInfoPGEScreen(productInfo: TaskProductInfo) {
         runOrPostpone {
-            getFragmentStack()?.push(ExciseAlcoStampAccInfoPGEFragment.create(productInfo))
+            getFragmentStack()?.push(ExciseAlcoStampAccInfoPGEFragment.newInstance(productInfo))
         }
     }
 

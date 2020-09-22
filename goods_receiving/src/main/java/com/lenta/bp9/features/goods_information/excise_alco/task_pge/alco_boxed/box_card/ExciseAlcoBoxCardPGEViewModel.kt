@@ -21,12 +21,10 @@ import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
-import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
@@ -336,9 +334,14 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
     private fun getBottlingDate(batchNumber: String): String {
-        return taskManager.getReceivingTask()?.run {
-            getProcessedBatches().findLast { it.batchNumber == batchNumber }?.bottlingDate
-        }.orEmpty()
+        return taskManager
+                .getReceivingTask()
+                ?.let { task ->
+                    task.getProcessedBatches()
+                            .findLast { it.batchNumber == batchNumber }
+                            ?.bottlingDate
+                }
+                .orEmpty()
     }
 
     fun onClickDetails() {
@@ -452,21 +455,30 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
             1. Марка присутствует в задании – выводить экран с сообщением «Марка присутствует в задании, добавление излишка недоступно».
             2. Марка отсутствует в задании – добавлять марку в список.
              */
-            if (scannedExciseStamp == null) {
-                screenNavigator.openAlertExciseStampPresentInTask()
-            } else {
-                addExciseStampDiscrepancy(scannedExciseStamp)
-            }
+            boxSurplus(scannedExciseStamp)
         } else { //https://trello.com/c/iOmIb6N7 Карточка короба
-            if (scannedExciseStamp == null) {
-                isSurplusMark(data)
-            } else {
-                isNotSurplusMark(data, scannedExciseStamp)
-            }
+            checkSurplusExciseStamp(data, scannedExciseStamp)
         }
     }
 
-    private fun isSurplusMark(data: String) {
+    private fun boxSurplus(scannedExciseStamp: TaskExciseStampInfo?) {
+        if (scannedExciseStamp == null) {
+            screenNavigator.openAlertExciseStampPresentInTask()
+        } else {
+            addExciseStampDiscrepancy(scannedExciseStamp)
+        }
+    }
+
+    private fun checkSurplusExciseStamp(data: String, scannedExciseStamp: TaskExciseStampInfo?) {
+        if (scannedExciseStamp == null) {
+            surplusMark(data)
+        } else {
+            notSurplusMark(data, scannedExciseStamp)
+        }
+    }
+
+
+    private fun surplusMark(data: String) {
         screenNavigator.openScannedStampBoxPGENotFoundDialog( //Отсканированная марка не найдена. Пометить ее как излишек? В случае согласия необходимо будет отсканировать все марки в текущей коробке.
                 nextCallbackFunc = {
                     //https://trello.com/c/lWYJ43Pe
@@ -505,22 +517,25 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
         )
     }
 
-    private fun isNotSurplusMark(data: String, scannedExciseStamp: TaskExciseStampInfo) {
+    private fun notSurplusMark(data: String, scannedExciseStamp: TaskExciseStampInfo) {
         if (processExciseAlcoBoxAccPGEService.exciseStampIsAlreadyProcessed(data)) {
             screenNavigator.openAlertScannedStampIsAlreadyProcessedScreen() //АМ уже обработана
         } else {
-            if (scannedExciseStamp.materialNumber != productInfo.value!!.materialNumber) {
-                //Отсканированная марка принадлежит товару <SAP-код> <Название>"
-                screenNavigator.openAlertScannedStampBelongsAnotherProductScreen(
-                        materialNumber = scannedExciseStamp.materialNumber.orEmpty(),
-                        materialName = zfmpUtz48V001.getProductInfoByMaterial(scannedExciseStamp.materialNumber)?.name.orEmpty()
-                )
-            } else {
-                stampFromAnotherBox(scannedExciseStamp)
-            }
+            chekScannedStampBelongsAnotherProductOrFromAnotherBox(scannedExciseStamp)
         }
     }
 
+    private fun chekScannedStampBelongsAnotherProductOrFromAnotherBox(scannedExciseStamp: TaskExciseStampInfo) {
+        if (scannedExciseStamp.materialNumber != productInfo.value!!.materialNumber) {
+            //Отсканированная марка принадлежит товару <SAP-код> <Название>"
+            screenNavigator.openAlertScannedStampBelongsAnotherProductScreen(
+                    materialNumber = scannedExciseStamp.materialNumber.orEmpty(),
+                    materialName = zfmpUtz48V001.getProductInfoByMaterial(scannedExciseStamp.materialNumber)?.name.orEmpty()
+            )
+        } else {
+            stampFromAnotherBox(scannedExciseStamp)
+        }
+    }
 
     private fun stampFromAnotherBox(scannedExciseStamp: TaskExciseStampInfo) {
         if (scannedExciseStamp.boxNumber == (boxInfo.value?.boxNumber.orEmpty())) {
@@ -543,37 +558,39 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
                         isEizUnit.value = false
                         screenNavigator.openAlertAmountNormWillBeReduced()
                     },
-                    realBoxNumber = if (realBoxNumber?.length in 4..10) {
-                        "${realBoxNumber?.substring(0, 4)}...${realBoxNumber?.substring(realBoxNumber.length - 10)}"
-                    } else {
-                        ""
-                    }
+                    realBoxNumber = realBoxNumber?.takeIf { it.length >= 10 }?.run {
+                        "${this.substring(0, 4)}...${this.substring(this.length - 10)}"
+                    }.orEmpty()
             )
         }
     }
 
     private fun checkScannedBox(data: String) {
         if (enabledApplyBtn.value == true) { //Функция доступна только при условии, что доступна кнопка "Применить". (ПГЕ https://trello.com/c/TzUSGIH7
-            isAllBoxesProcessed(data)
+            allBoxesProcessed(data)
         }
     }
 
-    private fun isAllBoxesProcessed(data: String) {
+    private fun allBoxesProcessed(data: String) {
         if (processExciseAlcoBoxAccPGEService.getCountBoxOfProductOfDiscrepancies(data) >= processExciseAlcoBoxAccPGEService.getCountAcceptRefusal()) {
             screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
         } else {
-            val boxInfo = processExciseAlcoBoxAccPGEService.searchBox(boxNumber = data)
-            if (boxInfo == null) {
-                scannedBoxNumber.value = data
-                scannedBoxNotFound(data)
-            } else {
-                isBoxSAP(boxInfo)
-            }
+            checkScanedBoxNotFound(data)
         }
     }
 
-    private fun isBoxSAP(boxInfo: TaskBoxInfo)  = launchUITryCatch {
-        if (boxInfo.materialNumber != productInfo.value?.materialNumber) {
+    private fun checkScanedBoxNotFound (data: String) {
+        val boxInfo = processExciseAlcoBoxAccPGEService.searchBox(boxNumber = data)
+        if (boxInfo == null) {
+            scannedBoxNumber.value = data
+            scannedBoxNotFound(data)
+        } else {
+            chekScannedBoxBelongsAnotherProduct(boxInfo)
+        }
+    }
+
+    private fun chekScannedBoxBelongsAnotherProduct(boxInfo: TaskBoxInfo) {
+        if (boxInfo.materialNumber != productInfo.value!!.materialNumber) {
             //Отсканированная коробка принадлежит товару <SAP-код> <Название>
             screenNavigator.openAlertScannedBoxBelongsAnotherProductScreen(
                     materialNumber = boxInfo.materialNumber,
@@ -586,7 +603,7 @@ class ExciseAlcoBoxCardPGEViewModel : CoreViewModel(), OnPositionClickListener {
                     }
                     ?.also { typeDiscrepancies ->
                         processExciseAlcoBoxAccPGEService.addBoxDiscrepancy(
-                                boxNumber = boxInfo.boxNumber.orEmpty(),
+                                boxNumber = boxInfo.boxNumber,
                                 typeDiscrepancies = typeDiscrepancies,
                                 isScan = true
                         )

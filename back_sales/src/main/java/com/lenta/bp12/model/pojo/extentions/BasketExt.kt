@@ -6,9 +6,10 @@ import com.lenta.bp12.platform.ZERO_QUANTITY
 import com.lenta.shared.utilities.orIfNull
 
 fun Basket.addGood(good: Good, quantity: Double) {
-    val goodWholeVolume = good.volume * quantity
+    val goodsOneUnitVolume = good.getVolume()
+    val goodWholeVolume = goodsOneUnitVolume * quantity
     if (freeVolume >= goodWholeVolume) {
-        freeVolume -= (good.volume * quantity)
+        freeVolume -= (goodsOneUnitVolume * quantity)
         val oldQuantity = goods[good].orIfNull { ZERO_QUANTITY }
         val newQuantity = quantity + oldQuantity
         goods[good] = newQuantity
@@ -16,10 +17,11 @@ fun Basket.addGood(good: Good, quantity: Double) {
 }
 
 fun Basket.deleteGood(good: Good) {
-    val basketsFreeVolumePlusGoodsVolume = freeVolume + good.volume
+    val goodsOneUnitVolume = good.getVolume()
+    val oldQuantity = goods[good].orIfNull { ZERO_QUANTITY }
+    val volumeToReturnToBasket = oldQuantity * goodsOneUnitVolume
+    val basketsFreeVolumePlusGoodsVolume = freeVolume + volumeToReturnToBasket
     if (basketsFreeVolumePlusGoodsVolume <= volume) {
-        val oldQuantity = goods[good].orIfNull { ZERO_QUANTITY }
-        val volumeToReturnToBasket = oldQuantity * good.volume
         freeVolume += volumeToReturnToBasket
         goods.remove(good)
     }
@@ -42,7 +44,7 @@ fun Basket.deleteGoodByMarks(good: Good) {
 }
 
 fun Basket.minusQuantityOfGood(good: Good, quantityToDel: Double, newQuantity: Double) {
-    val volumeToReturnToBasket = quantityToDel * good.volume
+    val volumeToReturnToBasket = quantityToDel * good.getVolume()
     val freeVolumePlusGoodsVolume = freeVolume + volumeToReturnToBasket
     if (freeVolumePlusGoodsVolume <= volume) {
         this.goods[good] = newQuantity

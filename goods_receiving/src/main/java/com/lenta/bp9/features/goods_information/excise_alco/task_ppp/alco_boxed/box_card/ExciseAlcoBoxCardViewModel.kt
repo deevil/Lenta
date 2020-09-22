@@ -10,6 +10,7 @@ import com.lenta.bp9.model.task.TaskBoxInfo
 import com.lenta.bp9.model.task.TaskExciseStampInfo
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
@@ -284,7 +285,7 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
 
     fun onScanResult(data: String) {
         when (data.length) {
-            68, 150 -> checkScannedExciseStamp(data)
+            68, 150 -> checkScannedStampNotFound(data)
             26 -> checkScannedBox(data)
             else -> screenNavigator.openAlertInvalidBarcodeFormatScannedScreen()
         }
@@ -322,12 +323,12 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
                             typeDiscrepancies = TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
                     )
         } else {
-            isBoxSAP(box, typeDiscrepancies)
+            chekScannedBoxBelongsAnotherProduct(box, typeDiscrepancies)
         }
     }
 
-    private fun isBoxSAP(box: TaskBoxInfo, typeDiscrepancies: String) {
-        if (box.materialNumber != productInfo.value?.materialNumber) {
+    private fun chekScannedBoxBelongsAnotherProduct(box: TaskBoxInfo, typeDiscrepancies: String) {
+        if (box.materialNumber != productInfo.value!!.materialNumber) {
             //Отсканированная коробка принадлежит товару <SAP-код> <Название>
             val productInfoByMaterial = zfmpUtz48V001.getProductInfoByMaterial(box.materialNumber)
             val materialName = productInfoByMaterial?.name.orEmpty()
@@ -361,7 +362,7 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
 
-    private fun checkScannedExciseStamp(data: String) {
+    private fun checkScannedStampNotFound(data: String) {
 
         if (isDefect.value == false) {//сканирование марок доступно только при категории Норма https://trello.com/c/Wr4xe6L8
             exciseStampInfo.value = processExciseAlcoBoxAccService.searchExciseStamp(data)
@@ -371,36 +372,40 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
                             processExciseAlcoBoxAccService.addExciseStampBad(data)
                         })
             } else {
-                isStampProcessed(data)
+                checkScannedStampIsAlreadyProcessed(data)
             }
         }
     }
 
-    private fun isStampProcessed(data: String) {
+    private fun checkScannedStampIsAlreadyProcessed(data: String) {
         if (processExciseAlcoBoxAccService.exciseStampIsAlreadyProcessed(data)) {
             screenNavigator.openAlertScannedStampIsAlreadyProcessedScreen() //АМ уже обработана
         } else {
-            if (exciseStampInfo.value?.materialNumber != productInfo.value?.materialNumber) {
-                //Отсканированная марка принадлежит товару <SAP-код> <Название>"
-                screenNavigator.openAlertScannedStampBelongsAnotherProductScreen(
-                        materialNumber = exciseStampInfo
-                                .value
-                                ?.materialNumber
-                                .orEmpty(),
-                        materialName = zfmpUtz48V001.getProductInfoByMaterial(
-                                material = exciseStampInfo
-                                        .value
-                                        ?.materialNumber
-                                        .orEmpty()
-                        )?.name.orEmpty()
-                )
-            } else {
-                manufacturerDateOfPour()
-            }
+            checkScannedStampBelongsAnotherProduct()
         }
     }
 
-    private fun manufacturerDateOfPour() {
+    private fun checkScannedStampBelongsAnotherProduct() {
+        if (exciseStampInfo.value?.materialNumber != productInfo.value?.materialNumber) {
+            //Отсканированная марка принадлежит товару <SAP-код> <Название>"
+            screenNavigator.openAlertScannedStampBelongsAnotherProductScreen(
+                    materialNumber = exciseStampInfo
+                            .value
+                            ?.materialNumber
+                            .orEmpty(),
+                    materialName = zfmpUtz48V001.getProductInfoByMaterial(
+                            material = exciseStampInfo
+                                    .value
+                                    ?.materialNumber
+                                    .orEmpty()
+                    )?.name.orEmpty()
+            )
+        } else {
+            saveScannedStamp()
+        }
+    }
+
+    private fun saveScannedStamp() {
         if (exciseStampInfo.value?.boxNumber == boxInfo.value?.boxNumber.orEmpty()) {
             //typeDiscrepancies передаем 1, т.к. сканирование марок возможно только при выбранной категории Норма
             exciseStampInfo.value?.let {
@@ -447,6 +452,31 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
                     paramGrzCrGrundcatName = paramGrzCrGrundcatName.value.orEmpty()
             )
         }
+            boxWithStamp()
+    }
+
+    private fun boxWithStamp() {
+        val realBoxNumber = processExciseAlcoBoxAccService.searchBox(boxNumber = exciseStampInfo.value?.boxNumber.orEmpty())?.boxNumber.orEmpty()
+        screenNavigator.openDiscrepancyScannedMarkCurrentBoxDialog( //Отсканированная марка числится в коробке XXXXX...XXXXX. Пометить текущую коробку XXXXX...XXXXX в коробку XXXXX...XXXXX как <GRZ_CR_GRUNDCAT>
+                yesCallbackFunc = {
+                    processExciseAlcoBoxAccService.addDiscrepancyScannedMarkCurrentBox(
+                            currentBoxNumber = boxInfo.value!!.boxNumber,
+                            realBoxNumber = realBoxNumber,
+                            scannedExciseStampInfo = exciseStampInfo.value!!,
+                            typeDiscrepancies = paramGrzCrGrundcatCode.value!!
+                    )
+                    //обновляем кол-во отсканированных марок с категорией норма для отображения на экране
+                    countExciseStampsScanned.value = processExciseAlcoBoxAccService
+                            .getCountExciseStampDiscrepanciesOfBox(
+                                    boxNumber = boxInfo.value?.boxNumber.orEmpty(),
+                                    typeDiscrepancies = TYPE_DISCREPANCIES_QUALITY_NORM)
+                    //выводим данные о производителе и дате розлива
+                    updateDateScreenManufacturerDateOfPour()
+                },
+                currentBoxNumber = boxInfo.value?.boxNumber.orEmpty(),
+                realBoxNumber = realBoxNumber,
+                paramGrzCrGrundcatName = paramGrzCrGrundcatName.value.orEmpty()
+        )
     }
 
 
