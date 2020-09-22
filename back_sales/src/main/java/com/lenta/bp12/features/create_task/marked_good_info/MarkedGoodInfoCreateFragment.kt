@@ -189,6 +189,11 @@ class MarkedGoodInfoCreateFragment : CoreFragment<FragmentMarkedGoodInfoCreateBi
 //                vm.onScanResult("010467003610609821fDiwLb=cO6vkb")
 //                true
 //            }
+//            //Марка обуви 198794
+//            KeyCode.KEYCODE_8 -> {
+//                vm.onScanResult("010290000004865221atgO4Cg*Z!KRp")
+//                true
+//            }
 //            else -> false
 //        }
 //    }

@@ -19,7 +19,7 @@ fun Good.addMark(mark: Mark) {
 
 fun Good.addMarks(marksToAdd: List<Mark>) {
     marksToAdd.forEach { mark ->
-        if (marks.find { it.number == mark.number } == null) {
+        if (marks.find { it.number == mark.number } == null && !marks.contains(mark)) {
             marks.add(mark)
         }
     }

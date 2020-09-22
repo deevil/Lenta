@@ -55,7 +55,7 @@ class IngredientDetailsFragment : CoreFragment<FragmentIngredientDetailsBinding,
 
     init {
         lifecycleScope.launchWhenResumed {
-            vm.requestFocusToNumberField.value = true
+            vm.requestFocusToCount.value = true
         }
     }
 
