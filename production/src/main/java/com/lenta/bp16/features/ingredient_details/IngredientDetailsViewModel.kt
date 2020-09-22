@@ -1,6 +1,8 @@
 package com.lenta.bp16.features.ingredient_details
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.switchMap
 import com.lenta.bp16.data.IScales
 import com.lenta.bp16.model.AddAttributeProdInfo
 import com.lenta.bp16.model.BatchNewDataInfoParam
@@ -87,9 +89,9 @@ class IngredientDetailsViewModel : CoreViewModel(), IZpartVisibleConditions {
     val weightField: MutableLiveData<String> = MutableLiveData(DEFAULT_WEIGHT)
 
     // суффикс
-    val suffix = orderIngredient.combineLatest(eanInfo).mapSkipNulls {
+    val suffix: LiveData<String> = eanInfo.map { eanInfoValue ->
         val uom: String =
-                when (eanInfo.value?.ean_nom.orEmpty()) {
+                when (eanInfoValue?.ean_nom) {
                     KAR, KOR_RUS -> Uom.KAR.name
                     ST, ST_RUS -> Uom.ST.name
                     else -> Uom.KG.name
@@ -115,14 +117,18 @@ class IngredientDetailsViewModel : CoreViewModel(), IZpartVisibleConditions {
     }
 
     val planQntWithSuffix by unsafeLazy {
-        orderIngredient.combineLatest(suffix).mapSkipNulls {
-            MutableLiveData("${orderIngredient.value?.plan_qnt.dropZeros()} ${suffix.value}")
+        orderIngredient.mapSkipNulls {
+            suffix.mapSkipNulls {
+                "${orderIngredient.value?.plan_qnt.dropZeros()} ${suffix.value}"
+            }
         }
     }
 
     val doneQtnWithSuffix by unsafeLazy {
-        orderIngredient.combineLatest(suffix).mapSkipNulls {
-            MutableLiveData("${orderIngredient.value?.done_qnt?.dropZeros()} ${suffix.value}")
+        orderIngredient.mapSkipNulls {
+            suffix.mapSkipNulls {
+                "${orderIngredient.value?.done_qnt?.dropZeros()} ${suffix.value}"
+            }
         }
     }
 

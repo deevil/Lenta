@@ -88,7 +88,7 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
     val weightField: MutableLiveData<String> = MutableLiveData(DEFAULT_WEIGHT)
 
     // суффикс
-    val suffix = materialIngredient.combineLatest(eanInfo).mapSkipNulls {
+    val suffix = eanInfo.map {
         val uom: String =
                 when (eanInfo.value?.ean_nom.orEmpty()) {
                     KAR, KOR_RUS -> Uom.KAR.name
@@ -116,14 +116,18 @@ class MaterialRemakeDetailsViewModel : CoreViewModel(), IZpartVisibleConditions 
     }
 
     val planQntWithSuffix by unsafeLazy {
-        materialIngredient.combineLatest(suffix).mapSkipNulls {
-            MutableLiveData("${materialIngredient.value?.plan_qnt?.toDouble().dropZeros()} ${suffix.value}")
+        materialIngredient.mapSkipNulls {
+            suffix.mapSkipNulls {
+                "${materialIngredient.value?.plan_qnt?.toDouble().dropZeros()} ${suffix.value}"
+            }
         }
     }
 
     val doneQtnWithSuffix by unsafeLazy {
-        materialIngredient.combineLatest(suffix).mapSkipNulls {
-            MutableLiveData("${materialIngredient.value?.done_qnt?.toDouble().dropZeros()} ${suffix.value}")
+        materialIngredient.mapSkipNulls {
+            suffix.mapSkipNulls {
+                "${materialIngredient.value?.done_qnt?.toDouble().dropZeros()} ${suffix.value}"
+            }
         }
     }
 
