@@ -180,10 +180,13 @@ class BasketOpenGoodListViewModel : BaseGoodListOpenViewModel(), OnOkInSoftKeybo
                             goodFromBasket = goodFromBasket,
                             basketToGetQuantity = basket
                     )
+                    if(goodFromBasket.getTotalQuantity() == 0.0) {
+                        goodFromBasket.isCounted = false
+                    }
                     //Удалим товар из корзины
                     basket.deleteGood(goodFromBasket)
                 }
-                removeEmptyBasketsAndGoods(task, basket)
+                removeEmptyBaskets(task, basket)
                 manager.updateBasketAndTask(task, basket)
             }.orIfNull {
                 Logg.e { "basket null" }
@@ -200,8 +203,7 @@ class BasketOpenGoodListViewModel : BaseGoodListOpenViewModel(), OnOkInSoftKeybo
         updateCurrentTask(task)
     }
 
-    private fun removeEmptyBasketsAndGoods(task: TaskOpen, basket: Basket) {
-        task.removeEmptyGoods()
+    private fun removeEmptyBaskets(task: TaskOpen, basket: Basket) {
         //Если корзина пуста удалим ее из задания и вернемся назад
         if (basket.goods.isEmpty()) {
             task.removeEmptyBaskets()
