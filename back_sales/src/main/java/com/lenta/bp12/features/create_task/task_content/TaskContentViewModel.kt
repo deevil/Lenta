@@ -82,12 +82,6 @@ class TaskContentViewModel : BaseGoodListCreateViewModel(), PageSelectionListene
     val goods by lazy {
         task.switchMap { task ->
             asyncLiveData<List<ItemGoodUi>> {
-                task.goods.forEach {
-                    Logg.e{ "MARKS FOR GOOD ${it.maxRetailPrice}: ${it.marks.size}"}
-                }
-                Logg.e {
-                    "${task.goods }}"
-                }
                 val distinctList = task.goods.distinctBy { it.ean }
                 val list = distinctList.mapIndexed { index, good ->
                     ItemGoodUi(
