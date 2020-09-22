@@ -1,5 +1,6 @@
 package com.lenta.bp9.model.task
 
+import com.lenta.bp9.features.goods_information.base.IBaseCurrentProductionDate
 import com.lenta.shared.models.core.Uom
 
 //партионные признаки для Z-партий
@@ -11,6 +12,7 @@ data class PartySignsOfZBatches(
         val manufactureCode: String, //ЕГАИС Код организации/производителя
         val shelfLifeDate: String, //Срок годности до (Дата)
         val shelfLifeTime: String, //Срок годности до (время)
+        val productionDate: String, //дата производства
         val partySign: PartySignsTypeOfZBatches //партионный признак (ДП-дата производства, СГ-срок годности),
 ) {
 }

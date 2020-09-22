@@ -197,7 +197,6 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-
     // Информационные экраны
     override fun showUnsentDataFoundOnDevice(deleteCallback: () -> Unit, goOverCallback: () -> Unit) {
         runOrPostpone {
@@ -622,6 +621,16 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showMarkScanError(errorText: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "98",
+                    message = errorText,
+                    iconRes = R.drawable.ic_warning_red_80dp
+            ))
+        }
+    }
+
     override fun showChooseProviderFirst() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
@@ -716,4 +725,6 @@ interface IScreenNavigator : ICoreNavigator {
 
     fun showCantAddExciseGoodForWholesale()
     fun showCantAddVetToWholeSale()
+
+    fun showMarkScanError(errorText: String)
 }

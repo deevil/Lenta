@@ -16,10 +16,12 @@ import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.pojo.ReasonRejectionInfo
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
+import java.lang.Exception
 import java.text.SimpleDateFormat
 import javax.inject.Inject
 
@@ -252,7 +254,7 @@ class GoodsDetailsViewModel : CoreViewModel() {
                     itemsZBatchesDiscrepancies.add(
                             getItemsZBatchesDiscrepanciesOfBatch(index, discrepancy)
                     )
-                    quantityItem += quantityItem
+                    quantityItem = index + 1
                 }
 
         taskRepository
@@ -283,25 +285,19 @@ class GoodsDetailsViewModel : CoreViewModel() {
     }
 
     private fun getItemsZBatchesDiscrepanciesOfBatch(index: Int, discrepancy: TaskZBatchesDiscrepancies): GoodsDetailsCategoriesItem {
-        val shelfLifeDate =
-                discrepancy
-                        .shelfLifeDate
-                        .takeIf { it.isNotEmpty() }
-                        ?.let { formatterRU.format(formatterERP.parse(it)) }
-                        .orEmpty()
-
-        val partySign =
+        val partySignOfZBatch =
                 taskRepository
                         ?.getZBatchesDiscrepancies()
                         ?.findPartySignOfZBatch(discrepancy)
-                        ?.partySign
-                        ?.partySignsTypeString
-                        .orEmpty()
+
+        val partySign = partySignOfZBatch?.partySign ?: PartySignsTypeOfZBatches.None
+
+        val shelfLifeOrProductionDate = getShelfLifeOrProductionDate(partySign, partySignOfZBatch?.shelfLifeDate.orEmpty(), partySignOfZBatch?.productionDate.orEmpty())
 
         return GoodsDetailsCategoriesItem(
                 number = index + 1,
                 name = reasonRejectionInfo.value?.firstOrNull { it.code == discrepancy.typeDiscrepancies }?.name.orEmpty(),
-                nameBatch = "$partySign-$shelfLifeDate // ${getManufacturerNameZBatch(discrepancy.manufactureCode)}",
+                nameBatch = "${partySign.partySignsTypeString}-$shelfLifeOrProductionDate // ${getManufacturerNameZBatch(discrepancy.manufactureCode)}",
                 visibilityNameBatch = true,
                 quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${uom.value?.name.orEmpty()}",
                 isNormDiscrepancies = isNormDiscrepancies(discrepancy.typeDiscrepancies),
@@ -311,6 +307,30 @@ class GoodsDetailsViewModel : CoreViewModel() {
                 zBatchDiscrepancies = discrepancy,
                 even = index % 2 == 0
         )
+    }
+
+    private fun getShelfLifeOrProductionDate(partySign: PartySignsTypeOfZBatches, shelfLifeDate: String, productionDate: String): String {
+        return try {
+            when(partySign) {
+                PartySignsTypeOfZBatches.ProductionDate -> {
+                    productionDate
+                            .takeIf { it.isNotEmpty() }
+                            ?.let { formatterRU.format(formatterERP.parse(it)) }
+                            .orEmpty()
+                }
+                PartySignsTypeOfZBatches.ShelfLife -> {
+                    shelfLifeDate
+                            .takeIf { it.isNotEmpty() }
+                            ?.let { formatterRU.format(formatterERP.parse(it)) }
+                            .orEmpty()
+                }
+                else -> ""
+            }
+        }
+        catch (e: Exception) {
+            Logg.e { "e: $e" }
+            ""
+        }
     }
 
     private fun updatingInfoOtherProducts() {
@@ -405,7 +425,7 @@ class GoodsDetailsViewModel : CoreViewModel() {
                                                 ?.deleteProductDiscrepancyByBatch(materialNumber, typeDiscrepancies, it.numberDiscrepancies.toDouble())
                                     }
                         }
-                        isZBatch.value == true -> {
+                        isZBatch.value == true && typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM -> {
                             goodsDetailsItem
                                     ?.zBatchDiscrepancies
                                     ?.let {

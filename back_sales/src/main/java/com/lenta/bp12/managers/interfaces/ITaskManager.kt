@@ -11,6 +11,7 @@ import com.lenta.bp12.request.pojo.good_info.GoodInfoResult
 
 /**
  * Имплементации
+ * @see com.lenta.bp12.managers.base.BaseTaskManager
  * @see com.lenta.bp12.managers.CreateTaskManager
  * @see com.lenta.bp12.managers.OpenTaskManager
  *

@@ -152,12 +152,14 @@ class MemoryTaskZBatchesDiscrepanciesRepository : ITaskZBatchesDiscrepanciesRepo
     override fun addPartySignOfZBatches(partySign: PartySignsOfZBatches): Boolean {
         var index = -1
         for (i in partySignsOfZBatches.indices) {
-            if (partySign.materialNumber == partySignsOfZBatches[i].materialNumber
-                    && partySign.batchNumber == partySignsOfZBatches[i].batchNumber
-                    && partySign.processingUnit == partySignsOfZBatches[i].processingUnit
-                    && partySign.manufactureCode == partySignsOfZBatches[i].manufactureCode
-                    && partySign.shelfLifeDate == partySignsOfZBatches[i].shelfLifeDate
-                    && partySign.shelfLifeTime == partySignsOfZBatches[i].shelfLifeTime) {
+            val partySigns = partySignsOfZBatches[i]
+            if (partySign.materialNumber == partySigns.materialNumber
+                    && partySign.batchNumber == partySigns.batchNumber
+                    && partySign.processingUnit == partySigns.processingUnit
+                    && partySign.manufactureCode == partySigns.manufactureCode
+                    && partySign.shelfLifeDate == partySigns.shelfLifeDate
+                    && partySign.shelfLifeTime == partySigns.shelfLifeTime
+                    && partySign.productionDate == partySigns.productionDate) {
                 index = i
             }
         }
@@ -182,6 +184,7 @@ class MemoryTaskZBatchesDiscrepanciesRepository : ITaskZBatchesDiscrepanciesRepo
                     && it.manufactureCode == partySign.manufactureCode
                     && it.shelfLifeDate == partySign.shelfLifeDate
                     && it.shelfLifeTime == partySign.shelfLifeTime
+                    && it.productionDate == partySign.productionDate
         }
     }
 
