@@ -264,9 +264,12 @@ abstract class BaseGoodInfoOpenViewModel : CoreViewModel(), IBaseGoodInfoOpenVie
         saveChangesAndExit()
     }
 
-    override fun isPlannedQuantityActual(): Boolean {
-        val quantityValue = quantity.value ?: -1.0
-        return isPlannedQuantityMoreThanZero && (quantityValue > plannedQuantity)
+    override fun isFactQuantityMoreThanPlanned(): Boolean {
+        val totalQuantity = good.value?.getTotalQuantity() ?: 0.0
+        val quantityValue = quantity.value ?: 0.0
+        val quantitySum = quantityValue + totalQuantity
+        val isFactQuantityMoreThanPlanned =  quantitySum > plannedQuantity
+        return isPlannedQuantityMoreThanZero && isFactQuantityMoreThanPlanned
     }
 
     companion object {

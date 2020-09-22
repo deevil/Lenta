@@ -366,7 +366,7 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
 
 
     override fun onClickApply() {
-        if (isPlannedQuantityActual()) {
+        if (isFactQuantityMoreThanPlanned()) {
             navigator.showQuantityMoreThanPlannedScreen()
             return
         }

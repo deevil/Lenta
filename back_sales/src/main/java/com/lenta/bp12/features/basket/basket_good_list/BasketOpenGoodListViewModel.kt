@@ -141,8 +141,8 @@ class BasketOpenGoodListViewModel : BaseGoodListOpenViewModel(), OnOkInSoftKeybo
                 manager.updateCurrentGood(item.good)
                 navigator.goBack()
                 if (item.good.markType == MarkType.UNKNOWN)
-                    navigator.openGoodInfoCreateScreen()
-                else navigator.openMarkedGoodInfoCreateScreen()
+                    navigator.openGoodInfoOpenScreen()
+                else navigator.openMarkedGoodInfoOpenScreen()
             }
         }.orIfNull {
             Logg.e { "goods null" }
