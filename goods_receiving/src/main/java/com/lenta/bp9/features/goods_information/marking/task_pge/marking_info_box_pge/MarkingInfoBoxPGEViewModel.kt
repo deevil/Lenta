@@ -41,7 +41,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo(), OnPositionClickListener {
         paramGrzAlternMeins.map {
             val uomName = paramGrzAlternMeins.value?.name?.toLowerCase()
 
-            var nestingInOneBlock = productInfo.value?.countPiecesBox?.toDouble().toStringFormatted()
+            var nestingInOneBlock = productInfo.value?.quantityInvest?.toDouble().toStringFormatted()
             if (nestingInOneBlock == COUNT_PIECES_BOX_IS_ZERO) {
                 nestingInOneBlock = COUNT_PIECES_BOX
             }
@@ -70,14 +70,15 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo(), OnPositionClickListener {
 
 
     private val enteredCountInBlockUnits: Double
-        get() { var addNewCount = countValue.value?.toDouble() ?: 0.0
+        get() {
+            var addNewCount = countValue.value?.toDouble() ?: 0.0
 
             var countPiecesBox =
                     productInfo.value
                             ?.countPiecesBox
                             ?.toDouble()
                             ?: 1.0
-            if (countPiecesBox == 0.0 ) countPiecesBox = 1.0
+            if (countPiecesBox == 0.0) countPiecesBox = 1.0
 
             isUnitBox.value
                     ?.takeIf { it }
@@ -93,13 +94,13 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo(), OnPositionClickListener {
                     .map {
                         currentQualityInfoCode
                                 .takeIf { code -> code == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM }
-                               ?.run { enteredCountInBlockUnits + countAcceptOfProduct }
+                                ?.run { enteredCountInBlockUnits + countAcceptOfProduct }
                                 ?: countAcceptOfProduct
                     }
 
     val acceptTotalCountWithUom: MutableLiveData<String> = acceptTotalCount.map {
         val acceptTotalCount = it ?: 0.0
-        val purchaseOrderUnits =  productInfo.value?.uom?.name.orEmpty()
+        val purchaseOrderUnits = productInfo.value?.uom?.name.orEmpty()
         val countAcceptOfProductValue = countAcceptOfProduct
         val totalCountAcceptOfProduct =
                 countAcceptOfProductValue
@@ -167,7 +168,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo(), OnPositionClickListener {
                 checkStampControlVisibility.value = true
                 val countStampsControl = if (acceptTotalCountVal < numberStampsControl) acceptTotalCountVal else numberStampsControl
                 buildString {
-                    append(countBlockScanned.toStringFormatted())
+                    append(enteredCountInBlockUnits.toStringFormatted())
                     append(" ")
                     append(paramGrzAlternMeins.value?.name?.toLowerCase())
                     append(" ")
@@ -267,7 +268,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo(), OnPositionClickListener {
         }
     }
 
-    private suspend fun initProduct(){
+    private suspend fun initProduct() {
         productInfo.value
                 ?.let {
                     if (processMarkingBoxProductService.newProcessMarkingProductService(it) == null) {
@@ -315,7 +316,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo(), OnPositionClickListener {
     }
 
     fun onClickBoxes() {
-        if (processMarkingBoxProductService.isOverLimit(enteredCountInBlockUnits)){
+        if (processMarkingBoxProductService.isOverLimit(enteredCountInBlockUnits)) {
 //            screenNavigator.openAlertMustEnterQuantityScreen()
             return
         }
@@ -361,7 +362,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo(), OnPositionClickListener {
         } else {
             addInfo()
         }
-         if (isAll) screenNavigator.goBack()
+        if (isAll) screenNavigator.goBack()
     }
 
     fun onScanResult(data: String) {
@@ -381,13 +382,6 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo(), OnPositionClickListener {
             in 0..7, in 9..11, in 15..20 -> screenNavigator.openAlertInvalidBarcodeFormatScannedScreen()
             8, in 12..14 -> { }
             in 21..28 -> boxCheck(data)
-            29 -> {
-                if (barcodePackCheck(data)) {
-                    screenNavigator.openAlertInvalidCodeScannedForCurrentModeScreen()
-                } else {
-                    boxCheck(data)
-                }
-            }
             in 30..44 -> {
                 if (barcodeBlockCheck(data)) {
                     blockCheck(data.substring(0, 25))
@@ -406,10 +400,15 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo(), OnPositionClickListener {
         }
     }
 
-    private fun barcodePackCheck(data: String): Boolean {
-        val regex = REGEX_BARCODE_PACK.toRegex()
-        return regex.find(data) != null
-    }
+//    private fun checkScanResult(data: String) {
+//        if (barcodeBlockCheck(data)) {
+//            blockCheck(data)
+//            } else {
+//            screenNavigator.openAlertInvalidBarcodeFormatScannedScreen()
+//        }
+//
+//    }
+
 
     private fun barcodeBlockCheck(data: String): Boolean {
         val regex = REGEX_BARCODE_BLOCK.toRegex()
@@ -578,7 +577,8 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo(), OnPositionClickListener {
     }
 
     fun onBackPressed() {
-        if (processMarkingBoxProductService.modifications()) {
+
+        if (processMarkingBoxProductService.modifications() || count.value?.toString() != "0") {
             screenNavigator.openUnsavedDataDialog(
                     yesCallbackFunc = {
                         processMarkingBoxProductService.clearModifications()
@@ -594,8 +594,6 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo(), OnPositionClickListener {
         private const val COUNT_PIECES_BOX = "1"
         private const val COUNT_PIECES_BOX_IS_ZERO = "0"
         private const val MULTIPLY = "x"
-        const val REGEX_BARCODE_PACK = """^(?<packBarcode>(?<gtin>\d{14})(?<serial>\S{7}))(?<MRC>\S{4})(?:\S{4})${'$'}"""
-        const val REGEX_BARCODE_BLOCK = """^.?(?<blockBarcode>01(?<gtin2>\d{14})21(?<serial>\S{7})).?8005(?<MRC>\d{6}).?93(?<verificationKey>\S{4}).?(?<other>\S{1,})?${'$'}"""
-//        """^(?<barcode>01(?<gtin>\d{14})21(?<serial>\S{13})).?(?:240(?<tradeCode>\d{4}))?.?(?:91(?<verificationKey>\S{4}))?.?(?:92(?<verificationCode>\S{88}))?${'$'}"""
+        const val REGEX_BARCODE_BLOCK = """^(?<barcode>01(?<gtin>\d{14})21(?<serial>\S{13})).?(?:240(?<tradeCode>\d{4}))?.?(?:91(?<verificationKey>\S{4}))?.?(?:92(?<verificationCode>\S{88}))?${'$'}"""
     }
 }
