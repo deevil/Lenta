@@ -417,7 +417,7 @@ class GoodListViewModel : BaseGoodListOpenViewModel(), PageSelectionListener, On
             )
         }
     }
-    
+
     private fun chooseQuantityForProcessing(good: Good): String {
         val quantity = "${good.planQuantity.dropZeros()} ${good.commonUnits.name}"
         return quantity.takeIf { good.planQuantity > ZERO_QUANTITY }.orEmpty()
