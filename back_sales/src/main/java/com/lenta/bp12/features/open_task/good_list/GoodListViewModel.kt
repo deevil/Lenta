@@ -293,47 +293,55 @@ class GoodListViewModel : BaseGoodListOpenViewModel(), PageSelectionListener, On
     fun onClickDelete() {
         selectedPage.value?.let { page ->
             when (page) {
-                PROCESSING_PAGE_INDEX -> {
-                    if (isTaskStrict.not()) {
-                        val materials = mutableListOf<String>()
-                        processingSelectionsHelper.selectedPositions.value?.mapNotNullTo(materials) { position ->
-                            processing.value?.get(position)?.material
-                        }.orEmpty()
-
-                        processingSelectionsHelper.clearPositions()
-                        manager.markGoodsDeleted(materials)
-                    }
-                }
-                PROCESSED_PAGE_INDEX -> {
-                    val itemsToDelete = processedSelectionsHelper.selectedPositions.value?.mapNotNullTo(mutableListOf()) { position ->
-                        processed.value?.get(position)
-                    }.orEmpty()
-                    val materials = itemsToDelete.map {
-                        it.material
-                    }
-                    itemsToDelete.forEach {
-                        it.good.clearMarksPartsPositions()
-                    }
-                    processedSelectionsHelper.clearPositions()
-                    manager.markGoodsUncounted(materials)
-                    manager.deleteGoodsFromBaskets(materials)
-                }
-                BASKETS_PAGE_INDEX -> {
-                    val basketList = mutableListOf<Basket>()
-                    basketSelectionsHelper.selectedPositions.value?.mapNotNullTo(basketList) { position ->
-                        if (manager.isWholesaleTaskType) {
-                            wholesaleBaskets.value?.get(position)?.basket
-                        } else {
-                            commonBaskets.value?.get(position)?.basket
-                        }
-                    }
-
-                    basketSelectionsHelper.clearPositions()
-                    manager.removeBaskets(basketList)
-                }
+                PROCESSING_PAGE_INDEX -> handleDeleteProcessingItems()
+                PROCESSED_PAGE_INDEX -> handleDeleteProcessedItems()
+                BASKETS_PAGE_INDEX -> handleDeleteBasketItems()
                 else -> throw IllegalArgumentException("Wrong pager position!")
             }
         }
+    }
+
+    private fun handleDeleteProcessingItems() {
+        if (isTaskStrict.not()) {
+            val materials = mutableListOf<String>()
+            processingSelectionsHelper.selectedPositions.value?.mapNotNullTo(materials) { position ->
+                processing.value?.get(position)?.material
+            }.orEmpty()
+
+            processingSelectionsHelper.clearPositions()
+            manager.markGoodsDeleted(materials)
+        }
+    }
+
+    private fun handleDeleteProcessedItems() {
+        val itemsToDelete = processedSelectionsHelper.selectedPositions.value
+                ?.mapNotNullTo(mutableListOf()) { position ->
+                    processed.value?.get(position)
+                }.orEmpty()
+
+        val materials = itemsToDelete.map {
+            it.material
+        }
+        itemsToDelete.forEach {
+            it.good.clearMarksPartsPositions()
+        }
+        processedSelectionsHelper.clearPositions()
+        manager.markGoodsUncounted(materials)
+        manager.deleteGoodsFromBaskets(materials)
+    }
+
+    private fun handleDeleteBasketItems() {
+        val basketList = mutableListOf<Basket>()
+        basketSelectionsHelper.selectedPositions.value?.mapNotNullTo(basketList) { position ->
+            if (manager.isWholesaleTaskType) {
+                wholesaleBaskets.value?.get(position)?.basket
+            } else {
+                commonBaskets.value?.get(position)?.basket
+            }
+        }
+
+        basketSelectionsHelper.clearPositions()
+        manager.removeBaskets(basketList)
     }
 
     fun onClickSave() {
