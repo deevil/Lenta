@@ -40,7 +40,7 @@ class MemoryTaskExciseStampDiscrepanciesRepository : ITaskExciseStampDiscrepanci
     }
 
     override fun updateExciseStampsDiscrepancy(newExciseStampDiscrepancies: List<TaskExciseStampDiscrepancies>) {
-        stampsDiscrepancies.clear()
+        clear()
         newExciseStampDiscrepancies.map {
             addExciseStampDiscrepancy(it)
         }
@@ -76,16 +76,17 @@ class MemoryTaskExciseStampDiscrepanciesRepository : ITaskExciseStampDiscrepanci
 
     override fun deleteExciseStampsDiscrepanciesNotNormForProduct(materialNumber: String): Boolean {
         return stampsDiscrepancies.removeItemFromListWithPredicate { stamp ->
-            stamp.materialNumber == materialNumber &&
-                    stamp.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
+            stamp.materialNumber == materialNumber
+                    && stamp.typeDiscrepancies == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
         }
     }
 
-    override fun deleteExciseStampDiscrepancyOfProductOfBoxOfDiscrepancy(materialNumber: String, boxNumber: String, typeDiscrepancies: String): Boolean {
+    override fun deleteExciseStampDiscrepancyOfProductOfBoxOfDiscrepancy(materialNumber: String, boxNumber: String, typeDiscrepancies: String, processingUnitNumber: String): Boolean {
         return stampsDiscrepancies.removeItemFromListWithPredicate { stamp ->
-            materialNumber == stamp.materialNumber
-                    && boxNumber == stamp.boxNumber
-                    && typeDiscrepancies == stamp.typeDiscrepancies
+            stamp.materialNumber == materialNumber
+                    && stamp.processingUnitNumber == processingUnitNumber
+                    && stamp.boxNumber == boxNumber
+                    && stamp.typeDiscrepancies == typeDiscrepancies
         }
     }
 

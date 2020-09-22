@@ -39,23 +39,29 @@ class TransportMarriageGoodsDetailsViewModel : CoreViewModel() {
                 return@map
             }
             goodsDetails.postValue(
-                    taskManager.getReceivingTask()?.taskRepository?.getTransportMarriage()?.getTransportMarriage()?.filter {itFilter ->
-                        itFilter.cargoUnitNumber == cargoUnitNumber.value && itFilter.materialNumber == materialNumber.value
-                    }?.mapIndexed { index, taskTransportMarriageInfo ->
-                        GoodsDetailsCategoriesItem(
-                                number = index + 1,
-                                name = discrepanciesName.value .orEmpty(),
-                                nameBatch = "",
-                                visibilityNameBatch = false,
-                                quantityWithUom = "${taskTransportMarriageInfo.quantity.toStringFormatted()} ${taskTransportMarriageInfo.uom.name.orEmpty()}",
-                                isNormDiscrepancies = false,
-                                typeDiscrepancies = "",
-                                materialNumber = materialNumber.value.orEmpty(),
-                                batchDiscrepancies = null,
-                                zBatchDiscrepancies = null,
-                                even = index % 2 == 0
-                        )
-                    }?.reversed()
+                    taskManager
+                            .getReceivingTask()
+                            ?.getProcessedTransportMarriage()
+                            ?.filter {
+                                it.cargoUnitNumber == cargoUnitNumber.value
+                                        && it.materialNumber == materialNumber.value
+                            }
+                            ?.mapIndexed { index, taskTransportMarriageInfo ->
+                                GoodsDetailsCategoriesItem(
+                                        number = index + 1,
+                                        name = discrepanciesName.value .orEmpty(),
+                                        nameBatch = "",
+                                        visibilityNameBatch = false,
+                                        quantityWithUom = "${taskTransportMarriageInfo.quantity.toStringFormatted()} ${taskTransportMarriageInfo.uom.name.orEmpty()}",
+                                        isNormDiscrepancies = false,
+                                        typeDiscrepancies = "",
+                                        materialNumber = materialNumber.value.orEmpty(),
+                                        batchDiscrepancies = null,
+                                        zBatchDiscrepancies = null,
+                                        even = index % 2 == 0
+                                )
+                            }
+                            ?.reversed()
             )
         }
 

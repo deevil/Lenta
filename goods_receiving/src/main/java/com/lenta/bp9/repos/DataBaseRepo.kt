@@ -262,7 +262,7 @@ class DataBaseRepo(
 
     override suspend fun getQualityInfoZBatchesTaskPGE(): List<QualityInfo>? = withContext(Dispatchers.IO) {
         zmpUtz17V001.getAllQuality()?.toQualityInfoList()?.filter {
-            it.id == "028"
+            it.id == "028" && it.code != "3"
         }
     }
 }

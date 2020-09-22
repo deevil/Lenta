@@ -53,7 +53,7 @@ class MemoryTaskBoxesDiscrepanciesRepository : ITaskBoxesDiscrepanciesRepository
     }
 
     override fun updateBoxesDiscrepancies(newBoxesDiscrepancies: List<TaskBoxDiscrepancies>) {
-        boxesDiscrepancies.clear()
+        clear()
         newBoxesDiscrepancies.map {
             addBoxDiscrepancies(it)
         }
@@ -65,14 +65,15 @@ class MemoryTaskBoxesDiscrepanciesRepository : ITaskBoxesDiscrepanciesRepository
     }
 
     override fun deleteBoxDiscrepancies(discrepancies: TaskBoxDiscrepancies): Boolean {
-        return deleteBoxDiscrepancies(discrepancies.materialNumber, discrepancies.boxNumber, discrepancies.typeDiscrepancies)
+        return deleteBoxDiscrepancies(discrepancies.materialNumber, discrepancies.boxNumber, discrepancies.typeDiscrepancies, discrepancies.processingUnitNumber)
     }
 
-    override fun deleteBoxDiscrepancies(materialNumber: String, boxNumber: String, typeDiscrepancies: String): Boolean {
+    override fun deleteBoxDiscrepancies(materialNumber: String, boxNumber: String, typeDiscrepancies: String, processingUnitNumber: String): Boolean {
         return boxesDiscrepancies.removeItemFromListWithPredicate { box ->
-            materialNumber == box.materialNumber
-                    && boxNumber == box.boxNumber
-                    && typeDiscrepancies == box.typeDiscrepancies
+            box.materialNumber == materialNumber
+                    && box.processingUnitNumber == processingUnitNumber
+                    && box.boxNumber == boxNumber
+                    && box.typeDiscrepancies == typeDiscrepancies
         }
     }
 

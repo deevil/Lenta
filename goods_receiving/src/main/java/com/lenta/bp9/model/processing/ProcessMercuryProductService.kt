@@ -253,7 +253,7 @@ class ProcessMercuryProductService
                 taskManager.getReceivingTask()?.
                         taskRepository?.
                         getProductsDiscrepancies()?.
-                        changeProductDiscrepancy(it)
+                        changeProductDiscrepancyOfProcessingUnit(it)
             }
         }
 

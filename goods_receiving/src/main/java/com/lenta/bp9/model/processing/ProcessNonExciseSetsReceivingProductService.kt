@@ -33,8 +33,8 @@ class ProcessNonExciseSetsReceivingProductService
         } else null
     }
 
-    private fun getCountOfDiscrepanciesOfSet(typeDiscrepancies: String): Double {
-        return taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountOfDiscrepanciesOfProduct(productInfo, typeDiscrepancies)
+    private fun getCountOfDiscrepanciesOfSet(typeDiscrepancies: String, processingUnitNumber: String): Double {
+        return taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountOfDiscrepanciesOfProductOfProcessingUnit(productInfo, typeDiscrepancies, processingUnitNumber)
                 ?: 0.0
     }
 
@@ -51,7 +51,7 @@ class ProcessNonExciseSetsReceivingProductService
     }
 
     fun apply(count: String, typeDiscrepancies: String) {
-        val countAdd: Double = getCountOfDiscrepanciesOfSet(typeDiscrepancies) + count.toDouble()
+        val countAdd: Double = getCountOfDiscrepanciesOfSet(typeDiscrepancies, productInfo.processingUnit) + count.toDouble()
         val foundDiscrepancy = taskManager
                 .getReceivingTask()
                 ?.taskRepository
@@ -66,7 +66,7 @@ class ProcessNonExciseSetsReceivingProductService
                     .getReceivingTask()
                     ?.taskRepository
                     ?.getProductsDiscrepancies()
-                    ?.changeProductDiscrepancy(
+                    ?.changeProductDiscrepancyOfProcessingUnit(
                             TaskProductDiscrepancies(
                                     materialNumber = productInfo.materialNumber,
                                     processingUnitNumber = productInfo.processingUnit,
@@ -83,7 +83,7 @@ class ProcessNonExciseSetsReceivingProductService
                     .getReceivingTask()
                     ?.taskRepository
                     ?.getProductsDiscrepancies()
-                    ?.changeProductDiscrepancy(foundDiscrepancy.copy(numberDiscrepancies = countAdd.toString()))
+                    ?.changeProductDiscrepancyOfProcessingUnit(foundDiscrepancy.copy(numberDiscrepancies = countAdd.toString()))
         }
 
         if (currentComponentsDiscrepancies.isNotEmpty()) {
@@ -92,7 +92,7 @@ class ProcessNonExciseSetsReceivingProductService
                         .getReceivingTask()
                         ?.taskRepository
                         ?.getProductsDiscrepancies()
-                        ?.changeProductDiscrepancy(it)
+                        ?.changeProductDiscrepancyOfProcessingUnit(it)
             }
         }
 

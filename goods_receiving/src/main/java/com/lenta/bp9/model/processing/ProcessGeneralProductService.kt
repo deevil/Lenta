@@ -4,6 +4,8 @@ import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskProductDiscrepancies
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.model.task.TaskType
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.models.core.ProductType
@@ -68,8 +70,7 @@ class ProcessGeneralProductService
         val countCategorySurplus = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo)?.findLast {
             it.typeDiscrepancies == paramGrwOlGrundcat
         }?.numberDiscrepancies?.toDouble() ?: 0.0
-        val countAllCategory = (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountAcceptOfProductPGE(productInfo) ?: 0.0)
-                + (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountRefusalOfProductPGE(productInfo) ?: 0.0)
+        val countAllCategory = (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountAcceptOfProductPGE(productInfo) ?: 0.0) + (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountRefusalOfProductPGE(productInfo) ?: 0.0)
         return productInfo.orderQuantity.toDouble() - countCategoryUnderload - countAllCategory + countCategorySurplus
     }
 
@@ -93,15 +94,23 @@ class ProcessGeneralProductService
         return productInfo.origQuantity.toDouble() -
                 (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountAcceptOfProduct(productInfo) ?: 0.0) -
                 (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountRefusalOfProduct(productInfo) ?: 0.0) +
-                (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountOfDiscrepanciesOfProduct(productInfo, paramGrsGrundNeg) ?: 0.0)
+                (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountOfDiscrepanciesOfProductOfProcessingUnit(productInfo, paramGrsGrundNeg, productInfo.processingUnit) ?: 0.0)
     }
 
     fun countWithoutParamGrwUlGrundcatPGE(paramGrwOlGrundcat: String, paramGrwUlGrundcat: String) : Double {
         return productInfo.orderQuantity.toDouble() - getOpenQuantityPGE(paramGrwOlGrundcat, paramGrwUlGrundcat)
     }
 
-    fun removeDiscrepancyFromProduct(typeDiscrepancies: String) {
-        taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.deleteProductDiscrepancy(materialNumber =  productInfo.materialNumber, typeDiscrepancies = typeDiscrepancies)
+    fun removeDiscrepancyFromProduct(typeDiscrepancies: String, processingUnitNumber: String) {
+        taskManager
+                .getReceivingTask()
+                ?.taskRepository
+                ?.getProductsDiscrepancies()
+                ?.deleteProductDiscrepancyOfProcessingUnit(
+                        materialNumber =  productInfo.materialNumber,
+                        typeDiscrepancies = typeDiscrepancies,
+                        processingUnitNumber = processingUnitNumber
+                )
     }
 
     fun addWithoutUnderload(typeDiscrepancies: String, count: String, processingUnit: String) {
@@ -109,7 +118,7 @@ class ProcessGeneralProductService
             it.typeDiscrepancies == typeDiscrepancies
         }
         if (productDiscrepancy != null) {
-            taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.changeProductDiscrepancy(productDiscrepancy.copy(numberDiscrepancies = count))
+            taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.changeProductDiscrepancyOfProcessingUnit(productDiscrepancy.copy(numberDiscrepancies = count))
         } else {
             add(count, typeDiscrepancies, processingUnit)
         }
@@ -126,15 +135,45 @@ class ProcessGeneralProductService
     }
 
     fun addCountMoreCargoUnit(paramGrwOlGrundcat: String, count: Double, processingUnit: String) {
-        var countNormAndParam = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo)?.filter {
-            it.typeDiscrepancies == "1" || it.typeDiscrepancies == paramGrwOlGrundcat
-        }?.sumByDouble {
-            it.numberDiscrepancies.toDouble()
-        } ?: 0.0
+        var countNormAndParam =
+                taskManager
+                        .getReceivingTask()
+                        ?.taskRepository
+                        ?.getProductsDiscrepancies()
+                        ?.findProductDiscrepanciesOfProductOfProcessingUnit(productInfo.materialNumber, processingUnit)
+                        ?.filter {
+                            it.typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM
+                                    || it.typeDiscrepancies == paramGrwOlGrundcat
+                        }
+                        ?.sumByDouble {
+                            it.numberDiscrepancies.toDouble()
+                        }
+                        ?: 0.0
+
         countNormAndParam += count
-        taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.deleteProductDiscrepancy(materialNumber =  productInfo.materialNumber, typeDiscrepancies = "1")
-        add(productInfo.orderQuantity, "1", processingUnit)
-        taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.deleteProductDiscrepancy(materialNumber =  productInfo.materialNumber, typeDiscrepancies = paramGrwOlGrundcat)
+
+        taskManager
+                .getReceivingTask()
+                ?.taskRepository
+                ?.getProductsDiscrepancies()
+                ?.deleteProductDiscrepancyOfProcessingUnit(
+                        materialNumber =  productInfo.materialNumber,
+                        typeDiscrepancies = TYPE_DISCREPANCIES_QUALITY_NORM,
+                        processingUnitNumber = productInfo.processingUnit
+                )
+
+        add(productInfo.orderQuantity, TYPE_DISCREPANCIES_QUALITY_NORM, processingUnit)
+
+        taskManager
+                .getReceivingTask()
+                ?.taskRepository
+                ?.getProductsDiscrepancies()
+                ?.deleteProductDiscrepancyOfProcessingUnit(
+                        materialNumber =  productInfo.materialNumber,
+                        typeDiscrepancies = paramGrwOlGrundcat,
+                        processingUnitNumber = productInfo.processingUnit
+                )
+
         add((countNormAndParam - productInfo.orderQuantity.toDouble()).toString(), paramGrwOlGrundcat, processingUnit)
     }
 
@@ -148,8 +187,8 @@ class ProcessGeneralProductService
                 + (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountRefusalOfProductPGE(productInfo) ?: 0.0) + count)
     }
 
-    private fun getCountOfDiscrepancies(typeDiscrepancies: String) : Double {
-        return taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountOfDiscrepanciesOfProduct(productInfo, typeDiscrepancies) ?: 0.0
+    private fun getCountOfDiscrepancies(typeDiscrepancies: String, processingUnitNumber: String) : Double {
+        return taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountOfDiscrepanciesOfProductOfProcessingUnit(productInfo, typeDiscrepancies, processingUnitNumber) ?: 0.0
     }
 
     fun overLimit(count: Double) : Boolean {
@@ -157,24 +196,38 @@ class ProcessGeneralProductService
                 + (taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountRefusalOfProduct(productInfo) ?: 0.0) + count)
     }
 
-    fun add(count: String, typeDiscrepancies: String, processingUnit: String){
-        val countAdd: Double = if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
-            getCountOfDiscrepancies(typeDiscrepancies) + count.toDouble()
+    fun add(count: String, typeDiscrepancies: String, processingUnit: String) {
+        val taskType = taskManager.getReceivingTask()?.taskHeader?.taskType
+        val countAdd: Double = if (taskType == TaskType.RecalculationCargoUnit) {
+            getCountOfDiscrepancies(typeDiscrepancies, processingUnit) + count.toDouble()
         } else {
-            if (typeDiscrepancies == "1") count.toDouble() else getCountOfDiscrepancies(typeDiscrepancies) + count.toDouble()
+            if (typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM) count.toDouble() else getCountOfDiscrepancies(typeDiscrepancies, processingUnit) + count.toDouble()
         }
-        val foundDiscrepancy = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo)?.findLast {
-            it.materialNumber == productInfo.materialNumber && it.typeDiscrepancies == typeDiscrepancies
-        }
+        val foundDiscrepancy =
+                taskManager
+                        .getReceivingTask()
+                        ?.taskRepository
+                        ?.getProductsDiscrepancies()
+                        ?.findProductDiscrepanciesOfProductOfProcessingUnit(productInfo.materialNumber, processingUnit)
+                        ?.findLast { it.typeDiscrepancies == typeDiscrepancies }
 
-        if (countAdd == 0.0 && taskManager.getReceivingTask()?.taskHeader?.taskType != TaskType.ShipmentPP) {
-            taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.deleteProductDiscrepancy(productInfo.materialNumber, typeDiscrepancies)
+        if (countAdd == 0.0
+                && taskType != TaskType.ShipmentPP) {
+            taskManager
+                    .getReceivingTask()
+                    ?.taskRepository
+                    ?.getProductsDiscrepancies()
+                    ?.deleteProductDiscrepancyOfProcessingUnit(
+                            materialNumber = productInfo.materialNumber,
+                            typeDiscrepancies = typeDiscrepancies,
+                            processingUnitNumber = productInfo.processingUnit
+                    )
         } else {
             if (foundDiscrepancy == null) {
                 taskManager.getReceivingTask()?.
                         taskRepository?.
                         getProductsDiscrepancies()?.
-                        changeProductDiscrepancy(TaskProductDiscrepancies(
+                        changeProductDiscrepancyOfProcessingUnit(TaskProductDiscrepancies(
                                 materialNumber = productInfo.materialNumber,
                                 processingUnitNumber = processingUnit,
                                 numberDiscrepancies = countAdd.toString(),
@@ -188,13 +241,13 @@ class ProcessGeneralProductService
                 taskManager.getReceivingTask()?.
                         taskRepository?.
                         getProductsDiscrepancies()?.
-                        changeProductDiscrepancy(foundDiscrepancy.copy(numberDiscrepancies = countAdd.toString(), processingUnitNumber = processingUnit))
+                        changeProductDiscrepancyOfProcessingUnit(foundDiscrepancy.copy(numberDiscrepancies = countAdd.toString(), processingUnitNumber = processingUnit))
             }
         }
     }
 
     fun addNotRecountPGE(countNorm: String, countDefect: String, typeDiscrepanciesDefect: String, processingUnit: String){
-        val countAddDefect: Double = getCountOfDiscrepancies(typeDiscrepanciesDefect) + countDefect.toDouble()
+        val countAddDefect: Double = getCountOfDiscrepancies(typeDiscrepanciesDefect, processingUnit) + countDefect.toDouble()
 
         val foundNormDiscrepancy = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo)?.findLast {
             it.materialNumber == productInfo.materialNumber && it.typeDiscrepancies == "1"
@@ -215,7 +268,7 @@ class ProcessGeneralProductService
             taskManager.getReceivingTask()?.
                     taskRepository?.
                     getProductsDiscrepancies()?.
-                    changeProductDiscrepancy(TaskProductDiscrepancies(
+                    changeProductDiscrepancyOfProcessingUnit(TaskProductDiscrepancies(
                             materialNumber = productInfo.materialNumber,
                             processingUnitNumber = processingUnit,
                             numberDiscrepancies = countAddDefect.toString(),

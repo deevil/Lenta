@@ -503,7 +503,7 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
                 batchNumber = "",
                 boxNumber = "",
                 setMaterialNumber = "",
-                organizationCodeEGAIS = manufacturerCode.orEmpty(),
+                organizationCodeEGAIS = manufacturerCode,
                 bottlingDate = bottlingDate
         )
         addExciseStampDiscrepancy()

@@ -36,10 +36,10 @@ class ProcessZBatchesPPPService
                 ?: 0.0
     }
 
-    private fun getCountOfDiscrepanciesOfProduct(typeDiscrepancies: String): Double {
+    private fun getCountOfDiscrepanciesOfProduct(typeDiscrepancies: String, processingUnitNumber: String): Double {
         return taskRepository
                 ?.getProductsDiscrepancies()
-                ?.getCountOfDiscrepanciesOfProduct(productInfo, typeDiscrepancies)
+                ?.getCountOfDiscrepanciesOfProductOfProcessingUnit(productInfo, typeDiscrepancies, processingUnitNumber)
                 ?: 0.0
     }
 
@@ -104,7 +104,7 @@ class ProcessZBatchesPPPService
     }
 
     fun countWithoutParamGrsGrundNeg(paramGrsGrundNeg: String): Double {
-        return productInfo.origQuantity.toDouble() - getCountAcceptOfProduct() - getCountRefusalOfProduct() + getCountOfDiscrepanciesOfProduct(paramGrsGrundNeg)
+        return productInfo.origQuantity.toDouble() - getCountAcceptOfProduct() - getCountRefusalOfProduct() + getCountOfDiscrepanciesOfProduct(paramGrsGrundNeg, productInfo.processingUnit)
     }
 
     fun removeDiscrepancyFromProduct(typeDiscrepancies: String) {
@@ -152,7 +152,7 @@ class ProcessZBatchesPPPService
     }
 
     private fun changeProductDiscrepancy(count: String, typeDiscrepancies: String) {
-        val countAdd = getCountOfDiscrepanciesOfProduct(typeDiscrepancies) + count.toDouble()
+        val countAdd = getCountOfDiscrepanciesOfProduct(typeDiscrepancies, productInfo.processingUnit) + count.toDouble()
 
         var foundDiscrepancy =
                 taskRepository
@@ -197,7 +197,7 @@ class ProcessZBatchesPPPService
                 foundDiscrepancy
                         ?.copy(numberDiscrepancies = countAdd.toString())
                         ?: TaskZBatchesDiscrepancies(
-                                processingUnit = "",
+                                processingUnit = productInfo.processingUnit,
                                 materialNumber = productInfo.materialNumber,
                                 batchNumber = "",
                                 numberDiscrepancies = countAdd.toString(),
@@ -219,7 +219,7 @@ class ProcessZBatchesPPPService
         var foundDiscrepancy =
                 taskRepository
                         ?.getZBatchesDiscrepancies()
-                        ?.findPartySignsOfProduct(productInfo.materialNumber)
+                        ?.findPartySignsOfProduct(productInfo.materialNumber, productInfo.processingUnit)
                         ?.findLast {
                             it.typeDiscrepancies == typeDiscrepancies
                                     && it.manufactureCode == manufactureCode
@@ -232,7 +232,7 @@ class ProcessZBatchesPPPService
                 foundDiscrepancy
                         ?.copy(partySign = partySignsType)
                         ?: PartySignsOfZBatches(
-                                processingUnit = "",
+                                processingUnit = productInfo.processingUnit,
                                 materialNumber = productInfo.materialNumber,
                                 batchNumber = "",
                                 typeDiscrepancies = typeDiscrepancies,

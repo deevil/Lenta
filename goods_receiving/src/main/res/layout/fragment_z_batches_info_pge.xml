@@ -167,7 +167,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="1dp"
-            android:visibility="@{!vm.isDefect}"
+            android:visibility="@{!vm.isDefect || vm.isShelfLifeObtainedFromEWM}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/div_hor3">
@@ -284,7 +284,7 @@
             android:id="@+id/ConstraintProductionDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="@{!vm.isDefect &amp;&amp; vm.isShelfLifeObtainedFromEWM}"
+            android:visibility="@{vm.isShelfLifeObtainedFromEWM}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"

@@ -100,7 +100,7 @@ class ProcessExciseAlcoBoxAccService
                         notEditNumberDiscrepancies = ""
                 )
 
-        taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.changeProductDiscrepancy(foundDiscrepancy)
+        taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.changeProductDiscrepancyOfProcessingUnit(foundDiscrepancy)
     }
 
     fun addExciseStampDiscrepancy(exciseStamp: TaskExciseStampInfo, typeDiscrepancies: String, isScan: Boolean) {
@@ -440,33 +440,51 @@ class ProcessExciseAlcoBoxAccService
     }
 
     fun cleanBoxInfo(boxNumber: String, typeDiscrepancies: String) {
-        currentExciseStampsDiscrepancies.map { it }.filter { unitInfo ->
-            if (unitInfo.materialNumber == productInfo.materialNumber && unitInfo.boxNumber == boxNumber && unitInfo.typeDiscrepancies == typeDiscrepancies) {
-                currentExciseStampsDiscrepancies.remove(unitInfo)
-                return@filter true
-            }
-            return@filter false
-        }
+        currentExciseStampsDiscrepancies
+                .map { it }
+                .filter { unitInfo ->
+                    if (unitInfo.materialNumber == productInfo.materialNumber
+                            && unitInfo.boxNumber == boxNumber
+                            && unitInfo.typeDiscrepancies == typeDiscrepancies) {
+                        currentExciseStampsDiscrepancies.remove(unitInfo)
+                        return@filter true
+                    }
+                    return@filter false
+                }
 
-        taskManager.getReceivingTask()?.taskRepository?.getExciseStampsDiscrepancies()?.deleteExciseStampDiscrepancyOfProductOfBoxOfDiscrepancy(
-                materialNumber = productInfo.materialNumber,
-                boxNumber = boxNumber,
-                typeDiscrepancies = typeDiscrepancies
-        )
+        taskManager
+                .getReceivingTask()
+                ?.taskRepository
+                ?.getExciseStampsDiscrepancies()
+                ?.deleteExciseStampDiscrepancyOfProductOfBoxOfDiscrepancy(
+                        materialNumber = productInfo.materialNumber,
+                        boxNumber = boxNumber,
+                        typeDiscrepancies = typeDiscrepancies,
+                        processingUnitNumber = productInfo.processingUnit
+                )
 
-        currentBoxDiscrepancies.map { it }.filter { unitInfo ->
-            if (unitInfo.materialNumber == productInfo.materialNumber && unitInfo.boxNumber == boxNumber && unitInfo.typeDiscrepancies == typeDiscrepancies) {
-                currentBoxDiscrepancies.remove(unitInfo)
-                return@filter true
-            }
-            return@filter false
-        }
+        currentBoxDiscrepancies
+                .map { it }
+                .filter { unitInfo ->
+                    if (unitInfo.materialNumber == productInfo.materialNumber
+                            && unitInfo.boxNumber == boxNumber
+                            && unitInfo.typeDiscrepancies == typeDiscrepancies) {
+                        currentBoxDiscrepancies.remove(unitInfo)
+                        return@filter true
+                    }
+                    return@filter false
+                }
 
-        taskManager.getReceivingTask()?.taskRepository?.getBoxesDiscrepancies()?.deleteBoxDiscrepancies(
-                materialNumber = productInfo.materialNumber,
-                boxNumber = boxNumber,
-                typeDiscrepancies = typeDiscrepancies
-        )
+        taskManager
+                .getReceivingTask()
+                ?.taskRepository
+                ?.getBoxesDiscrepancies()
+                ?.deleteBoxDiscrepancies(
+                        materialNumber = productInfo.materialNumber,
+                        boxNumber = boxNumber,
+                        typeDiscrepancies = typeDiscrepancies,
+                        processingUnitNumber = productInfo.processingUnit
+                )
 
         taskManager
                 .getReceivingTask()

@@ -73,9 +73,13 @@ class ProcessExciseAlcoBoxAccPGEService
         val countAdd = getCountOfDiscrepanciesOfProduct(typeDiscrepancies) + count.toDouble()
 
         //добавляем кол-во по расхождению для продукта
-        var foundDiscrepancy = taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().findProductDiscrepanciesOfProduct(productInfo).findLast {
-            it.typeDiscrepancies == typeDiscrepancies
-        }
+        var foundDiscrepancy =
+                taskManager
+                        .getReceivingTask()
+                        ?.taskRepository
+                        ?.getProductsDiscrepancies()
+                        ?.findProductDiscrepanciesOfProduct(productInfo)
+                        ?.findLast { it.typeDiscrepancies == typeDiscrepancies }
 
         foundDiscrepancy = foundDiscrepancy?.copy(numberDiscrepancies = countAdd.toString(), processingUnitNumber = productInfo.processingUnit)
                 ?: TaskProductDiscrepancies(
@@ -355,9 +359,12 @@ class ProcessExciseAlcoBoxAccPGEService
         }
     }
 
-    fun cleanBoxInfo(boxNumber: String, typeDiscrepancies: String) {
+    fun cleanBoxInfo(boxNumber: String, typeDiscrepancies: String, processingUnitNumber: String) {
         currentExciseStampsDiscrepancies.map { it }.filter { unitInfo ->
-            if (unitInfo.materialNumber == productInfo.materialNumber && unitInfo.boxNumber == boxNumber && unitInfo.typeDiscrepancies == typeDiscrepancies) {
+            if (unitInfo.materialNumber == productInfo.materialNumber
+                    && unitInfo.processingUnitNumber == processingUnitNumber
+                    && unitInfo.boxNumber == boxNumber
+                    && unitInfo.typeDiscrepancies == typeDiscrepancies) {
                 currentExciseStampsDiscrepancies.remove(unitInfo)
                 return@filter true
             }
@@ -369,29 +376,43 @@ class ProcessExciseAlcoBoxAccPGEService
                 ?.getExciseStampsDiscrepancies()
                 ?.deleteExciseStampDiscrepancyOfProductOfBoxOfDiscrepancy(
                         materialNumber = productInfo.materialNumber,
+                        processingUnitNumber = processingUnitNumber,
                         boxNumber = boxNumber,
                         typeDiscrepancies = typeDiscrepancies
                 )
 
         currentBoxDiscrepancies.map { it }.filter { unitInfo ->
-            if (unitInfo.materialNumber == productInfo.materialNumber && unitInfo.boxNumber == boxNumber && unitInfo.typeDiscrepancies == typeDiscrepancies) {
+            if (unitInfo.materialNumber == productInfo.materialNumber
+                    && unitInfo.boxNumber == boxNumber
+                    && unitInfo.typeDiscrepancies == typeDiscrepancies
+                    &&unitInfo.processingUnitNumber == processingUnitNumber
+            ) {
                 currentBoxDiscrepancies.remove(unitInfo)
                 return@filter true
             }
             return@filter false
         }
 
-        taskManager.getReceivingTask()?.taskRepository?.getBoxesDiscrepancies()?.deleteBoxDiscrepancies(
-                materialNumber = productInfo.materialNumber,
-                boxNumber = boxNumber,
-                typeDiscrepancies = typeDiscrepancies
-        )
+        taskManager
+                .getReceivingTask()
+                ?.taskRepository
+                ?.getBoxesDiscrepancies()
+                ?.deleteBoxDiscrepancies(
+                        materialNumber = productInfo.materialNumber,
+                        boxNumber = boxNumber,
+                        typeDiscrepancies = typeDiscrepancies,
+                        processingUnitNumber = processingUnitNumber
+                )
 
         taskManager
                 .getReceivingTask()
                 ?.taskRepository
                 ?.getProductsDiscrepancies()
-                ?.deleteProductDiscrepancy(productInfo.materialNumber, typeDiscrepancies)
+                ?.deleteProductDiscrepancyOfProcessingUnit(
+                        materialNumber = productInfo.materialNumber,
+                        typeDiscrepancies = typeDiscrepancies,
+                        processingUnitNumber = processingUnitNumber
+                )
     }
 
     fun setInitialCount(count: Double) {
