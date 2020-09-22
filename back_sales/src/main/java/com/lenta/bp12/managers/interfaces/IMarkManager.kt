@@ -22,7 +22,7 @@ interface IMarkManager {
     fun getProperties(): MutableList<GoodProperty>
     fun getCreatedGoodForError(): Good?
     fun getInternalErrorMessage(): String
-    suspend fun loadBoxInfo(number: String): MarkScreenStatus
+    suspend fun loadBoxInfo(number: String, workType: WorkType): MarkScreenStatus
     fun onRollback()
     fun clearData()
 }

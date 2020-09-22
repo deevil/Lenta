@@ -113,20 +113,20 @@ class MarkManager @Inject constructor(
             openMarkedGoodWithShoe(number, isCheckFromGoodCard)
         } else when (number.length) {
             in TOBACCO_BOX_MARK_RANGE_21_28 -> {
-                loadBoxInfo(number)
+                loadBoxInfo(number, workType)
             }
             MARK_TOBACCO_PACK_29 -> {
                 if (isCigarettesMark(number))
                     return MarkScreenStatus.CANT_SCAN_PACK
                 else {
-                    loadBoxInfo(number)
+                    loadBoxInfo(number, workType)
                 }
             }
             in TOBACCO_MARK_BLOCK_OR_BOX_RANGE_30_44 -> {
                 if (isCigarettesBox(number)) {
                     openMarkedGoodWithCarton(number, isCheckFromGoodCard)
                 } else {
-                    loadBoxInfo(number)
+                    loadBoxInfo(number, workType)
                 }
             }
             else -> {
@@ -177,7 +177,8 @@ class MarkManager @Inject constructor(
         }
     }
 
-    override suspend fun loadBoxInfo(number: String): MarkScreenStatus {
+    override suspend fun loadBoxInfo(number: String, workType: WorkType): MarkScreenStatus {
+        this.workType = workType
         val goodFromManager = chooseGood()
 
         return goodFromManager?.let { good ->
@@ -227,7 +228,6 @@ class MarkManager @Inject constructor(
             Logg.e { internalErrorMessage }
             MarkScreenStatus.INTERNAL_ERROR
         }
-
     }
 
     private fun String.getEANfromGTIN(): String = if (this.startsWith("0")) {

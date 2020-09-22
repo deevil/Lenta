@@ -217,7 +217,7 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
         launchUITryCatch {
             with(navigator) {
                 showProgressLoadingData()
-                val result = markManager.loadBoxInfo(number)
+                val result = markManager.loadBoxInfo(number, WorkType.CREATE)
                 hideProgress()
                 when (result) {
                     MarkScreenStatus.OK -> setMarksAndProperties()
