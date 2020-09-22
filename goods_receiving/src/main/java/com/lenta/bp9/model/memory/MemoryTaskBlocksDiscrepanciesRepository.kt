@@ -51,7 +51,7 @@ class MemoryTaskBlocksDiscrepanciesRepository : ITaskBlocksDiscrepanciesReposito
     }
 
     override fun updateBlocksDiscrepancies(newBlocksDiscrepancies: List<TaskBlockDiscrepancies>) {
-        blocksDiscrepancies.clear()
+        clear()
         newBlocksDiscrepancies.map {
             addBlockDiscrepancies(it)
         }

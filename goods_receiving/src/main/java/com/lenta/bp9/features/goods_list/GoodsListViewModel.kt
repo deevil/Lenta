@@ -569,7 +569,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
 
     fun onClickFourthBtn() {
         if (taskType.value == TaskType.ShipmentPP) {//https://trello.com/c/3WVovfmE
-            if (selectedPage.value == GoodsListViewPages.GOODS_LIST_VIEW_PAGE_COUNTED_OR_TO_PROCESSING) {
+            if (selectedPage.value == GOODS_LIST_VIEW_PAGE_COUNTED_OR_TO_PROCESSING) {
                 missingGoodsForShipmentPP()
             } else {
                 cleanGoodsForShipmentPP()

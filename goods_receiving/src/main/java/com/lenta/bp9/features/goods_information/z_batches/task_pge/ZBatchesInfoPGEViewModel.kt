@@ -8,8 +8,14 @@ import com.lenta.bp9.features.goods_information.base.BaseGoodsInfo
 import com.lenta.bp9.model.processing.ProcessZBatchesPGEService
 import com.lenta.bp9.model.task.PartySignsTypeOfZBatches
 import com.lenta.bp9.model.task.TaskProductInfo
+import com.lenta.bp9.model.task.TaskZBatchInfo
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
+import com.lenta.shared.fmp.resources.dao_ext.getEanInfoByMaterialUnits
+import com.lenta.shared.fmp.resources.dao_ext.getUnitName
+import com.lenta.shared.fmp.resources.dao_ext.getUomInfo
+import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
+import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.Logg
@@ -19,6 +25,7 @@ import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.utilities.orIfNull
+import com.mobrun.plugin.api.HyperHive
 import org.joda.time.DateTime
 import org.joda.time.Days
 import java.text.SimpleDateFormat
@@ -29,6 +36,9 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
 
     @Inject
     lateinit var processZBatchesPGEService: ProcessZBatchesPGEService
+
+    @Inject
+    lateinit var hyperHive: HyperHive
 
     val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData(false)
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
@@ -73,28 +83,34 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
             spinManufacturersSelectedPosition
                     .combineLatest(spinProductionDateSelectedPosition)
                     .map {
-                        val quantityAlternativeUnitMeasure = productInfo.value?.quantityAlternativeUnitMeasure?.toDoubleOrNull().toStringFormatted()
+                        val zBatchInfo = getZBatchInfo()
+                        val zBatchQuantityBaseUnit = zBatchInfo?.purchaseOrderScope.toStringFormatted()
+                        val quantityAlternativeUnitMeasure = zBatchInfo?.quantityAlternativeUnitMeasure.toStringFormatted()
+                        val alternativeUnitMeasure = ZmpUtz07V001(hyperHive).getUnitName(zBatchInfo?.alternativeUnitMeasure.orEmpty()).orEmpty()
                         buildString {
-                            append(getZBatchQuantityBaseUnit())
+                            append(zBatchQuantityBaseUnit)
                             append(" ")
                             append(baseUnitName)
                             append("/")
                             append(quantityAlternativeUnitMeasure)
                             append(" ")
-                            append(productInfo.value?.alternativeUnitMeasure.orEmpty())
+                            append(alternativeUnitMeasure)
                         }
                     }
 
-    private fun getZBatchQuantityBaseUnit(): String {
-        return taskZBatchesInfo
-                ?.findLast {
-                    it.materialNumber == productMaterialNumber
-                            && it.processingUnit == productInfo.value?.processingUnit
-                            && it.manufactureCode == currentManufactureCode
-                            && it.productionDate == currentProductionDate
-                }
-                ?.purchaseOrderScope
-                .toStringFormatted()
+    private fun getZBatchInfo(): TaskZBatchInfo? {
+        return try {
+            taskZBatchesInfo
+                    ?.findLast {
+                        it.materialNumber == productMaterialNumber
+                                && it.processingUnit == productInfo.value?.processingUnit
+                                && it.manufactureCode == currentManufactureCode
+                                && it.productionDate == formatterEN.format(formatterRU.parse(currentProductionDate))
+                    }
+        } catch (e: Exception) {
+            Logg.e { "ZBatchesInfoPGEViewModel -> getZBatchInfo: $e" }
+            null
+        }
     }
 
     val tvProductionDate: MutableLiveData<String> = quantityByZBatchWithProductionDate.map {
@@ -266,7 +282,7 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
             tvAlternativeUnitMeasure.value = buildString {
                 append(context.getString(R.string.alternative_unit_measure_abbr))
                 append(": ")
-                append(productInfo.value?.quantityAlternativeUnitMeasure?.toDoubleOrNull().toStringFormatted())
+                append(productInfo.value?.quantityAlternativeUnitMeasure?.toStringFormatted())
                 append(productInfo.value?.alternativeUnitMeasure.orEmpty())
             }
 
@@ -570,13 +586,13 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
     //ПГЕ блок 7.55
     private fun checkParamGrwUlGrundcat() {
         val paramGrwUlGrundcatValue = paramGrwUlGrundcat.value.orEmpty()
-        if (processZBatchesPGEService.checkParam(paramGrwUlGrundcat.value!!)) {//блок 7.55 (да)
+        if (processZBatchesPGEService.checkParam(paramGrwUlGrundcat.value.orEmpty())) {//блок 7.55 (да)
             //блок 7.96
-            val countWithoutParamGrwUlGrundcat = processZBatchesPGEService.countWithoutParamGrwUlGrundcatPGE(paramGrwOlGrundcat.value!!, paramGrwUlGrundcat.value!!)
+            val countWithoutParamGrwUlGrundcat = processZBatchesPGEService.countWithoutParamGrwUlGrundcatPGE(paramGrwOlGrundcat.value.orEmpty(), paramGrwUlGrundcat.value.orEmpty())
             //блок 7.135
             if (countWithoutParamGrwUlGrundcat == 0.0) {//блок 7.135 (да)
                 //блок 7.133
-                processZBatchesPGEService.removeDiscrepancyFromProduct(paramGrwUlGrundcat.value!!)
+                processZBatchesPGEService.removeDiscrepancyFromProduct(paramGrwUlGrundcat.value.orEmpty(), currentProcessingUnitNumber)
                 //блок 7.177
                 saveCategoryPGE(true)
             } else {//блок 7.135 (нет)
@@ -591,13 +607,14 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
                             shelfLifeTime = getShelfLifeTime(),
                             productionDate = getProductionDate(),
                             processingUnit = currentProcessingUnitNumber,
-                            partySignsType = getPartySignsType()
+                            partySignsType = getPartySignsType(),
+                            isShelfLifeObtainedFromEWM = isShelfLifeObtainedFromEWM.value ?: false
                     )
                     //блок 7.177
                     saveCategoryPGE(true)
                 } else {//блок 7.157 (нет)
                     //блок 7.165
-                    processZBatchesPGEService.removeDiscrepancyFromProduct(paramGrwUlGrundcatValue)
+                    processZBatchesPGEService.removeDiscrepancyFromProduct(paramGrwUlGrundcatValue, currentProcessingUnitNumber)
                     noParamGrwUlGrundcat()
                 }
             }
@@ -657,7 +674,8 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
                                     shelfLifeDate = getShelfLifeDate(),
                                     shelfLifeTime = getShelfLifeTime(),
                                     productionDate = getProductionDate(),
-                                    partySignsType = getPartySignsType()
+                                    partySignsType = getPartySignsType(),
+                                    isShelfLifeObtainedFromEWM = isShelfLifeObtainedFromEWM.value ?: false
                             )
                             //блок 7.188 (переходим минуя 7.177 и 7.185, т.к. мы уже сохранили данные в блоке 7.209)
                             clickBtnApply()
@@ -688,7 +706,8 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
                     shelfLifeTime = getShelfLifeTime(),
                     productionDate = getProductionDate(),
                     processingUnit = currentProcessingUnitNumber,
-                    partySignsType = getPartySignsType()
+                    partySignsType = getPartySignsType(),
+                    isShelfLifeObtainedFromEWM = isShelfLifeObtainedFromEWM.value ?: false
             )
         }
 

@@ -149,11 +149,14 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
     }
 
     fun onClickClean(){
-        processedSelectionsHelper.selectedPositions.value?.map { position ->
-            processExciseAlcoBoxAccPGEService.cleanBoxInfo(
-                    boxNumber = countProcessed.value?.get(position)?.boxInfo?.boxNumber ?: "",
-                    typeDiscrepancies = countProcessed.value?.get(position)?.typeDiscrepancies ?: "")
-        }
+        processedSelectionsHelper.selectedPositions.value
+                ?.map { position ->
+                    processExciseAlcoBoxAccPGEService.cleanBoxInfo(
+                            boxNumber = countProcessed.value?.getOrNull(position)?.boxInfo?.boxNumber.orEmpty(),
+                            typeDiscrepancies = countProcessed.value?.getOrNull(position)?.typeDiscrepancies.orEmpty(),
+                            processingUnitNumber = countProcessed.value?.getOrNull(position)?.boxInfo?.processingUnitNumber.orEmpty()
+                    )
+                }
 
         updateData()
     }

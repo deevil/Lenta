@@ -202,7 +202,7 @@ class SearchProductDelegate @Inject constructor(
                 isZBatches = false,
                 isNeedPrint = false,
                 alternativeUnitMeasure = "",
-                quantityAlternativeUnitMeasure = ""
+                quantityAlternativeUnitMeasure = 0.0
         )
         taskManager
                 .getReceivingTask()

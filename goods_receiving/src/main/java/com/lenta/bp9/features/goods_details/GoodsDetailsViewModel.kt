@@ -247,9 +247,10 @@ class GoodsDetailsViewModel : CoreViewModel() {
     private fun updatingInfoZBatches() {
         val itemsZBatchesDiscrepancies: ArrayList<GoodsDetailsCategoriesItem> = ArrayList()
         var quantityItem = 0
+        val materialNumber = productInfo.value?.materialNumber.orEmpty()
         taskRepository
                 ?.getZBatchesDiscrepancies()
-                ?.findZBatchDiscrepanciesOfProduct(productInfo.value?.materialNumber.orEmpty())
+                ?.findZBatchDiscrepanciesOfProduct(materialNumber)
                 ?.mapIndexed { index, discrepancy ->
                     itemsZBatchesDiscrepancies.add(
                             getItemsZBatchesDiscrepanciesOfBatch(index, discrepancy)
@@ -257,29 +258,44 @@ class GoodsDetailsViewModel : CoreViewModel() {
                     quantityItem = index + 1
                 }
 
-        taskRepository
+        taskManager
+                .getReceivingTask()
+                ?.taskRepository
                 ?.getProductsDiscrepancies()
-                ?.findProductDiscrepanciesOfProduct(productInfo.value?.materialNumber.orEmpty())
-                ?.asSequence()
+                ?.findProductDiscrepanciesOfProduct(materialNumber)
                 ?.filter { it.typeDiscrepancies != TYPE_DISCREPANCIES_QUALITY_NORM }
-                ?.mapIndexed { index, discrepancy ->
-                    itemsZBatchesDiscrepancies.add(
-                            GoodsDetailsCategoriesItem(
-                                    number = quantityItem + index + 1,
-                                    name = reasonRejectionInfo.value?.firstOrNull { it.code == discrepancy.typeDiscrepancies }?.name.orEmpty(),
-                                    nameBatch = "",
-                                    visibilityNameBatch = false,
-                                    quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${uom.value?.name.orEmpty()}",
-                                    isNormDiscrepancies = isNormDiscrepancies(discrepancy.typeDiscrepancies),
-                                    typeDiscrepancies = discrepancy.typeDiscrepancies,
-                                    materialNumber = productInfo.value?.materialNumber.orEmpty(),
-                                    batchDiscrepancies = null,
-                                    zBatchDiscrepancies = null,
-                                    even = index % 2 == 0
-                            )
-                    )
+                ?.groupBy { it.materialNumber}
+                ?.forEach { groupByMaterialNumberProduct ->
+                    groupByMaterialNumberProduct.value
+                            .groupBy { it.typeDiscrepancies }
+                            .forEach { groupByProductDiscrepancies ->
+                                val countDiscrepancies =
+                                        groupByProductDiscrepancies.value
+                                                .map { it.numberDiscrepancies }
+                                                .sumByDouble { it.toDoubleOrNull() ?: 0.0 }
+
+                                groupByProductDiscrepancies.value
+                                        .first()
+                                        .let { product ->
+                                            itemsZBatchesDiscrepancies.add(
+                                                    GoodsDetailsCategoriesItem(
+                                                            number = quantityItem + 1,
+                                                            name = reasonRejectionInfo.value?.firstOrNull { it.code == product.typeDiscrepancies }?.name.orEmpty(),
+                                                            nameBatch = "",
+                                                            visibilityNameBatch = false,
+                                                            quantityWithUom = "${countDiscrepancies.toStringFormatted()} ${uom.value?.name.orEmpty()}",
+                                                            isNormDiscrepancies = isNormDiscrepancies(product.typeDiscrepancies),
+                                                            typeDiscrepancies = product.typeDiscrepancies,
+                                                            materialNumber = materialNumber,
+                                                            batchDiscrepancies = null,
+                                                            zBatchDiscrepancies = null,
+                                                            even = quantityItem % 2 == 0
+                                                    )
+                                            )
+                                            quantityItem++
+                                        }
+                            }
                 }
-                ?.toList()
 
         goodsDetails.value = itemsZBatchesDiscrepancies.reversed()
     }
@@ -334,28 +350,49 @@ class GoodsDetailsViewModel : CoreViewModel() {
     }
 
     private fun updatingInfoOtherProducts() {
-        goodsDetails.value =
-                taskManager
-                        .getReceivingTask()
-                        ?.taskRepository
-                        ?.getProductsDiscrepancies()
-                        ?.findProductDiscrepanciesOfProduct(productInfo.value!!)
-                        ?.mapIndexed { index, discrepancy ->
-                            GoodsDetailsCategoriesItem(
-                                    number = index + 1,
-                                    name = reasonRejectionInfo.value?.firstOrNull { it.code == discrepancy.typeDiscrepancies }?.name.orEmpty(),
-                                    nameBatch = "",
-                                    visibilityNameBatch = false,
-                                    quantityWithUom = "${discrepancy.numberDiscrepancies.toDouble().toStringFormatted()} ${uom.value?.name.orEmpty()}",
-                                    isNormDiscrepancies = isNormDiscrepancies(discrepancy.typeDiscrepancies),
-                                    typeDiscrepancies = discrepancy.typeDiscrepancies,
-                                    materialNumber = productInfo.value?.materialNumber.orEmpty(),
-                                    batchDiscrepancies = null,
-                                    zBatchDiscrepancies = null,
-                                    even = index % 2 == 0
-                            )
-                        }
-                        ?.reversed()
+        val itemsProductDiscrepancies: ArrayList<GoodsDetailsCategoriesItem> = ArrayList()
+        val materialNumber = productInfo.value?.materialNumber.orEmpty()
+        var index = 0
+
+        taskManager
+                .getReceivingTask()
+                ?.taskRepository
+                ?.getProductsDiscrepancies()
+                ?.findProductDiscrepanciesOfProduct(materialNumber)
+                ?.groupBy { it.materialNumber}
+                ?.forEach { groupByMaterialNumberProduct ->
+                    groupByMaterialNumberProduct.value
+                            .groupBy { it.typeDiscrepancies }
+                            .forEach { groupByProductDiscrepancies ->
+                                val countDiscrepancies =
+                                        groupByProductDiscrepancies.value
+                                                .map { it.numberDiscrepancies }
+                                                .sumByDouble { it.toDoubleOrNull() ?: 0.0 }
+
+                                groupByProductDiscrepancies.value
+                                        .first()
+                                        .let { product ->
+                                            itemsProductDiscrepancies.add(
+                                                    GoodsDetailsCategoriesItem(
+                                                            number = index + 1,
+                                                            name = reasonRejectionInfo.value?.firstOrNull { it.code == product.typeDiscrepancies }?.name.orEmpty(),
+                                                            nameBatch = "",
+                                                            visibilityNameBatch = false,
+                                                            quantityWithUom = "${countDiscrepancies.toStringFormatted()} ${uom.value?.name.orEmpty()}",
+                                                            isNormDiscrepancies = isNormDiscrepancies(product.typeDiscrepancies),
+                                                            typeDiscrepancies = product.typeDiscrepancies,
+                                                            materialNumber = materialNumber,
+                                                            batchDiscrepancies = null,
+                                                            zBatchDiscrepancies = null,
+                                                            even = index % 2 == 0
+                                                    )
+                                            )
+                                            index++
+                                        }
+                            }
+                }
+
+        goodsDetails.value = itemsProductDiscrepancies.reversed()
     }
 
 

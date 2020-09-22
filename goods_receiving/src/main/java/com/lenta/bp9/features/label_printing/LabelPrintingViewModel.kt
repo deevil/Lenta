@@ -154,7 +154,7 @@ class LabelPrintingViewModel : CoreViewModel() {
                     .getReceivingTask()
                     ?.taskRepository
                     ?.getZBatchesDiscrepancies()
-                    ?.findPartySignsOfProduct(label.materialNumber)
+                    ?.findPartySignsOfProduct(label.materialNumber, label.processingUnit)
                     ?.findLast { partySign ->
                         var partySignTime = if (partySign.shelfLifeTime.isEmpty()) {
                             "000000"

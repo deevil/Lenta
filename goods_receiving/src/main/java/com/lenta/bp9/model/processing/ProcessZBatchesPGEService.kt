@@ -36,10 +36,10 @@ class ProcessZBatchesPGEService
                 ?: 0.0
     }
 
-    private fun getCountOfDiscrepanciesOfProduct(typeDiscrepancies: String): Double {
+    private fun getCountOfDiscrepanciesOfProduct(typeDiscrepancies: String, processingUnitNumber: String): Double {
         return taskRepository
                 ?.getProductsDiscrepancies()
-                ?.getCountOfDiscrepanciesOfProduct(productInfo, typeDiscrepancies)
+                ?.getCountOfDiscrepanciesOfProductOfProcessingUnit(productInfo, typeDiscrepancies, processingUnitNumber)
                 ?: 0.0
     }
 
@@ -66,12 +66,13 @@ class ProcessZBatchesPGEService
                 .isNullOrEmpty()
     }
 
-    fun removeDiscrepancyFromProduct(typeDiscrepancies: String) {
+    fun removeDiscrepancyFromProduct(typeDiscrepancies: String, processingUnitNumber: String) {
         taskRepository
                 ?.getProductsDiscrepancies()
-                ?.deleteProductDiscrepancy(
+                ?.deleteProductDiscrepancyOfProcessingUnit(
                         materialNumber = productInfo.materialNumber,
-                        typeDiscrepancies = typeDiscrepancies
+                        typeDiscrepancies = typeDiscrepancies,
+                        processingUnitNumber = processingUnitNumber
                 )
     }
 
@@ -83,19 +84,21 @@ class ProcessZBatchesPGEService
             shelfLifeTime: String,
             productionDate: String,
             processingUnit: String,
-            partySignsType: PartySignsTypeOfZBatches) {
+            partySignsType: PartySignsTypeOfZBatches,
+            isShelfLifeObtainedFromEWM: Boolean
+    ) {
         val productDiscrepancy =
                 taskRepository
                         ?.getProductsDiscrepancies()
-                        ?.findProductDiscrepanciesOfProduct(productInfo)
+                        ?.findProductDiscrepanciesOfProductOfProcessingUnit(productInfo.materialNumber, processingUnit)
                         ?.findLast { it.typeDiscrepancies == typeDiscrepancies }
 
         if (productDiscrepancy != null) {
             taskRepository
                     ?.getProductsDiscrepancies()
-                    ?.changeProductDiscrepancy(productDiscrepancy.copy(numberDiscrepancies = count))
+                    ?.changeProductDiscrepancyOfProcessingUnit(productDiscrepancy.copy(numberDiscrepancies = count))
         } else {
-            add(count, typeDiscrepancies, manufactureCode, shelfLifeDate, shelfLifeTime, productionDate, processingUnit, partySignsType)
+            add(count, typeDiscrepancies, manufactureCode, shelfLifeDate, shelfLifeTime, productionDate, processingUnit, partySignsType, isShelfLifeObtainedFromEWM)
         }
     }
 
@@ -112,24 +115,25 @@ class ProcessZBatchesPGEService
             shelfLifeTime: String,
             productionDate: String,
             processingUnit: String,
-            partySignsType: PartySignsTypeOfZBatches
+            partySignsType: PartySignsTypeOfZBatches,
+            isShelfLifeObtainedFromEWM: Boolean
     ) {
         changeProductDiscrepancy(count, typeDiscrepancies, processingUnit)
 
-        if (typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM) {
+        if (typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM || isShelfLifeObtainedFromEWM) {
             changeZBatchDiscrepancy(count, typeDiscrepancies, manufactureCode, shelfLifeDate, shelfLifeTime, processingUnit)
             changePartySign(typeDiscrepancies, manufactureCode, shelfLifeDate, shelfLifeTime, productionDate, processingUnit, partySignsType)
         }
     }
 
     private fun changeProductDiscrepancy(count: String, typeDiscrepancies: String, processingUnit: String) {
-        val countAdd = getCountOfDiscrepanciesOfProduct(typeDiscrepancies) + count.toDouble()
+        val countAdd = getCountOfDiscrepanciesOfProduct(typeDiscrepancies, processingUnit) + count.toDouble()
 
         var foundDiscrepancy =
                 taskRepository
                         ?.getProductsDiscrepancies()
-                        ?.findProductDiscrepanciesOfProduct(productInfo)
-                        ?.findLast { it.typeDiscrepancies == typeDiscrepancies && it.processingUnitNumber == processingUnit}
+                        ?.findProductDiscrepanciesOfProductOfProcessingUnit(productInfo.materialNumber, processingUnit)
+                        ?.findLast { it.typeDiscrepancies == typeDiscrepancies }
 
         foundDiscrepancy =
                 foundDiscrepancy
@@ -147,7 +151,7 @@ class ProcessZBatchesPGEService
 
         taskRepository
                 ?.getProductsDiscrepancies()
-                ?.changeProductDiscrepancy(foundDiscrepancy)
+                ?.changeProductDiscrepancyOfProcessingUnit(foundDiscrepancy)
     }
 
     private fun changeZBatchDiscrepancy(count: String, typeDiscrepancies: String, manufactureCode: String, shelfLifeDate: String, shelfLifeTime: String, processingUnit: String) {
@@ -173,7 +177,7 @@ class ProcessZBatchesPGEService
                                 materialNumber = productInfo.materialNumber,
                                 batchNumber = "",
                                 numberDiscrepancies = countAdd.toString(),
-                                uom = productInfo.purchaseOrderUnits,
+                                uom = productInfo.uom,
                                 typeDiscrepancies = typeDiscrepancies,
                                 isNew = false,
                                 manufactureCode = manufactureCode,
@@ -186,15 +190,22 @@ class ProcessZBatchesPGEService
                 ?.changeZBatchDiscrepancy(foundDiscrepancy)
     }
 
-    private fun changePartySign(typeDiscrepancies: String, manufactureCode: String, shelfLifeDate: String, shelfLifeTime: String, productionDate: String, processingUnit: String, partySignsType: PartySignsTypeOfZBatches) {
+    private fun changePartySign(
+            typeDiscrepancies: String,
+            manufactureCode: String,
+            shelfLifeDate: String,
+            shelfLifeTime: String,
+            productionDate: String,
+            processingUnit: String,
+            partySignsType: PartySignsTypeOfZBatches
+    ) {
 
         var foundDiscrepancy =
                 taskRepository
                         ?.getZBatchesDiscrepancies()
-                        ?.findPartySignsOfProduct(productInfo.materialNumber)
+                        ?.findPartySignsOfProduct(productInfo.materialNumber, processingUnit)
                         ?.findLast {
                             it.typeDiscrepancies == typeDiscrepancies
-                                    && it.processingUnit == processingUnit
                                     && it.manufactureCode == manufactureCode
                                     && it.shelfLifeDate == shelfLifeDate
                                     && it.shelfLifeTime == shelfLifeTime
@@ -281,7 +292,8 @@ class ProcessZBatchesPGEService
             shelfLifeDate: String,
             shelfLifeTime: String,
             productionDate: String,
-            partySignsType: PartySignsTypeOfZBatches
+            partySignsType: PartySignsTypeOfZBatches,
+            isShelfLifeObtainedFromEWM: Boolean
     ) {
         var countNormAndParam =
                 taskManager
@@ -296,11 +308,16 @@ class ProcessZBatchesPGEService
                         } ?: 0.0
 
         countNormAndParam += count
+
         taskManager
                 .getReceivingTask()
                 ?.taskRepository
                 ?.getProductsDiscrepancies()
-                ?.deleteProductDiscrepancy(materialNumber =  productInfo.materialNumber, typeDiscrepancies = TYPE_DISCREPANCIES_QUALITY_NORM)
+                ?.deleteProductDiscrepancyOfProcessingUnit(
+                        materialNumber =  productInfo.materialNumber,
+                        typeDiscrepancies = TYPE_DISCREPANCIES_QUALITY_NORM,
+                        processingUnitNumber = processingUnit
+                )
 
         add(count = productInfo.orderQuantity,
                 typeDiscrepancies = TYPE_DISCREPANCIES_QUALITY_NORM,
@@ -309,13 +326,19 @@ class ProcessZBatchesPGEService
                 shelfLifeTime = shelfLifeTime,
                 productionDate = productionDate,
                 processingUnit = processingUnit,
-                partySignsType = partySignsType)
+                partySignsType = partySignsType,
+                isShelfLifeObtainedFromEWM = isShelfLifeObtainedFromEWM
+        )
 
         taskManager
                 .getReceivingTask()
                 ?.taskRepository
                 ?.getProductsDiscrepancies()
-                ?.deleteProductDiscrepancy(materialNumber =  productInfo.materialNumber, typeDiscrepancies = paramGrwOlGrundcat)
+                ?.deleteProductDiscrepancyOfProcessingUnit(
+                        materialNumber =  productInfo.materialNumber,
+                        typeDiscrepancies = paramGrwOlGrundcat,
+                        processingUnitNumber = processingUnit
+                )
 
         add(count = (countNormAndParam - productInfo.orderQuantity.toDouble()).toString(),
                 typeDiscrepancies = paramGrwOlGrundcat,
@@ -324,7 +347,8 @@ class ProcessZBatchesPGEService
                 shelfLifeTime = shelfLifeTime,
                 productionDate = productionDate,
                 processingUnit = processingUnit,
-                partySignsType = partySignsType
+                partySignsType = partySignsType,
+                isShelfLifeObtainedFromEWM = isShelfLifeObtainedFromEWM
         )
     }
 

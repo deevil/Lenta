@@ -39,7 +39,7 @@ class MemoryTaskMercuryDiscrepanciesRepository : ITaskMercuryDiscrepanciesReposi
     }
 
     override fun updateMercuryDiscrepancy(newMercuryDiscrepancy: List<TaskMercuryDiscrepancies>) {
-        mercuryDiscrepancies.clear()
+        clear()
         newMercuryDiscrepancy.map { addMercuryDiscrepancy(it) }
     }
 

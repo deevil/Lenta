@@ -48,7 +48,7 @@ class TaskProductInfo(materialNumber: String,
                       val isZBatches: Boolean, //Z-партии
                       val isNeedPrint: Boolean,
                       val alternativeUnitMeasure: String, // альтернативная единица измерения
-                      val quantityAlternativeUnitMeasure: String // количество в альтернативной единице измерения
+                      val quantityAlternativeUnitMeasure: Double // количество в альтернативной единице измерения
                         ) : ProductInfo(materialNumber, description, uom, type, isSet, sectionId, matrixType, materialType) {
 
     fun copy(materialNumber: String = this.materialNumber,
@@ -96,7 +96,7 @@ class TaskProductInfo(materialNumber: String,
              isZBatches: Boolean = this.isZBatches,
              isNeedPrint: Boolean = this.isNeedPrint,
              alternativeUnitMeasure: String = this.alternativeUnitMeasure,
-             quantityAlternativeUnitMeasure: String = this.quantityAlternativeUnitMeasure) : TaskProductInfo {
+             quantityAlternativeUnitMeasure: Double = this.quantityAlternativeUnitMeasure) : TaskProductInfo {
         return TaskProductInfo(
                 materialNumber = materialNumber,
                 description = description,
