@@ -8,10 +8,12 @@ import com.lenta.bp12.features.open_task.base.BaseGoodListOpenViewModel
 import com.lenta.bp12.managers.interfaces.IMarkManager
 import com.lenta.bp12.managers.interfaces.IOpenTaskManager
 import com.lenta.bp12.model.pojo.Basket
+import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.extentions.getDescription
 import com.lenta.bp12.model.pojo.extentions.getQuantityFromGoodList
 import com.lenta.bp12.model.pojo.extentions.isAnyNotLocked
 import com.lenta.bp12.model.pojo.extentions.isAnyPrinted
+import com.lenta.bp12.platform.ZERO_QUANTITY
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -105,7 +107,7 @@ class GoodListViewModel : BaseGoodListOpenViewModel(), PageSelectionListener, On
                                 name = good.getNameWithMaterial(),
                                 material = good.material,
                                 providerCode = good.provider.code.orEmpty(),
-                                quantity = "${good.planQuantity.dropZeros()} ${good.commonUnits.name}",
+                                quantity = chooseQuantityForProcessing(good),
                                 good = good
                         )
                     }
@@ -414,6 +416,11 @@ class GoodListViewModel : BaseGoodListOpenViewModel(), PageSelectionListener, On
                     }
             )
         }
+    }
+    
+    private fun chooseQuantityForProcessing(good: Good): String {
+        val quantity = "${good.planQuantity.dropZeros()} ${good.commonUnits.name}"
+        return quantity.takeIf { good.planQuantity > ZERO_QUANTITY }.orEmpty()
     }
 
     private fun handlePrintSuccess(baskets: List<Basket>) {
