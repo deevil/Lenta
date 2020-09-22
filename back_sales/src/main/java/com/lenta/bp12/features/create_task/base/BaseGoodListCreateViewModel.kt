@@ -91,7 +91,7 @@ abstract class BaseGoodListCreateViewModel : CoreViewModel(), IBaseGoodListCreat
             with(navigator) {
                 manager.clearEan()
                 showProgressLoadingData()
-                val screenStatus = markManager.checkMark(number, WorkType.CREATE)
+                val screenStatus = markManager.checkMark(number, WorkType.CREATE, false)
                 Logg.d { "--> MarkScreenStatus: ${screenStatus.name}" }
                 hideProgress()
                 when (screenStatus) {

@@ -638,6 +638,12 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
     private suspend fun checkPart(): Either<Failure, ScanInfoResult> {
         navigator.showProgressLoadingData(::handleFailure)
 
+        val formattedDate = getFormattedDate(
+                date = date.value.orEmpty(),
+                sourcePattern = Constants.DATE_FORMAT_dd_mm_yyyy,
+                targetPattern = Constants.DATE_FORMAT_yyyy_mm_dd
+        )
+
         val quantityFromField = quantity.value ?: ZERO_QUANTITY
 
         val allPartsQuantity = good.value?.getPartQuantityByDateAndProducer(
@@ -651,7 +657,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
                         tkNumber = sessionInfo.market.orEmpty(),
                         material = good.value?.material.orEmpty(),
                         producerCode = getProducerCode(),
-                        bottledDate = date.value.orEmpty(),
+                        bottledDate = formattedDate,
                         mode = ScanInfoMode.PART.mode,
                         quantity = allPartsQuantity
                 )

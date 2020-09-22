@@ -23,6 +23,7 @@ import com.lenta.bp12.request.GoodInfoNetRequest
 import com.lenta.bp12.request.MarkCartonBoxGoodInfoNetRequest
 import com.lenta.bp12.request.ScanInfoNetRequest
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.exception.Failure
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.*
@@ -143,15 +144,7 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
     МРЦ
      */
 
-    val mrc by unsafeLazy {
-        good.map { goodValue ->
-            goodValue?.let { good ->
-                val mrc = good.maxRetailPrice
-                mrc.takeIf { it.isNotEmpty() }
-                        ?.run { "${good.maxRetailPrice} ${resource.rub}" }.orEmpty()
-            }
-        }
-    }
+    val mrc = MutableLiveData<String>("")
 
     val isMrcVisible by unsafeLazy {
         good.map {
@@ -219,7 +212,7 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
         launchUITryCatch {
             with(navigator) {
                 showProgressLoadingData()
-                val status = markManager.checkMark(number, WorkType.OPEN)
+                val status = markManager.checkMark(number, WorkType.OPEN, true)
                 Logg.d { status.name }
                 hideProgress()
                 when (status) {
@@ -234,7 +227,7 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
                     MarkScreenStatus.BOX_ALREADY_SCANNED ->
                         showBoxAlreadyScannedDelete(::handleYesDeleteMappedMarksFromTempCallBack)
 
-                    MarkScreenStatus.FAILURE -> handleFailure(markManager.getMarkFailure())
+                    MarkScreenStatus.FAILURE -> handleMarkScanError()
 
                     MarkScreenStatus.GOOD_CANNOT_BE_ADDED -> showGoodCannotBeAdded()
 
@@ -268,11 +261,21 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
         }
     }
 
+    private fun handleMarkScanError(){
+        val failure = markManager.getMarkFailure()
+        if (failure is Failure.MessageFailure) {
+            navigator.showMarkScanError(failure.message.orEmpty())
+        } else {
+            handleFailure(failure)
+        }
+    }
+
     private fun handleYesSaveCurrentMarkToBasketAndOpenAnother() {
         launchUITryCatch {
             saveChanges()
             markManager.handleYesSaveAndOpenAnotherBox()
             tempMarks.value = markManager.getTempMarks()
+            setMrc()
         }
     }
 
@@ -288,7 +291,7 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
                     MarkScreenStatus.INTERNAL_ERROR ->
                         showInternalError(markManager.getInternalErrorMessage())
 
-                    MarkScreenStatus.FAILURE -> handleFailure(markManager.getMarkFailure())
+                    MarkScreenStatus.FAILURE -> handleMarkScanError()
 
                     MarkScreenStatus.MARK_ALREADY_SCANNED ->
                         showMarkAlreadyScannedDelete(::handleYesDeleteMappedMarksFromTempCallBack)
@@ -310,6 +313,7 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
             markManager.handleYesDeleteMappedMarksFromTempCallBack()
             val tempMarksFromMarkManager = markManager.getTempMarks()
             tempMarks.postValue(tempMarksFromMarkManager)
+            setMrc()
         }
     }
 
@@ -391,6 +395,7 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
         isExistUnsavedData = true
         tempMarks.value = markManager.getTempMarks()
         properties.value = markManager.getProperties()
+        setMrc()
     }
 
     fun setupData(marksFromBundle: List<Mark>?, propertiesFromBundle: List<GoodProperty>?) {
@@ -416,5 +421,13 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
                 navigator.showInternalError(resource.goodNotFoundErrorMsg)
             }
         }
+    }
+
+
+    private fun setMrc() {
+        val newMrc = tempMarks.value?.firstOrNull()?.run {
+            resource.mrcSpaceRub(maxRetailPrice)
+        }.orEmpty()
+        mrc.postValue(newMrc)
     }
 }
