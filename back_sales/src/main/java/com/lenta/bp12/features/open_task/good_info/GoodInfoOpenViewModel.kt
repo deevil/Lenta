@@ -835,7 +835,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
     }
 
     override fun onClickApply() {
-        if (isPlannedQuantityActual()) {
+        if (isFactQuantityMoreThanPlanned()) {
             navigator.showQuantityMoreThanPlannedScreen()
             return
         }
