@@ -321,8 +321,8 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
     }
 
     private fun setMrc() {
-        val newMrc = tempMarks.value?.firstOrNull()?.let{
-            "${it.maxRetailPrice} ${resource.rub}"
+        val newMrc = tempMarks.value?.firstOrNull()?.run {
+            resource.mrcSpaceRub(maxRetailPrice)
         }.orEmpty()
         mrc.postValue(newMrc)
     }

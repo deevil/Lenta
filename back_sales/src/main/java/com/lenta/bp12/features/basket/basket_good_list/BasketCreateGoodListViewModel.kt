@@ -233,7 +233,7 @@ class BasketCreateGoodListViewModel : BaseGoodListCreateViewModel(), OnOkInSoftK
 
     private fun getMrc(good: Good, task: TaskCreate): String {
         val mrc = good.maxRetailPrice
-        val mrcString = "МРЦ - $mrc${resource.rub}"
+        val mrcString = resource.mrcDashCostRub(mrc)
         return mrcString.takeIf { task.type.isDivByMinimalPrice && mrc.isEmpty().not() }.orEmpty()
     }
 }

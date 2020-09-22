@@ -13,6 +13,7 @@ import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.extentions.isAnyAlreadyIn
 import com.lenta.bp12.model.pojo.extentions.mapToMarkList
+import com.lenta.bp12.model.pojo.open_task.TaskOpen
 import com.lenta.bp12.platform.ZERO_VOLUME
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
@@ -387,11 +388,9 @@ class MarkManager @Inject constructor(
             )
 
             if (database.isMarkTypeInDatabase(createdGood.markType)) {
-                if (good == null || createdGood.markType == good.markType) {
-                    setFoundGood(createdGood, container)
-                } else {
-                    MarkScreenStatus.INCORRECT_EAN_FORMAT
-                }
+                setFoundGood(createdGood, container)
+                        .takeIf { good == null || createdGood.markType == good.markType }
+                        .orIfNull { MarkScreenStatus.INCORRECT_EAN_FORMAT }
             } else {
                 MarkScreenStatus.NO_MARKTYPE_IN_SETTINGS
             }
@@ -436,18 +435,7 @@ class MarkManager @Inject constructor(
 
                     //Проверим есть ли такая маркировка в справочнике
                     if (database.isMarkTypeInDatabase(createdGood.markType)) {
-                        //Проверим совпадают ли у товара в карточке и найденого товара маркировки
-                        if (createdGood.markType == good.markType) {
-                            //Проверим если товар табак и если его мрц нет в списке мрц задания
-                            if (good.isTobacco() && task.isMrcNotInTaskMrcList(mrc)) {
-                                createdGoodToShowError.value = createdGood
-                                MarkScreenStatus.MRC_NOT_SAME
-                            } else {
-                                setFoundGood(createdGood, container)
-                            }
-                        } else {
-                            MarkScreenStatus.NOT_MARKED_GOOD
-                        }
+                        checkIsFoundGoodHasSameMarkType(createdGood, good, task, mrc, container)
                     } else {
                         MarkScreenStatus.NO_MARKTYPE_IN_SETTINGS
                     }
@@ -464,6 +452,40 @@ class MarkManager @Inject constructor(
         }
     }
 
+    /**
+     * Совпадают ли у товара в карточке и найденого товара маркировки
+     * */
+    private suspend fun checkIsFoundGoodHasSameMarkType(
+            createdGood: Good,
+            currentGood: Good,
+            task: TaskOpen,
+            mrc: String,
+            container: Pair<String, Mark.Container>?
+    ): MarkScreenStatus {
+        return if (createdGood.markType == currentGood.markType) {
+            checkIsGoodTobaccoAndHasDifferentMrc(createdGood, currentGood, task, mrc, container)
+        } else {
+            MarkScreenStatus.NOT_MARKED_GOOD
+        }
+    }
+
+    /**
+     * Проверим если товар табак и если его мрц нет в списке мрц задания
+     * */
+    private suspend fun checkIsGoodTobaccoAndHasDifferentMrc(
+            createdGood: Good,
+            currentGood: Good,
+            task: TaskOpen,
+            mrc: String,
+            container: Pair<String, Mark.Container>?
+    ): MarkScreenStatus {
+        return if (currentGood.isTobacco() && task.isMrcNotInTaskMrcList(mrc)) {
+            createdGoodToShowError.value = createdGood
+            MarkScreenStatus.MRC_NOT_SAME
+        } else {
+            setFoundGood(createdGood, container)
+        }
+    }
 
     /**
      * Форматирует мрц, если он есть
