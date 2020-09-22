@@ -181,6 +181,10 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardLis
         }
     }
 
+    fun updateCounter() {
+        count.value = initCountLiveData().value
+    }
+
     abstract fun onBackPressed(): Boolean
 
     abstract fun onScanResult(data: String)

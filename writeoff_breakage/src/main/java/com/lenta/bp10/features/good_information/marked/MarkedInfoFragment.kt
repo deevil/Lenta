@@ -87,6 +87,12 @@ class MarkedInfoFragment : CoreFragment<FragmentMarkedInfoBinding, MarkedInfoVie
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        vm.updateCounter()
+        vm.requestFocusToQuantity.value = true
+    }
+
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_2 -> vm.onClickRollBack()
