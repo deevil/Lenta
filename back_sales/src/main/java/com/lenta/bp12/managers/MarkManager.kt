@@ -677,26 +677,42 @@ class MarkManager @Inject constructor(
      * в зависимости от того что мы сканируем
      * */
     private fun getMarkParams(foundGood: Good, container: Pair<String, Mark.Container>): MarkCartonBoxGoodInfoNetRequestParams {
+        val tkNumber = sessionInfo.market.orEmpty()
+        val taskNumber = openManager.currentTask.value?.number.takeIf { workType == WorkType.OPEN }.orEmpty()
+        val taskType = chooseManager().currentTask.value?.type?.code.orEmpty()
+
         return when (container.second) {
             Mark.Container.CARTON -> {
                 MarkCartonBoxGoodInfoNetRequestParams(
                         cartonNumber = container.first,
-                        goodNumber = foundGood.material,
-                        markType = foundGood.markType.name
+                        material = foundGood.material,
+                        markType = foundGood.markType.name,
+                        maxRetailPrice = foundGood.maxRetailPrice,
+                        tkNumber = tkNumber,
+                        taskNumber = taskNumber,
+                        taskType = taskType
                 )
             }
+
             Mark.Container.BOX -> {
                 MarkCartonBoxGoodInfoNetRequestParams(
                         boxNumber = container.first,
-                        goodNumber = foundGood.material,
-                        markType = foundGood.markType.name
+                        material = foundGood.material,
+                        markType = foundGood.markType.name,
+                        tkNumber = tkNumber,
+                        taskNumber = taskNumber,
+                        taskType = taskType
                 )
             }
+
             Mark.Container.SHOE -> {
                 MarkCartonBoxGoodInfoNetRequestParams(
                         markNumber = container.first,
-                        goodNumber = foundGood.material,
-                        markType = foundGood.markType.name
+                        material = foundGood.material,
+                        markType = foundGood.markType.name,
+                        tkNumber = tkNumber,
+                        taskNumber = taskNumber,
+                        taskType = taskType
                 )
             }
         }
