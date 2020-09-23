@@ -374,7 +374,7 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
                 INDICATOR_POSITION_3 -> {
                     screenNavigator.openScannedBoxNotIncludedInNetworkLentaDialog(
                             nextCallbackFunc = { //https://trello.com/c/6NyHp2jB 11. ПГЕ. Излишки. Карточка короба-излишка (не числится в ленте)
-                                val boxInfo = processExciseAlcoBoxAccPGEService.searchBox(boxNumber = scannedBoxNumber.value
+                                val boxInfo = processExciseAlcoBoxAccPGEService.searchBox(boxNumber = scannedBoxNumber.value.orEmpty()
                                         ?: "")
                                 screenNavigator.openExciseAlcoBoxCardPGEScreen(
                                         productInfo = it,

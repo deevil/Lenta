@@ -329,7 +329,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
                     addAllUntreatedBlocksAsDefect(currentTypeDiscrepanciesCode)
                 }
                 addProduct(enteredCountInBlockUnits.toStringFormatted(), currentTypeDiscrepanciesCode)
-                apply()
+                filterAndUpdateBlockDiscrepansies()
             }
 
             if (currentTypeDiscrepanciesCode != TYPE_DISCREPANCIES_QUALITY_NORM) {

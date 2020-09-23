@@ -166,7 +166,7 @@ class ProcessMarkingBoxPGEProductService
             )
         }
 
-        apply()
+        filterAndUpdateBlockDiscrepansies()
 
         //удаляем всю информацию по продукту
         taskRepository
@@ -192,13 +192,13 @@ class ProcessMarkingBoxPGEProductService
             )
         }
 
-        apply()
+        filterAndUpdateBlockDiscrepansies()
 
         val notConfirmedByScanning = productInfo.origQuantity.toDouble() - getCountAcceptOfProduct() - getCountRefusalOfProduct()
         addProduct(notConfirmedByScanning.toString(), typeDiscrepancies)
     }
 
-    fun apply() {
+    fun filterAndUpdateBlockDiscrepansies() {
         currentBlocksDiscrepancies
                 .takeIf { it.isNotEmpty() }
                 ?.filter { blockDiscrepanciesInfo -> blockDiscrepanciesInfo.isGtinControlPassed }

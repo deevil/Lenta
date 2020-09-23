@@ -67,22 +67,30 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkI
     }
 
     fun getDescription(): String {
-        productInfo.value?.let {
-            return if (selectQualityCode.value == SELECT_QUALITY_CODE) {
-                if (taskManager.getReceivingTask()?.controlExciseStampsOfProduct(it) == true && taskManager.getReceivingTask()?.controlBoxesOfProduct(it) == true) { //https://trello.com/c/HjxtG4Ca
-                    context.getString(R.string.norm_control_performed) //Контроль нормы выполнен
-                } else {
-                    "${context.getString(R.string.norm_control)} ${it.numberBoxesControl.toDouble().toStringFormatted()} ${context.getString(R.string.box_abbreviated)}" //Контроль нормы. Z кор.
-                }
+        return if (selectQualityCode.value == SELECT_QUALITY_CODE) {
+                normControl()
             } else {
-                if (processExciseAlcoBoxAccService.getCountUntreatedBoxes() == 0) {
-                    context.getString(R.string.accounting_of_marriage_completed) //Учет брака выполнен
-                } else {
-                    "${context.getString(R.string.accounting_for_marriage)} ${initialCount.value?.toDouble().toStringFormatted()} ${context.getString(R.string.box_abbreviated)}" //Учет брака. Q кор.
-                }
+                marriage()
+        }
+    }
+
+    private fun normControl():String{
+        productInfo.value?.let {
+           return if (taskManager.getReceivingTask()?.controlExciseStampsOfProduct(it) == true && taskManager.getReceivingTask()?.controlBoxesOfProduct(it) == true) { //https://trello.com/c/HjxtG4Ca
+                context.getString(R.string.norm_control_performed) //Контроль нормы выполнен
+            } else {
+                "${context.getString(R.string.norm_control)} ${it.numberBoxesControl.toDouble().toStringFormatted()} ${context.getString(R.string.box_abbreviated)}" //Контроль нормы. Z кор.
             }
         }
-        return ""
+        return  ""
+    }
+
+    private fun marriage() : String{
+       return if (processExciseAlcoBoxAccService.getCountUntreatedBoxes() == 0) {
+            context.getString(R.string.accounting_of_marriage_completed) //Учет брака выполнен
+        } else {
+            "${context.getString(R.string.accounting_for_marriage)} ${initialCount.value?.toDouble().toStringFormatted()} ${context.getString(R.string.box_abbreviated)}" //Учет брака. Q кор.
+        }
     }
 
 
