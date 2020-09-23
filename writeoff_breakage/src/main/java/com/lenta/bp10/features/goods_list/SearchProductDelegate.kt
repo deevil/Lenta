@@ -216,6 +216,7 @@ class SearchProductDelegate @Inject constructor(
     }
 
     fun openProductScreen(productInfo: ProductInfo, quantity: Double) {
+        Logg.d { "--> productInfo = ${productInfo.type.name}" }
         when (productInfo.type) {
             ProductType.General -> navigator.openGoodInfoScreen(productInfo, quantity)
             ProductType.ExciseAlcohol -> {

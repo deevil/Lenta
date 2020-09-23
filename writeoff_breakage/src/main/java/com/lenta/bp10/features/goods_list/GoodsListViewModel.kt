@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.bp10.models.repositories.getTotalCountForProduct
 import com.lenta.bp10.models.task.TaskWriteOffReason
+import com.lenta.bp10.models.task.WriteOffTask
 import com.lenta.bp10.models.task.getPrinterTask
 import com.lenta.bp10.models.task.getReport
 import com.lenta.bp10.platform.navigation.IScreenNavigator
@@ -60,14 +61,23 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     @Inject
     lateinit var analyticsHelper: AnalyticsHelper
 
-    val countedGoods: MutableLiveData<List<GoodItem>> = MutableLiveData()
-    val filteredGoods: MutableLiveData<List<FilterItem>> = MutableLiveData()
-    val categories: MutableLiveData<List<String>> = MutableLiveData()
-    val requestFocusToEan: MutableLiveData<Boolean> = MutableLiveData()
-    val selectedCategoryPosition: MutableLiveData<Int> = MutableLiveData(0)
-    val eanCode: MutableLiveData<String> = MutableLiveData()
+
     val countedSelectionsHelper = SelectionItemsHelper()
+
     val filteredSelectionsHelper = SelectionItemsHelper()
+
+    val eanCode = MutableLiveData("")
+
+    val requestFocusToEan = MutableLiveData(false)
+
+    val countedGoods: MutableLiveData<List<GoodItem>> = MutableLiveData()
+
+    val filteredGoods: MutableLiveData<List<FilterItem>> = MutableLiveData()
+
+    val categories: MutableLiveData<List<String>> = MutableLiveData()
+
+    val selectedCategoryPosition = MutableLiveData(0)
+
 
     val deleteEnabled: MutableLiveData<Boolean> = selectedPage
             .combineLatest(countedSelectionsHelper.selectedPositions)
@@ -165,10 +175,12 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 1 -> {
                     with(filteredSelectionsHelper) {
                         val isEmptyCategory = selectedCategoryPosition.value == 0 && categories.value?.size ?: 0 > 1
+                        val countGoodsForRemove = filteredGoods.value?.size ?: 0
+
                         if (isSelectedEmpty() && isEmptyCategory) {
                             screenNavigator.openRemoveLinesConfirmationScreen(
                                     taskDescription = writeOffTask.taskDescription.taskName,
-                                    count = filteredGoods.value?.size ?: 0,
+                                    count = countGoodsForRemove,
                                     codeConfirmation = requestCodeDelete
                             )
 
@@ -176,16 +188,15 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                         }
 
                         if (isSelectedEmpty()) {
-                            filteredGoods.value?.let {
-                                addAll(it)
+                            filteredGoods.value?.let { addAll(it) }
+                            screenNavigator.openRemoveItemsFromSelectedCategory(countGoodsForRemove) {
+                                removeSelectedFilteredPositions(writeOffTask)
                             }
+
+                            return
                         }
 
-                        selectedPositions.value?.map { position ->
-                            filteredGoods.value!![position].let { filterItem ->
-                                writeOffTask.deleteTaskWriteOffReason(filterItem.taskWriteOffReason)
-                            }
-                        }
+                        removeSelectedFilteredPositions(writeOffTask)
                     }
                 }
                 else -> throw IllegalArgumentException("Wrong pager position!")
@@ -194,6 +205,14 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             selectedCategoryPosition.value = 0
             updateCounted()
             updateFilter()
+        }
+    }
+
+    private fun removeSelectedFilteredPositions(writeOffTask: WriteOffTask) {
+        filteredSelectionsHelper.selectedPositions.value?.map { position ->
+            filteredGoods.value!![position].let { filterItem ->
+                writeOffTask.deleteTaskWriteOffReason(filterItem.taskWriteOffReason)
+            }
         }
     }
 
@@ -289,7 +308,6 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     private fun updateFilter() {
         processServiceManager.getWriteOffTask()?.let { writeOffTask ->
-
             val writeOffReasons = writeOffTask.taskRepository.getWriteOffReasons().getWriteOffReasons()
 
             val reasons = writeOffReasons.map {
@@ -327,8 +345,6 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                                         )
                                         )
                                     }
-
-
                                 }
                     }.reversed()
             )
@@ -336,7 +352,6 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
         filteredSelectionsHelper.clearPositions()
     }
-
 
 }
 

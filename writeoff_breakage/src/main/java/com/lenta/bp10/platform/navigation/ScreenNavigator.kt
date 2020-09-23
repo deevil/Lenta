@@ -183,6 +183,17 @@ class ScreenNavigator(
         }
     }
 
+    override fun openRemoveItemsFromSelectedCategory(count: Int, applyCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.remove_lines_confirmation, count),
+                    iconRes = R.drawable.ic_delete_red_80dp,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(applyCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.apply)
+            )
+        }
+    }
+
     override fun openSendingReportsScreen(sendWriteOffDataResult: SendWriteOffDataResult) {
         runOrPostpone {
             getFragmentStack()?.replace(ReportResultFragment.create(sendWriteOffDataResult))
@@ -331,6 +342,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openComponentSetScreen(productInfo: ProductInfo, componentItem: ComponentItem, targetTotalCount: Double)
     fun openDetectionSavedDataScreen()
     fun openRemoveLinesConfirmationScreen(taskDescription: String, count: Int, codeConfirmation: Int)
+    fun openRemoveItemsFromSelectedCategory(count: Int, applyCallback: () -> Unit)
     fun openMatrixAlertScreen(matrixType: MatrixType, yesCallback: () -> Unit)
     fun openAlertGoodsNotForTaskScreen()
     fun openNotPossibleSaveNegativeQuantityScreen()

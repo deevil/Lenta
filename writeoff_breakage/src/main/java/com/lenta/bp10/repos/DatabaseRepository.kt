@@ -3,8 +3,7 @@ package com.lenta.bp10.repos
 import com.lenta.bp10.fmp.resources.dao_ext.isChkOwnpr
 import com.lenta.bp10.fmp.resources.tasks_settings.ZmpUtz29V001Rfc
 import com.lenta.shared.fmp.resources.dao_ext.getSpecialTaskTypes
-import com.lenta.shared.fmp.resources.fast.*
-import com.lenta.shared.fmp.resources.slow.*
+import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
