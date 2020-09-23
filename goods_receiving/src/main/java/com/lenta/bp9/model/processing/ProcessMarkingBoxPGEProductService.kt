@@ -201,23 +201,20 @@ class ProcessMarkingBoxPGEProductService
     fun apply() {
         currentBlocksDiscrepancies
                 .takeIf { it.isNotEmpty() }
-                ?.apply {
-                    filter { blockDiscrepanciesInfo -> blockDiscrepanciesInfo.isGtinControlPassed }
-                            .forEach { block ->
-                                taskRepository
-                                        ?.getBlocksDiscrepancies()
-                                        ?.changeBlockDiscrepancy(block.blockDiscrepancies)
-                            }
+                ?.filter { blockDiscrepanciesInfo -> blockDiscrepanciesInfo.isGtinControlPassed }
+                ?.forEach { block ->
+                    taskRepository
+                            ?.getBlocksDiscrepancies()
+                            ?.changeBlockDiscrepancy(block.blockDiscrepancies)
+
                 }
 
         currentBoxDiscrepancies
                 .takeIf { it.isNotEmpty() }
-                ?.apply {
-                    forEach { box ->
-                        taskRepository
-                                ?.getBoxesDiscrepancies()
-                                ?.changeBoxDiscrepancy(box)
-                    }
+                ?.forEach { box ->
+                    taskRepository
+                            ?.getBoxesDiscrepancies()
+                            ?.changeBoxDiscrepancy(box)
                 }
     }
 
@@ -299,7 +296,7 @@ class ProcessMarkingBoxPGEProductService
         addTypeLastStampScanned(TypeLastStampScanned.BLOCK)
     }
 
-    fun addBoxDiscrepancy(boxNumber: String, typeDiscrepancies: String, isScan: Boolean, isDenialOfFullProductAcceptance: Boolean) : Int {
+    fun addBoxDiscrepancy(boxNumber: String, typeDiscrepancies: String, isScan: Boolean, isDenialOfFullProductAcceptance: Boolean): Int {
         val box = boxes.findLast { it.boxNumber == boxNumber }
         var foundBoxDiscrepancy =
                 currentBoxDiscrepancies
@@ -420,8 +417,7 @@ class ProcessMarkingBoxPGEProductService
         currentBlocksDiscrepancies
                 .takeIf { it.isNotEmpty() }
                 ?.apply {
-                    val block = this.last()
-                    this.remove(block)
+                    removeAt(size - 1)
                 }
     }
 
@@ -429,12 +425,11 @@ class ProcessMarkingBoxPGEProductService
         currentGtin
                 .takeIf { it.isNotEmpty() }
                 ?.apply {
-                    val gtin = this.last()
-                    this.remove(gtin)
+                    removeAt(size - 1)
                 }
     }
 
-    private fun rollbackScannedBox() : Int {
+    private fun rollbackScannedBox(): Int {
         var boxNumber = ""
         currentBoxDiscrepancies
                 .takeIf { it.isNotEmpty() }
@@ -519,7 +514,7 @@ class ProcessMarkingBoxPGEProductService
         currentScannedTypesStamps.add(typeLastStampScanned)
     }
 
-    fun rollbackTypeLastStampScanned() : Int {
+    fun rollbackTypeLastStampScanned(): Int {
         var countDelBlocksForBox = 0
         currentScannedTypesStamps
                 .takeIf { it.isNotEmpty() }
@@ -537,7 +532,7 @@ class ProcessMarkingBoxPGEProductService
         return countDelBlocksForBox
     }
 
-    fun getLastScannedTypesStamps() : TypeLastStampScanned {
+    fun getLastScannedTypesStamps(): TypeLastStampScanned {
         return currentScannedTypesStamps.last()
     }
 

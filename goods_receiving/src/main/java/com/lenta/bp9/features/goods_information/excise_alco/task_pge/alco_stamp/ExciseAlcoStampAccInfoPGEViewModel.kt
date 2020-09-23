@@ -335,7 +335,7 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
                 processExciseAlcoStampAccPGEService.setProcessingUnitNumber(enteredProcessingUnitNumber.value!!)
             }
             processExciseAlcoStampAccPGEService.addProduct(convertEizToBei().toString(), qualityInfo.value!![spinQualitySelectedPosition.value!!].code)
-            processExciseAlcoStampAccPGEService.apply()
+            processExciseAlcoStampAccPGEService.filterAndUpdateBlockDiscrepansies()
             true
         }
     }

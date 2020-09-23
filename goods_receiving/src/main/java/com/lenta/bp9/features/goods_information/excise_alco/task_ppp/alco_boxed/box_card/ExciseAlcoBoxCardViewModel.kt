@@ -510,11 +510,15 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
     fun onBackPressed() {
         if (processExciseAlcoBoxAccService.modifications()) {
             productInfo.value?.let {
+                val qualityCode = selectQualityCode.value.orEmpty()
+                val rejectionCode = selectReasonRejectionCode.value.orEmpty()
+                val count = initialCount.value.orEmpty()
+
                 screenNavigator.openUnsavedDataDialog(
                         yesCallbackFunc = {
                             processExciseAlcoBoxAccService.clearModifications()
                             screenNavigator.goBack()
-                            screenNavigator.openExciseAlcoBoxListScreen(it, selectQualityCode.value.orEmpty(), selectReasonRejectionCode.value, initialCount.value.orEmpty())
+                            screenNavigator.openExciseAlcoBoxListScreen(it, qualityCode, rejectionCode, count)
                         }
                 )
             }.orIfNull {

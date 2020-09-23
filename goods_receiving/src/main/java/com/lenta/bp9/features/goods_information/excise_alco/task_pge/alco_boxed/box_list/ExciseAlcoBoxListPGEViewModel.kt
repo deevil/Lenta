@@ -78,18 +78,29 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
     fun getDescription(): String {
         val countBoxesOfProductForSearchSurplus = processExciseAlcoBoxAccPGEService.getCountBoxesOfProductForSearchSurplus(processExciseAlcoBoxAccPGEService.getInitialCount())
         val descriptionSurplus = if (countBoxesOfProductForSearchSurplus > 0) "${context.getString(R.string.surplus_dot)} ${countBoxesOfProductForSearchSurplus.toStringFormatted()} ${context.getString(R.string.box_abbreviated)}" else ""
-        return if (selectQualityCode.value == "1") {
-            if (taskManager.getReceivingTask()?.controlExciseStampsOfProduct(productInfo.value!!) == true && taskManager.getReceivingTask()?.controlBoxesOfProduct(productInfo.value!!) == true) { //https://trello.com/c/HjxtG4Ca
+        return if (selectQualityCode.value == SELECT_QUALITY_CODE) {
+            normAndSurplus(descriptionSurplus)
+        } else {
+            marriage()
+        }
+    }
+
+    private fun normAndSurplus(descriptionSurplus : String): String{
+        productInfo.value?.let {
+            return if (taskManager.getReceivingTask()?.controlExciseStampsOfProduct(it) == true && taskManager.getReceivingTask()?.controlBoxesOfProduct(it) == true) { //https://trello.com/c/HjxtG4Ca
                 "${context.getString(R.string.norm_control_performed)} $descriptionSurplus" //Контроль нормы выполнен. Излишек. Y кор.
             } else {
                 "${context.getString(R.string.norm_control)} ${productInfo.value?.numberBoxesControl?.toDouble().toStringFormatted()} ${context.getString(R.string.box_abbreviated)} $descriptionSurplus" //Контроль нормы. Z кор. Излишек. Y кор.
             }
+        }
+        return ""
+    }
+
+    private fun marriage () : String{
+       return if (processExciseAlcoBoxAccPGEService.getCountUntreatedBoxes() == 0) {
+            context.getString(R.string.accounting_of_marriage_completed) //Учет брака выполнен
         } else {
-            if (processExciseAlcoBoxAccPGEService.getCountUntreatedBoxes() == 0) {
-                context.getString(R.string.accounting_of_marriage_completed) //Учет брака выполнен
-            } else {
-                "${context.getString(R.string.accounting_for_marriage)} ${processExciseAlcoBoxAccPGEService.getInitialCount().toStringFormatted()} ${context.getString(R.string.box_abbreviated)}" //Учет брака. Q кор.
-            }
+            "${context.getString(R.string.accounting_for_marriage)} ${processExciseAlcoBoxAccPGEService.getInitialCount().toStringFormatted()} ${context.getString(R.string.box_abbreviated)}" //Учет брака. Q кор.
         }
     }
 
@@ -335,11 +346,11 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
     private fun handleSuccessZmpUtzGrz31(result: ZmpUtzGrz31V001Result) {
         productInfo.value?.let {
             when (result.indicatorOnePosition) {
-                "1" -> {
+                INDICATOR_POSITION_1 -> {
                     screenNavigator.openScannedBoxListedInCargoUnitDialog(
                             cargoUnitNumber = result.cargoUnitNumber,
                             nextCallbackFunc = {
-                                processExciseAlcoBoxAccPGEService.addAllAsSurplusForBox(count = convertEizToBei().toString(), boxNumber = scannedBoxNumber.value
+                                processExciseAlcoBoxAccPGEService.addAllAsSurplusForBox(count = convertEizToBei().toString(), boxNumber = scannedBoxNumber.value.orEmpty()
                                         ?: "", typeDiscrepancies = TYPE_DISCREPANCIES, isScan = true)
                                 screenNavigator.openExciseAlcoBoxListPGEScreen(
                                         productInfo = it,
@@ -348,10 +359,10 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
                             }
                     )
                 }
-                "2" -> {
+                INDICATOR_POSITION_2 -> {
                     screenNavigator.openScannedBoxNotIncludedInDeliveryDialog(
                             nextCallbackFunc = {
-                                processExciseAlcoBoxAccPGEService.addAllAsSurplusForBox(count = convertEizToBei().toString(), boxNumber = scannedBoxNumber.value
+                                processExciseAlcoBoxAccPGEService.addAllAsSurplusForBox(count = convertEizToBei().toString(), boxNumber = scannedBoxNumber.value.orEmpty()
                                         ?: "", typeDiscrepancies = TYPE_DISCREPANCIES, isScan = true)
                                 screenNavigator.openExciseAlcoBoxListPGEScreen(
                                         productInfo = it,
@@ -360,7 +371,7 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
                             }
                     )
                 }
-                "3" -> {
+                INDICATOR_POSITION_3 -> {
                     screenNavigator.openScannedBoxNotIncludedInNetworkLentaDialog(
                             nextCallbackFunc = { //https://trello.com/c/6NyHp2jB 11. ПГЕ. Излишки. Карточка короба-излишка (не числится в ленте)
                                 val boxInfo = processExciseAlcoBoxAccPGEService.searchBox(boxNumber = scannedBoxNumber.value
@@ -408,5 +419,8 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
         private const val SELECT_QUALITY_CODE = "1"
         private const val TYPE_DISCREPANCIES = "2"
         private const val PAGE_NUMBER_97 = "97"
+        private const val INDICATOR_POSITION_1 = "1"
+        private const val INDICATOR_POSITION_2 = "2"
+        private const val INDICATOR_POSITION_3 = "3"
     }
 }

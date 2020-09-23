@@ -17,10 +17,7 @@ import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
-import com.lenta.shared.utilities.extentions.combineLatest
-import com.lenta.shared.utilities.extentions.launchUITryCatch
-import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.toStringFormatted
+import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.orIfNull
 import com.mobrun.plugin.api.HyperHive
 import javax.inject.Inject
@@ -72,17 +69,11 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
         get() {
             var addNewCount = countValue.value?.toDouble() ?: 0.0
 
-            var countPiecesBox =
-                    productInfo.value
-                            ?.countPiecesBox
-                            ?.toDouble()
-                            ?: 1.0
-            if (countPiecesBox == 0.0) countPiecesBox = 1.0
-
-            isUnitBox.value
-                    ?.takeIf { it }
-                    ?.let { addNewCount *= countPiecesBox }
-
+            if(isUnitBox.value == true) {
+                var countPiecesBox = productInfo.value?.countPiecesBox?.toDouble() ?: 1.0
+                if (countPiecesBox == 0.0) countPiecesBox = 1.0
+                addNewCount *= countPiecesBox
+            }
             return addNewCount
         }
 
@@ -123,18 +114,20 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
                                 ?: countRefusalOfProduct
                     }
 
-    val refusalTotalCountWithUom: MutableLiveData<String> = refusalTotalCount.map {
-        val refusalTotalCount = it ?: 0.0
-        val purchaseOrderUnits = productInfo.value?.uom?.name.orEmpty()
-        val totalCountRefusalOfProduct =
-                countRefusalOfProduct
-                        .takeIf { count -> count > 0.0 }
-                        ?.run { "- ${this.toStringFormatted()}" }
-                        ?: countRefusalOfProduct.toStringFormatted()
-        refusalTotalCount
-                .takeIf { count -> count > 0.0 }
-                ?.run { "- ${this.toStringFormatted()} $purchaseOrderUnits" }
-                ?: "$totalCountRefusalOfProduct $purchaseOrderUnits"
+    val refusalTotalCountWithUom: MutableLiveData<String> = refusalTotalCount.mapSkipNulls {
+        productInfo.value.let {productInfoValue ->
+            val refusalTotalCount = it
+            val purchaseOrderUnits = productInfoValue?.uom?.name
+            val totalCountRefusalOfProduct =
+                    countRefusalOfProduct
+                            .takeIf { count -> count > 0.0 }
+                            ?.run { "- ${this.toStringFormatted()}" }
+                            ?: countRefusalOfProduct.toStringFormatted()
+            refusalTotalCount
+                    .takeIf { count -> count > 0.0 }
+                    ?.run { "- ${this.toStringFormatted()} $purchaseOrderUnits" }
+                    ?: "$totalCountRefusalOfProduct $purchaseOrderUnits"
+        }
     }
 
     val checkStampControlVisibility: MutableLiveData<Boolean> = MutableLiveData()
@@ -145,6 +138,17 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
             .map {
                 getTvStampControlVal()
             }
+
+
+    val tvStampListVal: MutableLiveData<String> = refusalTotalCount
+            .combineLatest(spinQualitySelectedPosition)
+            .combineLatest(spinReasonRejectionSelectedPosition)
+            .combineLatest(countScannedBlocks)
+            .map {
+                getTvStampListVal()
+
+            }
+
 
     private fun getTvStampControlVal(): String {
         val acceptTotalCountVal = acceptTotalCount.value ?: 0.0
@@ -250,39 +254,42 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
     init {
         launchUITryCatch {
             initProduct()
-            return@launchUITryCatch
         }
     }
 
     private suspend fun initProduct() {
-        productInfo.value
-                ?.let {
-                    if (processMarkingBoxProductService.newProcessMarkingProductService(it) == null) {
+        launchUITryCatch {
+            productInfo.value
+                    ?.let {
+                        if (processMarkingBoxProductService.newProcessMarkingProductService(it) == null) {
+                            screenNavigator.goBackAndShowAlertWrongProductType()
+                            return@launchUITryCatch
+                        }
+                    }.orIfNull {
                         screenNavigator.goBackAndShowAlertWrongProductType()
+                        return@launchUITryCatch
                     }
-                }.orIfNull {
-                    screenNavigator.goBackAndShowAlertWrongProductType()
-                }
 
-        searchProductDelegate.init(viewModelScope = this@MarkingInfoBoxPGEViewModel::viewModelScope,
-                scanResultHandler = this@MarkingInfoBoxPGEViewModel::handleProductSearchResult)
+            searchProductDelegate.init(viewModelScope = this@MarkingInfoBoxPGEViewModel::viewModelScope,
+                    scanResultHandler = this@MarkingInfoBoxPGEViewModel::handleProductSearchResult)
 
-        val paramGrzAlternMeinsCode = dataBase.getGrzAlternMeins().orEmpty()
-        val uomInfo = ZmpUtz07V001(hyperHive).getUomInfo(paramGrzAlternMeinsCode)
-        paramGrzAlternMeins.value = Uom(
-                code = uomInfo?.uom.orEmpty(),
-                name = uomInfo?.name.orEmpty()
-        )
+            val paramGrzAlternMeinsCode = dataBase.getGrzAlternMeins().orEmpty()
+            val uomInfo = ZmpUtz07V001(hyperHive).getUomInfo(paramGrzAlternMeinsCode)
+            paramGrzAlternMeins.value = Uom(
+                    code = uomInfo?.uom.orEmpty(),
+                    name = uomInfo?.name.orEmpty()
+            )
 
-        qualityInfo.value = dataBase.getQualityInfo().orEmpty()
-        spinQuality.value = qualityInfo.value?.map { it.name }.orEmpty()
+            qualityInfo.value = dataBase.getQualityInfo().orEmpty()
+            spinQuality.value = qualityInfo.value?.map { it.name }.orEmpty()
 
-        suffix.value = paramGrzAlternMeins.value?.name?.toLowerCase()
+            suffix.value = paramGrzAlternMeins.value?.name?.toLowerCase()
 
 
-        val qualityInfoValue = qualityInfo.value.orEmpty()
-        val allReasonRejectionInfo = dataBase.getAllReasonRejectionInfo()?.map { it.convertToQualityInfo() }.orEmpty()
-        allTypeDiscrepancies.value = qualityInfoValue + allReasonRejectionInfo
+            val qualityInfoValue = qualityInfo.value.orEmpty()
+            val allReasonRejectionInfo = dataBase.getAllReasonRejectionInfo()?.map { it.convertToQualityInfo() }.orEmpty()
+            allTypeDiscrepancies.value = qualityInfoValue + allReasonRejectionInfo
+        }
     }
 
     private fun handleProductSearchResult(@Suppress("UNUSED_PARAMETER") scanInfoResult: ScanInfoResult?): Boolean {
@@ -426,6 +433,49 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
         }
     }
 
+    private fun stampInGrayZone(data: String) {
+        val blockInfo = processMarkingBoxProductService.searchBlock(data) //Наличие марки в текущем задании в ET_TASK_MARK
+        val stamp = taskRepository?.getExciseStamps()?.findExciseStampsOfProduct(productMaterialNumber)?.findLast {
+            it.code == data
+        }
+        if (stamp == null) {  //Марка есть в задании
+            val blockMaterialNumber = blockInfo?.materialNumber.orEmpty()
+            screenNavigator.openAlertScannedStampBelongsAnotherProductScreen(
+                    materialNumber = blockMaterialNumber,
+                    materialName = ZfmpUtz48V001(hyperHive).getProductInfoByMaterial(blockMaterialNumber)?.name.orEmpty()
+            )
+            stampInAssignment(data)
+        } else {
+            screenNavigator.openAddGoodsSurplusDialog(requestCodeAddGoodsSurplus)
+            callbackFuncAlertStampNotFoundReturnSupplierScreen()
+        }
+    }
+
+    private fun stampInAssignment(data: String){
+        val boxMaterialNumber =
+                taskRepository
+                        ?.getBoxes()
+                        ?.findBox(data)
+                        ?.materialNumber
+                        .orEmpty()
+
+        val productMaterialNumber = productInfo.value?.materialNumber.orEmpty()
+        if (boxMaterialNumber.isEmpty()) {
+            //Отсканированная коробка не числится в поставке. Отсканируйте все марки из этого короба
+            screenNavigator.openMarkingBoxNotIncludedDeliveryScreen()
+            return
+        }
+
+        if (boxMaterialNumber != productMaterialNumber) {
+            //Отсканированная коробка принадлежит товару <SAP-код> <Название>
+            val materialName = ZfmpUtz48V001(hyperHive).getProductInfoByMaterial(boxMaterialNumber)?.name.orEmpty()
+            screenNavigator.openAlertScannedBoxBelongsAnotherProductScreen(
+                    materialNumber = boxMaterialNumber,
+                    materialName = materialName
+            )
+        }
+    }
+
 
     private fun barcodeBlockCheck(data: String): Boolean {
         val regex = REGEX_BARCODE_BLOCK.toRegex()
@@ -553,6 +603,13 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
     }
 
 
+    fun onClickPositionSpinQuality(position: Int) {
+        launchUITryCatch {
+            spinQualitySelectedPosition.value = position
+        }
+    }
+
+
     private fun getCurrentTypeDiscrepanciesName(typeDiscrepancies: String): String {
         return allTypeDiscrepancies.value
                 ?.findLast { it.code == typeDiscrepancies }
@@ -561,19 +618,17 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
     }
 
     fun onClickUnitChange() {
-        isUnitBox.value?.let {
-            suffix.value = if (!it) {
+            suffix.value = if (isUnitBox.value == false) {
                 paramGrzAlternMeins.value?.name?.toLowerCase().orEmpty()
             } else {
+                isUnitBox.value = false
                 productInfo.value?.purchaseOrderUnits?.name.orEmpty()
-            }
         }
         count.value = count.value
     }
 
     fun onBackPressed() {
-
-        if (processMarkingBoxProductService.modifications() || count.value?.toString() != "0") {
+        if (processMarkingBoxProductService.modifications() || count.value?.toString() != DEFAULT_COUNT) {
             screenNavigator.openUnsavedDataDialog(
                     yesCallbackFunc = {
                         processMarkingBoxProductService.clearModifications()
@@ -588,6 +643,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
     companion object {
         private const val COUNT_PIECES_BOX = "1"
         private const val COUNT_PIECES_BOX_IS_ZERO = "0"
+        private const val DEFAULT_COUNT = "0"
         private const val MULTIPLY = "x"
         const val REGEX_BARCODE_BLOCK = """^(?<barcode>01(?<gtin>\d{14})21(?<serial>\S{13})).?(?:240(?<tradeCode>\d{4}))?.?(?:91(?<verificationKey>\S{4}))?.?(?:92(?<verificationCode>\S{88}))?${'$'}"""
     }
