@@ -110,10 +110,11 @@ fun GoodInfoResult.getControlType(): ControlType {
 
 fun TaskInfo.getControlTypes(): Set<ControlType> {
     val setOfControlTypes = mutableSetOf<ControlType>()
-    if (this.isVet.isSapTrue()) setOfControlTypes.add(ControlType.VET)
-    if (this.isAlco.isSapTrue()) setOfControlTypes.add(ControlType.ALCOHOL)
-    if (this.isUsual.isSapTrue()) setOfControlTypes.add(ControlType.COMMON)
-    if (this.isMark.isSapTrue()) setOfControlTypes.add(ControlType.MARK)
+
+    setOfControlTypes add ControlType.VET ifTrue isVet.isSapTrue()
+    setOfControlTypes add ControlType.ALCOHOL ifTrue isAlco.isSapTrue()
+    setOfControlTypes add ControlType.COMMON ifTrue isUsual.isSapTrue()
+    setOfControlTypes add ControlType.MARK ifTrue isMark.isSapTrue()
 
     return setOfControlTypes
 }
@@ -238,3 +239,19 @@ fun ScanCodeInfo.getConvertedQuantityString(divider: Double): String {
     }
     return converted.dropZeros()
 }
+
+fun <T> MutableCollection<T>.addIf(predicate: Boolean, whatToAdd: () -> T) {
+    if (predicate) this.add(whatToAdd())
+}
+
+infix fun <T> MutableCollection<T>.add(whatToAdd: T): Holder<T> {
+    return Holder(whatToAdd, this)
+}
+
+infix fun<T> Holder<T>.ifTrue(predictValue: Boolean) {
+    if(predictValue) {
+        this.who.add(this.value)
+    }
+}
+
+data class Holder<T>(val value:T, val who:MutableCollection<T> )

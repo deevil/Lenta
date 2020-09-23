@@ -22,10 +22,7 @@ import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.dropZeros
-import com.lenta.shared.utilities.extentions.launchUITryCatch
-import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.unsafeLazy
+import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.orIfNull
 import javax.inject.Inject
 
@@ -316,31 +313,28 @@ class GoodListViewModel : BaseGoodListOpenViewModel(), PageSelectionListener, On
     }
 
     private fun handleDeleteProcessedItems() {
-        val itemsToDelete = processedSelectionsHelper.selectedPositions.value
-                ?.mapNotNullTo(mutableListOf()) { position ->
-                    processed.value?.get(position)
-                }.orEmpty()
+        val materials = mutableListOf<String>()
 
-        val materials = itemsToDelete.map {
-            it.material
-        }
-        itemsToDelete.forEach {
-            it.good.clearMarksPartsPositions()
-        }
+        processedSelectionsHelper.selectedPositions.value?.forEach { position ->
+                    val item = processed.value?.getOrNull(position)
+                    item?.let {
+                        materials.add(it.material)
+                        it.good.clearMarksPartsPositions()
+                    }
+                }
         processedSelectionsHelper.clearPositions()
         manager.markGoodsUncounted(materials)
         manager.deleteGoodsFromBaskets(materials)
     }
 
     private fun handleDeleteBasketItems() {
-        val basketList = mutableListOf<Basket>()
-        basketSelectionsHelper.selectedPositions.value?.mapNotNullTo(basketList) { position ->
+        val basketList = basketSelectionsHelper.selectedPositions.value?.mapNotNull { position ->
             if (manager.isWholesaleTaskType) {
                 wholesaleBaskets.value?.get(position)?.basket
             } else {
                 commonBaskets.value?.get(position)?.basket
             }
-        }
+        }.orEmptyMutable()
 
         basketSelectionsHelper.clearPositions()
         manager.removeBaskets(basketList)
