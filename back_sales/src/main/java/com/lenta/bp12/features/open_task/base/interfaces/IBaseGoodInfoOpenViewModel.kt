@@ -74,5 +74,5 @@ interface IBaseGoodInfoOpenViewModel {
 
     fun loadBoxInfo(number: String)
 
-    fun isPlannedQuantityActual(): Boolean
+    fun isFactQuantityMoreThanPlanned(): Boolean
 }

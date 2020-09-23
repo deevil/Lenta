@@ -283,7 +283,7 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
         launchUITryCatch {
             with(navigator) {
                 showProgressLoadingData()
-                val screenStatus = markManager.loadBoxInfo(number)
+                val screenStatus = markManager.loadBoxInfo(number, WorkType.OPEN)
                 hideProgress()
                 when (screenStatus) {
                     MarkScreenStatus.OK -> setMarksAndProperties()
@@ -366,7 +366,7 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
 
 
     override fun onClickApply() {
-        if (isPlannedQuantityActual()) {
+        if (isFactQuantityMoreThanPlanned()) {
             navigator.showQuantityMoreThanPlannedScreen()
             return
         }
