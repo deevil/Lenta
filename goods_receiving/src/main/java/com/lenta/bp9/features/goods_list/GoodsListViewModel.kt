@@ -219,7 +219,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                                                     nameBatch = "$partySign-$shelfLifeOrProductionDate // ${getManufacturerNameZBatch(zBatch.manufactureCode)}",
                                                     visibilityNameBatch = true,
                                                     countAcceptWithUom = getAcceptTotalCountWithUomZBatch(zBatch, uom),
-                                                    countRefusalWithUom = "",
+                                                    countRefusalWithUom = "", //todo надо это для ПГЕ добавить if (taskType.value == TaskType.RecalculationCargoUnit) getRefusalTotalCountWithUomZBatch(zBatch, uom) else "",
                                                     isNotEdit = productInfo.isNotEdit,
                                                     productInfo = productInfo,
                                                     zBatchDiscrepancies = zBatch,
@@ -774,6 +774,32 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
         }
         return if (acceptTotalCountBatch != 0.0) {
             "+ ${acceptTotalCountBatch.toStringFormatted()} ${uom.name}"
+        } else {
+            "0 ${uom.name}"
+        }
+    }
+
+    private fun getRefusalTotalCountWithUomZBatch(discrepancies: TaskZBatchesDiscrepancies?, uom: Uom): String {
+        val currentTaskType =
+                taskManager.getReceivingTask()
+                        ?.taskHeader
+                        ?.taskType
+
+        val refusalTotalCountBatch = discrepancies?.let {
+            if (currentTaskType == TaskType.RecalculationCargoUnit) {
+                taskManager.getReceivingTask()
+                        ?.taskRepository
+                        ?.getZBatchesDiscrepancies()
+                        ?.getCountAcceptOfZBatchPGE(discrepancies)
+            } else {
+                taskManager.getReceivingTask()
+                        ?.taskRepository
+                        ?.getZBatchesDiscrepancies()
+                        ?.getCountAcceptOfZBatch(discrepancies)
+            }
+        }
+        return if (refusalTotalCountBatch != 0.0) {
+            "+ ${refusalTotalCountBatch.toStringFormatted()} ${uom.name}"
         } else {
             "0 ${uom.name}"
         }

@@ -206,11 +206,13 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
             searchProductDelegate.init(viewModelScope = this@ZBatchesInfoPGEViewModel::viewModelScope,
                     scanResultHandler = this@ZBatchesInfoPGEViewModel::handleProductSearchResult)
 
+            processingUnitsOfProduct.value = getProcessingUnitsOfProduct(productMaterialNumber)
+            val processingUnits = processingUnitsOfProduct.value?.map { it.processingUnit }.orEmpty()
             isShelfLifeObtainedFromEWM.value =
                     taskZBatchesInfo
                             ?.findLast {
                                 it.materialNumber == productMaterialNumber
-                                        && it.processingUnit == productInfo.value?.processingUnit
+                                        && processingUnits.all { processingUnit -> processingUnit == it.processingUnit} //todo так было ранее и вроде так было не верно && it.processingUnit == productInfo.value?.processingUnit
                             }
                             ?.shelfLifeDate
                             ?.isNotEmpty()
@@ -260,7 +262,6 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
 
             termControlType.value = dataBase.getTermControlInfo()
             spinTermControl.value = termControlType.value?.map { it.name }.orEmpty()
-            processingUnitsOfProduct.value = getProcessingUnitsOfProduct(productMaterialNumber)
 
             /** Z-партии всегда скоропорт */
             val productGeneralShelfLife = productInfo.value?.generalShelfLife?.toInt() ?: 0
@@ -378,12 +379,12 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
         spinProcessingUnitSelectedPosition.value = position
 
         productInfo.value = processingUnitsOfProduct.value?.getOrNull(position)
-
+        val processingUnits = processingUnitsOfProduct.value?.map { it.processingUnit }.orEmpty()
         isShelfLifeObtainedFromEWM.value =
                 taskZBatchesInfo
                         ?.findLast {
                             it.materialNumber == productMaterialNumber
-                                    && it.processingUnit == productInfo.value?.processingUnit
+                                    && processingUnits.all { processingUnit -> processingUnit == it.processingUnit}
                         }
                         ?.shelfLifeDate
                         ?.isNotEmpty()

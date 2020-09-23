@@ -258,44 +258,64 @@ class GoodsDetailsViewModel : CoreViewModel() {
                     quantityItem = index + 1
                 }
 
-        taskManager
-                .getReceivingTask()
-                ?.taskRepository
-                ?.getProductsDiscrepancies()
-                ?.findProductDiscrepanciesOfProduct(materialNumber)
-                ?.filter { it.typeDiscrepancies != TYPE_DISCREPANCIES_QUALITY_NORM }
-                ?.groupBy { it.materialNumber}
-                ?.forEach { groupByMaterialNumberProduct ->
-                    groupByMaterialNumberProduct.value
-                            .groupBy { it.typeDiscrepancies }
-                            .forEach { groupByProductDiscrepancies ->
-                                val countDiscrepancies =
-                                        groupByProductDiscrepancies.value
-                                                .map { it.numberDiscrepancies }
-                                                .sumByDouble { it.toDoubleOrNull() ?: 0.0 }
+        //todo это для ПГЕ
+        val processingUnitsOfProduct = taskRepository
+                ?.getProducts()
+                ?.getProcessingUnitsOfProduct(materialNumber)
 
-                                groupByProductDiscrepancies.value
-                                        .first()
-                                        .let { product ->
-                                            itemsZBatchesDiscrepancies.add(
-                                                    GoodsDetailsCategoriesItem(
-                                                            number = quantityItem + 1,
-                                                            name = reasonRejectionInfo.value?.firstOrNull { it.code == product.typeDiscrepancies }?.name.orEmpty(),
-                                                            nameBatch = "",
-                                                            visibilityNameBatch = false,
-                                                            quantityWithUom = "${countDiscrepancies.toStringFormatted()} ${uom.value?.name.orEmpty()}",
-                                                            isNormDiscrepancies = isNormDiscrepancies(product.typeDiscrepancies),
-                                                            typeDiscrepancies = product.typeDiscrepancies,
-                                                            materialNumber = materialNumber,
-                                                            batchDiscrepancies = null,
-                                                            zBatchDiscrepancies = null,
-                                                            even = quantityItem % 2 == 0
-                                                    )
-                                            )
-                                            quantityItem++
-                                        }
-                            }
-                }
+        val processingUnits = processingUnitsOfProduct?.map { it.processingUnit }.orEmpty()
+        val isShelfLifeObtainedFromEWM =
+                repoInMemoryHolder.taskZBatchInfo.value
+                        ?.findLast {
+                            it.materialNumber == materialNumber
+                                    && processingUnits.all { processingUnit -> processingUnit == it.processingUnit}
+                        }
+                        ?.shelfLifeDate
+                        ?.isNotEmpty()
+                        ?: false
+        //todo end
+
+        if (taskManager.getTaskType() == TaskType.DirectSupplier || (taskManager.getTaskType() == TaskType.RecalculationCargoUnit && !isShelfLifeObtainedFromEWM)) {
+            taskManager
+                    .getReceivingTask()
+                    ?.taskRepository
+                    ?.getProductsDiscrepancies()
+                    ?.findProductDiscrepanciesOfProduct(materialNumber)
+                    ?.filter { it.typeDiscrepancies != TYPE_DISCREPANCIES_QUALITY_NORM }
+                    ?.groupBy { it.materialNumber}
+                    ?.forEach { groupByMaterialNumberProduct ->
+                        groupByMaterialNumberProduct.value
+                                .groupBy { it.typeDiscrepancies }
+                                .forEach { groupByProductDiscrepancies ->
+                                    val countDiscrepancies =
+                                            groupByProductDiscrepancies.value
+                                                    .map { it.numberDiscrepancies }
+                                                    .sumByDouble { it.toDoubleOrNull() ?: 0.0 }
+
+                                    groupByProductDiscrepancies.value
+                                            .first()
+                                            .let { product ->
+                                                itemsZBatchesDiscrepancies.add(
+                                                        GoodsDetailsCategoriesItem(
+                                                                number = quantityItem + 1,
+                                                                name = reasonRejectionInfo.value?.firstOrNull { it.code == product.typeDiscrepancies }?.name.orEmpty(),
+                                                                nameBatch = "",
+                                                                visibilityNameBatch = false,
+                                                                quantityWithUom = "${countDiscrepancies.toStringFormatted()} ${uom.value?.name.orEmpty()}",
+                                                                isNormDiscrepancies = isNormDiscrepancies(product.typeDiscrepancies),
+                                                                typeDiscrepancies = product.typeDiscrepancies,
+                                                                materialNumber = materialNumber,
+                                                                batchDiscrepancies = null,
+                                                                zBatchDiscrepancies = null,
+                                                                even = quantityItem % 2 == 0
+                                                        )
+                                                )
+                                                quantityItem++
+                                            }
+                                }
+                    }
+        }
+
 
         goodsDetails.value = itemsZBatchesDiscrepancies.reversed()
     }
@@ -462,7 +482,31 @@ class GoodsDetailsViewModel : CoreViewModel() {
                                                 ?.deleteProductDiscrepancyByBatch(materialNumber, typeDiscrepancies, it.numberDiscrepancies.toDouble())
                                     }
                         }
-                        isZBatch.value == true && typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM -> {
+                        isZBatch.value == true -> {
+                            //todo это для ПГЕ
+                            val processingUnitsOfProduct = taskRepository
+                                    ?.getProducts()
+                                    ?.getProcessingUnitsOfProduct(materialNumber)
+
+                            val processingUnits = processingUnitsOfProduct?.map { it.processingUnit }.orEmpty()
+                            val isShelfLifeObtainedFromEWM =
+                                    repoInMemoryHolder.taskZBatchInfo.value
+                                            ?.findLast {
+                                                it.materialNumber == materialNumber
+                                                        && processingUnits.all { processingUnit -> processingUnit == it.processingUnit}
+                                            }
+                                            ?.shelfLifeDate
+                                            ?.isNotEmpty()
+                                            ?: false
+                            //todo end
+                            val isDepProductDiscrepancies = (taskManager.getTaskType() == TaskType.DirectSupplier && typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM)
+                                    || (taskManager.getTaskType() == TaskType.RecalculationCargoUnit && !isShelfLifeObtainedFromEWM)
+                            if (isDepProductDiscrepancies) { //todo это надо для ППП и для ПГЕ, но для ПГЕ только в случае, когда isShelfLifeObtainedFromEWM == false (СГ не получены из EWM)
+                                taskRepository
+                                        ?.getProductsDiscrepancies()
+                                        ?.deleteProductDiscrepancy(materialNumber, typeDiscrepancies)
+                            }
+
                             goodsDetailsItem
                                     ?.zBatchDiscrepancies
                                     ?.let {

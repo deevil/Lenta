@@ -142,7 +142,7 @@ class ProcessZBatchesPGEService
                                 materialNumber = productInfo.materialNumber,
                                 processingUnitNumber = processingUnit,
                                 numberDiscrepancies = countAdd.toString(),
-                                uom = productInfo.purchaseOrderUnits,
+                                uom = productInfo.uom,
                                 typeDiscrepancies = typeDiscrepancies,
                                 isNotEdit = false,
                                 isNew = false,

@@ -113,6 +113,18 @@ class MemoryTaskZBatchesDiscrepanciesRepository : ITaskZBatchesDiscrepanciesRepo
         return countAccept
     }
 
+    override fun getCountRefusalOfZBatchPGE(discrepancies: TaskZBatchesDiscrepancies): Double {
+        var countRefusal = 0.0
+        findZBatchDiscrepancies(discrepancies)
+                .filter {
+                    !(it.typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM
+                            || it.typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS)
+                }.map {disc ->
+                    countRefusal += disc.numberDiscrepancies.toDouble()
+                }
+        return countRefusal
+    }
+
     override fun findPartySignOfZBatch(zBatchesDiscrepancies: TaskZBatchesDiscrepancies): PartySignsOfZBatches? {
         return partySignsOfZBatches.findLast {
             it.materialNumber == zBatchesDiscrepancies.materialNumber
