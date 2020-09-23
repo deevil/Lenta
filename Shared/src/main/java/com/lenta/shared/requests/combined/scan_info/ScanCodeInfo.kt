@@ -1,6 +1,5 @@
 package com.lenta.shared.requests.combined.scan_info
 
-import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.requests.combined.scan_info.pojo.EanInfo
 import java.lang.Long.parseLong
 import java.util.*

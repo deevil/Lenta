@@ -2,7 +2,6 @@ package com.lenta.bp10.features.good_information.sets.component
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.features.good_information.base.BaseProductInfoViewModel
 import com.lenta.bp10.features.good_information.excise_alco.ExciseAlcoDelegate
 import com.lenta.bp10.features.good_information.isEnabledApplyButtons
@@ -12,7 +11,6 @@ import com.lenta.bp10.models.repositories.ITaskRepository
 import com.lenta.bp10.models.task.ProcessExciseAlcoProductService
 import com.lenta.bp10.models.task.TaskDescription
 import com.lenta.bp10.models.task.WriteOffReason
-import com.lenta.shared.models.core.ProductType
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.launchUITryCatch
@@ -107,7 +105,7 @@ class ComponentViewModel : BaseProductInfoViewModel() {
 
     override fun onClickApply() {
         onClickAdd()
-        screenNavigator.goBack()
+        navigator.goBack()
     }
 
     override fun onBackPressed(): Boolean {
@@ -118,13 +116,13 @@ class ComponentViewModel : BaseProductInfoViewModel() {
 
     override fun onScanResult(data: String) {
         if (totalCount.value ?: 0.0 >= targetTotalCount) {
-            screenNavigator.openStampsCountAlreadyScannedScreen()
+            navigator.openStampsCountAlreadyScannedScreen()
             return
         }
         if (stampsCollectorManager.getComponentsStampCollector()!!.prepare(stampCode = data)) {
             exciseAlcoDelegate.searchExciseStamp(data)
         } else {
-            screenNavigator.openAlertDoubleScanStamp()
+            navigator.openAlertDoubleScanStamp()
         }
     }
 
@@ -135,7 +133,7 @@ class ComponentViewModel : BaseProductInfoViewModel() {
                         writeOffReason = getSelectedReason().code,
                         isBadStamp = isBadStamp
                 )) {
-            screenNavigator.openAlertDoubleScanStamp()
+            navigator.openAlertDoubleScanStamp()
         }
     }
 

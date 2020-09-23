@@ -12,6 +12,7 @@ import com.lenta.bp10.models.task.WriteOffReason
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.platform.resources.IStringResourceManager
 import com.lenta.bp10.repos.DatabaseRepository
+import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
@@ -27,7 +28,7 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardLis
     lateinit var processServiceManager: IWriteOffTaskManager
 
     @Inject
-    lateinit var screenNavigator: IScreenNavigator
+    lateinit var navigator: IScreenNavigator
 
     @Inject
     lateinit var resourceManager: IStringResourceManager
@@ -40,6 +41,9 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardLis
 
     @Inject
     lateinit var database: DatabaseRepository
+
+    @Inject
+    lateinit var sessionInfo: ISessionInfo
 
 
     /**
@@ -127,7 +131,7 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardLis
 
             limitsChecker = LimitsChecker(
                     limit = goodInformationRepo.getLimit(getTaskDescription().taskType.code, productInfo.value!!.type),
-                    observer = { screenNavigator.openLimitExceededScreen() },
+                    observer = { navigator.openLimitExceededScreen() },
                     countLiveData = totalCount,
                     viewModelScope = this@BaseProductInfoViewModel::viewModelScope
 
@@ -187,9 +191,9 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardLis
 
     protected fun showNotPossibleSaveScreen() {
         if (getSelectedReason() === WriteOffReason.empty) {
-            screenNavigator.openNotPossibleSaveWithoutReasonScreen()
+            navigator.openNotPossibleSaveWithoutReasonScreen()
         } else {
-            screenNavigator.openNotPossibleSaveNegativeQuantityScreen()
+            navigator.openNotPossibleSaveNegativeQuantityScreen()
         }
     }
 
@@ -209,7 +213,7 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardLis
 
     fun onClickDetails() {
         productInfo.value?.let {
-            screenNavigator.openGoodsReasonsScreen(productInfo = it)
+            navigator.openGoodsReasonsScreen(productInfo = it)
         }
     }
 

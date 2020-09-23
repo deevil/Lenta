@@ -60,7 +60,7 @@ class ExciseAlcoInfoViewModel : BaseProductInfoViewModel() {
     override fun onClickApply() {
         addGood()
         processExciseAlcoProductService.apply()
-        screenNavigator.goBack()
+        navigator.goBack()
     }
 
 
@@ -97,15 +97,15 @@ class ExciseAlcoInfoViewModel : BaseProductInfoViewModel() {
                         writeOffReason = getSelectedReason().code,
                         isBadStamp = isBadStamp
                 )) {
-            screenNavigator.openAlertDoubleScanStamp()
+            navigator.openAlertDoubleScanStamp()
         }
     }
 
 
     override fun onBackPressed(): Boolean {
         if (alcoholStampCollector.isNotEmpty()) {
-            screenNavigator.openConfirmationToBackNotEmptyStampsScreen {
-                screenNavigator.goBack()
+            navigator.openConfirmationToBackNotEmptyStampsScreen {
+                navigator.goBack()
             }
             return false
         }
@@ -118,7 +118,7 @@ class ExciseAlcoInfoViewModel : BaseProductInfoViewModel() {
             if (alcoholStampCollector.prepare(stampCode = data)) {
                 exciseAlcoDelegate.searchExciseStamp(data)
             } else {
-                screenNavigator.openAlertDoubleScanStamp()
+                navigator.openAlertDoubleScanStamp()
             }
 
         } else {

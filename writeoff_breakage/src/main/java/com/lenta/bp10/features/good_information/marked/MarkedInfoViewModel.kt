@@ -7,6 +7,8 @@ import com.lenta.bp10.models.MarkedGoodStampCollector
 import com.lenta.bp10.models.repositories.ITaskRepository
 import com.lenta.bp10.models.task.ProcessMarkedGoodProductService
 import com.lenta.bp10.models.task.TaskDescription
+import com.lenta.bp10.requests.network.GoodInfoNetRequest
+import com.lenta.bp10.requests.network.GoodInfoParams
 import com.lenta.bp10.requests.network.pojo.MarkInfo
 import com.lenta.bp10.requests.network.pojo.Property
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
@@ -21,6 +23,9 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
 
     @Inject
     lateinit var markSearchDelegate: MarkSearchDelegate
+
+    @Inject
+    lateinit var goodInfoNetRequest: GoodInfoNetRequest
 
 
     /**
@@ -63,19 +68,42 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
 
     init {
         launchUITryCatch {
-            markSearchDelegate.init(
-                    tkNumber = getTaskDescription().tkNumber,
-                    updateProperties = this@MarkedInfoViewModel::updateProperties,
-                    handleScannedMark = this@MarkedInfoViewModel::handleScannedMark,
-                    handleScannedBox = this@MarkedInfoViewModel::handleScannedBox,
-                    productInfo = productInfo.value
-            )
+            initMarkSearchDelegate()
+            initGoodProperties()
         }
     }
 
     /**
     Методы
      */
+
+    private fun initMarkSearchDelegate() {
+        markSearchDelegate.init(
+                tkNumber = getTaskDescription().tkNumber,
+                updateProperties = this@MarkedInfoViewModel::updateProperties,
+                handleScannedMark = this@MarkedInfoViewModel::handleScannedMark,
+                handleScannedBox = this@MarkedInfoViewModel::handleScannedBox,
+                productInfo = productInfo.value
+        )
+    }
+
+    private suspend fun initGoodProperties() {
+        navigator.showProgressLoadingData(::handleFailure)
+
+        val ean = database.getEanByMaterialUnits(
+                material = productInfo.value?.materialNumber.orEmpty(),
+                unitsCode = productInfo.value?.uom?.code.orEmpty()
+        )
+
+        goodInfoNetRequest(GoodInfoParams(
+                tkNumber = sessionInfo.market.orEmpty(),
+                ean = ean
+        )).also {
+            navigator.hideProgress()
+        }.either(::handleFailure) { result ->
+            updateProperties(result.properties.orEmpty())
+        }
+    }
 
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
@@ -114,7 +142,7 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
     override fun onClickApply() {
         addGood()
         processMarkedGoodProductService.apply()
-        screenNavigator.goBack()
+        navigator.goBack()
     }
 
     override fun initCountLiveData(): MutableLiveData<String> {
@@ -123,8 +151,8 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
 
     override fun onBackPressed(): Boolean {
         if (markedGoodStampCollector.isNotEmpty()) {
-            screenNavigator.openConfirmationToBackNotEmptyStampsScreen {
-                screenNavigator.goBack()
+            navigator.openConfirmationToBackNotEmptyStampsScreen {
+                navigator.goBack()
             }
             return false
         }
@@ -169,7 +197,7 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
         if (!markedGoodStampCollector.isContainsStamp(markNumber)) {
             markSearchDelegate.requestMarkInfo(markNumber)
         } else {
-            screenNavigator.openAlertDoubleScanStamp()
+            navigator.openAlertDoubleScanStamp()
         }
     }
 
@@ -177,7 +205,7 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
         if (!markedGoodStampCollector.isContainsBox(boxNumber)) {
             markSearchDelegate.requestPackInfo(boxNumber)
         } else {
-            screenNavigator.openAlertDoubleScanStamp()
+            navigator.openAlertDoubleScanStamp()
         }
     }
 
