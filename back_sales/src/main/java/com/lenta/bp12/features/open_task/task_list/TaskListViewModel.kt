@@ -239,18 +239,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     private fun updateProcessingTaskList() {
         val entered = processingNumberField.value.orEmpty()
-//        val isEnteredLogin = isEnteredLogin(entered)
-//        val isEnteredUnknownTaskNumber = isEnteredUnknownTaskNumber(entered)
         loadProcessingTaskList(entered)
-//        if (isEnteredLogin || isEnteredUnknownTaskNumber) {
-//            loadProcessingTaskList(entered)
-//        } else {
-//            val currentUser = sessionInfo.userName.orEmpty()
-//            val userNumber = sessionInfo.personnelNumber.orEmpty()
-//
-//            loadProcessingTaskList(currentUser, userNumber)
-//            processingNumberField.value = currentUser
-//        }
     }
 
     private fun updateSearchTaskList() {

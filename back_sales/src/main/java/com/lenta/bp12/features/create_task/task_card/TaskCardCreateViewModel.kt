@@ -90,6 +90,7 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
     private val selectedType by lazy {
         types.combineLatest(taskTypePosition).mapSkipNulls {
             it.let {
+                updateLists()
                 val (list, position) = it
                 list.getOrNull(position)
             }
