@@ -90,14 +90,9 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
     private suspend fun initGoodProperties() {
         navigator.showProgressLoadingData(::handleFailure)
 
-        val ean = database.getEanByMaterialUnits(
-                material = productInfo.value?.materialNumber.orEmpty(),
-                unitsCode = productInfo.value?.uom?.code.orEmpty()
-        )
-
         goodInfoNetRequest(GoodInfoParams(
                 tkNumber = sessionInfo.market.orEmpty(),
-                ean = ean
+                material = productInfo.value?.materialNumber?.takeLast(6).orEmpty()
         )).also {
             navigator.hideProgress()
         }.either(::handleFailure) { result ->
