@@ -245,10 +245,11 @@ class BasketOpenGoodListViewModel : BaseGoodListOpenViewModel(), OnOkInSoftKeybo
 
     private fun getMrc(good: Good, task: TaskOpen): String {
         val mrc = good.maxRetailPrice
-        val mrcString = resource.mrcDashCostRub(mrc)
         val isDivByMinimalPrice = task.type?.isDivByMinimalPrice == true
-        val isMrcEmpty = (mrc.isEmpty().not() || mrc != ZERO_MRC_STRING)
-        return mrcString.takeIf { isDivByMinimalPrice && isMrcEmpty }.orEmpty()
+
+        return mrc.takeIf { isDivByMinimalPrice && (it.isEmpty().not() || it != ZERO_MRC_STRING) }
+                ?.let { resource.mrcDashCostRub(it) }
+                .orEmpty()
     }
 
     companion object {

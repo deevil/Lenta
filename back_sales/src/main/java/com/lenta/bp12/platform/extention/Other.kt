@@ -59,8 +59,7 @@ fun MarkCartonBoxGoodInfoNetRequestResult.getMarkStatus(): MarkStatus {
 
         MarkRequestStatus.MARK_NOT_FOUND_IN_TASK,
         MarkRequestStatus.MARK_NOT_FOUND_OR_PROBLEMATIC,
-        MarkRequestStatus.MARK_OF_DIFFERENT_GOOD
-        -> MarkStatus.BAD_MARK
+        MarkRequestStatus.MARK_OF_DIFFERENT_GOOD -> MarkStatus.BAD_MARK
 
         MarkRequestStatus.CARTON_FOUND_OR_GRAYZONE -> MarkStatus.GOOD_CARTON
 
@@ -68,16 +67,14 @@ fun MarkCartonBoxGoodInfoNetRequestResult.getMarkStatus(): MarkStatus {
         MarkRequestStatus.CARTON_NOT_FOUND,
         MarkRequestStatus.CARTON_NOT_FOUND_IN_TASK,
         MarkRequestStatus.CARTON_OF_DIFFERENT_GOOD,
-        MarkRequestStatus.CARTON_OLD
-        -> MarkStatus.BAD_CARTON
+        MarkRequestStatus.CARTON_OLD -> MarkStatus.BAD_CARTON
 
         MarkRequestStatus.BOX_FOUND -> MarkStatus.GOOD_BOX
 
         MarkRequestStatus.BOX_NOT_FOUND,
         MarkRequestStatus.BOX_OF_DIFFERENT_GOOD,
         MarkRequestStatus.BOX_INCOMPLETE,
-        MarkRequestStatus.BOX_NOT_FOUND_IN_TASK
-        -> MarkStatus.BAD_BOX
+        MarkRequestStatus.BOX_NOT_FOUND_IN_TASK -> MarkStatus.BAD_BOX
 
         else -> MarkStatus.UNKNOWN
     }
