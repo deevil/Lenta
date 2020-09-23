@@ -40,6 +40,22 @@ enum class ControlType(val code: String, val description: String) {
         }
     }
 
+    fun isCommon(): Boolean {
+        return this == ControlType.COMMON
+    }
+
+    fun isAlcohol(): Boolean {
+        return this == ControlType.ALCOHOL
+    }
+
+    fun isMark(): Boolean {
+        return this == ControlType.MARK
+    }
+
+    fun isVet(): Boolean {
+        return this == ControlType.VET
+    }
+
     companion object {
         fun from(code: String): ControlType {
             return when (code) {

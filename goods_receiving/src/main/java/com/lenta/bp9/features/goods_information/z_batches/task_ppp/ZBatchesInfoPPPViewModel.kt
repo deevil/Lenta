@@ -16,6 +16,7 @@ import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.date_time.DateTimeUtil
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.launchUITryCatch
@@ -509,6 +510,7 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
                             manufactureCode = currentManufactureCode,
                             shelfLifeDate = getShelfLifeDate(),
                             shelfLifeTime = getShelfLifeTime(),
+                            productionDate = getProductionDate(),
                             partySignsType = getPartySignsType()
                     )
                     //блок 6.172
@@ -588,6 +590,7 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
                         manufactureCode = currentManufactureCode,
                         shelfLifeDate = getShelfLifeDate(),
                         shelfLifeTime = getShelfLifeTime(),
+                        productionDate = getProductionDate(),
                         partySignsType = getPartySignsType()
                 )
             }
@@ -613,6 +616,7 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
                 manufactureCode = currentManufactureCode,
                 shelfLifeDate = getShelfLifeDate(),
                 shelfLifeTime = getShelfLifeTime(),
+                productionDate = getProductionDate(),
                 partySignsType = getPartySignsType()
         )
 
@@ -621,17 +625,45 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
     }
 
     private fun getShelfLifeDate(): String {
-        return if (currentTermControlCode == TERM_CONTROL_CODE_PRODUCTION_DATE
-                && currentQualityInfoCode == TYPE_DISCREPANCIES_QUALITY_NORM) {
-            val shelfLife = Calendar.getInstance()
-            shelfLife.time = formatterRU.parse(enteredDate.value)
-            shelfLife.add(Calendar.DATE, generalShelfLife.value?.toInt() ?: 0)
-            shelfLife.time?.let { formatterERP.format(it) }.orEmpty()
-        } else {
-            enteredDate.value
-                    ?.takeIf { it.isNotEmpty() }
-                    ?.let { formatterERP.format(formatterRU.parse(it)) }
-                    .orEmpty()
+        try {
+            return if (currentTermControlCode == TERM_CONTROL_CODE_PRODUCTION_DATE
+                    && currentQualityInfoCode == TYPE_DISCREPANCIES_QUALITY_NORM) {
+                val shelfLife = Calendar.getInstance()
+                shelfLife.time = formatterRU.parse(enteredDate.value)
+                shelfLife.add(Calendar.DATE, generalShelfLife.value?.toInt() ?: 0)
+                shelfLife.time?.let { formatterERP.format(it) }.orEmpty()
+            } else {
+                enteredDate.value
+                        ?.takeIf { it.isNotEmpty() }
+                        ?.let { formatterERP.format(formatterRU.parse(it)) }
+                        .orEmpty()
+            }
+        }
+        catch (e: Exception) {
+            Logg.e { "Get shelf life date exception: $e" }
+            return ""
+        }
+    }
+
+    private fun getProductionDate(): String {
+        try {
+            return if (currentTermControlCode == TERM_CONTROL_CODE_SHELF_LIFE
+                    && currentQualityInfoCode == TYPE_DISCREPANCIES_QUALITY_NORM) {
+                val productionDate = Calendar.getInstance()
+                val generalShelfLifeValue = generalShelfLife.value?.toInt() ?: 0
+                productionDate.time = formatterRU.parse(enteredDate.value)
+                productionDate.add(Calendar.DATE, -generalShelfLifeValue)
+                productionDate.time?.let { formatterERP.format(it) }.orEmpty()
+            } else {
+                enteredDate.value
+                        ?.takeIf { it.isNotEmpty() }
+                        ?.let { formatterERP.format(formatterRU.parse(it)) }
+                        .orEmpty()
+            }
+        }
+        catch (e: Exception) {
+            Logg.e { "Get production date exception: $e" }
+            return ""
         }
     }
 

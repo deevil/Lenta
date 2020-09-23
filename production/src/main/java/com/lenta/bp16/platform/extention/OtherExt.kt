@@ -2,7 +2,6 @@ package com.lenta.bp16.platform.extention
 
 import com.lenta.bp16.model.IDataInfo
 import com.lenta.bp16.model.TaskStatus
-import com.lenta.bp16.platform.Constants
 import com.lenta.bp16.request.pojo.TaskInfo
 import com.lenta.shared.utilities.extentions.isSapTrue
 
@@ -30,11 +29,7 @@ fun getFieldWithSuffix(field: String?, suffix: String): String {
     }.orEmpty()
 }
 
-fun <T : IDataInfo, K> Iterable<T>.distinctAndAddFirstValue(selector: (T) -> K, mapper: (T) -> String): List<String> {
+fun <T : IDataInfo, K, R> Iterable<T>.distinctAndAddFirstValue(selector: (T) -> K, mapper: (T) -> R): List<R> {
     val listWithoutRepeat = this.distinctBy(selector)
-    val list = listWithoutRepeat.map(mapper).toMutableList()
-    if (list.size > 1) {
-        list.add(0, Constants.CHOOSE_ITEM)
-    }
-    return list
+    return listWithoutRepeat.map(mapper)
 }

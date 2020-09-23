@@ -6,6 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.features.delegates.ISaveProductDelegate
 import com.lenta.bp9.features.delegates.SearchProductDelegate
+import com.lenta.bp9.features.goods_list.GoodsListViewPages.GOODS_LIST_VIEW_PAGE_COUNTED_OR_TO_PROCESSING
+import com.lenta.bp9.features.goods_list.GoodsListViewPages.GOODS_LIST_VIEW_PAGE_WITHOUT_BARCODE_OR_PROCESSED
 import com.lenta.bp9.model.task.*
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IRepoInMemoryHolder
@@ -24,6 +26,7 @@ import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.utilities.orIfNull
+import java.lang.Exception
 import java.text.SimpleDateFormat
 import javax.inject.Inject
 
@@ -199,13 +202,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                                 addBatchProduct = productInfo.materialNumber
                                 val zBatchesInfoOfProduct = task.taskRepository.getZBatchesDiscrepancies().findZBatchDiscrepanciesOfProduct(productInfo.materialNumber)
                                 zBatchesInfoOfProduct.map { zBatch ->
-                                    val shelfLifeDate =
-                                            zBatch
-                                                    .shelfLifeDate
-                                                    .takeIf { it.isNotEmpty() }
-                                                    ?.let { formatterRU.format(formatterERP.parse(it)) }
-                                                    .orEmpty()
-
+                                    val shelfLifeOrProductionDate = getShelfLifeOrProductionDate(zBatch)
                                     val partySign =
                                             task.taskRepository
                                                     .getZBatchesDiscrepancies()
@@ -219,7 +216,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                                                     number = index + 1,
                                                     name = "${productInfo.getMaterialLastSix()} ${productInfo.description}",
                                                     nameMaxLines = 1,
-                                                    nameBatch = "$partySign-$shelfLifeDate // ${getManufacturerNameZBatch(zBatch.manufactureCode)}",
+                                                    nameBatch = "$partySign-$shelfLifeOrProductionDate // ${getManufacturerNameZBatch(zBatch.manufactureCode)}",
                                                     visibilityNameBatch = true,
                                                     countAcceptWithUom = getAcceptTotalCountWithUomZBatch(zBatch, uom),
                                                     countRefusalWithUom = "",
@@ -255,6 +252,37 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
 
         listCounted.value = arrayCounted.reversed()
         countedSelectionsHelper.clearPositions()
+    }
+
+    private fun getShelfLifeOrProductionDate(zBatchesDiscrepancies: TaskZBatchesDiscrepancies): String {
+        return try {
+            val partySignOfZBatch =
+                    taskRepository
+                            ?.getZBatchesDiscrepancies()
+                            ?.findPartySignOfZBatch(zBatchesDiscrepancies)
+
+            when(partySignOfZBatch?.partySign ?: PartySignsTypeOfZBatches.None) {
+                PartySignsTypeOfZBatches.ProductionDate -> {
+                    partySignOfZBatch
+                            ?.productionDate
+                            ?.takeIf { it.isNotEmpty() }
+                            ?.let { formatterRU.format(formatterERP.parse(it)) }
+                            .orEmpty()
+                }
+                PartySignsTypeOfZBatches.ShelfLife -> {
+                    partySignOfZBatch
+                            ?.shelfLifeDate
+                            ?.takeIf { it.isNotEmpty() }
+                            ?.let { formatterRU.format(formatterERP.parse(it)) }
+                            .orEmpty()
+                }
+                else -> ""
+            }
+        }
+        catch (e: Exception) {
+            Logg.e { "e: $e" }
+            ""
+        }
     }
 
     private fun updateListWithoutBarcode() {
@@ -650,19 +678,19 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
 
     private fun setEanCode() {
         eanCode.value = when (selectedPage.value) {
-            GoodsListViewPages.GOODS_LIST_VIEW_PAGE_COUNTED_OR_TO_PROCESSING -> eanCodeCountedOrToProcessing.value
-            GoodsListViewPages.GOODS_LIST_VIEW_PAGE_WITHOUT_BARCODE_OR_PROCESSED -> eanCodeWithoutBarcodeOrProcessed.value
+            GOODS_LIST_VIEW_PAGE_COUNTED_OR_TO_PROCESSING -> eanCodeCountedOrToProcessing.value
+            GOODS_LIST_VIEW_PAGE_WITHOUT_BARCODE_OR_PROCESSED -> eanCodeWithoutBarcodeOrProcessed.value
             else -> null
         }
     }
 
     private fun setRequestFocus() {
         when (selectedPage.value) {
-            GoodsListViewPages.GOODS_LIST_VIEW_PAGE_COUNTED_OR_TO_PROCESSING -> {
+            GOODS_LIST_VIEW_PAGE_COUNTED_OR_TO_PROCESSING -> {
                 requestFocusWithoutBarcodeOrProcessed.value = false
                 requestFocusCountedOrToProcessing.value = true
             }
-            GoodsListViewPages.GOODS_LIST_VIEW_PAGE_WITHOUT_BARCODE_OR_PROCESSED -> {
+            GOODS_LIST_VIEW_PAGE_WITHOUT_BARCODE_OR_PROCESSED -> {
                 requestFocusCountedOrToProcessing.value = false
                 requestFocusWithoutBarcodeOrProcessed.value = true
             }

@@ -372,10 +372,10 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
                         if (exciseStampInfo.materialNumber != productInfo.value!!.materialNumber) {
                             //Отсканированная марка принадлежит товару <SAP-код> <Название>"
                             screenNavigator.openAlertScannedStampBelongsAnotherProductScreen(
-                                    materialNumber = exciseStampInfo.materialNumber,
+                                    materialNumber = exciseStampInfo.materialNumber.orEmpty(),
                                     materialName = zfmpUtz48V001.getProductInfoByMaterial(exciseStampInfo.materialNumber)?.name.orEmpty())
                         } else {
-                            if (processExciseAlcoBoxAccService.getCountBoxOfProductOfDiscrepancies(exciseStampInfo.boxNumber, "1") >= acceptTotalCount.value!!.toInt()) {
+                            if (processExciseAlcoBoxAccService.getCountBoxOfProductOfDiscrepancies(exciseStampInfo.boxNumber.orEmpty(), "1") >= acceptTotalCount.value!!.toInt()) {
                                 screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
                             } else {
                                 processExciseAlcoBoxAccService.setCountAccept((acceptTotalCount.value
