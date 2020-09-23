@@ -9,7 +9,6 @@ import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskBoxInfo
 import com.lenta.bp9.model.task.TaskExciseStampInfo
 import com.lenta.bp9.model.task.TaskProductInfo
-import com.lenta.bp9.platform.TypeDiscrepanciesConstants
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
@@ -189,14 +188,14 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
                 //typeDiscrepancies передаем 1, т.к. сканирование марок возможно только при выбранной категории Норма
                 processExciseAlcoBoxAccService.addExciseStampDiscrepancy(
                         exciseStamp = exciseStampInfoValue,
-                        typeDiscrepancies = TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM,
+                        typeDiscrepancies = TYPE_DISCREPANCIES_QUALITY_NORM,
                         isScan = true
                 )
                 //обновляем кол-во отсканированных марок с категорией норма для отображения на экране
                 countExciseStampsScanned.value = processExciseAlcoBoxAccService
                         .getCountExciseStampDiscrepanciesOfBox(
                                 boxNumber = boxInfo.value?.boxNumber.orEmpty(),
-                                typeDiscrepancies = TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
+                                typeDiscrepancies = TYPE_DISCREPANCIES_QUALITY_NORM
                         )
 
                 //выводим данные о производителе и дате розлива
@@ -229,7 +228,7 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
         countExciseStampsScanned.value = processExciseAlcoBoxAccService
                 .getCountExciseStampDiscrepanciesOfBox(
                         boxNumber = boxInfo.value?.boxNumber.orEmpty(),
-                        typeDiscrepancies = TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
+                        typeDiscrepancies = TYPE_DISCREPANCIES_QUALITY_NORM
                 )
         //возвращаем данные предыдущей остканированной марки, если таковая есть
         exciseStampInfo.value = processExciseAlcoBoxAccService.getLastAddExciseStamp()
@@ -266,7 +265,7 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
             val typeDiscrepancies =
                     selectedQualityInfo
                             ?.code
-                            ?.takeIf { it == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM }
+                            ?.takeIf { it == TYPE_DISCREPANCIES_QUALITY_NORM }
                             ?: selectedReasonRejectionInfo
                                     ?.code
             typeDiscrepancies?.let {
@@ -301,7 +300,7 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
         val typeDiscrepancies = selectedQualityInfo
                 ?.code
                 ?.takeIf { qualityInfoCode ->
-                    qualityInfoCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
+                    qualityInfoCode == TYPE_DISCREPANCIES_QUALITY_NORM
                 }
                 ?: selectedReasonRejectionInfo
                         ?.code.orEmpty()
@@ -320,7 +319,7 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
             countExciseStampsScanned.value = processExciseAlcoBoxAccService
                     .getCountExciseStampDiscrepanciesOfBox(
                             boxNumber = box.boxNumber,
-                            typeDiscrepancies = TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
+                            typeDiscrepancies = TYPE_DISCREPANCIES_QUALITY_NORM
                     )
         } else {
             chekScannedBoxBelongsAnotherProduct(box, typeDiscrepancies)
@@ -350,7 +349,7 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
                         boxInfo = box,
                         massProcessingBoxesNumber = null,
                         exciseStampInfo = null,
-                        selectQualityCode = TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM,
+                        selectQualityCode = TYPE_DISCREPANCIES_QUALITY_NORM,
                         selectReasonRejectionCode = null,
                         initialCount = INITIAL_COUNT,
                         isScan = true
@@ -411,7 +410,7 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
             exciseStampInfo.value?.let {
                 processExciseAlcoBoxAccService.addExciseStampDiscrepancy(
                         exciseStamp = it,
-                        typeDiscrepancies = TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM,
+                        typeDiscrepancies = TYPE_DISCREPANCIES_QUALITY_NORM,
                         isScan = true
                 )
             }.orIfNull {
@@ -420,7 +419,7 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
             //обновляем кол-во отсканированных марок с категорией норма для отображения на экране
             countExciseStampsScanned.value = processExciseAlcoBoxAccService.getCountExciseStampDiscrepanciesOfBox(
                     boxNumber = boxInfo.value?.boxNumber.orEmpty(),
-                    typeDiscrepancies = TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM)
+                    typeDiscrepancies = TYPE_DISCREPANCIES_QUALITY_NORM)
             //выводим данные о производителе и дате розлива
             updateDateScreenManufacturerDateOfPour()
         } else {
@@ -443,7 +442,7 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
                         countExciseStampsScanned.value = processExciseAlcoBoxAccService
                                 .getCountExciseStampDiscrepanciesOfBox(
                                         boxNumber = boxInfo.value?.boxNumber.orEmpty(),
-                                        typeDiscrepancies = TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM)
+                                        typeDiscrepancies = TYPE_DISCREPANCIES_QUALITY_NORM)
                         //выводим данные о производителе и дате розлива
                         updateDateScreenManufacturerDateOfPour()
                     },

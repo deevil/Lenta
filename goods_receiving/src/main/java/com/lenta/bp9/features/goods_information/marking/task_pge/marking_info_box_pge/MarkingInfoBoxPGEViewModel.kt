@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
 import com.lenta.bp9.features.delegates.SearchProductDelegate
 import com.lenta.bp9.features.goods_information.base.BaseGoodsInfo
-import com.lenta.bp9.features.goods_information.marking.TypeLastStampScanned
 import com.lenta.bp9.model.processing.ProcessMarkingBoxPGEProductService
 import com.lenta.bp9.model.task.TaskBlockInfo
 import com.lenta.bp9.model.task.TaskProductInfo
@@ -23,11 +22,10 @@ import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.utilities.orIfNull
-import com.lenta.shared.view.OnPositionClickListener
 import com.mobrun.plugin.api.HyperHive
 import javax.inject.Inject
 
-class MarkingInfoBoxPGEViewModel : BaseGoodsInfo(), OnPositionClickListener {
+class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
 
     @Inject
     lateinit var processMarkingBoxProductService: ProcessMarkingBoxPGEProductService
@@ -40,7 +38,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo(), OnPositionClickListener {
 
     val tvAccept: MutableLiveData<String> by lazy {
         paramGrzAlternMeins.map {
-            val uomName = paramGrzAlternMeins.value?.name?.toLowerCase()
+            val uomName = paramGrzAlternMeins.value?.name?.toLowerCase().orEmpty()
 
             var nestingInOneBlock = productInfo.value?.quantityInvest?.toDouble().toStringFormatted()
             if (nestingInOneBlock == COUNT_PIECES_BOX_IS_ZERO) {
@@ -94,7 +92,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo(), OnPositionClickListener {
                     .combineLatest(spinQualitySelectedPosition)
                     .map {
                         currentQualityInfoCode
-                                .takeIf { code -> code == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM }
+                                .takeIf { code -> code == TYPE_DISCREPANCIES_QUALITY_NORM }
                                 ?.run { enteredCountInBlockUnits + countAcceptOfProduct }
                                 ?: countAcceptOfProduct
                     }
@@ -120,7 +118,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo(), OnPositionClickListener {
                     .combineLatest(spinQualitySelectedPosition)
                     .map {
                         currentQualityInfoCode
-                                .takeIf { code -> code != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM }
+                                .takeIf { code -> code != TYPE_DISCREPANCIES_QUALITY_NORM }
                                 ?.run { enteredCountInBlockUnits + countRefusalOfProduct }
                                 ?: countRefusalOfProduct
                     }
@@ -150,18 +148,13 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo(), OnPositionClickListener {
 
     private fun getTvStampControlVal(): String {
         val acceptTotalCountVal = acceptTotalCount.value ?: 0.0
-        val countBlockScanned =
-                productInfo.value
-                        ?.let { processMarkingBoxProductService.getCountProcessedBlockForDiscrepancies(TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM).toDouble() }
-                        ?: 0.0
-
         val numberStampsControl =
                 productInfo.value
                         ?.numberStampsControl
                         ?.toDouble()
                         ?: 0.0
 
-        return if (currentQualityInfoCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
+        return if (currentQualityInfoCode == TYPE_DISCREPANCIES_QUALITY_NORM) {
             if (numberStampsControl == 0.0 || acceptTotalCountVal <= 0.0) {
                 checkStampControlVisibility.value = false
                 context.getString(R.string.not_required)
@@ -171,7 +164,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo(), OnPositionClickListener {
                 buildString {
                     append(enteredCountInBlockUnits.toStringFormatted())
                     append(" ")
-                    append(paramGrzAlternMeins.value?.name?.toLowerCase())
+                    append(paramGrzAlternMeins.value?.name?.toLowerCase().orEmpty())
                     append(" ")
                     append(MULTIPLY)
                     append(" ")
@@ -185,21 +178,13 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo(), OnPositionClickListener {
     }
 
     val checkStampControl: MutableLiveData<Boolean> = checkStampControlVisibility.map {
-        val countBlockScanned = processMarkingBoxProductService.getCountProcessedBlockForDiscrepancies(TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM).toDouble()
+        val countBlockScanned = processMarkingBoxProductService.getCountProcessedBlockForDiscrepancies(TYPE_DISCREPANCIES_QUALITY_NORM).toDouble()
         val numberStampsControl = productInfo.value?.numberStampsControl?.toDouble() ?: 0.0
         countBlockScanned >= numberStampsControl
     }
 
 
     val checkBoxStampListVisibility: MutableLiveData<Boolean> = MutableLiveData()
-
-    val tvStampListVal: MutableLiveData<String> = refusalTotalCount
-            .combineLatest(spinQualitySelectedPosition)
-            .combineLatest(spinReasonRejectionSelectedPosition)
-            .combineLatest(countScannedBlocks)
-            .map {
-                getTvStampListVal()
-            }
 
     private fun getTvStampListVal(): String {
         return productInfo.value
@@ -212,7 +197,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo(), OnPositionClickListener {
                     }
                     val unprocessedQuantityOfBlocksVal = unprocessedQuantityOfBlocks.value
                             ?: 0.0
-                    if (currentTypeDiscrepanciesCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
+                    if (currentTypeDiscrepanciesCode == TYPE_DISCREPANCIES_QUALITY_NORM) {
                         if (unprocessedQuantityOfBlocksVal == enteredCountInBlockUnits) {
                             checkBoxStampListVisibility.value = false
                             context.getString(R.string.not_required)
@@ -236,7 +221,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo(), OnPositionClickListener {
 
     val checkBoxStampList: MutableLiveData<Boolean> = checkBoxStampListVisibility.map {
         val countBlockScanned = countScannedBlocks.value ?: 0
-        (currentTypeDiscrepanciesCode != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM && it == false)
+        (currentTypeDiscrepanciesCode != TYPE_DISCREPANCIES_QUALITY_NORM && it == false)
                 || (countBlockScanned >= enteredCountInBlockUnits && enteredCountInBlockUnits > 0.0)
     }
 
@@ -254,8 +239,8 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo(), OnPositionClickListener {
         val checkBoxStampListValue = checkBoxStampList.value ?: false
         val acceptTotalCountValue = acceptTotalCount.value ?: 0.0
 
-        return (enteredCountInBlockUnits > 0.0 || (acceptTotalCountValue > 0.0 && currentTypeDiscrepanciesCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM))
-                && (currentTypeDiscrepanciesCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
+        return (enteredCountInBlockUnits > 0.0 || (acceptTotalCountValue > 0.0 && currentTypeDiscrepanciesCode == TYPE_DISCREPANCIES_QUALITY_NORM))
+                && (currentTypeDiscrepanciesCode == TYPE_DISCREPANCIES_QUALITY_NORM
                 || checkStampControlValue
                 || checkBoxStampListValue)
     }
@@ -331,7 +316,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo(), OnPositionClickListener {
         return if (currentTypeDiscrepanciesCode.isNotEmpty()) {
 
             with(processMarkingBoxProductService) {
-                if (currentTypeDiscrepanciesCode != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
+                if (currentTypeDiscrepanciesCode != TYPE_DISCREPANCIES_QUALITY_NORM
                         && checkBoxStampListVisibility.value == false) {//выбрана категория брака и в поле Список марок отображается Не требуется
                     //сохраняем все необработанные блоки с текущей категорией брака
                     addAllUntreatedBlocksAsDefect(currentTypeDiscrepanciesCode)
@@ -340,7 +325,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo(), OnPositionClickListener {
                 apply()
             }
 
-            if (currentTypeDiscrepanciesCode != TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
+            if (currentTypeDiscrepanciesCode != TYPE_DISCREPANCIES_QUALITY_NORM) {
                 processMarkingBoxProductService.clearModifications()
                 //обнуляем кол-во отсканированных марок (блок/gtin)
                 countScannedStamps.value = 0
@@ -369,7 +354,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo(), OnPositionClickListener {
     fun onScanResult(data: String) {
         val acceptTotalCountValue = acceptTotalCount.value ?: 0.0
         if (enteredCountInBlockUnits <= 0.0) {
-            if (!(currentTypeDiscrepanciesCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM && acceptTotalCountValue > 0.0)) {
+            if (!(currentTypeDiscrepanciesCode == TYPE_DISCREPANCIES_QUALITY_NORM && acceptTotalCountValue > 0.0)) {
                 screenNavigator.openAlertMustEnterQuantityInfoGreenScreen()
                 return
             }
@@ -429,6 +414,15 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo(), OnPositionClickListener {
             )
             val blockInfo = processMarkingBoxProductService.searchBlock(data)
             blockProcessing(blockInfo)
+        }
+    }
+
+    private fun barcodeStamp(data: String): String {
+        val index = data.indexOf("92")
+        return if (index in 31..38) {
+            data.substring(0, index)
+        } else {
+            ""
         }
     }
 
@@ -559,8 +553,6 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo(), OnPositionClickListener {
     }
 
 
-
-
     private fun getCurrentTypeDiscrepanciesName(typeDiscrepancies: String): String {
         return allTypeDiscrepancies.value
                 ?.findLast { it.code == typeDiscrepancies }
@@ -568,38 +560,14 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo(), OnPositionClickListener {
                 .orEmpty()
     }
 
-    override fun onClickPosition(position: Int) {
-        spinReasonRejectionSelectedPosition.value = position
-    }
-
-    fun onClickPositionSpinQuality(position: Int) {
-        launchUITryCatch {
-            spinQualitySelectedPosition.value = position
-            updateDataSpinReasonRejection(currentQualityInfoCode)
-        }
-    }
-
-    private suspend fun updateDataSpinReasonRejection(selectedQuality: String) {
-        launchUITryCatch {
-            screenNavigator.showProgressLoadingData()
-            spinReasonRejectionSelectedPosition.value = 0
-            reasonRejectionInfo.value = dataBase.getReasonRejectionInfoOfQuality(selectedQuality)
-            count.value = count.value
-            screenNavigator.hideProgress()
-        }
-    }
-
     fun onClickUnitChange() {
-        isUnitBox.value?.let { isUnitBox.value = !it }
-        suffix.value =
-                isUnitBox.value
-                        ?.takeIf { it }
-                        ?.run { paramGrzAlternMeins.value?.name?.toLowerCase() }
-                        ?: productInfo.value
-                                ?.purchaseOrderUnits
-                                ?.name
-                                .orEmpty()
-
+        isUnitBox.value?.let {
+            suffix.value = if (!it) {
+                paramGrzAlternMeins.value?.name?.toLowerCase().orEmpty()
+            } else {
+                productInfo.value?.purchaseOrderUnits?.name.orEmpty()
+            }
+        }
         count.value = count.value
     }
 
