@@ -13,6 +13,7 @@ import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.extentions.*
 import com.lenta.bp12.model.pojo.open_task.TaskOpen
+import com.lenta.bp12.platform.ZERO_QUANTITY
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -141,8 +142,8 @@ class BasketOpenGoodListViewModel : BaseGoodListOpenViewModel(), OnOkInSoftKeybo
                 manager.updateCurrentGood(item.good)
                 navigator.goBack()
                 if (item.good.markType == MarkType.UNKNOWN)
-                    navigator.openGoodInfoCreateScreen()
-                else navigator.openMarkedGoodInfoCreateScreen()
+                    navigator.openGoodInfoOpenScreen()
+                else navigator.openMarkedGoodInfoOpenScreen()
             }
         }.orIfNull {
             Logg.e { "goods null" }
@@ -185,10 +186,13 @@ class BasketOpenGoodListViewModel : BaseGoodListOpenViewModel(), OnOkInSoftKeybo
                             goodFromBasket = goodFromBasket,
                             basketToGetQuantity = basket
                     )
+                    if (goodFromBasket.getTotalQuantity() == ZERO_QUANTITY) {
+                        goodFromBasket.isCounted = false
+                    }
                     //Удалим товар из корзины
                     basket.deleteGood(goodFromBasket)
                 }
-                removeEmptyBasketsAndGoods(task, basket)
+                removeEmptyBaskets(task, basket)
                 manager.updateBasketAndTask(task, basket)
             }.orIfNull {
                 Logg.e { "basket null" }
@@ -205,8 +209,7 @@ class BasketOpenGoodListViewModel : BaseGoodListOpenViewModel(), OnOkInSoftKeybo
         updateCurrentTask(task)
     }
 
-    private fun removeEmptyBasketsAndGoods(task: TaskOpen, basket: Basket) {
-        task.removeEmptyGoods()
+    private fun removeEmptyBaskets(task: TaskOpen, basket: Basket) {
         //Если корзина пуста удалим ее из задания и вернемся назад
         if (basket.goods.isEmpty()) {
             task.removeEmptyBaskets()

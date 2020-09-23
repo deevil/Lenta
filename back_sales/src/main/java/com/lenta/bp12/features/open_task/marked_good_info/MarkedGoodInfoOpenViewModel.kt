@@ -23,6 +23,7 @@ import com.lenta.bp12.request.GoodInfoNetRequest
 import com.lenta.bp12.request.MarkCartonBoxGoodInfoNetRequest
 import com.lenta.bp12.request.ScanInfoNetRequest
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.exception.Failure
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.*
@@ -226,7 +227,7 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
                     MarkScreenStatus.BOX_ALREADY_SCANNED ->
                         showBoxAlreadyScannedDelete(::handleYesDeleteMappedMarksFromTempCallBack)
 
-                    MarkScreenStatus.FAILURE -> handleFailure(markManager.getMarkFailure())
+                    MarkScreenStatus.FAILURE -> handleMarkScanError()
 
                     MarkScreenStatus.GOOD_CANNOT_BE_ADDED -> showGoodCannotBeAdded()
 
@@ -260,6 +261,15 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
         }
     }
 
+    private fun handleMarkScanError(){
+        val failure = markManager.getMarkFailure()
+        if (failure is Failure.MessageFailure) {
+            navigator.showMarkScanError(failure.message.orEmpty())
+        } else {
+            handleFailure(failure)
+        }
+    }
+
     private fun handleYesSaveCurrentMarkToBasketAndOpenAnother() {
         launchUITryCatch {
             saveChanges()
@@ -273,7 +283,7 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
         launchUITryCatch {
             with(navigator) {
                 showProgressLoadingData()
-                val screenStatus = markManager.loadBoxInfo(number)
+                val screenStatus = markManager.loadBoxInfo(number, WorkType.OPEN)
                 hideProgress()
                 when (screenStatus) {
                     MarkScreenStatus.OK -> setMarksAndProperties()
@@ -281,7 +291,7 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
                     MarkScreenStatus.INTERNAL_ERROR ->
                         showInternalError(markManager.getInternalErrorMessage())
 
-                    MarkScreenStatus.FAILURE -> handleFailure(markManager.getMarkFailure())
+                    MarkScreenStatus.FAILURE -> handleMarkScanError()
 
                     MarkScreenStatus.MARK_ALREADY_SCANNED ->
                         showMarkAlreadyScannedDelete(::handleYesDeleteMappedMarksFromTempCallBack)
@@ -356,7 +366,7 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
 
 
     override fun onClickApply() {
-        if (isPlannedQuantityActual()) {
+        if (isFactQuantityMoreThanPlanned()) {
             navigator.showQuantityMoreThanPlannedScreen()
             return
         }
