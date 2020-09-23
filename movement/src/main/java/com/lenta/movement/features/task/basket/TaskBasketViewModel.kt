@@ -143,7 +143,7 @@ class TaskBasketViewModel() : CoreViewModel(),
     private fun searchCode(code: String, fromScan: Boolean, isBarCode: Boolean? = null) {
         launchUITryCatch {
             scanInfoHelper.searchCode(code, fromScan, isBarCode) { productInfo ->
-                addProductToRep(productInfo)
+                onSearchResult(productInfo)
             }
         }
     }
@@ -153,6 +153,13 @@ class TaskBasketViewModel() : CoreViewModel(),
             taskBasketsRepository.addProduct(
                     product = productInfo,
                     count = ONE_PRODUCT_TO_ADD)
+        }
+    }
+
+    private fun onSearchResult(productInfo: ProductInfo) {
+        launchUITryCatch {
+            screenNavigator.goBack()
+            screenNavigator.openTaskGoodsInfoScreen(productInfo)
         }
     }
 

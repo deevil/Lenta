@@ -278,7 +278,6 @@ class TaskGoodsViewModel : CoreViewModel(),
         searchCode(code = data, fromScan = true, isBarCode = true)
     }
 
-    //fixme: не вызывается
     private fun searchCode(code: String, fromScan: Boolean, isBarCode: Boolean? = null) {
         launchUITryCatch {
             scanInfoHelper.searchCode(code, fromScan, isBarCode) { productInfo ->
