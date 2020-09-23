@@ -23,7 +23,8 @@
     <string name="stamp_was_added_to_box_msg">Отсканированная марка была добавлена в короб %s. Перепривязка невозможна.</string>
     <string name="box_number_was_used_msg">Указанный номер был использован ранее при создании другого короба</string>
     <string name="ean_invalid_msg">Неверный формат штрихкода</string>
-
+    <string name="product_is_banned_for_task_type">Товар запрещен для добавления в данный тип задания. Добавление товара невозможно.</string>
+    
     <string name="unsaved_data_confirmation">Несохранённые данные будут утеряны, всё равно продолжить?</string>
     <string name="box_saved_msg">Короб %s сохранен</string>
     <string name="save_to_sap_erp_msg">Сохранение в SAP ERP</string>

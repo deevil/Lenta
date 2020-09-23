@@ -134,8 +134,7 @@ class TaskGoodsViewModel : CoreViewModel(),
         return if (eanCodeValue != null && eanCodeValue.isNotEmpty()) {
             searchCode(eanCodeValue, fromScan = false)
             true
-        }
-        else false
+        } else false
     }
 
     fun onDigitPressed(digit: Int) {
@@ -287,8 +286,21 @@ class TaskGoodsViewModel : CoreViewModel(),
     }
 
     private fun onSearchResult(productInfo: ProductInfo) {
+        launchAsyncTryCatch {
+            if (taskManager.isAllowProduct(productInfo)) showProductInfoScreen(productInfo)
+            else showProductBannedMessage()
+        }
+    }
+
+    private fun showProductInfoScreen(productInfo: ProductInfo) {
         launchUITryCatch {
             screenNavigator.openTaskGoodsInfoScreen(productInfo)
+        }
+    }
+
+    private fun showProductBannedMessage() {
+        launchUITryCatch {
+            screenNavigator.openBannedProductDialog()
         }
     }
 

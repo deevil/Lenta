@@ -157,11 +157,25 @@ class TaskBasketViewModel() : CoreViewModel(),
     }
 
     private fun onSearchResult(productInfo: ProductInfo) {
+        launchAsyncTryCatch {
+            if (taskManager.isAllowProduct(productInfo)) showProductInfoScreen(productInfo)
+            else showProductBannedMessage()
+        }
+    }
+
+    private fun showProductInfoScreen(productInfo: ProductInfo) {
         launchUITryCatch {
             screenNavigator.goBack()
             screenNavigator.openTaskGoodsInfoScreen(productInfo)
         }
     }
+
+    private fun showProductBannedMessage() {
+        launchUITryCatch {
+            screenNavigator.openBannedProductDialog()
+        }
+    }
+
 
     companion object {
         private const val DEFAULT_BASKET_INDEX = 0

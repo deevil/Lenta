@@ -7,14 +7,16 @@ enum class ProductType(val code: String) {
     NonExciseAlcohol("A"),
     ExciseAlcohol("A"),
     Marked("M"),
+    Vet("V"),
     Unknown("UNKNOWN")
 }
 
-fun getProductType(isAlco: Boolean, isExcise: Boolean, isMarkedGood: Boolean = false): ProductType {
+fun getProductType(isAlco: Boolean, isExcise: Boolean, isMarkedGood: Boolean = false, isVet: Boolean = false): ProductType {
     return when{
         isMarkedGood -> ProductType.Marked
         isExcise -> ProductType.ExciseAlcohol
         isAlco -> ProductType.NonExciseAlcohol
+        isVet -> ProductType.Vet
         else -> ProductType.General
     }
 }
@@ -25,6 +27,7 @@ fun ProductType?.getDescriptionResId(): Int {
         ProductType.ExciseAlcohol -> R.string.excise_alco
         ProductType.NonExciseAlcohol -> R.string.non_excise_alco
         ProductType.Marked -> R.string.marked_good
+        ProductType.Vet -> R.string.vet_good
         else -> 0
     }
 }

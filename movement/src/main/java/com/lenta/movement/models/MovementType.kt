@@ -11,5 +11,11 @@ enum class MovementType(val propertyName: String) {
     SCS("SCS"),
     @SerializedName("SCST")
     SCST("SCST"),
+    @SerializedName("A")
+    A("A"),
+    @SerializedName("N")
+    N("N"),
+    @SerializedName("M")
+    M("M"),
     UnknownMovementType("Ошибка сервера")
 }
