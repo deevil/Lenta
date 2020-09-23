@@ -80,7 +80,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv"
             style="@style/RecyclerWithSomethingBellowStyle"
-            app:items="@{vm.search}"
+            app:items="@{vm.searchItems}"
             app:rv_config="@{rvConfig}"
             tools:listitem="@layout/item_task_list_task" />
 

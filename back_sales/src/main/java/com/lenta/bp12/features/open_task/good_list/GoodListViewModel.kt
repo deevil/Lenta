@@ -13,6 +13,7 @@ import com.lenta.bp12.model.pojo.extentions.getDescription
 import com.lenta.bp12.model.pojo.extentions.getQuantityFromGoodList
 import com.lenta.bp12.model.pojo.extentions.isAnyNotLocked
 import com.lenta.bp12.model.pojo.extentions.isAnyPrinted
+import com.lenta.bp12.model.pojo.open_task.TaskOpen
 import com.lenta.bp12.platform.ZERO_QUANTITY
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
@@ -338,17 +339,23 @@ class GoodListViewModel : BaseGoodListOpenViewModel(), PageSelectionListener, On
 
     fun onClickSave() {
         task.value?.let { task ->
-            //Если есть не удаленные товары в задании и их плановое количество больше фактического
-            if (task.isQuantityOfNotDeletedGoodsNotActual()) {
-                navigator.openDiscrepancyListScreen() // откроем лист расхождений
-            } else {
-                showMakeTaskCountedAndClose()
+            when {
+                // Есть незакрытые в опте корзины - отобразить экран сообщения «Некоторые корзины не закрыты.
+                // Сохранение заданий невозможно», с кнопкой «Назад». См. «MRK_BKS_Макет экранов МП (Крупный ОПТ) 1.1 APP» экран №84
+                isTaskWholesaleAndAnyOfBasketsIsNotClosed(task) ->
+                    navigator.showSomeBasketsNotClosedCantSaveScreen()
+                //Если есть не удаленные товары в задании и их плановое количество больше фактического
+                task.isQuantityOfNotDeletedGoodsNotActual() ->
+                    navigator.openDiscrepancyListScreen()
+                else -> showMakeTaskCountedAndClose()
             }
         }.orIfNull {
             Logg.e { "task null" }
             navigator.showInternalError(resource.taskNotFoundErrorMsg)
         }
     }
+
+    private fun isTaskWholesaleAndAnyOfBasketsIsNotClosed(task: TaskOpen) = manager.isWholesaleTaskType && task.baskets.isAnyNotLocked()
 
     private fun showMakeTaskCountedAndClose() {
         navigator.showMakeTaskCountedAndClose {
