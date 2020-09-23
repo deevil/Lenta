@@ -319,9 +319,18 @@ class ScreenNavigator(
         }
     }
 
+    override fun showIncorrectMarkScanMode() {
+        openAlertScreen(
+                message = context.getString(R.string.incorrect_mark_scan_mode),
+                iconRes = R.drawable.ic_warning_yellow_80dp,
+                pageNumber = "96"
+        )
+    }
+
 }
 
 interface IScreenNavigator : ICoreNavigator {
+
     fun openFirstScreen()
     fun openLoginScreen()
     fun openSelectMarketScreen()
@@ -356,4 +365,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openNotPossibleSaveWithoutReasonScreen()
     fun openConfirmationToBackNotEmptyStampsScreen(callbackFunc: () -> Unit)
     fun showWriteOffToProductionConfirmation(nextCallback: () -> Unit)
+    fun showIncorrectMarkScanMode()
+
 }

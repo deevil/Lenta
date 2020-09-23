@@ -79,6 +79,7 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
 
     private fun initMarkSearchDelegate() {
         markSearchDelegate.init(
+                isSpecialMode = isSpecialMode,
                 tkNumber = getTaskDescription().tkNumber,
                 updateProperties = this@MarkedInfoViewModel::updateProperties,
                 handleScannedMark = this@MarkedInfoViewModel::handleScannedMark,

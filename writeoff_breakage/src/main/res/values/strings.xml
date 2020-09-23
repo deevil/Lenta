@@ -39,6 +39,7 @@
     <string name="not_possible_save_without_reason">Не возможно сохранить, выберите причину списания</string>
     <string name="not_support_type_product_for_set">Только акцизный алкоголь может быть в наборе</string>
     <string name="confirmation_back_with_scanned_stamps">Имеются отсканированные марки. Вы действительно хотите выйти?</string>
+    <string name="incorrect_mark_scan_mode">Марка числится в сети «Лента». Для списания подобного товара необходимо создать задание не специального типа.</string>
 
     <string name="quantity">Количество</string>
     <string name="properties">Свойства</string>
