@@ -62,7 +62,9 @@ fun actionByNumber(
 
             Logg.d { "--> Cigarette mark / markWithoutTail = $markWithoutTail / gtin = $gtin / ean = $ean" }
 
-            funcForCigarettes?.invoke(markWithoutTail) ?: funcForNotValidFormat()
+            funcForCigarettes?.invoke(markWithoutTail)
+                    ?: funcForEan?.invoke(ean)
+                    ?: funcForNotValidFormat()
         } ?: funcForNotValidFormat()
 
         return
@@ -76,7 +78,9 @@ fun actionByNumber(
 
             Logg.d { "--> Cigarette box mark / markWithoutTail = $markWithoutTail / gtin = $gtin / ean = $ean" }
 
-            funcForCigaretteBox?.invoke(markWithoutTail) ?: funcForNotValidFormat()
+            funcForCigaretteBox?.invoke(markWithoutTail)
+                    ?: funcForEan?.invoke(ean)
+                    ?: funcForNotValidFormat()
         } ?: funcForNotValidFormat()
 
         return
