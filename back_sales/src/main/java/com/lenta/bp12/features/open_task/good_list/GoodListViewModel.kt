@@ -419,8 +419,9 @@ class GoodListViewModel : BaseGoodListOpenViewModel(), PageSelectionListener, On
     }
 
     private fun chooseQuantityForProcessing(good: Good): String {
-        val quantity = "${good.planQuantity.dropZeros()} ${good.commonUnits.name}"
-        return quantity.takeIf { good.planQuantity > ZERO_QUANTITY }.orEmpty()
+        return good.takeIf { good.planQuantity > ZERO_QUANTITY }?.run {
+            "${planQuantity.dropZeros()} ${commonUnits.name}"
+        }.orEmpty()
     }
 
     private fun handlePrintSuccess(baskets: List<Basket>) {
