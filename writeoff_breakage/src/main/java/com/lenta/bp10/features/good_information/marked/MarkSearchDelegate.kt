@@ -32,13 +32,13 @@ class MarkSearchDelegate @Inject constructor(
 
     private lateinit var handleScannedMark: (mark: String) -> Unit
 
-    private lateinit var handleScannedBox: (marks: List<MarkInfo>) -> Unit
+    private lateinit var handleScannedBox: (boxNumber: String, marks: List<MarkInfo>) -> Unit
 
 
     fun init(tkNumber: String,
              productInfo: ProductInfo?,
              handleScannedMark: (mark: String) -> Unit,
-             handleScannedBox: (marks: List<MarkInfo>) -> Unit,
+             handleScannedBox: (boxNumber: String, marks: List<MarkInfo>) -> Unit,
              updateProperties: (properties: List<Property>) -> Unit) {
 
         this.tkNumber = tkNumber
@@ -64,18 +64,18 @@ class MarkSearchDelegate @Inject constructor(
         }
     }
 
-    fun requestPackInfo(number: String) {
+    fun requestPackInfo(boxNumber: String) {
         launch {
             navigator.showProgress(markedInfoNetRequest)
             markedInfoNetRequest(MarkedInfoParams(
                     tkNumber = tkNumber,
                     material = productInfo?.materialNumber.orEmpty(),
-                    packNumber = number,
+                    packNumber = boxNumber,
                     markType = productInfo?.markedGoodType.orEmpty()
             )).also {
                 navigator.hideProgress()
             }.either(::handleFailure) { result ->
-                handleBoxRequestResult(result)
+                handleBoxRequestResult(boxNumber, result)
             }
         }
     }
@@ -93,10 +93,10 @@ class MarkSearchDelegate @Inject constructor(
         }
     }
 
-    private fun handleBoxRequestResult(result: MarkedInfoResult) {
+    private fun handleBoxRequestResult(boxNumber: String, result: MarkedInfoResult) {
         if (result.status == BOX_CODE_OK) {
             updateProperties.invoke(result.properties.orEmpty())
-            handleScannedBox(result.marks.orEmpty())
+            handleScannedBox(boxNumber, result.marks.orEmpty())
         } else {
             navigator.openInfoScreen(result.statusDescription.orEmpty())
         }

@@ -217,7 +217,7 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardLis
         }
     }
 
-    fun updateCounter() {
+    open fun updateCounter() {
         count.value = initCountLiveData().value
     }
 

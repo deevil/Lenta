@@ -218,8 +218,9 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
         )
     }
 
-    private fun handleScannedBox(marks: List<MarkInfo>) {
+    private fun handleScannedBox(boxNumber: String, marks: List<MarkInfo>) {
         markedGoodStampCollector.addMarks(
+                boxNumber = boxNumber,
                 material = productInfo.value?.materialNumber.orEmpty(),
                 marks = marks,
                 writeOffReason = getSelectedReason().code
@@ -235,6 +236,10 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
                 material = productInfo.value?.materialNumber.orEmpty(),
                 writeOffReason = getSelectedReason().code
         )
+    }
+
+    override fun updateCounter() {
+        markedGoodStampCollector.onDataChanged()
     }
 
 }

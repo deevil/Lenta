@@ -31,14 +31,9 @@ class MarkedGoodStampCollector(private val processMarkedGoodProductService: Proc
         onDataChanged()
     }
 
-    fun addMarks(marks: List<MarkInfo>, material: String, writeOffReason: String) {
+    fun addMarks(boxNumber: String, marks: List<MarkInfo>, material: String, writeOffReason: String) {
         val stampList = mutableListOf<TaskExciseStamp>()
         marks.mapTo(stampList) { mark ->
-            val boxNumber = mark.boxNumber.orEmpty()
-            if (!boxes.contains(boxNumber)) {
-                boxes.add(boxNumber)
-            }
-
             TaskExciseStamp(
                     material = material,
                     markNumber = mark.markNumber.orEmpty(),
@@ -46,6 +41,10 @@ class MarkedGoodStampCollector(private val processMarkedGoodProductService: Proc
                     packNumber = mark.packNumber.orEmpty(),
                     writeOffReason = writeOffReason
             )
+        }
+
+        if (!boxes.contains(boxNumber)) {
+            boxes.add(boxNumber)
         }
 
         stamps.add(stampList)
@@ -68,13 +67,21 @@ class MarkedGoodStampCollector(private val processMarkedGoodProductService: Proc
 
     fun rollback() {
         if (stamps.isNotEmpty()) {
-            stamps.removeAt(stamps.size - 1)
+            val boxNumber = stamps[stamps.lastIndex][0].boxNumber
+            if (boxNumber.isNotEmpty()) {
+                boxes.remove(boxNumber)
+            }
+
+            stamps.removeAt(stamps.lastIndex)
+
             onDataChanged()
         }
     }
 
     fun processAll(reason: WriteOffReason) {
-        stamps.flatten().forEach { processMarkedGoodProductService.add(reason, 1.0, it) }
+        stamps.flatten().forEach {
+            processMarkedGoodProductService.add(reason, 1.0, it)
+        }
         clear()
     }
 
@@ -96,8 +103,8 @@ class MarkedGoodStampCollector(private val processMarkedGoodProductService: Proc
         onDataChanged()
     }
 
-    private fun onDataChanged() {
-        countLiveData.postValue(stamps.size.toDouble())
+    fun onDataChanged() {
+        countLiveData.value = stamps.flatten().size.toDouble()
     }
 
     fun observeCount(): LiveData<Double> {
