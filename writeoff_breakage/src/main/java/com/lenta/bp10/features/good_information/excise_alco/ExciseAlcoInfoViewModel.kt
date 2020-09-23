@@ -146,4 +146,11 @@ class ExciseAlcoInfoViewModel : BaseProductInfoViewModel() {
         alcoholStampCollector.rollback()
     }
 
+    fun onClickDamaged() {
+        alcoholStampCollector.addBadMark(
+                material = productInfo.value?.materialNumber.orEmpty(),
+                writeOffReason = getSelectedReason().code
+        )
+    }
+
 }

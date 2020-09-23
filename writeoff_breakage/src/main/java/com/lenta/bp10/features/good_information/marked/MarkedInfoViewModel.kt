@@ -7,22 +7,20 @@ import com.lenta.bp10.models.MarkedGoodStampCollector
 import com.lenta.bp10.models.repositories.ITaskRepository
 import com.lenta.bp10.models.task.ProcessMarkedGoodProductService
 import com.lenta.bp10.models.task.TaskDescription
-import com.lenta.bp10.repos.DatabaseRepository
 import com.lenta.bp10.requests.network.pojo.MarkInfo
 import com.lenta.bp10.requests.network.pojo.Property
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.actionByNumber
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.extentions.launchUITryCatch
+import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.toStringFormatted
 import javax.inject.Inject
 
 class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
 
     @Inject
     lateinit var markSearchDelegate: MarkSearchDelegate
-
-    @Inject
-    lateinit var database: DatabaseRepository
 
 
     /**
@@ -36,8 +34,6 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
     private val markedGoodStampCollector: MarkedGoodStampCollector by lazy {
         MarkedGoodStampCollector(processMarkedGoodProductService)
     }
-
-    val isSpecialMode = MutableLiveData(false)
 
     private val properties = MutableLiveData(listOf<Property>())
 
@@ -61,22 +57,12 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
         countValue.map { it ?: 0.0 > 0.0 }
     }
 
-    val damagedEnabled: LiveData<Boolean> by lazy {
-        enabledApplyButton.combineLatest(isSpecialMode).mapSkipNulls {
-            val (enabledApplyButton, isSpecialMode) = it
-            if (isSpecialMode) isSpecialMode else enabledApplyButton
-        }
-    }
-
     /**
     Блок инициализации
      */
 
     init {
         launchUITryCatch {
-            val taskType = processMarkedGoodProductService.taskDescription.taskType.code
-            isSpecialMode.value = database.isSpecialMode(taskType)
-
             markSearchDelegate.init(
                     tkNumber = getTaskDescription().tkNumber,
                     updateProperties = this@MarkedInfoViewModel::updateProperties,

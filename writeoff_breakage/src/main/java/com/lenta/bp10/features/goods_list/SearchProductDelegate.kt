@@ -191,7 +191,7 @@ class SearchProductDelegate @Inject constructor(
             goodsForTask = false
 
             taskDescription?.gisControls?.let { gisControls ->
-                Logg.d { "--> gisControls = $gisControls" }
+                Logg.d { "--> Valid gis controls for task = $gisControls" }
                 if (gisControls.contains(it.productInfo.type.code)) {
                     goodsForTask = true
                 }
@@ -216,7 +216,7 @@ class SearchProductDelegate @Inject constructor(
     }
 
     fun openProductScreen(productInfo: ProductInfo, quantity: Double) {
-        Logg.d { "--> productInfo = ${productInfo.type.name}" }
+        Logg.d { "--> Product info type: ${productInfo.type.name}" }
         when (productInfo.type) {
             ProductType.General -> navigator.openGoodInfoScreen(productInfo, quantity)
             ProductType.ExciseAlcohol -> {

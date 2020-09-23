@@ -4,6 +4,7 @@ import com.lenta.bp10.fmp.resources.dao_ext.isChkOwnpr
 import com.lenta.bp10.fmp.resources.tasks_settings.ZmpUtz29V001Rfc
 import com.lenta.shared.fmp.resources.dao_ext.getSpecialTaskTypes
 import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
+import com.lenta.shared.utilities.Logg
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -25,7 +26,9 @@ class DatabaseRepository @Inject constructor(
 
     override suspend fun isSpecialMode(taskTypeCode: String): Boolean {
         return withContext(Dispatchers.IO) {
-            settings.getSpecialTaskTypes().contains(taskTypeCode)
+            val specialTaskTypes = settings.getSpecialTaskTypes()
+            Logg.d { "--> Special task types: $specialTaskTypes" }
+            specialTaskTypes.contains(taskTypeCode)
         }
     }
 
