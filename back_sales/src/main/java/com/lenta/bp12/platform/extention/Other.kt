@@ -53,18 +53,14 @@ fun GoodInfoResult.getMarkType(): MarkType {
     return enumValueOrNull<MarkType>(markTypeString).orIfNull { MarkType.UNKNOWN }
 }
 
-fun CreateTaskBasketInfo.getMarkType(): MarkType {
-    val markTypeString = marktypeGroup.orEmpty()
-    return enumValueOrNull<MarkType>(markTypeString).orIfNull { MarkType.UNKNOWN }
-}
-
 fun MarkCartonBoxGoodInfoNetRequestResult.getMarkStatus(): MarkStatus {
     return when (this.markStatus) {
         MarkRequestStatus.MARK_FOUND -> MarkStatus.GOOD_MARK
 
         MarkRequestStatus.MARK_NOT_FOUND_IN_TASK,
         MarkRequestStatus.MARK_NOT_FOUND_OR_PROBLEMATIC,
-        MarkRequestStatus.MARK_OF_DIFFERENT_GOOD -> MarkStatus.BAD_MARK
+        MarkRequestStatus.MARK_OF_DIFFERENT_GOOD
+        -> MarkStatus.BAD_MARK
 
         MarkRequestStatus.CARTON_FOUND_OR_GRAYZONE -> MarkStatus.GOOD_CARTON
 
@@ -72,14 +68,16 @@ fun MarkCartonBoxGoodInfoNetRequestResult.getMarkStatus(): MarkStatus {
         MarkRequestStatus.CARTON_NOT_FOUND,
         MarkRequestStatus.CARTON_NOT_FOUND_IN_TASK,
         MarkRequestStatus.CARTON_OF_DIFFERENT_GOOD,
-        MarkRequestStatus.CARTON_OLD -> MarkStatus.BAD_CARTON
+        MarkRequestStatus.CARTON_OLD
+        -> MarkStatus.BAD_CARTON
 
         MarkRequestStatus.BOX_FOUND -> MarkStatus.GOOD_BOX
 
         MarkRequestStatus.BOX_NOT_FOUND,
         MarkRequestStatus.BOX_OF_DIFFERENT_GOOD,
         MarkRequestStatus.BOX_INCOMPLETE,
-        MarkRequestStatus.BOX_NOT_FOUND_IN_TASK -> MarkStatus.BAD_BOX
+        MarkRequestStatus.BOX_NOT_FOUND_IN_TASK
+        -> MarkStatus.BAD_BOX
 
         else -> MarkStatus.UNKNOWN
     }
@@ -113,17 +111,27 @@ fun GoodInfoResult.getControlType(): ControlType {
     }
 }
 
-fun TaskInfo.getControlType(): ControlType {
+fun TaskInfo.getControlTypes(): Set<ControlType> {
+    val setOfControlTypes = mutableSetOf<ControlType>()
+    if (this.isVet.isSapTrue()) setOfControlTypes.add(ControlType.VET)
+    if (this.isAlco.isSapTrue()) setOfControlTypes.add(ControlType.ALCOHOL)
+    if (this.isUsual.isSapTrue()) setOfControlTypes.add(ControlType.COMMON)
+    if (this.isMark.isSapTrue()) setOfControlTypes.add(ControlType.MARK)
+
+    return setOfControlTypes
+}
+
+fun CreateTaskBasketInfo.getControlType(): ControlType {
     val isVet = this.isVet.isSapTrue()
-    val isAlcohol = this.isAlco.isSapTrue()
-    val isUsual = this.isUsual.isSapTrue()
+    val isAlcohol = this.isAlcohol.isSapTrue()
     val isMark = this.isMark.isSapTrue()
+    val isCommon = this.isCommon.isSapTrue()
 
     return when {
-        isUsual -> ControlType.COMMON
+        isMark -> ControlType.MARK
+        isCommon -> ControlType.COMMON
         isAlcohol -> ControlType.ALCOHOL
         isVet -> ControlType.VET
-        isMark -> ControlType.MARK
         else -> ControlType.UNKNOWN
     }
 }
@@ -219,7 +227,6 @@ private fun String.deleteSecondMinus(): String {
 fun String.extractAlcoCode(): String {
     return BigInteger(this.substring(7, 19), 36).toString().padStart(19, '0')
 }
-
 
 
 fun TaskType.isWholesaleType(): Boolean {
