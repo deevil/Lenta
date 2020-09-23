@@ -14,7 +14,7 @@ data class TaskOpen(
 
         override val name: String,
         override val type: TaskType?,
-        override val control: ControlType,
+        val controlTypes: Set<ControlType>,
 
         val storage: String,
 

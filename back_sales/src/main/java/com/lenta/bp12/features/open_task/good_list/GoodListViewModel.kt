@@ -8,10 +8,9 @@ import com.lenta.bp12.features.open_task.base.BaseGoodListOpenViewModel
 import com.lenta.bp12.managers.interfaces.IMarkManager
 import com.lenta.bp12.managers.interfaces.IOpenTaskManager
 import com.lenta.bp12.model.pojo.Basket
-import com.lenta.bp12.model.pojo.extentions.getDescription
-import com.lenta.bp12.model.pojo.extentions.getQuantityFromGoodList
-import com.lenta.bp12.model.pojo.extentions.isAnyNotLocked
-import com.lenta.bp12.model.pojo.extentions.isAnyPrinted
+import com.lenta.bp12.model.pojo.Good
+import com.lenta.bp12.model.pojo.extentions.*
+import com.lenta.bp12.platform.ZERO_QUANTITY
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -23,10 +22,7 @@ import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.dropZeros
-import com.lenta.shared.utilities.extentions.launchUITryCatch
-import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.unsafeLazy
+import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.orIfNull
 import javax.inject.Inject
 
@@ -105,7 +101,7 @@ class GoodListViewModel : BaseGoodListOpenViewModel(), PageSelectionListener, On
                                 name = good.getNameWithMaterial(),
                                 material = good.material,
                                 providerCode = good.provider.code.orEmpty(),
-                                quantity = "${good.planQuantity.dropZeros()} ${good.commonUnits.name}",
+                                quantity = chooseQuantityForProcessing(good),
                                 good = good
                         )
                     }
@@ -296,42 +292,52 @@ class GoodListViewModel : BaseGoodListOpenViewModel(), PageSelectionListener, On
     fun onClickDelete() {
         selectedPage.value?.let { page ->
             when (page) {
-                PROCESSING_PAGE_INDEX -> {
-                    if (isTaskStrict.not()) {
-                        val materials = mutableListOf<String>()
-                        processingSelectionsHelper.selectedPositions.value?.mapNotNullTo(materials) { position ->
-                            processing.value?.get(position)?.material
-                        }
-
-                        processingSelectionsHelper.clearPositions()
-                        manager.markGoodsDeleted(materials)
-                    }
-                }
-                PROCESSED_PAGE_INDEX -> {
-                    val materials = processedSelectionsHelper.selectedPositions.value?.mapNotNullTo(mutableListOf()) { position ->
-                        processed.value?.get(position)?.material
-                    }.orEmpty()
-
-                    processedSelectionsHelper.clearPositions()
-                    manager.markGoodsUncounted(materials)
-                    manager.deleteGoodsFromBaskets(materials)
-                }
-                BASKETS_PAGE_INDEX -> {
-                    val basketList = mutableListOf<Basket>()
-                    basketSelectionsHelper.selectedPositions.value?.mapNotNullTo(basketList) { position ->
-                        if (manager.isWholesaleTaskType) {
-                            wholesaleBaskets.value?.get(position)?.basket
-                        } else {
-                            commonBaskets.value?.get(position)?.basket
-                        }
-                    }
-
-                    basketSelectionsHelper.clearPositions()
-                    manager.removeBaskets(basketList)
-                }
+                PROCESSING_PAGE_INDEX -> handleDeleteProcessingItems()
+                PROCESSED_PAGE_INDEX -> handleDeleteProcessedItems()
+                BASKETS_PAGE_INDEX -> handleDeleteBasketItems()
                 else -> throw IllegalArgumentException("Wrong pager position!")
             }
         }
+    }
+
+    private fun handleDeleteProcessingItems() {
+        if (isTaskStrict.not()) {
+            val materials = mutableListOf<String>()
+            processingSelectionsHelper.selectedPositions.value?.mapNotNullTo(materials) { position ->
+                processing.value?.get(position)?.material
+            }.orEmpty()
+
+            processingSelectionsHelper.clearPositions()
+            manager.markGoodsDeleted(materials)
+        }
+    }
+
+    private fun handleDeleteProcessedItems() {
+        val materials = mutableListOf<String>()
+
+        processedSelectionsHelper.selectedPositions.value?.forEach { position ->
+                    val item = processed.value?.getOrNull(position)
+                    item?.let {
+                        materials.add(it.material)
+                        it.good.clearMarksPartsPositions()
+                    }
+                }
+        processedSelectionsHelper.clearPositions()
+        manager.markGoodsUncounted(materials)
+        manager.deleteGoodsFromBaskets(materials)
+    }
+
+    private fun handleDeleteBasketItems() {
+        val basketList = basketSelectionsHelper.selectedPositions.value?.mapNotNull { position ->
+            if (manager.isWholesaleTaskType) {
+                wholesaleBaskets.value?.get(position)?.basket
+            } else {
+                commonBaskets.value?.get(position)?.basket
+            }
+        }.orEmptyMutable()
+
+        basketSelectionsHelper.clearPositions()
+        manager.removeBaskets(basketList)
     }
 
     fun onClickSave() {
@@ -414,6 +420,12 @@ class GoodListViewModel : BaseGoodListOpenViewModel(), PageSelectionListener, On
                     }
             )
         }
+    }
+
+    private fun chooseQuantityForProcessing(good: Good): String {
+        return good.takeIf { good.planQuantity > ZERO_QUANTITY }?.run {
+            "${planQuantity.dropZeros()} ${commonUnits.name}"
+        }.orEmpty()
     }
 
     private fun handlePrintSuccess(baskets: List<Basket>) {
