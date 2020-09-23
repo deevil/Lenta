@@ -122,7 +122,7 @@ class SearchProductDelegate @Inject constructor(
             }
             requestCodeTypeBarCode -> {
                 searchCode(code = codeWith12Digits
-                        ?: "", fromScan = false, isBarCode = true, isDiscrepancy = isDiscrepancy!!)
+                        ?: "", fromScan = false, isBarCode = true, isDiscrepancy = isDiscrepancy?: false)
                 codeWith12Digits = null
                 true
             }

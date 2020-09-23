@@ -10,6 +10,7 @@ import com.lenta.bp9.model.processing.ProcessMarkingBoxPGEProductService
 import com.lenta.bp9.model.task.TaskBlockInfo
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants
+import com.lenta.bp9.platform.requestCodeAddGoodsSurplus
 import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.fmp.resources.dao_ext.getUomInfo
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
@@ -378,36 +379,58 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo(), OnPositionClickListener {
     }
 
     private fun checkScanResult(data: String) {
-        when (data.length) {
-            in 0..7, in 9..11, in 15..20 -> screenNavigator.openAlertInvalidBarcodeFormatScannedScreen()
-            8, in 12..14 -> { }
-            in 21..28 -> boxCheck(data)
-            in 30..44 -> {
-                if (barcodeBlockCheck(data)) {
-                    blockCheck(data.substring(0, 25))
-                } else {
-                    boxCheck(data)
-                }
-            }
+        if (barcodeBlockCheck(data)) {
+//            val barcode = data.substring(2, data.length)
+            stampInGrayZone(data)
+        }else{
 
-            else -> {
-                if (barcodeBlockCheck(data)) {
-                    blockCheck(data.substring(0, 25))
-                } else {
-                    screenNavigator.openAlertInvalidBarcodeFormatScannedScreen()
-                }
-            }
         }
     }
 
-//    private fun checkScanResult(data: String) {
-//        if (barcodeBlockCheck(data)) {
-//            blockCheck(data)
-//            } else {
-//            screenNavigator.openAlertInvalidBarcodeFormatScannedScreen()
-//        }
-//
-//    }
+    private fun stampInGrayZone(data: String) {
+        val blockInfo = processMarkingBoxProductService.searchBlock(data) //Наличие марки в текущем задании в ET_TASK_MARK
+        val stamp = taskRepository?.getExciseStamps()?.findExciseStampsOfProduct(productMaterialNumber)?.findLast {
+            it.code == data
+        }
+        if (stamp == null) {  //Марка есть в задании
+            val blockMaterialNumber = blockInfo?.materialNumber.orEmpty()
+            screenNavigator.openAlertScannedStampBelongsAnotherProductScreen(
+                    materialNumber = blockMaterialNumber,
+                    materialName = ZfmpUtz48V001(hyperHive).getProductInfoByMaterial(blockMaterialNumber)?.name.orEmpty()
+            )
+            stampInAssignment(data)
+        } else {
+            screenNavigator.openAddGoodsSurplusDialog(requestCodeAddGoodsSurplus)
+            callbackFuncAlertStampNotFoundReturnSupplierScreen()
+        }
+    }
+
+    private fun stampInAssignment(data: String){
+        val boxMaterialNumber =
+                taskRepository
+                        ?.getBoxes()
+                        ?.findBox(data)
+                        ?.materialNumber
+                        .orEmpty()
+
+        val productMaterialNumber = productInfo.value?.materialNumber.orEmpty()
+        if (boxMaterialNumber.isEmpty()) {
+            //Отсканированная коробка не числится в поставке. Отсканируйте все марки из этого короба
+            screenNavigator.openMarkingBoxNotIncludedDeliveryScreen()
+            return
+        }
+
+        if (boxMaterialNumber != productMaterialNumber) {
+            //Отсканированная коробка принадлежит товару <SAP-код> <Название>
+            val materialName = ZfmpUtz48V001(hyperHive).getProductInfoByMaterial(boxMaterialNumber)?.name.orEmpty()
+            screenNavigator.openAlertScannedBoxBelongsAnotherProductScreen(
+                    materialNumber = boxMaterialNumber,
+                    materialName = materialName
+            )
+            val blockInfo = processMarkingBoxProductService.searchBlock(data)
+            blockProcessing(blockInfo)
+        }
+    }
 
 
     private fun barcodeBlockCheck(data: String): Boolean {
@@ -415,7 +438,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo(), OnPositionClickListener {
         return regex.find(data) != null
     }
 
-    private fun blockCheck(stampCode: String) {
+    private fun stampCheck(stampCode: String) {
         val blockInfo = processMarkingBoxProductService.searchBlock(stampCode)
 
         if (processMarkingBoxProductService.blockIsAlreadyProcessed(stampCode)) {
@@ -424,13 +447,13 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo(), OnPositionClickListener {
         }
 
         if (blockInfo == null) {
-            if (productInfo.value?.isGrayZone != true) {
+            if (productInfo.value?.isGrayZone != true) { //Отсканированная марка не числится в текущей поставке. Верните отсканированную марку обратно поставщику
                 screenNavigator.openAlertStampNotFoundReturnSupplierScreen(::callbackFuncAlertStampNotFoundReturnSupplierScreen)
                 return
             }
         }
 
-        if (blockInfo?.materialNumber != productInfo.value?.materialNumber) {
+        if (blockInfo?.materialNumber != productInfo.value?.materialNumber) {//Отсканированная марка принадлежит товару \"%1$s\" \"%2$s\"
             val blockMaterialNumber = blockInfo?.materialNumber.orEmpty()
             screenNavigator.openAlertScannedStampBelongsAnotherProductScreen(
                     materialNumber = blockMaterialNumber,
@@ -439,46 +462,8 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo(), OnPositionClickListener {
             return
         }
 
-        blockProcessing(stampCode, blockInfo)
+        blockProcessing(blockInfo)
     }
-
-    private fun blockProcessing(stampCode: String, blockInfo: TaskBlockInfo?) {
-        //этот блок считается обработанным, т.к. здесь нету контроля gtin, сохраняем его для erp
-        addBlock(
-                blockInfo = blockInfo,
-                typeDiscrepancies = currentTypeDiscrepanciesCode
-        )
-        //обновляем кол-во отсканированных марок/блоков для отображения на экране в поле «Контроль марок»
-        countScannedBlocks.value = countScannedBlocks.value?.plus(1)
-    }
-
-    private fun callbackFuncAlertStampNotFoundReturnSupplierScreen() {
-        if (currentTypeDiscrepanciesCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
-            count.value?.let {
-                if (it.toDouble() > 0.0) {
-                    count.value = count.value?.toDouble()?.minus(1)?.toStringFormatted()
-                    //Количество нормы будет уменьшено
-                    screenNavigator.openAlertAmountNormWillBeReducedMarkingScreen()
-                }
-            }
-        }
-    }
-
-    private fun addBlock(blockInfo: TaskBlockInfo?, typeDiscrepancies: String?) {
-        blockInfo?.let { currentBlock ->
-            typeDiscrepancies?.let { currentTypeDiscrepancies ->
-                processMarkingBoxProductService
-                        .addBlockDiscrepancies(
-                                blockInfo = currentBlock,
-                                typeDiscrepancies = currentTypeDiscrepancies,
-                                isScan = true,
-                                isGtinControlPassed = false
-                        )
-                countScannedStamps.value = countScannedStamps.value?.plus(1)
-            }
-        }
-    }
-
 
     private fun boxCheck(boxNumber: String) {
         val boxMaterialNumber =
@@ -533,6 +518,48 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo(), OnPositionClickListener {
         countScannedStamps.value = countScannedStamps.value?.plus(1)
 
     }
+
+
+
+    private fun blockProcessing(blockInfo: TaskBlockInfo?) {
+        //этот блок считается обработанным, т.к. здесь нету контроля gtin, сохраняем его для erp
+        addBlock(
+                blockInfo = blockInfo,
+                typeDiscrepancies = currentTypeDiscrepanciesCode
+        )
+        //обновляем кол-во отсканированных марок/блоков для отображения на экране в поле «Контроль марок»
+        countScannedBlocks.value = countScannedBlocks.value?.plus(1)
+    }
+
+    private fun callbackFuncAlertStampNotFoundReturnSupplierScreen() {
+        if (currentTypeDiscrepanciesCode == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM) {
+            count.value?.let {
+                if (it.toDouble() > 0.0) {
+                    count.value = count.value?.toDouble()?.minus(1)?.toStringFormatted()
+                    //Количество нормы будет уменьшено
+                    screenNavigator.openAlertAmountNormWillBeReducedMarkingScreen()
+                }
+            }
+        }
+    }
+
+    private fun addBlock(blockInfo: TaskBlockInfo?, typeDiscrepancies: String?) {
+        blockInfo?.let { currentBlock ->
+            typeDiscrepancies?.let { currentTypeDiscrepancies ->
+                processMarkingBoxProductService
+                        .addBlockDiscrepancies(
+                                blockInfo = currentBlock,
+                                typeDiscrepancies = currentTypeDiscrepancies,
+                                isScan = true,
+                                isGtinControlPassed = false
+                        )
+                countScannedStamps.value = countScannedStamps.value?.plus(1)
+            }
+        }
+    }
+
+
+
 
     private fun getCurrentTypeDiscrepanciesName(typeDiscrepancies: String): String {
         return allTypeDiscrepancies.value

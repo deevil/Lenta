@@ -420,8 +420,7 @@ class ProcessMarkingBoxPGEProductService
         currentBlocksDiscrepancies
                 .takeIf { it.isNotEmpty() }
                 ?.apply {
-                    val block = this.last()
-                    this.remove(block)
+                    removeAt(size - 1)
                 }
     }
 
@@ -429,8 +428,7 @@ class ProcessMarkingBoxPGEProductService
         currentGtin
                 .takeIf { it.isNotEmpty() }
                 ?.apply {
-                    val gtin = this.last()
-                    this.remove(gtin)
+                    removeAt(size - 1)
                 }
     }
 
