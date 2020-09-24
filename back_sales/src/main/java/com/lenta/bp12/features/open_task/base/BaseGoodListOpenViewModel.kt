@@ -99,6 +99,18 @@ abstract class BaseGoodListOpenViewModel: CoreViewModel(), IBaseGoodListOpenView
         )
     }
 
+    override fun setFoundGood(foundGood: Good) {
+        with(navigator) {
+            manager.updateCurrentGood(foundGood)
+            if (foundGood.isMarked()) {
+                openMarkedGoodInfoOpenScreen()
+                showForGoodNeedScanFirstMark()
+            } else {
+                openGoodInfoOpenScreen()
+            }
+        }
+    }
+
     /**
      * Метод ищет есть ли уже товар в задании по Sap коду,
      * если есть то отправляет на его карточку
@@ -207,18 +219,6 @@ abstract class BaseGoodListOpenViewModel: CoreViewModel(), IBaseGoodListOpenView
             )
 
             setFoundGood(goodOpen)
-        }
-    }
-
-    override fun setFoundGood(foundGood: Good) {
-        with(navigator) {
-            manager.updateCurrentGood(foundGood)
-            if (foundGood.isMarked()) {
-                openMarkedGoodInfoOpenScreen()
-                showForGoodNeedScanFirstMark()
-            } else {
-                openGoodInfoOpenScreen()
-            }
         }
     }
 }

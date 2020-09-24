@@ -354,18 +354,6 @@ class GoodListViewModel : BaseGoodListOpenViewModel(), PageSelectionListener, On
         }
     }
 
-    private fun showMakeTaskCountedAndClose() {
-        navigator.showMakeTaskCountedAndClose {
-            manager.finishCurrentTask()
-            manager.prepareSendTaskDataParams(
-                    deviceIp = deviceInfo.getDeviceIp(),
-                    tkNumber = sessionInfo.market.orEmpty(),
-                    userNumber = sessionInfo.personnelNumber.orEmpty()
-            )
-            navigator.openSaveDataScreen()
-        }
-    }
-
     fun getCountTab(): Int {
         return COUNT_TAB
     }
@@ -389,6 +377,18 @@ class GoodListViewModel : BaseGoodListOpenViewModel(), PageSelectionListener, On
         }.orIfNull {
             Logg.e { "task null" }
             navigator.showInternalError(resource.taskNotFoundErrorMsg)
+        }
+    }
+
+    private fun showMakeTaskCountedAndClose() {
+        navigator.showMakeTaskCountedAndClose {
+            manager.finishCurrentTask()
+            manager.prepareSendTaskDataParams(
+                    deviceIp = deviceInfo.getDeviceIp(),
+                    tkNumber = sessionInfo.market.orEmpty(),
+                    userNumber = sessionInfo.personnelNumber.orEmpty()
+            )
+            navigator.openSaveDataScreen()
         }
     }
 
