@@ -53,7 +53,7 @@ class OpenTaskManager @Inject constructor(
 
     override val currentBasket = MutableLiveData<Basket>()
 
-    private var startStateHashOfCurrentTask = -1
+    private var startStateHashOfCurrentTask = HASH_OF_NOT_CHANGED_TASK
 
     override fun updateTasks(taskList: List<TaskOpen>?) {
         tasks.value = taskList ?: emptyList()
@@ -110,6 +110,7 @@ class OpenTaskManager @Inject constructor(
                             eans = goodInfo.eans,
                             material = material.orEmpty(),
                             name = goodInfo.name,
+                            control = goodInfo.kind.toControlType(),
                             section = goodInfo.section,
                             matrix = goodInfo.matrix,
                             kind = goodInfo.kind,
@@ -152,7 +153,7 @@ class OpenTaskManager @Inject constructor(
     }
 
     private suspend fun TaskOpen.addBasketsToTask(taskContentResult: TaskContentResult) {
-        val basketVolume = database.getBasketVolume() ?: 0.0
+        val basketVolume = database.getBasketVolume() ?: ZERO_VOLUME
         val taskGoods = goods
         //Корзины с реста
         val restBaskets = taskContentResult.basketInfo
@@ -168,7 +169,7 @@ class OpenTaskManager @Inject constructor(
                             ?: baskets.size + 1,
                     section = restBasket.section.orEmpty(),
                     goodType = restBasket.goodType.orEmpty(),
-                    control = control,
+                    control = restBasket.getControlType(),
                     provider = taskGoods.firstOrNull()?.provider,
                     volume = basketVolume,
                     markTypeGroup = markTypeGroup,
@@ -202,13 +203,13 @@ class OpenTaskManager @Inject constructor(
 
     override fun isGoodCorrespondToTask(goodInfo: GoodInfoResult): Boolean {
         currentTask.value?.let { task ->
-            val isControl = task.control == goodInfo.getControlType()
+            val isControl = task.controlTypes.contains(goodInfo.getControlType())
             val isType = if (task.goodType.isNotEmpty()) task.goodType == goodInfo.materialInfo?.goodType else true
             val isSection = if (task.section.isNotEmpty()) task.section == goodInfo.materialInfo?.section else true
             val isPurchaseGroup = if (task.purchaseGroup.isNotEmpty()) task.purchaseGroup == goodInfo.materialInfo?.purchaseGroup else true
             val isProvider = if (task.provider.code.orEmpty().isNotEmpty()) goodInfo.providers?.find { it.code == task.provider.code } != null else true
 
-            Logg.d { "--> task parameters: ${task.control} / ${task.goodType} / ${task.section} / ${task.purchaseGroup} / ${task.provider.code}" }
+            Logg.d { "--> task parameters: ${task.controlTypes} / ${task.goodType} / ${task.section} / ${task.purchaseGroup} / ${task.provider.code}" }
             Logg.d { "--> good parameters: ${goodInfo.getControlType()} / ${goodInfo.materialInfo?.goodType} / ${goodInfo.materialInfo?.section} / ${goodInfo.materialInfo?.purchaseGroup} / ${goodInfo.providers}" }
 
             return isControl && isType && isSection && isPurchaseGroup && isProvider
@@ -366,35 +367,40 @@ class OpenTaskManager @Inject constructor(
         }
     }
 
-
-
     override fun saveStartTaskInfo() {
         val hashOfCurrentTask = currentTask.value.hashCode()
         startStateHashOfCurrentTask = hashOfCurrentTask
     }
 
-    override fun isExistStartTaskInfo(): Boolean {
-        return startStateHashOfCurrentTask != -1
-    }
-
+    /**
+     * Проверяет по хэш коду задания изменено оно или нет
+     * */
     override fun isTaskWasChanged(): Boolean {
         return if (isExistStartTaskInfo()) {
             currentTask.value.hashCode() != startStateHashOfCurrentTask
         } else false
     }
 
+    override fun isExistStartTaskInfo(): Boolean {
+        return startStateHashOfCurrentTask != HASH_OF_NOT_CHANGED_TASK
+    }
+
     override fun clearStartTaskInfo() {
-        startStateHashOfCurrentTask = -1
+        startStateHashOfCurrentTask = HASH_OF_NOT_CHANGED_TASK
     }
 
     override fun clearCurrentTask() {
         tasks.value?.let { tasks ->
             currentTask.value?.let { task ->
-                tasks.find { it.number == task.number }?.goods?.clear()
+                tasks.find { it.number == task.number }?.clearGoodsAndBaskets()
             }
 
-            updateCurrentTask(null)
+            clearCurrentGood()
             updateTasks(tasks)
         }
+    }
+
+    companion object {
+        private const val HASH_OF_NOT_CHANGED_TASK = -1
     }
 }
