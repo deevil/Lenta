@@ -103,3 +103,9 @@ fun Good.getScreenStatus(): ScreenStatus {
 
 fun Good.isGoodHasSameEan(otherEan: String) = this.ean == otherEan || this.eans.contains(otherEan)
 fun Good.isGoodHasSameMaxRetailPrice(otherMrc: String) = this.maxRetailPrice == otherMrc
+
+fun Good.clearMarksPartsPositions() {
+    this.marks.clear()
+    this.parts.clear()
+    this.positions.clear()
+}
