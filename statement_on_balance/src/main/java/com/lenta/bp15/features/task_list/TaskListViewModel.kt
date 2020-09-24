@@ -31,7 +31,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     val requestFocusToNumberField = MutableLiveData(false)
 
     val taskList = MutableLiveData(
-            List(5) {
+            List((3..7).random()) {
                 val position = (it + 1).toString()
                 ItemTaskUi(
                         position = position,
@@ -45,7 +45,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     )
 
     val searchList = MutableLiveData(
-            List(5) {
+            List((3..7).random()) {
                 val position = (it + 1).toString()
                 ItemTaskUi(
                         position = position,

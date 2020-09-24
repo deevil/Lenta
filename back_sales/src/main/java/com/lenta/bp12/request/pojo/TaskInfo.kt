@@ -5,7 +5,7 @@ import com.lenta.bp12.model.pojo.Block
 import com.lenta.bp12.model.pojo.ReturnReason
 import com.lenta.bp12.model.pojo.TaskType
 import com.lenta.bp12.model.pojo.open_task.TaskOpen
-import com.lenta.bp12.platform.extention.getControlType
+import com.lenta.bp12.platform.extention.getControlTypes
 import com.lenta.shared.utilities.BlockType
 import com.lenta.shared.utilities.extentions.isSapTrue
 
@@ -95,7 +95,7 @@ data class TaskInfo(
                                 ip = blockIp.orEmpty()
                         ),
                         storage = storage.orEmpty(),
-                        control = getControlType(),
+                        controlTypes = getControlTypes(),
                         provider = ProviderInfo(
                                 code = providerCode.orEmpty(),
                                 name = providerName.orEmpty()

@@ -77,7 +77,6 @@
         ОБЪЕДИНИТЬ - добавить все ЕО в одну ГЕ</string>
     <string name="task_eo_merge_docs_title">Сформированные документы</string>
     <string name="documents_type">Тип документа</string>
-    <string name="detected_discrepancies">Обнаруженные расхождения</string>
     <string name="task_eo_merge_print_confirmation_msg">Напечатать паллетные ведомости для всех(%1$d) ЕО/ГЕ?</string>
     <string name="cargoUnit_doc_print">Печать паллетной ведомости</string>
     <string name="cargoUnit_doc_printed">Паллетная ведомость напечатана</string>

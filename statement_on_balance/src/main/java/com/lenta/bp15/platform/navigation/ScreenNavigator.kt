@@ -2,7 +2,9 @@ package com.lenta.bp15.platform.navigation
 
 import android.content.Context
 import com.lenta.bp15.features.auth.AuthFragment
+import com.lenta.bp15.features.discrepancy_list.DiscrepancyListFragment
 import com.lenta.bp15.features.enter_employee_number.EnterEmployeeNumberFragment
+import com.lenta.bp15.features.good_list.GoodListFragment
 import com.lenta.bp15.features.loading.FastDataLoadingFragment
 import com.lenta.bp15.features.main_menu.MainMenuFragment
 import com.lenta.bp15.features.select_market.SelectMarketFragment
@@ -72,6 +74,18 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun openGoodListScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(GoodListFragment())
+        }
+    }
+
+    override fun openDiscrepancyListScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(DiscrepancyListFragment())
+        }
+    }
+
 
     // Информационные экраны
 
@@ -88,5 +102,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openMainMenuScreen()
 
     fun openTaskListScreen()
+    fun openGoodListScreen()
+    fun openDiscrepancyListScreen()
 
 }

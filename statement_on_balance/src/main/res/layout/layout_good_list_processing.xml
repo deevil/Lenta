@@ -2,13 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.lenta.bp15.features.discrepancy_list.DiscrepancyListFragment">
+    tools:context="com.lenta.bp15.features.good_list.DiscrepancyListFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp15.features.discrepancy_list.DiscrepancyListViewModel" />
+            type="com.lenta.bp15.features.good_list.GoodListViewModel" />
 
         <variable
             name="rvConfig"
@@ -70,9 +70,9 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv"
             style="@style/RecyclerWithSomethingBellowStyle"
-            app:items="@{vm.discrepancyList}"
+            app:items="@{vm.processingList}"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_discrepansy_list" />
+            tools:listitem="@layout/item_good_list" />
 
     </LinearLayout>
 

@@ -4,9 +4,11 @@
 
     // Заголовки экранов
     <string name="setting_tasks">Задания на постановку</string>
+    <string name="good_list">Список товаров</string>
 
     // Наименование вкладок
     <string name="to_processing">К обработке</string>
+    <string name="processed">Обработанные</string>
     <string name="search">Поиск</string>
 
     // Наименования колонок

@@ -31,7 +31,7 @@ class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, Dis
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
-        topToolbarUiModel.description.value = getString(R.string.discrepancies_detected)
+        topToolbarUiModel.description.value = getString(R.string.detected_discrepancies)
 
         connectLiveData(vm.title, topToolbarUiModel.title)
     }

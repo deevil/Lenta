@@ -1,30 +1,65 @@
 package com.lenta.bp15.features.discrepancy_list
 
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import com.lenta.bp15.R
+import com.lenta.bp15.BR
+import com.lenta.bp15.databinding.FragmentDiscrepancyListBinding
+import com.lenta.bp15.databinding.ItemDiscrepansyListBinding
+import com.lenta.bp15.platform.extention.getAppComponent
+import com.lenta.shared.platform.fragment.CoreFragment
+import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
+import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
+import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
+import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
+import com.lenta.shared.utilities.extentions.provideViewModel
 
-class DiscrepancyListFragment : Fragment() {
+class DiscrepancyListFragment : CoreFragment<FragmentDiscrepancyListBinding, DiscrepancyListViewModel>(),
+        ToolbarButtonsClickListener {
+
+    override fun getLayoutId(): Int = R.layout.fragment_discrepancy_list
+
+    override fun getPageNumber(): String? = generateScreenNumberFromPostfix(SCREEN_NUMBER)
+
+    override fun getViewModel(): DiscrepancyListViewModel {
+        provideViewModel(DiscrepancyListViewModel::class.java).let {
+            getAppComponent()?.inject(it)
+            return it
+        }
+    }
+
+    override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
+        topToolbarUiModel.title.value = vm.title
+        topToolbarUiModel.description.value = getString(R.string.good_list)
+    }
+
+    override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
+        bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.skip)
+    }
+
+    override fun onToolbarButtonClick(view: View) {
+        when (view.id) {
+            R.id.b_5 -> vm.onClickSkip()
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initDiscrepancyList()
+    }
+
+    private fun initDiscrepancyList() {
+        binding?.rvConfig = DataBindingRecyclerViewConfig<ItemDiscrepansyListBinding>(
+                layoutId = R.layout.item_discrepansy_list,
+                itemId = BR.item
+        )
+    }
 
     companion object {
-        fun newInstance() = DiscrepancyListFragment()
-    }
-
-    private lateinit var viewModel: DiscrepancyListViewModel
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_discrepancy_list, container, false)
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(DiscrepancyListViewModel::class.java)
-        // TODO: Use the ViewModel
+        const val SCREEN_NUMBER = "21"
     }
 
 }

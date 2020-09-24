@@ -5,6 +5,8 @@ import com.lenta.bp15.features.main_menu.MainMenuViewModel
 import com.lenta.bp15.features.select_market.SelectMarketViewModel
 import com.lenta.bp15.ExceptionHandler
 import com.lenta.bp15.features.auth.AuthViewModel
+import com.lenta.bp15.features.discrepancy_list.DiscrepancyListViewModel
+import com.lenta.bp15.features.good_list.GoodListViewModel
 import com.lenta.bp15.features.loading.FastLoadingViewModel
 import com.lenta.bp15.features.task_list.TaskListViewModel
 import com.lenta.bp15.main.MainViewModel
@@ -35,5 +37,7 @@ interface AppComponent : CoreComponent {
     fun inject(it: MainMenuViewModel)
 
     fun inject(it: TaskListViewModel)
+    fun inject(it: GoodListViewModel)
+    fun inject(it: DiscrepancyListViewModel)
 
 }
