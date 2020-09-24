@@ -3,6 +3,7 @@ package com.lenta.bp9.features.goods_information.excise_alco.task_ppp.alco_boxed
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp9.R
+import com.lenta.bp9.features.goods_information.excise_alco.task_pge.alco_boxed.box_list.ExciseAlcoBoxListPGEViewModel
 import com.lenta.bp9.model.processing.ProcessExciseAlcoBoxAccService
 import com.lenta.bp9.model.task.*
 import com.lenta.bp9.platform.navigation.IScreenNavigator
@@ -68,25 +69,25 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkI
 
     fun getDescription(): String {
         return if (selectQualityCode.value == SELECT_QUALITY_CODE) {
-                normControl()
-            } else {
-                marriage()
+            normControl()
+        } else {
+            marriage()
         }
     }
 
-    private fun normControl():String{
+    private fun normControl(): String {
         productInfo.value?.let {
-           return if (taskManager.getReceivingTask()?.controlExciseStampsOfProduct(it) == true && taskManager.getReceivingTask()?.controlBoxesOfProduct(it) == true) { //https://trello.com/c/HjxtG4Ca
+            return if (taskManager.getReceivingTask()?.controlExciseStampsOfProduct(it) == true && taskManager.getReceivingTask()?.controlBoxesOfProduct(it) == true) { //https://trello.com/c/HjxtG4Ca
                 context.getString(R.string.norm_control_performed) //Контроль нормы выполнен
             } else {
                 "${context.getString(R.string.norm_control)} ${it.numberBoxesControl.toDouble().toStringFormatted()} ${context.getString(R.string.box_abbreviated)}" //Контроль нормы. Z кор.
             }
         }
-        return  ""
+        return ""
     }
 
-    private fun marriage() : String{
-       return if (processExciseAlcoBoxAccService.getCountUntreatedBoxes() == 0) {
+    private fun marriage(): String {
+        return if (processExciseAlcoBoxAccService.getCountUntreatedBoxes() == 0) {
             context.getString(R.string.accounting_of_marriage_completed) //Учет брака выполнен
         } else {
             "${context.getString(R.string.accounting_for_marriage)} ${initialCount.value?.toDouble().toStringFormatted()} ${context.getString(R.string.box_abbreviated)}" //Учет брака. Q кор.
@@ -113,7 +114,8 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkI
                                 .mapIndexed { index, boxInfo ->
                                     BoxListItem(
                                             number = index + 1,
-                                            name = boxInfo.boxNumber.takeIf { it.length >= 26 }?.run { "${substring(0, 10)} ${substring(10, 20)} ${substring(20, 26)}" }.orEmpty(),
+                                            name = boxInfo.boxNumber.takeIf { it.length >= BOX_NUMBER_LENGTH }
+                                                    ?.run { "${substring(BOX_NUMBER_START, BOX_NUMBER_POSITION_10)} ${substring(BOX_NUMBER_POSITION_10, BOX_NUMBER_POSITION_20)} ${substring(BOX_NUMBER_POSITION_20, BOX_NUMBER_LENGTH)}" }.orEmpty(),
                                             productInfo = productInfoValue,
                                             productDiscrepancies = null,
                                             boxInfo = boxInfo,
@@ -135,7 +137,8 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkI
                                     val typeDiscrepancies = taskManager.getReceivingTask()?.taskRepository?.getBoxesDiscrepancies()?.findBoxesDiscrepanciesOfProduct(productInfoValue)?.findLast { it.boxNumber == boxInfo.boxNumber }?.typeDiscrepancies.orEmpty()
                                     BoxListItem(
                                             number = index + 1,
-                                            name = boxInfo.boxNumber.takeIf { it.length >= 26 }?.run { "${substring(0, 10)} ${substring(10, 20)} ${substring(20, 26)}" }.orEmpty(),
+                                            name = boxInfo.boxNumber.takeIf { it.length >= BOX_NUMBER_LENGTH }
+                                                    ?.run { "${substring(BOX_NUMBER_START, BOX_NUMBER_POSITION_10)} ${substring(BOX_NUMBER_POSITION_10, BOX_NUMBER_POSITION_20)} ${substring(BOX_NUMBER_POSITION_20, BOX_NUMBER_LENGTH)}" }.orEmpty(),
                                             productInfo = productInfo.value,
                                             productDiscrepancies = null,
                                             boxInfo = boxInfo,
@@ -438,6 +441,10 @@ class ExciseAlcoBoxListViewModel : CoreViewModel(), PageSelectionListener, OnOkI
         private const val SELECT_QUALITY_CODE = "1"
         private const val INITIAL_COUNT = "1"
         private const val TYPE_DISCREPANCIES = "1"
+        private const val BOX_NUMBER_START = 0
+        private const val BOX_NUMBER_LENGTH = 26
+        private const val BOX_NUMBER_POSITION_10 = 10
+        private const val BOX_NUMBER_POSITION_20 = 20
     }
 
 }
