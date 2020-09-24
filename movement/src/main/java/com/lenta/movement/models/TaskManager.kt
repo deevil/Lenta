@@ -70,9 +70,9 @@ class TaskManager(
             allowProductsTable.all.any {
                 it.taskType == task?.taskType &&
                         it.taskCntrl == product.type.code &&
-                        (it.ekgrp == product.ekGroup || it.ekgrp.isEmpty() ) &&
-                        (it.matkl == product.matkl || it.matkl.isEmpty()) &&
-                        (it.mtart == product.materialType || it.mtart.isEmpty())
+                        (it.ekgrp.isEmpty() || it.ekgrp == product.ekGroup) &&
+                        (it.matkl.isEmpty() || it.matkl == product.matkl) &&
+                        (it.mtart.isEmpty() || it.mtart == product.materialType)
             }
         }
     }

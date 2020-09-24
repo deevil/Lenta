@@ -12,6 +12,8 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.util.*
 import javax.inject.Inject
 
@@ -156,24 +158,20 @@ class TaskBasketViewModel() : CoreViewModel(),
         }
     }
 
-    private fun onSearchResult(productInfo: ProductInfo) {
-        launchAsyncTryCatch {
-            if (taskManager.isAllowProduct(productInfo)) showProductInfoScreen(productInfo)
-            else showProductBannedMessage()
-        }
+    private fun onSearchResult(productInfo: ProductInfo) = launchUITryCatch {
+        val isAllowed = withContext(Dispatchers.IO) { taskManager.isAllowProduct(productInfo) }
+        if (isAllowed) showProductInfoScreen(productInfo)
+        else showProductBannedMessage()
     }
 
+
     private fun showProductInfoScreen(productInfo: ProductInfo) {
-        launchUITryCatch {
-            screenNavigator.goBack()
-            screenNavigator.openTaskGoodsInfoScreen(productInfo)
-        }
+        screenNavigator.goBack()
+        screenNavigator.openTaskGoodsInfoScreen(productInfo)
     }
 
     private fun showProductBannedMessage() {
-        launchUITryCatch {
-            screenNavigator.openBannedProductDialog()
-        }
+        screenNavigator.openBannedProductDialog()
     }
 
 

@@ -22,6 +22,8 @@ import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class TaskGoodsViewModel : CoreViewModel(),
@@ -134,7 +136,9 @@ class TaskGoodsViewModel : CoreViewModel(),
         return if (eanCodeValue != null && eanCodeValue.isNotEmpty()) {
             searchCode(eanCodeValue, fromScan = false)
             true
-        } else false
+        } else {
+            false
+        }
     }
 
     fun onDigitPressed(digit: Int) {
@@ -285,23 +289,18 @@ class TaskGoodsViewModel : CoreViewModel(),
         }
     }
 
-    private fun onSearchResult(productInfo: ProductInfo) {
-        launchAsyncTryCatch {
-            if (taskManager.isAllowProduct(productInfo)) showProductInfoScreen(productInfo)
-            else showProductBannedMessage()
-        }
+    private fun onSearchResult(productInfo: ProductInfo) = launchUITryCatch {
+        val isAllowed = withContext(Dispatchers.IO) { taskManager.isAllowProduct(productInfo) }
+        if (isAllowed) showProductInfoScreen(productInfo)
+        else showProductBannedMessage()
     }
 
     private fun showProductInfoScreen(productInfo: ProductInfo) {
-        launchUITryCatch {
-            screenNavigator.openTaskGoodsInfoScreen(productInfo)
-        }
+        screenNavigator.openTaskGoodsInfoScreen(productInfo)
     }
 
     private fun showProductBannedMessage() {
-        launchUITryCatch {
-            screenNavigator.openBannedProductDialog()
-        }
+        screenNavigator.openBannedProductDialog()
     }
 
     private fun getProcessed(): List<Pair<ProductInfo, Int>> {
