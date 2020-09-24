@@ -110,12 +110,17 @@ abstract class BaseGoodListCreateViewModel : CoreViewModel(), IBaseGoodListCreat
             manager.updateCurrentGood(foundGood)
             if (foundGood.isMarked()) {
                 openMarkedGoodInfoCreateScreen()
-                showForGoodNeedScanFirstMark()
+                checkThatNoneOfGoodAreMarkType()
             } else {
                 manager.updateCurrentGood(foundGood)
                 openGoodInfoCreateScreen()
             }
         }
+    }
+
+    private fun checkThatNoneOfGoodAreMarkType() {
+        if (task.value?.goods?.none { it.isMarked() } == true)
+            navigator.showForGoodNeedScanFirstMark()
     }
 
     override suspend fun loadGoodInfoByEan(ean: String) {

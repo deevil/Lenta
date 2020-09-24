@@ -83,7 +83,7 @@ abstract class BaseGoodListOpenViewModel: CoreViewModel(), IBaseGoodListOpenView
         }
     }
 
-    suspend fun loadGoodInfoByEan(ean: String) {
+    private suspend fun loadGoodInfoByEan(ean: String) {
         navigator.showProgressLoadingData(::handleFailure)
         goodInfoNetRequest(
                 GoodInfoParams(
@@ -104,11 +104,16 @@ abstract class BaseGoodListOpenViewModel: CoreViewModel(), IBaseGoodListOpenView
             manager.updateCurrentGood(foundGood)
             if (foundGood.isMarked()) {
                 openMarkedGoodInfoOpenScreen()
-                showForGoodNeedScanFirstMark()
+                checkThatNoneOfGoodAreMarkType()
             } else {
                 openGoodInfoOpenScreen()
             }
         }
+    }
+
+    private fun checkThatNoneOfGoodAreMarkType() {
+        if (task.value?.goods?.none { it.isMarked() } == true)
+            navigator.showForGoodNeedScanFirstMark()
     }
 
     /**
