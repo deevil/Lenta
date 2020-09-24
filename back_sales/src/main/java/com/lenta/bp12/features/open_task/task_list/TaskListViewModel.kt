@@ -13,11 +13,13 @@ import com.lenta.bp12.request.TaskListResult
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.orIfNull
 import javax.inject.Inject
 
 class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
@@ -194,14 +196,21 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         tasks.value?.let { tasks ->
             val numberOfClickedProcessing = processing.value?.getOrNull(position)?.number.orEmpty()
             tasks.find { it.number == numberOfClickedProcessing }?.let(::prepareToOpenTask)
-        }
+                    .orIfNull { handleTaskNotFoundError() }
+        }.orIfNull { handleTaskNotFoundError() }
     }
 
     private fun handleClickSearchItems(position: Int) {
         foundTasks.value?.let { tasks ->
             val numberOfClickedSearched = searchItems.value?.getOrNull(position)?.number.orEmpty()
             tasks.find { it.number == numberOfClickedSearched }?.let(::prepareToOpenTask)
-        }
+                    .orIfNull { handleTaskNotFoundError() }
+        }.orIfNull { handleTaskNotFoundError() }
+    }
+
+    private fun handleTaskNotFoundError() {
+        Logg.e { "foundTasks null " }
+        navigator.showInternalError(resource.taskNotFoundErrorMsg)
     }
 
     private fun prepareToOpenTask(task: TaskOpen) {
