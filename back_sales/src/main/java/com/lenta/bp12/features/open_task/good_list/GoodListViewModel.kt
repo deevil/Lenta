@@ -10,6 +10,7 @@ import com.lenta.bp12.managers.interfaces.IOpenTaskManager
 import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.extentions.*
+import com.lenta.bp12.model.pojo.open_task.TaskOpen
 import com.lenta.bp12.platform.ZERO_QUANTITY
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
@@ -316,12 +317,12 @@ class GoodListViewModel : BaseGoodListOpenViewModel(), PageSelectionListener, On
         val materials = mutableListOf<String>()
 
         processedSelectionsHelper.selectedPositions.value?.forEach { position ->
-                    val item = processed.value?.getOrNull(position)
-                    item?.let {
-                        materials.add(it.material)
-                        it.good.clearMarksPartsPositions()
-                    }
-                }
+            val item = processed.value?.getOrNull(position)
+            item?.let {
+                materials.add(it.material)
+                it.good.clearMarksPartsPositions()
+            }
+        }
         processedSelectionsHelper.clearPositions()
         manager.markGoodsUncounted(materials)
         manager.deleteGoodsFromBaskets(materials)
@@ -342,15 +343,33 @@ class GoodListViewModel : BaseGoodListOpenViewModel(), PageSelectionListener, On
 
     fun onClickSave() {
         task.value?.let { task ->
-            //Если есть не удаленные товары в задании и их плановое количество больше фактического
-            if (task.isQuantityOfNotDeletedGoodsNotActual()) {
-                navigator.openDiscrepancyListScreen() // откроем лист расхождений
-            } else {
-                showMakeTaskCountedAndClose()
+            when {
+                // Есть незакрытые в опте корзины - отобразить экран сообщения «Некоторые корзины не закрыты.
+                // Сохранение заданий невозможно», с кнопкой «Назад». См. «MRK_BKS_Макет экранов МП (Крупный ОПТ) 1.1 APP» экран №84
+                isTaskWholesaleAndAnyOfBasketsIsNotClosed(task) ->
+                    navigator.showSomeBasketsNotClosedCantSaveScreen()
+                //Если есть не удаленные товары в задании и их плановое количество больше фактического
+                task.isQuantityOfNotDeletedGoodsNotActual() ->
+                    navigator.openDiscrepancyListScreen()
+                else -> showMakeTaskCountedAndClose()
             }
         }.orIfNull {
             Logg.e { "task null" }
             navigator.showInternalError(resource.taskNotFoundErrorMsg)
+        }
+    }
+
+    private fun isTaskWholesaleAndAnyOfBasketsIsNotClosed(task: TaskOpen) = manager.isWholesaleTaskType && task.baskets.isAnyNotLocked()
+
+    private fun showMakeTaskCountedAndClose() {
+        navigator.showMakeTaskCountedAndClose {
+            manager.finishCurrentTask()
+            manager.prepareSendTaskDataParams(
+                    deviceIp = deviceInfo.getDeviceIp(),
+                    tkNumber = sessionInfo.market.orEmpty(),
+                    userNumber = sessionInfo.personnelNumber.orEmpty()
+            )
+            navigator.openSaveDataScreen()
         }
     }
 
@@ -377,18 +396,6 @@ class GoodListViewModel : BaseGoodListOpenViewModel(), PageSelectionListener, On
         }.orIfNull {
             Logg.e { "task null" }
             navigator.showInternalError(resource.taskNotFoundErrorMsg)
-        }
-    }
-
-    private fun showMakeTaskCountedAndClose() {
-        navigator.showMakeTaskCountedAndClose {
-            manager.finishCurrentTask()
-            manager.prepareSendTaskDataParams(
-                    deviceIp = deviceInfo.getDeviceIp(),
-                    tkNumber = sessionInfo.market.orEmpty(),
-                    userNumber = sessionInfo.personnelNumber.orEmpty()
-            )
-            navigator.openSaveDataScreen()
         }
     }
 

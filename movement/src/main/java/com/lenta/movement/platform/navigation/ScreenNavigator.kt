@@ -207,6 +207,9 @@ class ScreenNavigator(
                 )
             }
     }
+
+
+
     override fun openStampWasAddedDialogInAnotherBox(box: ExciseBox) {
             runOrPostpone {
                 getFragmentStack()?.push(
@@ -258,6 +261,19 @@ class ScreenNavigator(
     override fun openTaskGoodsInfoScreen(productInfo: ProductInfo) {
         runOrPostpone {
             getFragmentStack()?.push(TaskGoodsInfoFragment.newInstance(productInfo))
+        }
+    }
+
+    override fun openBannedProductDialog() {
+        runOrPostpone {
+            getFragmentStack()?.push(
+                    fragment = AlertFragment.create(
+                            message = context.getString(R.string.product_is_banned_for_task_type),
+                            iconRes = R.drawable.ic_warning_red_80dp,
+                            pageNumber = OPEN_BOX_REWRITE_DIALOG_PAGE_NUMBER,
+                            leftButtonDecorationInfo = ButtonDecorationInfo.back
+                    )
+            )
         }
     }
 
@@ -468,6 +484,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTaskScreen(task: Task?)
     fun openTaskCompositionScreen()
     fun openTaskGoodsInfoScreen(productInfo: ProductInfo)
+    fun openBannedProductDialog()
     fun openTaskGoodsDetailsScreen(productInfo: ProductInfo)
     fun openTaskBasketScreen(basketIndex: Int)
     fun openTaskBasketCharacteristicsScreen(basketIndex: Int)
