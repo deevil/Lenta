@@ -31,7 +31,7 @@ abstract class BaseTaskViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     override fun onOkInSoftKeyboard(): Boolean {
         val eanCodeValue = eanCode.value
-        return if (eanCodeValue != null && eanCodeValue.isNotEmpty()) {
+        return if (eanCodeValue?.isNotEmpty() == true) {
             searchCode(eanCodeValue, fromScan = false)
             true
         } else {
