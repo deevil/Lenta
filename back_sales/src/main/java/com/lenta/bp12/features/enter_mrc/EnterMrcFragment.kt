@@ -51,6 +51,11 @@ class EnterMrcFragment : CoreFragment<FragmentEnterMrcBinding, EnterMrcViewModel
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        vm.requestFocus.value = true
+    }
+
     companion object {
         fun newInstance(workType: WorkType, codeConfirmForRight: Int?): EnterMrcFragment {
             return EnterMrcFragment().apply {

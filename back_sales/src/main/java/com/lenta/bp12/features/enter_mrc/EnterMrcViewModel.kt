@@ -1,8 +1,8 @@
 package com.lenta.bp12.features.enter_mrc
 
 import androidx.lifecycle.MutableLiveData
-import com.lenta.bp12.managers.CreateTaskManager
-import com.lenta.bp12.managers.OpenTaskManager
+import com.lenta.bp12.managers.interfaces.ICreateTaskManager
+import com.lenta.bp12.managers.interfaces.IOpenTaskManager
 import com.lenta.bp12.managers.interfaces.ITaskManager
 import com.lenta.bp12.model.WorkType
 import com.lenta.shared.platform.navigation.ICoreNavigator
@@ -18,16 +18,21 @@ class EnterMrcViewModel : CoreViewModel() {
     lateinit var screenNavigator: ICoreNavigator
 
     @Inject
-    lateinit var createTaskManager: CreateTaskManager
+    lateinit var createTaskManager: ICreateTaskManager
 
     @Inject
-    lateinit var openTaskManager: OpenTaskManager
+    lateinit var openTaskManager: IOpenTaskManager
 
     @Inject
     lateinit var coreNavigator: ICoreNavigator
 
+    val requestFocus = MutableLiveData(true)
+
     var workType = WorkType.CREATE
 
+    /**
+     * Это поле нужно для того чтобы вернуть callback
+     * */
     var codeConfirmForRight: Int? = null
 
     val mrcField: MutableLiveData<String> = MutableLiveData("")

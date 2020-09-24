@@ -561,7 +561,7 @@ class MarkManager @Inject constructor(
         val status = result.getMarkStatus()
         val marks = result.marks
         val properties = result.properties
-        foundGood.maxRetailPrice = result.maxRetailPrice.orEmpty()
+        foundGood.maxRetailPrice = result.maxRetailPrice?.toDoubleOrNull().dropZeros()
         return marks?.let { resultMarks ->
             val mappedMarks = resultMarks.mapToMarkList(foundGood)
             when (status) {
@@ -584,18 +584,8 @@ class MarkManager @Inject constructor(
                     )
                 }
                 MarkStatus.GOOD_BOX -> {
-                    if (foundGood.isTobacco() && foundGood.maxRetailPrice.isEmpty()) {
-                        tobaccoBoxMarks = mappedMarks
-                        tempGood.value = foundGood
-                        MarkScreenStatus.ENTER_MRC_FROM_BOX
-                    }
-                    checkIsAnyOfMarksIsAlreadyIn(
-                            restProperties = properties,
-                            localTempMarks = tempMarks,
-                            mappedMarks = mappedMarks,
-                            foundGood = foundGood,
-                            screenStatusIfAlreadyScanned = MarkScreenStatus.BOX_ALREADY_SCANNED
-                    )
+                    handleGoodBox(properties, mappedMarks, foundGood)
+
                 }
                 else -> {
                     failure = Failure.MessageFailure(
@@ -608,6 +598,26 @@ class MarkManager @Inject constructor(
             internalErrorMessage = "marks null"
             Logg.e { internalErrorMessage }
             MarkScreenStatus.INTERNAL_ERROR
+        }
+    }
+
+    private fun handleGoodBox(
+            properties: List<PropertiesInfo>?,
+            mappedMarks: List<Mark>,
+            foundGood: Good
+    ): MarkScreenStatus {
+        return if (foundGood.isTobacco() && foundGood.maxRetailPrice == "0") {
+            tobaccoBoxMarks = mappedMarks
+            tempGood.value = foundGood
+            MarkScreenStatus.ENTER_MRC_FROM_BOX
+        } else {
+            checkIsAnyOfMarksIsAlreadyIn(
+                    restProperties = properties,
+                    localTempMarks = tempMarks,
+                    mappedMarks = mappedMarks,
+                    foundGood = foundGood,
+                    screenStatusIfAlreadyScanned = MarkScreenStatus.BOX_ALREADY_SCANNED
+            )
         }
     }
 
@@ -746,8 +756,8 @@ class MarkManager @Inject constructor(
      * и в tempGood найденный товар, а затем если пользователь нажмет далее то менежжер возьмет
      * из tobaccoBoxMarks марки и из tempGood найденный товар
      * */
-    override fun handleEnterMrcFromBox() {
-        tempGood.value?.let{ foundGood ->
+    override fun handleEnterMrcFromBox(): MarkScreenStatus {
+        return tempGood.value?.let { foundGood ->
             tobaccoBoxMarks.forEach {
                 it.maxRetailPrice = foundGood.maxRetailPrice
             }
@@ -758,6 +768,10 @@ class MarkManager @Inject constructor(
                     foundGood = foundGood,
                     screenStatusIfAlreadyScanned = MarkScreenStatus.BOX_ALREADY_SCANNED
             )
+        }.orIfNull {
+            internalErrorMessage = "marks null"
+            Logg.e { internalErrorMessage }
+            MarkScreenStatus.INTERNAL_ERROR
         }
     }
 
