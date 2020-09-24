@@ -123,7 +123,7 @@ class ExciseAlcoInfoViewModel : BaseProductInfoViewModel() {
 
         } else {
             if (addGood()) {
-                searchProductDelegate.searchCode(data, fromScan = true)
+                searchProductDelegate.searchCode(data)
             }
         }
     }

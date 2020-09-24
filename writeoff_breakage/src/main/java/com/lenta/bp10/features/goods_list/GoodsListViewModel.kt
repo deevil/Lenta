@@ -124,7 +124,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     override fun onOkInSoftKeyboard(): Boolean {
         eanCode.value?.let {
-            searchProductDelegate.searchCode(it, fromScan = false)
+            searchProductDelegate.searchCode(it)
         }
         return true
     }
@@ -144,7 +144,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onScanResult(data: String) {
-        searchProductDelegate.searchCode(code = data, fromScan = true)
+        searchProductDelegate.searchCode(code = data)
     }
 
     fun onClickSave() {

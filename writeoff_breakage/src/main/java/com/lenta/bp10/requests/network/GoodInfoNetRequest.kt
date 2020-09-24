@@ -8,6 +8,7 @@ import com.lenta.shared.functional.Either
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.requests.FmpRequestsHelper
 import com.lenta.shared.requests.SapResponse
+import com.lenta.shared.requests.combined.scan_info.pojo.Material
 import javax.inject.Inject
 
 class GoodInfoNetRequest @Inject constructor(

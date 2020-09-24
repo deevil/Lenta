@@ -86,7 +86,7 @@ class GoodInfoViewModel : BaseProductInfoViewModel() {
 
     override fun onScanResult(data: String) {
         if (addGood()) {
-            searchProductDelegate.searchCode(code = data, fromScan = true)
+            searchProductDelegate.searchCode(code = data)
         }
     }
 

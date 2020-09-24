@@ -207,7 +207,7 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
 
     private fun searchGood(data: String) {
         if (addGood()) {
-            searchProductDelegate.searchCode(data, fromScan = true)
+            searchProductDelegate.searchCode(data)
         }
     }
 

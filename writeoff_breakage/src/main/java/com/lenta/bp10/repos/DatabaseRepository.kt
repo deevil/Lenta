@@ -2,11 +2,15 @@ package com.lenta.bp10.repos
 
 import com.lenta.bp10.fmp.resources.dao_ext.isChkOwnpr
 import com.lenta.bp10.fmp.resources.tasks_settings.ZmpUtz29V001Rfc
-import com.lenta.shared.fmp.resources.dao_ext.getEanInfoByMaterialUnits
-import com.lenta.shared.fmp.resources.dao_ext.getSpecialTaskTypes
-import com.lenta.shared.fmp.resources.dao_ext.toEanInfo
+import com.lenta.shared.fmp.resources.dao_ext.*
+import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
+import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
+import com.lenta.shared.fmp.resources.slow.ZmpUtz46V001
+import com.lenta.shared.models.core.ProductInfo
+import com.lenta.shared.models.core.Uom
+import com.lenta.shared.requests.combined.scan_info.pojo.EanInfo
 import com.lenta.shared.utilities.Logg
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
@@ -18,8 +22,12 @@ class DatabaseRepository @Inject constructor(
 ) : IDatabaseRepository {
 
     private val eanInfo: ZmpUtz25V001 by lazy { ZmpUtz25V001(hyperHive) } // Информация о штрих-коде
+    private val products: ZfmpUtz48V001 by lazy { ZfmpUtz48V001(hyperHive) } // Информация о товаре
     private val settings: ZmpUtz14V001 by lazy { ZmpUtz14V001(hyperHive) } // Настройки
-    private val zmpUtz29V001: ZmpUtz29V001Rfc by lazy { ZmpUtz29V001Rfc(hyperHive) } // Типы заданий???
+    private val units: ZmpUtz07V001 by lazy { ZmpUtz07V001(hyperHive) } // Единицы измерения
+
+    private val taskTypes: ZmpUtz29V001Rfc by lazy { ZmpUtz29V001Rfc(hyperHive) } // Типы заданий для списания
+    private val setInfo: ZmpUtz46V001 by lazy { ZmpUtz46V001(hyperHive) } // Информация о наборах
 
 
     override suspend fun getEanByMaterialUnits(material: String, unitsCode: String): String {
@@ -30,7 +38,7 @@ class DatabaseRepository @Inject constructor(
 
     override suspend fun isChkOwnpr(taskTypeCode: String): Boolean {
         return withContext(Dispatchers.IO) {
-            zmpUtz29V001.isChkOwnpr(taskTypeCode)
+            taskTypes.isChkOwnpr(taskTypeCode)
         }
     }
 
@@ -42,6 +50,46 @@ class DatabaseRepository @Inject constructor(
         }
     }
 
+    override suspend fun getProductInfoByMaterial(material: String): ProductInfo? {
+        return withContext(Dispatchers.IO) {
+            products.getProductInfoByMaterial(material)?.let { materialInfo ->
+                with(materialInfo) {
+                    ProductInfo(
+                            materialNumber = material,
+                            description = name,
+                            uom = getUnitsByCode(buom),
+                            type = getProductType(),
+                            isSet = setInfo.isSet(material),
+                            sectionId = abtnr,
+                            matrixType = getMatrixType(),
+                            materialType = matype,
+                            markedGoodType = markType
+                    )
+                }
+            }
+        }
+    }
+
+    override suspend fun getProductInfoByEan(ean: String): ProductInfo? {
+        return withContext(Dispatchers.IO) {
+            getEanInfo(ean)?.let { eanInfo ->
+                getProductInfoByMaterial(eanInfo.materialNumber)
+            }
+        }
+    }
+
+    private fun getEanInfo(ean: String): EanInfo? {
+        return eanInfo.getEanInfo(ean)?.toEanInfo()
+    }
+
+    override suspend fun getUnitsByCode(code: String): Uom {
+        return withContext(Dispatchers.IO) {
+            units.getUnitName(code)?.let { name ->
+                Uom(code, name)
+            } ?: Uom.ST
+        }
+    }
+
 }
 
 interface IDatabaseRepository {
@@ -49,5 +97,9 @@ interface IDatabaseRepository {
     suspend fun getEanByMaterialUnits(material: String, unitsCode: String): String
     suspend fun isChkOwnpr(taskTypeCode: String): Boolean
     suspend fun isSpecialMode(taskTypeCode: String): Boolean
+    suspend fun getUnitsByCode(code: String): Uom
+
+    suspend fun getProductInfoByMaterial(material: String): ProductInfo?
+    suspend fun getProductInfoByEan(ean: String): ProductInfo?
 
 }

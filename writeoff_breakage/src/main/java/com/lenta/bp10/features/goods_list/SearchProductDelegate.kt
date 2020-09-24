@@ -4,16 +4,11 @@ import com.lenta.bp10.features.good_information.LimitsChecker
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.repos.DatabaseRepository
-import com.lenta.bp10.requests.network.PermissionToWriteoffNetRequest
-import com.lenta.bp10.requests.network.PermissionToWriteoffPrams
-import com.lenta.bp10.requests.network.PermissionToWriteoffRestInfo
+import com.lenta.bp10.requests.network.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
-import com.lenta.shared.models.core.ProductInfo
-import com.lenta.shared.models.core.ProductType
-import com.lenta.shared.models.core.isNormal
+import com.lenta.shared.models.core.*
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequest
-import com.lenta.shared.requests.combined.scan_info.ScanInfoRequestParams
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.actionByNumber
@@ -30,7 +25,8 @@ class SearchProductDelegate @Inject constructor(
         private val scanInfoRequest: ScanInfoRequest,
         private val processServiceManager: IWriteOffTaskManager,
         private val sessionInfo: ISessionInfo,
-        private var permissionToWriteoffNetRequest: PermissionToWriteoffNetRequest
+        private var permissionToWriteoffNetRequest: PermissionToWriteoffNetRequest,
+        private var goodInfoNetRequest: GoodInfoNetRequest
 ) : CoroutineScope {
 
     private val job = SupervisorJob()
@@ -52,7 +48,8 @@ class SearchProductDelegate @Inject constructor(
                 scanInfoRequest,
                 processServiceManager,
                 sessionInfo,
-                permissionToWriteoffNetRequest
+                permissionToWriteoffNetRequest,
+                goodInfoNetRequest
         )
 
         searchProductDelegate.init(scanResultHandler, checksEnabled, limitsChecker)
@@ -66,41 +63,80 @@ class SearchProductDelegate @Inject constructor(
         this.limitsChecker = limitsChecker
     }
 
-    fun searchCode(code: String, fromScan: Boolean, isBarCode: Boolean? = null) {
-        Logg.d { "hashCode: ${hashCode()}" }
-
+    fun searchCode(code: String) {
         checksEnabled = true
 
         actionByNumber(
                 number = code,
-                funcForEan = { ean ->  actionWithEan(ean, fromScan) },
-                funcForMaterial = { material ->  actionWithMaterial(material, fromScan) },
+                funcForEan = { ean, weight -> actionWithEan(ean, weight) },
+                funcForMaterial = ::actionWithMaterial,
                 funcForSapOrBar = navigator::showTwelveCharactersEntered,
                 funcForNotValidFormat = navigator::showIncorrectEanFormat
         )
     }
 
-    private fun actionWithMaterial(number: String, fromScan: Boolean) {
-        searchGoodInfoByNumber(number, fromScan = fromScan, isBarCode = false)
-    }
-
-    private fun actionWithEan(number: String, fromScan: Boolean) {
-        searchGoodInfoByNumber(number, fromScan = fromScan, isBarCode = true)
-    }
-
-    private fun searchGoodInfoByNumber(code: String, fromScan: Boolean, isBarCode: Boolean? = null) {
+    private fun actionWithEan(ean: String, weight: Double) {
         launch {
-            navigator.showProgress(scanInfoRequest)
-            scanInfoRequest(
-                    ScanInfoRequestParams(
-                            number = code,
-                            tkNumber = processServiceManager.getWriteOffTask()!!.taskDescription.tkNumber,
-                            fromScan = fromScan,
-                            isBarCode = isBarCode
-                    )
-            ).either(::handleFailure, ::handleSearchSuccess)
+            database.getProductInfoByEan(ean)?.let { productInfo ->
+                scanInfoResult = ScanInfoResult(productInfo, weight)
+                searchProduct()
+            } ?: loadProductInfoByEan(ean, weight)
+        }
+    }
 
+    private suspend fun loadProductInfoByEan(ean: String, weight: Double) {
+        navigator.showProgressLoadingData(::handleFailure)
+        goodInfoNetRequest(GoodInfoParams(
+                tkNumber = sessionInfo.market.orEmpty(),
+                ean = ean
+        )).also {
             navigator.hideProgress()
+        }.either(::handleFailure) { result ->
+            handleLoadProductInfoResult(result, weight)
+        }
+    }
+
+    private fun actionWithMaterial(material: String) {
+        launch {
+            database.getProductInfoByMaterial(material)?.let { productInfo ->
+                scanInfoResult = ScanInfoResult(productInfo, 0.0)
+                searchProduct()
+            } ?: loadProductInfoByMaterial(material)
+        }
+    }
+
+    private suspend fun loadProductInfoByMaterial(material: String) {
+        navigator.showProgressLoadingData(::handleFailure)
+        goodInfoNetRequest(GoodInfoParams(
+                tkNumber = sessionInfo.market.orEmpty(),
+                material = material.takeLast(6)
+        )).also {
+            navigator.hideProgress()
+        }.either(::handleFailure) { result ->
+            handleLoadProductInfoResult(result, 0.0)
+        }
+    }
+
+    private fun handleLoadProductInfoResult(result: GoodInfoResult, quantity: Double) {
+        launch {
+            result.material?.let { material ->
+                val isMarkedGood = material.isMark.orEmpty().isNotEmpty() || material.markType.orEmpty().isNotEmpty()
+                scanInfoResult = ScanInfoResult(
+                        productInfo = ProductInfo(
+                                materialNumber = material.material,
+                                description = material.name,
+                                uom = database.getUnitsByCode(result.material.buom),
+                                type = getProductType(isAlco = material.isAlco.isNotEmpty(), isExcise = material.isExcise.isNotEmpty(), isMarkedGood = isMarkedGood),
+                                isSet = !result.set.isNullOrEmpty(),
+                                sectionId = material.abtnr,
+                                matrixType = getMatrixType(material.matrixType),
+                                materialType = material.materialType,
+                                markedGoodType = material.markType.orEmpty()
+                        ),
+                        quantity = quantity)
+
+                searchProduct()
+            }
         }
     }
 
@@ -150,12 +186,6 @@ class SearchProductDelegate @Inject constructor(
 
     private fun handleFailure(failure: Failure) {
         navigator.openAlertScreen(failure)
-    }
-
-    private fun handleSearchSuccess(scanInfoResult: ScanInfoResult) {
-        Logg.d { "scanInfoResult: $scanInfoResult" }
-        this.scanInfoResult = scanInfoResult
-        searchProduct()
     }
 
     private fun handlePermissionsSuccess(permissionToWriteoff: PermissionToWriteoffRestInfo) {
