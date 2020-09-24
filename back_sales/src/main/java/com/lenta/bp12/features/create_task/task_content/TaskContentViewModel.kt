@@ -347,7 +347,7 @@ class TaskContentViewModel : BaseGoodListCreateViewModel(), PageSelectionListene
         //отображать сообщение «Паллетный лист был успешно распечатан», с кнопкой «Далее»
         navigator.showPalletListPrintedScreen(
                 nextCallback = {
-                    navigator.goBack()
+                    navigator.goBackTo(TaskContentFragment::class.simpleName)
                 }
         )
     }

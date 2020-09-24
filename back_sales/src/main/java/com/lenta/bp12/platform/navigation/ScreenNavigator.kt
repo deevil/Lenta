@@ -515,10 +515,11 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "81",
                     message = context.getString(R.string.pallet_list_printed),
-                    iconRes = R.drawable.ic_done_green_80dp,
+                    iconRes = R.drawable.ic_info_green_80dp,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.next,
-                    leftButtonDecorationInfo = ButtonDecorationInfo.empty
+                    leftButtonDecorationInfo = ButtonDecorationInfo.empty,
+                    isVisibleLeftButton = false
             ))
         }
     }
