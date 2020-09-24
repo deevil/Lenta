@@ -255,6 +255,9 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
                                 productName = markManager.getCreatedGoodForError()?.name.orEmpty()
                         )
 
+                    MarkScreenStatus.MARKS_MORE_THAN_PLANNED ->
+                        showQuantityMoreThanPlannedScreen()
+
                     else -> showIncorrectEanFormat()
                 }
             }
