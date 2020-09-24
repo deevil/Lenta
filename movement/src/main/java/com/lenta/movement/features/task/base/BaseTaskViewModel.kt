@@ -47,7 +47,7 @@ abstract class BaseTaskViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         }
     }
 
-    fun onSearchResult(productInfo: ProductInfo) = launchUITryCatch {
+    private fun onSearchResult(productInfo: ProductInfo) = launchUITryCatch {
         val isAllowed = withContext(Dispatchers.IO) { taskManager.isAllowProduct(productInfo) }
         if (isAllowed) showProductInfoScreen(productInfo)
         else showProductBannedMessage()
