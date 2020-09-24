@@ -1,12 +1,14 @@
 package com.lenta.bp12.features.create_task.base
 
 import androidx.lifecycle.MutableLiveData
+import com.lenta.bp12.features.base.BaseGoodListViewModel
 import com.lenta.bp12.features.create_task.base.interfaces.IBaseGoodListCreateViewModel
 import com.lenta.bp12.model.GoodKind
 import com.lenta.bp12.model.MarkScreenStatus
 import com.lenta.bp12.model.WorkType
 import com.lenta.bp12.model.actionByNumber
 import com.lenta.bp12.model.pojo.Good
+import com.lenta.bp12.model.pojo.create_task.TaskCreate
 import com.lenta.bp12.platform.ZERO_VOLUME
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
@@ -14,7 +16,6 @@ import com.lenta.bp12.platform.extention.getMarkType
 import com.lenta.bp12.request.pojo.good_info.GoodInfoParams
 import com.lenta.bp12.request.pojo.good_info.GoodInfoResult
 import com.lenta.shared.models.core.getMatrixType
-import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.launchUITryCatch
@@ -29,15 +30,13 @@ import kotlinx.coroutines.withContext
  * @see com.lenta.bp12.features.create_task.task_content.TaskContentViewModel
  * @see com.lenta.bp12.features.basket.basket_good_list.BasketCreateGoodListViewModel
  * */
-abstract class BaseGoodListCreateViewModel : CoreViewModel(), IBaseGoodListCreateViewModel, OnOkInSoftKeyboardListener {
-
-    val numberField = MutableLiveData("")
+abstract class BaseGoodListCreateViewModel : BaseGoodListViewModel<TaskCreate>(), IBaseGoodListCreateViewModel, OnOkInSoftKeyboardListener {
 
     val requestFocusToNumberField by unsafeLazy {
         MutableLiveData(true)
     }
 
-    val task by unsafeLazy {
+    override val task by unsafeLazy {
         manager.currentTask
     }
 
@@ -116,11 +115,6 @@ abstract class BaseGoodListCreateViewModel : CoreViewModel(), IBaseGoodListCreat
                 openGoodInfoCreateScreen()
             }
         }
-    }
-
-    private fun checkThatNoneOfGoodAreMarkType(goodTitle: String) {
-        if (task.value?.goods?.none { it.isMarked() } == true)
-            navigator.showForGoodNeedScanFirstMark(goodTitle)
     }
 
     override suspend fun loadGoodInfoByEan(ean: String) {
@@ -212,10 +206,6 @@ abstract class BaseGoodListCreateViewModel : CoreViewModel(), IBaseGoodListCreat
                 setFoundGood(good)
             }
         }
-    }
-
-    override fun onScanResult(data: String) {
-        checkSearchNumber(data)
     }
 
     override fun onOkInSoftKeyboard(): Boolean {

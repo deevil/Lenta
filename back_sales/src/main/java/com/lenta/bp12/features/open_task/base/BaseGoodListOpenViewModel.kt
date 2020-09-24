@@ -1,9 +1,11 @@
 package com.lenta.bp12.features.open_task.base
 
 import androidx.lifecycle.MutableLiveData
+import com.lenta.bp12.features.base.BaseGoodListViewModel
 import com.lenta.bp12.features.open_task.base.interfaces.IBaseGoodListOpenViewModel
 import com.lenta.bp12.model.*
 import com.lenta.bp12.model.pojo.Good
+import com.lenta.bp12.model.pojo.open_task.TaskOpen
 import com.lenta.bp12.platform.ZERO_QUANTITY
 import com.lenta.bp12.platform.ZERO_VOLUME
 import com.lenta.bp12.platform.extention.getControlType
@@ -13,7 +15,6 @@ import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.bp12.request.pojo.good_info.GoodInfoParams
 import com.lenta.bp12.request.pojo.good_info.GoodInfoResult
 import com.lenta.shared.models.core.getMatrixType
-import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.orIfNull
 import kotlinx.coroutines.Dispatchers
@@ -25,20 +26,14 @@ import kotlinx.coroutines.withContext
  * @see com.lenta.bp12.features.open_task.good_list.GoodListViewModel
  * @see com.lenta.bp12.features.basket.basket_good_list.BasketOpenGoodListViewModel
  * */
-abstract class BaseGoodListOpenViewModel: CoreViewModel(), IBaseGoodListOpenViewModel {
+abstract class BaseGoodListOpenViewModel: BaseGoodListViewModel<TaskOpen>(), IBaseGoodListOpenViewModel {
 
-    val numberField: MutableLiveData<String> = MutableLiveData("")
-
-    val task by lazy {
+    override val task by lazy {
         manager.currentTask
     }
 
     val requestFocusToNumberField by lazy {
         MutableLiveData(true)
-    }
-
-    fun onScanResult(data: String) {
-        checkSearchNumber(data)
     }
 
     /**
@@ -111,11 +106,6 @@ abstract class BaseGoodListOpenViewModel: CoreViewModel(), IBaseGoodListOpenView
         }
     }
 
-    private fun checkThatNoneOfGoodAreMarkType(goodTitle: String) {
-        if (task.value?.goods?.none { it.isMarked() } == true)
-            navigator.showForGoodNeedScanFirstMark(goodTitle)
-    }
-
     /**
      * Метод ищет есть ли уже товар в задании по Sap коду,
      * если есть то отправляет на его карточку
@@ -167,6 +157,7 @@ abstract class BaseGoodListOpenViewModel: CoreViewModel(), IBaseGoodListOpenView
                 hideProgress()
                 when (screenStatus) {
                     MarkScreenStatus.OK -> openMarkedGoodInfoOpenScreen()
+                    MarkScreenStatus.CANT_SCAN_PACK -> showCantScanPackAlert()
                     MarkScreenStatus.NO_MARKTYPE_IN_SETTINGS -> showNoMarkTypeInSettings()
                     MarkScreenStatus.INCORRECT_EAN_FORMAT -> showIncorrectEanFormat()
                     else -> Unit

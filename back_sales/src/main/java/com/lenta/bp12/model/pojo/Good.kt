@@ -119,7 +119,7 @@ class Good(
     fun isNotDeletedAndQuantityNotActual() = !this.isDeleted && !isQuantityActual()
 
     fun getVolumeCorrespondingToUom(): Double {
-        return if (commonUnits == Uom.G) {
+        return if (innerUnits == Uom.G) {
             volume * DIV_TO_KG
         } else {
             volume
