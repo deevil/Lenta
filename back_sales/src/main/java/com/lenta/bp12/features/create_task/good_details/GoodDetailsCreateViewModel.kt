@@ -18,6 +18,7 @@ import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.unsafeLazy
 import javax.inject.Inject
 
 class GoodDetailsCreateViewModel : CoreViewModel(), PageSelectionListener {
@@ -42,6 +43,12 @@ class GoodDetailsCreateViewModel : CoreViewModel(), PageSelectionListener {
 
     val good by lazy {
         manager.currentGood
+    }
+
+    val isGoodTobaccoOrExcise by unsafeLazy {
+        good.value?.let {
+            it.isExciseAlco() || it.isMarked()
+        } ?: false
     }
 
     val title by lazy {

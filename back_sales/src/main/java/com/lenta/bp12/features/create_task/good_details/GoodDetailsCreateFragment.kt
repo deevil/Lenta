@@ -62,7 +62,13 @@ class GoodDetailsCreateFragment : CoreFragment<FragmentGoodDetailsCreateBinding,
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
         return when (position) {
             TAB_BASKETS -> initGoodDetailsBaskets(container)
-            TAB_CATEGORIES -> initGoodDetailsCategories(container)
+            TAB_CATEGORIES -> {
+                if (vm.isGoodTobaccoOrExcise) {
+                    View(context)
+                } else {
+                    initGoodDetailsCategories(container)
+                }
+            }
             else -> View(context)
         }
     }
@@ -74,38 +80,30 @@ class GoodDetailsCreateFragment : CoreFragment<FragmentGoodDetailsCreateBinding,
                 false).let { layoutBinding ->
 
             val onClickSelectionListener = View.OnClickListener {
-                (it!!.tag as Int).let { position ->
+                (it.tag as? Int)?.let{ position ->
                     vm.basketSelectionsHelper.revert(position = position)
                     layoutBinding.rv.adapter?.notifyItemChanged(position)
                 }
             }
 
-            layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                     layoutId = R.layout.item_basket_details,
                     itemId = BR.item,
-                    realisation = object : DataBindingAdapter<ItemBasketDetailsBinding> {
-                        override fun onCreate(binding: ItemBasketDetailsBinding) {
+                    onItemBind = { binding: ItemGoodListProcessingBinding, position: Int ->
+                        binding.tvItemNumber.tag = position
+                        binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                        binding.selectedForDelete = vm.basketSelectionsHelper.isSelected(position)
+                        basketRecyclerViewKeyHandler?.let {
+                            binding.root.isSelected = it.isSelected(position)
                         }
-
-                        override fun onBind(binding: ItemBasketDetailsBinding, position: Int) {
-                            binding.tvItemNumber.tag = position
-                            binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                            binding.selectedForDelete = vm.basketSelectionsHelper.isSelected(position)
-                            basketRecyclerViewKeyHandler?.let {
-                                binding.root.isSelected = it.isSelected(position)
-                            }
-                        }
-                    }
+                    },
+                    keyHandlerId = TAB_BASKETS,
+                    recyclerView = layoutBinding.rv,
+                    items = vm.baskets
             )
 
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
-            basketRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                    rv = layoutBinding.rv,
-                    items = vm.baskets,
-                    lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                    initPosInfo = basketRecyclerViewKeyHandler?.posInfo?.value
-            )
 
             return layoutBinding.root
         }
@@ -118,7 +116,7 @@ class GoodDetailsCreateFragment : CoreFragment<FragmentGoodDetailsCreateBinding,
                 false).let { layoutBinding ->
 
             val onClickSelectionListener = View.OnClickListener {
-                (it!!.tag as Int).let { position ->
+                (it.tag as? Int)?.let{ position ->
                     vm.categorySelectionsHelper.revert(position = position)
                     layoutBinding.rv.adapter?.notifyItemChanged(position)
                 }
@@ -144,6 +142,7 @@ class GoodDetailsCreateFragment : CoreFragment<FragmentGoodDetailsCreateBinding,
 
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
+
             categoryRecyclerViewKeyHandler = RecyclerViewKeyHandler(
                     rv = layoutBinding.rv,
                     items = vm.categories,
