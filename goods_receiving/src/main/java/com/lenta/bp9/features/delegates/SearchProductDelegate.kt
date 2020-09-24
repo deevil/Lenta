@@ -328,7 +328,6 @@ class SearchProductDelegate @Inject constructor(
                     TaskListLoadingMode.Shipment -> screenNavigator.openInfoScreen(context.getString(R.string.data_retrieval_error)) //openNotImplementedScreenAlert("Информация о марочном учете")
                     else -> screenNavigator.openAlertUnknownTaskTypeScreen() //сообщение о неизвестном типе задания
                 }
-
             }
             else -> screenNavigator.openAlertUnknownGoodsTypeScreen() //сообщение о неизвестном типе товара
         }
