@@ -181,8 +181,8 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
                         taskManager
                                 .getReceivingTask()
                                 ?.taskRepository
-                                ?.getBoxes()
-                                ?.getBoxes()
+                                ?.getBoxesRepository()
+                                ?.getTaskBoxes()
                                 ?.findLast { it.boxNumber == exciseStampInfoValue.boxNumber }
 
                 //typeDiscrepancies передаем 1, т.к. сканирование марок возможно только при выбранной категории Норма
@@ -211,8 +211,8 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
             val boxNumber = exciseStampInfo.value?.let { stampInfo -> ////значит была отсканирована марка
                 taskManager.getReceivingTask()
                         ?.taskRepository
-                        ?.getBoxes()
-                        ?.getBoxes()
+                        ?.getBoxesRepository()
+                        ?.getTaskBoxes()
                         ?.findLast { box ->
                             box.boxNumber == stampInfo.boxNumber
                         }

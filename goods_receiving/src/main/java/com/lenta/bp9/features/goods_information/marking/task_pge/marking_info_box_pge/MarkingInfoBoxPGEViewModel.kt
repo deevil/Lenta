@@ -9,6 +9,7 @@ import com.lenta.bp9.model.processing.ProcessMarkingBoxPGEProductService
 import com.lenta.bp9.model.task.TaskBlockInfo
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
 import com.lenta.bp9.platform.requestCodeAddGoodsSurplus
 import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.fmp.resources.dao_ext.getUomInfo
@@ -400,7 +401,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
     private fun stampInAssignment(data: String){
         val boxMaterialNumber =
                 taskRepository
-                        ?.getBoxes()
+                        ?.getBoxesRepository()
                         ?.findBox(data)
                         ?.materialNumber
                         .orEmpty()
@@ -432,50 +433,6 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
             ""
         }
     }
-
-    private fun stampInGrayZone(data: String) {
-        val blockInfo = processMarkingBoxProductService.searchBlock(data) //Наличие марки в текущем задании в ET_TASK_MARK
-        val stamp = taskRepository?.getExciseStamps()?.findExciseStampsOfProduct(productMaterialNumber)?.findLast {
-            it.code == data
-        }
-        if (stamp == null) {  //Марка есть в задании
-            val blockMaterialNumber = blockInfo?.materialNumber.orEmpty()
-            screenNavigator.openAlertScannedStampBelongsAnotherProductScreen(
-                    materialNumber = blockMaterialNumber,
-                    materialName = ZfmpUtz48V001(hyperHive).getProductInfoByMaterial(blockMaterialNumber)?.name.orEmpty()
-            )
-            stampInAssignment(data)
-        } else {
-            screenNavigator.openAddGoodsSurplusDialog(requestCodeAddGoodsSurplus)
-            callbackFuncAlertStampNotFoundReturnSupplierScreen()
-        }
-    }
-
-    private fun stampInAssignment(data: String){
-        val boxMaterialNumber =
-                taskRepository
-                        ?.getBoxes()
-                        ?.findBox(data)
-                        ?.materialNumber
-                        .orEmpty()
-
-        val productMaterialNumber = productInfo.value?.materialNumber.orEmpty()
-        if (boxMaterialNumber.isEmpty()) {
-            //Отсканированная коробка не числится в поставке. Отсканируйте все марки из этого короба
-            screenNavigator.openMarkingBoxNotIncludedDeliveryScreen()
-            return
-        }
-
-        if (boxMaterialNumber != productMaterialNumber) {
-            //Отсканированная коробка принадлежит товару <SAP-код> <Название>
-            val materialName = ZfmpUtz48V001(hyperHive).getProductInfoByMaterial(boxMaterialNumber)?.name.orEmpty()
-            screenNavigator.openAlertScannedBoxBelongsAnotherProductScreen(
-                    materialNumber = boxMaterialNumber,
-                    materialName = materialName
-            )
-        }
-    }
-
 
     private fun barcodeBlockCheck(data: String): Boolean {
         val regex = REGEX_BARCODE_BLOCK.toRegex()
@@ -512,7 +469,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
     private fun boxCheck(boxNumber: String) {
         val boxMaterialNumber =
                 taskRepository
-                        ?.getBoxes()
+                        ?.getBoxesRepository()
                         ?.findBox(boxNumber)
                         ?.materialNumber
                         .orEmpty()

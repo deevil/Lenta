@@ -50,7 +50,7 @@ class ProcessMarkingBoxProductService
 
                     boxes.clear()
                     taskRepository?.let { repository ->
-                        repository.getBoxes()
+                        repository.getBoxesRepository()
                                 .findBoxesOfProduct(productInfo)
                                 ?.mapTo(boxes) { it.copy() }
                     }
@@ -577,7 +577,7 @@ class ProcessMarkingBoxProductService
 
         taskRepository?.let { repository ->
             repository
-                    .getBoxes()
+                    .getBoxesRepository()
                     .findBoxesOfProduct(productInfo)
                     ?.mapTo(boxes) { it.copy() }
 
