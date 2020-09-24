@@ -118,18 +118,19 @@ class TransportMarriageCargoUnitViewModel : CoreViewModel(), OnOkInSoftKeyboardL
     private fun handleSuccessSearchProduct(result: ZmpUtzGrz26V001Result) {
         launchUITryCatch {
             repoInMemoryHolder.manufacturers.value = result.manufacturers
-            result.processingUnits.map {processingUnitInfo ->
-                val batchNumber = result.taskBatches.findLast {batchesInfo ->
+            result.processingUnits.map { processingUnitInfo ->
+                val batchNumber = result.taskBatches.findLast { batchesInfo ->
                     batchesInfo.materialNumber == processingUnitInfo.materialNumber && batchesInfo.processingUnitNumber == processingUnitInfo.processingUnitNumber
                 }?.batchNumber
-                val foundTransportMarriageInfo = TaskTransportMarriageInfo.from(hyperHive, processingUnitInfo, cargoUnitNumber.value ?: "", batchNumber ?: "")
+                val foundTransportMarriageInfo = TaskTransportMarriageInfo.from(hyperHive, processingUnitInfo, cargoUnitNumber.value
+                        ?: "", batchNumber ?: "")
                 taskManager.getReceivingTask()?.taskRepository?.getTransportMarriage()?.addTransportMarriage(foundTransportMarriageInfo)
             }
-            taskManager.getReceivingTask()?.taskRepository?.getTransportMarriage()?.findTransportMarriage(cargoUnitNumber = cargoUnitNumber.value ?: "", materialNumber = result.processingUnits[0].materialNumber)?.
-                    map {
-                        screenNavigator.openTransportMarriageGoodsInfoScreen(transportMarriageInfo = it)
-                        return@map
-                    }
+            val materialNumber = result.processingUnits.firstOrNull()?.materialNumber.orEmpty()
+            taskManager.getReceivingTask()?.taskRepository?.getTransportMarriage()?.findTransportMarriage(cargoUnitNumber = cargoUnitNumber.value.orEmpty(), materialNumber = materialNumber)?.map {
+                screenNavigator.openTransportMarriageGoodsInfoScreen(transportMarriageInfo = it)
+                return@map
+            }
         }
     }
 
