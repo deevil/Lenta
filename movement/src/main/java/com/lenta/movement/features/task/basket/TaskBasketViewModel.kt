@@ -1,36 +1,20 @@
 package com.lenta.movement.features.task.basket
 
 import androidx.lifecycle.MutableLiveData
-import com.lenta.movement.features.main.box.ScanInfoHelper
-import com.lenta.movement.models.ITaskManager
+import com.lenta.movement.features.task.base.BaseTaskViewModel
 import com.lenta.movement.models.ProductInfo
 import com.lenta.movement.models.SimpleListItem
 import com.lenta.movement.models.repositories.ITaskBasketsRepository
 import com.lenta.movement.platform.IFormatter
-import com.lenta.movement.platform.navigation.IScreenNavigator
-import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
-import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import java.util.*
 import javax.inject.Inject
 
-class TaskBasketViewModel() : CoreViewModel(),
-        OnOkInSoftKeyboardListener {
-
-    @Inject
-    lateinit var screenNavigator: IScreenNavigator
-
-    @Inject
-    lateinit var taskManager: ITaskManager
+class TaskBasketViewModel : BaseTaskViewModel(){
 
     @Inject
     lateinit var taskBasketsRepository: ITaskBasketsRepository
-
-    @Inject
-    lateinit var scanInfoHelper: ScanInfoHelper
 
     @Inject
     lateinit var formatter: IFormatter
@@ -62,7 +46,6 @@ class TaskBasketViewModel() : CoreViewModel(),
         }
     }
 
-    val eanCode: MutableLiveData<String> = MutableLiveData()
     val requestFocusToEan: MutableLiveData<Boolean> = MutableLiveData()
 
     val deleteEnabled = selectionsHelper.selectedPositions.map { selectedPositions ->
@@ -122,15 +105,6 @@ class TaskBasketViewModel() : CoreViewModel(),
         }
     }
 
-    override fun onOkInSoftKeyboard(): Boolean {
-        searchCode(eanCode.value.orEmpty(), fromScan = false)
-        return true
-    }
-
-    fun onScanResult(data: String) {
-        searchCode(code = data, fromScan = true, isBarCode = true)
-    }
-
     fun onDigitPressed(digit: Int) {
         requestFocusToEan.value = true
         eanCode.value = eanCode.value ?: "" + digit
@@ -142,41 +116,11 @@ class TaskBasketViewModel() : CoreViewModel(),
         }.orEmpty()
     }
 
-    private fun searchCode(code: String, fromScan: Boolean, isBarCode: Boolean? = null) {
-        launchUITryCatch {
-            scanInfoHelper.searchCode(code, fromScan, isBarCode) { productInfo ->
-                onSearchResult(productInfo)
-            }
-        }
-    }
-
-    private fun addProductToRep(productInfo: ProductInfo) {
-        launchAsyncTryCatch {
-            taskBasketsRepository.addProduct(
-                    product = productInfo,
-                    count = ONE_PRODUCT_TO_ADD)
-        }
-    }
-
-    private fun onSearchResult(productInfo: ProductInfo) = launchUITryCatch {
-        val isAllowed = withContext(Dispatchers.IO) { taskManager.isAllowProduct(productInfo) }
-        if (isAllowed) showProductInfoScreen(productInfo)
-        else showProductBannedMessage()
-    }
-
-
-    private fun showProductInfoScreen(productInfo: ProductInfo) {
+    override fun showProductInfoScreen(productInfo: ProductInfo) {
         screenNavigator.goBack()
         screenNavigator.openTaskGoodsInfoScreen(productInfo)
     }
-
-    private fun showProductBannedMessage() {
-        screenNavigator.openBannedProductDialog()
-    }
-
-
     companion object {
         private const val DEFAULT_BASKET_INDEX = 0
-        private const val ONE_PRODUCT_TO_ADD = 1
     }
 }

@@ -3,11 +3,10 @@ package com.lenta.movement.features.task.goods
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.switchMap
-import com.lenta.movement.features.main.box.ScanInfoHelper
+import com.lenta.movement.features.task.base.BaseTaskViewModel
 import com.lenta.movement.models.*
 import com.lenta.movement.models.repositories.ITaskBasketsRepository
 import com.lenta.movement.platform.IFormatter
-import com.lenta.movement.platform.navigation.IScreenNavigator
 import com.lenta.movement.requests.network.SaveTaskNetRequest
 import com.lenta.movement.requests.network.models.saveTask.SaveTaskParams
 import com.lenta.movement.requests.network.models.saveTask.SaveTaskParamsTaskBasket
@@ -17,36 +16,23 @@ import com.lenta.movement.requests.network.models.toTask
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.constants.Constants
-import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
-import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class TaskGoodsViewModel : CoreViewModel(),
-        PageSelectionListener,
-        OnOkInSoftKeyboardListener {
+class TaskGoodsViewModel : BaseTaskViewModel(),
+        PageSelectionListener{
 
     @Inject
     lateinit var context: Context
 
     @Inject
-    lateinit var screenNavigator: IScreenNavigator
-
-    @Inject
     lateinit var sessionInfo: ISessionInfo
-
-    @Inject
-    lateinit var taskManager: ITaskManager
 
     @Inject
     lateinit var taskBasketsRepository: ITaskBasketsRepository
 
-    @Inject
-    lateinit var scanInfoHelper: ScanInfoHelper
 
     @Inject
     lateinit var saveTaskNetRequest: SaveTaskNetRequest
@@ -57,7 +43,6 @@ class TaskGoodsViewModel : CoreViewModel(),
     val processedSelectionHelper = SelectionItemsHelper()
     val basketSelectionHelper = SelectionItemsHelper()
 
-    val eanCode: MutableLiveData<String> = MutableLiveData()
     val requestFocusToEan: MutableLiveData<Boolean> = MutableLiveData()
 
     private val processed = MutableLiveData<List<Pair<ProductInfo, Int>>>()
@@ -131,15 +116,7 @@ class TaskGoodsViewModel : CoreViewModel(),
         return scanInfoHelper.handleFragmentResult(code) || super.handleFragmentResult(code)
     }
 
-    override fun onOkInSoftKeyboard(): Boolean {
-        val eanCodeValue = eanCode.value
-        return if (eanCodeValue != null && eanCodeValue.isNotEmpty()) {
-            searchCode(eanCodeValue, fromScan = false)
-            true
-        } else {
-            false
-        }
-    }
+
 
     fun onDigitPressed(digit: Int) {
         requestFocusToEan.value = true
@@ -276,32 +253,6 @@ class TaskGoodsViewModel : CoreViewModel(),
         }
     }
 
-
-    fun onScanResult(data: String) {
-        searchCode(code = data, fromScan = true, isBarCode = true)
-    }
-
-    private fun searchCode(code: String, fromScan: Boolean, isBarCode: Boolean? = null) {
-        launchUITryCatch {
-            scanInfoHelper.searchCode(code, fromScan, isBarCode) { productInfo ->
-                onSearchResult(productInfo)
-            }
-        }
-    }
-
-    private fun onSearchResult(productInfo: ProductInfo) = launchUITryCatch {
-        val isAllowed = withContext(Dispatchers.IO) { taskManager.isAllowProduct(productInfo) }
-        if (isAllowed) showProductInfoScreen(productInfo)
-        else showProductBannedMessage()
-    }
-
-    private fun showProductInfoScreen(productInfo: ProductInfo) {
-        screenNavigator.openTaskGoodsInfoScreen(productInfo)
-    }
-
-    private fun showProductBannedMessage() {
-        screenNavigator.openBannedProductDialog()
-    }
 
     private fun getProcessed(): List<Pair<ProductInfo, Int>> {
         return taskBasketsRepository.getAll()
