@@ -93,7 +93,7 @@ class SearchProductDelegate @Inject constructor(
             scanInfoRequest(
                     ScanInfoRequestParams(
                             number = code,
-                            tkNumber = sessionInfo.market ?: "",
+                            tkNumber = sessionInfo.market.orEmpty(),
                             fromScan = fromScan,
                             isBarCode = isBarCode
                     )
@@ -121,8 +121,12 @@ class SearchProductDelegate @Inject constructor(
                 true
             }
             requestCodeTypeBarCode -> {
-                searchCode(code = codeWith12Digits
-                        ?: "", fromScan = false, isBarCode = true, isDiscrepancy = isDiscrepancy?: false)
+                searchCode(
+                        code = codeWith12Digits.orEmpty(),
+                        fromScan = false,
+                        isBarCode = true,
+                        isDiscrepancy = isDiscrepancy ?: false
+                )
                 codeWith12Digits = null
                 true
             }
@@ -141,7 +145,7 @@ class SearchProductDelegate @Inject constructor(
             taskManager.getReceivingTask()?.let { task ->
                 val params = ZmpUtzGrz31V001Params(
                         taskNumber = task.taskHeader.taskNumber,
-                        materialNumber = scanInfoResult?.productInfo?.materialNumber ?: "",
+                        materialNumber = scanInfoResult?.productInfo?.materialNumber.orEmpty(),
                         boxNumber = "",
                         stampCode = ""
                 )
