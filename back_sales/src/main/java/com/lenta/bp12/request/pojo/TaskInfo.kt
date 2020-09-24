@@ -6,7 +6,7 @@ import com.lenta.bp12.model.pojo.Block
 import com.lenta.bp12.model.pojo.ReturnReason
 import com.lenta.bp12.model.pojo.TaskType
 import com.lenta.bp12.model.pojo.open_task.TaskOpen
-import com.lenta.bp12.platform.extention.getControlType
+import com.lenta.bp12.platform.extention.getControlTypes
 import com.lenta.shared.utilities.extentions.isSapTrue
 
 /**
@@ -48,7 +48,7 @@ data class TaskInfo(
         @SerializedName("IS_ALCO")
         val isAlco: String?,
         /** Флаг – маркированное задание */
-        @SerializedName("IS_MARK>")
+        @SerializedName("IS_MARK")
         val isMark: String?,
         /** Флаг – задание вет. контроля */
         @SerializedName("IS_USUAL")
@@ -95,7 +95,7 @@ data class TaskInfo(
                                 ip = blockIp.orEmpty()
                         ),
                         storage = storage.orEmpty(),
-                        control = getControlType(),
+                        controlTypes = getControlTypes(),
                         provider = ProviderInfo(
                                 code = providerCode.orEmpty(),
                                 name = providerName.orEmpty()

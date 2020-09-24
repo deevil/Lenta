@@ -24,8 +24,17 @@ data class MarkCartonBoxGoodInfoNetRequestParams(
         val markNumber: String = "",
         /** Номер товара */
         @SerializedName("IV_MATNR")
-        val goodNumber: String = "",
+        val material: String = "",
         /** Тип маркировки */
         @SerializedName("IV_ZMARKTYPE")
-        val markType: String
+        val markType: String,
+        /** Тип задания на списание */
+        @SerializedName("IV_TASK_TYPE")
+        val taskType: String = "",
+        /** Предп */
+        @SerializedName("IT_WERKS")
+        val tkNumber: String = "",
+        /** Максимальная розничная цена */
+        @SerializedName("IV_MPR")
+        val maxRetailPrice: String = ""
 )

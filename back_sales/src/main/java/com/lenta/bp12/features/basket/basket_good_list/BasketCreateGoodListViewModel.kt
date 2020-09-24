@@ -8,6 +8,7 @@ import com.lenta.bp12.features.create_task.task_content.TaskContentFragment
 import com.lenta.bp12.managers.interfaces.ICreateTaskManager
 import com.lenta.bp12.managers.interfaces.IMarkManager
 import com.lenta.bp12.model.pojo.Basket
+import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.create_task.TaskCreate
 import com.lenta.bp12.model.pojo.extentions.*
 import com.lenta.bp12.platform.navigation.IScreenNavigator
@@ -74,18 +75,21 @@ class BasketCreateGoodListViewModel : BaseGoodListCreateViewModel(), OnOkInSoftK
 
     val goods by unsafeLazy {
         basket.switchMap { basket ->
-            asyncTryCatchLiveData {
-                val list = basket.getGoodList()
-                list.mapIndexed { index, good ->
-                    val units = good.commonUnits.name
-                    val quantity = basket.goods[good]
-                    ItemGoodUi(
-                            position = "${index + 1}",
-                            name = good.getNameWithMaterial(),
-                            quantity = "${quantity.dropZeros()} $units",
-                            material = good.material,
-                            good = good
-                    )
+            task.switchMap { task ->
+                asyncTryCatchLiveData {
+                    val list = basket.getGoodList()
+                    list.mapIndexed { index, good ->
+                        val units = good.commonUnits.name
+                        val quantity = basket.goods[good]
+                        ItemGoodUi(
+                                position = "${index + 1}",
+                                name = good.getNameWithMaterial(),
+                                mrc = getMrc(good, task),
+                                quantity = "${quantity.dropZeros()} $units",
+                                material = good.material,
+                                good = good
+                        )
+                    }
                 }
             }
         }
@@ -147,6 +151,20 @@ class BasketCreateGoodListViewModel : BaseGoodListCreateViewModel(), OnOkInSoftK
         navigator.openBasketPropertiesScreen()
     }
 
+    fun onClickClose() {
+        navigator.showCloseBasketDialog(
+                yesCallback = {
+                    lockAndUpdateBasketAndTask(isNeedLock = true)
+                })
+    }
+
+    fun onClickOpen() {
+        navigator.showOpenBasketDialog(
+                yesCallback = {
+                    lockAndUpdateBasketAndTask(isNeedLock = false)
+                })
+    }
+
     override fun onClickDelete() {
         val materials = getSelectedGoodsNumbers()
         deleteGoodsFromBasketAndTask(materials)
@@ -199,20 +217,6 @@ class BasketCreateGoodListViewModel : BaseGoodListCreateViewModel(), OnOkInSoftK
         }
     }
 
-    fun onClickClose() {
-        navigator.showCloseBasketDialog(
-                yesCallback = {
-                    lockAndUpdateBasketAndTask(isNeedLock = true)
-                })
-    }
-
-    fun onClickOpen() {
-        navigator.showOpenBasketDialog(
-                yesCallback = {
-                    lockAndUpdateBasketAndTask(isNeedLock = false)
-                })
-    }
-
     private fun lockAndUpdateBasketAndTask(isNeedLock: Boolean) {
         val taskValue = task.value
         val basketValue = basket.value
@@ -225,5 +229,11 @@ class BasketCreateGoodListViewModel : BaseGoodListCreateViewModel(), OnOkInSoftK
             }
             navigator.goBack()
         }
+    }
+
+    private fun getMrc(good: Good, task: TaskCreate): String {
+        val mrc = good.maxRetailPrice
+        val mrcString = resource.mrcDashCostRub(mrc)
+        return mrcString.takeIf { task.type.isDivByMinimalPrice && mrc.isEmpty().not() }.orEmpty()
     }
 }
