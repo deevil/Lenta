@@ -60,7 +60,13 @@ class GoodDetailsOpenFragment : CoreFragment<FragmentGoodDetailsOpenBinding, Goo
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
         return when (position) {
             TAB_BASKETS -> initGoodDetailsBaskets(container)
-            TAB_CATEGORIES -> initGoodDetailsCategories(container)
+            TAB_CATEGORIES -> {
+                if (vm.isGoodTobaccoOrExcise) {
+                    View(context)
+                } else {
+                    initGoodDetailsCategories(container)
+                }
+            }
             else -> View(context)
         }
     }
@@ -81,13 +87,11 @@ class GoodDetailsOpenFragment : CoreFragment<FragmentGoodDetailsOpenBinding, Goo
             layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                     layoutId = R.layout.item_basket_details,
                     itemId = BR.item,
-                    onItemBind = { binding: ItemGoodListProcessingBinding, position: Int ->
+                    onItemBind = { binding: ItemBasketDetailsBinding, position: Int ->
                         binding.tvItemNumber.tag = position
                         binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                         binding.selectedForDelete = vm.basketSelectionsHelper.isSelected(position)
-                        basketRecyclerViewKeyHandler?.let {
-                            binding.root.isSelected = it.isSelected(position)
-                        }
+                        basketRecyclerViewKeyHandler?.onItemClicked(position)
                     },
                     keyHandlerId = TAB_BASKETS,
                     recyclerView = layoutBinding.rv,
@@ -108,7 +112,7 @@ class GoodDetailsOpenFragment : CoreFragment<FragmentGoodDetailsOpenBinding, Goo
                 false).let { layoutBinding ->
 
             val onClickSelectionListener = View.OnClickListener {
-                (it!!.tag as Int).let { position ->
+                (it.tag as? Int)?.let{ position ->
                     vm.categorySelectionsHelper.revert(position = position)
                     layoutBinding.rv.adapter?.notifyItemChanged(position)
                 }
@@ -121,6 +125,7 @@ class GoodDetailsOpenFragment : CoreFragment<FragmentGoodDetailsOpenBinding, Goo
                         binding.tvItemNumber.tag = position
                         binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                         binding.selectedForDelete = vm.categorySelectionsHelper.isSelected(position)
+                        categoryRecyclerViewKeyHandler?.onItemClicked(position)
                     },
                     recyclerView = layoutBinding.rv,
                     items = vm.categories
