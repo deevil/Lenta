@@ -9,12 +9,8 @@ import com.lenta.bp12.managers.interfaces.IMarkManager
 import com.lenta.bp12.managers.interfaces.IOpenTaskManager
 import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.Good
-import com.lenta.bp12.model.pojo.extentions.getDescription
-import com.lenta.bp12.model.pojo.extentions.getQuantityFromGoodList
-import com.lenta.bp12.model.pojo.extentions.isAnyNotLocked
-import com.lenta.bp12.model.pojo.extentions.isAnyPrinted
-import com.lenta.bp12.model.pojo.open_task.TaskOpen
 import com.lenta.bp12.model.pojo.extentions.*
+import com.lenta.bp12.model.pojo.open_task.TaskOpen
 import com.lenta.bp12.platform.ZERO_QUANTITY
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
@@ -321,12 +317,12 @@ class GoodListViewModel : BaseGoodListOpenViewModel(), PageSelectionListener, On
         val materials = mutableListOf<String>()
 
         processedSelectionsHelper.selectedPositions.value?.forEach { position ->
-                    val item = processed.value?.getOrNull(position)
-                    item?.let {
-                        materials.add(it.material)
-                        it.good.clearMarksPartsPositions()
-                    }
-                }
+            val item = processed.value?.getOrNull(position)
+            item?.let {
+                materials.add(it.material)
+                it.good.clearMarksPartsPositions()
+            }
+        }
         processedSelectionsHelper.clearPositions()
         manager.markGoodsUncounted(materials)
         manager.deleteGoodsFromBaskets(materials)
@@ -400,18 +396,6 @@ class GoodListViewModel : BaseGoodListOpenViewModel(), PageSelectionListener, On
         }.orIfNull {
             Logg.e { "task null" }
             navigator.showInternalError(resource.taskNotFoundErrorMsg)
-        }
-    }
-
-    private fun showMakeTaskCountedAndClose() {
-        navigator.showMakeTaskCountedAndClose {
-            manager.finishCurrentTask()
-            manager.prepareSendTaskDataParams(
-                    deviceIp = deviceInfo.getDeviceIp(),
-                    tkNumber = sessionInfo.market.orEmpty(),
-                    userNumber = sessionInfo.personnelNumber.orEmpty()
-            )
-            navigator.openSaveDataScreen()
         }
     }
 
