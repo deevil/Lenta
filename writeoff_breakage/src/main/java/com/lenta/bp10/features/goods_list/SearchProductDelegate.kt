@@ -22,7 +22,6 @@ import kotlin.coroutines.CoroutineContext
 class SearchProductDelegate @Inject constructor(
         private val database: DatabaseRepository,
         private val navigator: IScreenNavigator,
-        private val scanInfoRequest: ScanInfoRequest,
         private val processServiceManager: IWriteOffTaskManager,
         private val sessionInfo: ISessionInfo,
         private var permissionToWriteoffNetRequest: PermissionToWriteoffNetRequest,
@@ -45,7 +44,6 @@ class SearchProductDelegate @Inject constructor(
         val searchProductDelegate = SearchProductDelegate(
                 database,
                 navigator,
-                scanInfoRequest,
                 processServiceManager,
                 sessionInfo,
                 permissionToWriteoffNetRequest,
