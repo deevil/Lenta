@@ -104,16 +104,16 @@ abstract class BaseGoodListOpenViewModel: CoreViewModel(), IBaseGoodListOpenView
             manager.updateCurrentGood(foundGood)
             if (foundGood.isMarked()) {
                 openMarkedGoodInfoOpenScreen()
-                checkThatNoneOfGoodAreMarkType()
+                checkThatNoneOfGoodAreMarkType(foundGood.getNameWithMaterial())
             } else {
                 openGoodInfoOpenScreen()
             }
         }
     }
 
-    private fun checkThatNoneOfGoodAreMarkType() {
+    private fun checkThatNoneOfGoodAreMarkType(goodTitle: String) {
         if (task.value?.goods?.none { it.isMarked() } == true)
-            navigator.showForGoodNeedScanFirstMark()
+            navigator.showForGoodNeedScanFirstMark(goodTitle)
     }
 
     /**
