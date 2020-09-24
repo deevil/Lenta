@@ -290,10 +290,18 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
                                 markManager.getCreatedGoodForError()?.name.orEmpty()
                         )
 
+                    MarkScreenStatus.ENTER_MRC_FROM_BOX -> handleEnterMrcFromBox()
+
                     else -> showIncorrectEanFormat()
 
                 }
             }
+        }
+    }
+
+    private fun handleEnterMrcFromBox() {
+        navigator.openEnterMrcFromBoxScreen(WorkType.CREATE) {
+            markManager.handleEnterMrcFromBox()
         }
     }
 

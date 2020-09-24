@@ -17,6 +17,7 @@ interface IMarkManager {
     suspend fun checkMark(number: String, workType: WorkType, isCheckFromGoodCard: Boolean): MarkScreenStatus
     suspend fun handleYesDeleteMappedMarksFromTempCallBack()
     fun handleYesSaveAndOpenAnotherBox()
+    fun handleEnterMrcFromBox()
     fun getMarkFailure(): Failure
     fun getTempMarks(): MutableList<Mark>
     fun getProperties(): MutableList<GoodProperty>

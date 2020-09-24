@@ -126,7 +126,7 @@ class Good(
         }
     }
 
-    fun copyWithDifferentMrc(mrc: String) = Good(
+    fun copy() = Good(
             ean,
             eans.toList(),
             material,
@@ -146,7 +146,7 @@ class Good(
             parts.toMutableList(),
             markType,
             markTypeGroup?.copy(),
-            mrc,
+            maxRetailPrice,
             mprGroup,
             type
     )
