@@ -18,10 +18,10 @@ abstract class BaseTaskViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     lateinit var scanInfoHelper: ScanInfoHelper
 
     @Inject
-    protected lateinit var screenNavigator: IScreenNavigator
+    lateinit var screenNavigator: IScreenNavigator
 
     @Inject
-    protected lateinit var taskManager: ITaskManager
+    lateinit var taskManager: ITaskManager
 
     val eanCode: MutableLiveData<String> = MutableLiveData()
 

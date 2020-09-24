@@ -22,7 +22,7 @@ import com.lenta.shared.utilities.extentions.*
 import javax.inject.Inject
 
 class TaskGoodsViewModel : BaseTaskViewModel(),
-        PageSelectionListener{
+        PageSelectionListener {
 
     @Inject
     lateinit var context: Context
@@ -115,7 +115,6 @@ class TaskGoodsViewModel : BaseTaskViewModel(),
     override fun handleFragmentResult(code: Int?): Boolean {
         return scanInfoHelper.handleFragmentResult(code) || super.handleFragmentResult(code)
     }
-
 
 
     fun onDigitPressed(digit: Int) {

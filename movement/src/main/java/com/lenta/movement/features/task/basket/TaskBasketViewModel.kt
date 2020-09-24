@@ -11,7 +11,7 @@ import com.lenta.shared.utilities.extentions.*
 import java.util.*
 import javax.inject.Inject
 
-class TaskBasketViewModel : BaseTaskViewModel(){
+class TaskBasketViewModel : BaseTaskViewModel() {
 
     @Inject
     lateinit var taskBasketsRepository: ITaskBasketsRepository
@@ -120,6 +120,7 @@ class TaskBasketViewModel : BaseTaskViewModel(){
         screenNavigator.goBack()
         screenNavigator.openTaskGoodsInfoScreen(productInfo)
     }
+
     companion object {
         private const val DEFAULT_BASKET_INDEX = 0
     }
