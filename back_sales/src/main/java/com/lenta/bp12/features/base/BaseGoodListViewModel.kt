@@ -11,7 +11,7 @@ import com.lenta.bp12.request.GoodInfoNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 
-abstract class BaseGoodListViewModel<T: Taskable>: CoreViewModel() {
+abstract class BaseGoodListViewModel<T : Taskable> : CoreViewModel() {
 
     val numberField: MutableLiveData<String> = MutableLiveData("")
 
@@ -28,8 +28,9 @@ abstract class BaseGoodListViewModel<T: Taskable>: CoreViewModel() {
     abstract fun setFoundGood(foundGood: Good)
 
     fun checkThatNoneOfGoodAreMarkType(goodTitle: String) {
-        if (task.value?.goods?.none { it.isMarked() } == true)
+        if (task.value?.goods?.none { it.isMarked() } == true) {
             navigator.showForGoodNeedScanFirstMark(goodTitle)
+        }
     }
 
     fun onScanResult(data: String) {
