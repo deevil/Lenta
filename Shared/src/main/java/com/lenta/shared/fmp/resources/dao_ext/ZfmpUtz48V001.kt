@@ -36,6 +36,7 @@ fun ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST.getMatrixType(): MatrixType {
 }
 
 fun ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST.getProductType(): ProductType {
-    val isMarkedGood = markType.isNotEmpty() || isMark.isNotEmpty()
-    return getProductType(isAlco.isNotEmpty(), isExc.isNotEmpty(), isMarkedGood)
+    return getProductType(isAlco.isNotEmpty(), isExc.isNotEmpty())
+    //val isMarkedGood = markType.isNotEmpty() || isMark.isNotEmpty()
+    //return getProductType(isAlco.isNotEmpty(), isExc.isNotEmpty(), isMarkedGood)
 }
