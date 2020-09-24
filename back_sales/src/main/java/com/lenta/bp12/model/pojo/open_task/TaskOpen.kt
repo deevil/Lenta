@@ -53,7 +53,7 @@ data class TaskOpen(
         }
     }
 
-    fun getFormattedName(withFullName: Boolean = false): String {
+    override fun getFormattedName(withFullName: Boolean): String {
         var formattedName = name
         if (!withFullName) {
             runCatching {

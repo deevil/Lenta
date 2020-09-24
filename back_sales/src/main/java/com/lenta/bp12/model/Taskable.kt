@@ -16,4 +16,5 @@ interface Taskable{
     fun getBasketsByGood(good: Good): List<Basket>
     fun removeEmptyGoods()
     fun removeEmptyBaskets()
+    fun getFormattedName(withFullName: Boolean = false): String
 }

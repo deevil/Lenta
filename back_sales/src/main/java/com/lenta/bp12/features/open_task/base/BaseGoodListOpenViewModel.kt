@@ -3,6 +3,7 @@ package com.lenta.bp12.features.open_task.base
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.features.base.BaseGoodListViewModel
 import com.lenta.bp12.features.open_task.base.interfaces.IBaseGoodListOpenViewModel
+import com.lenta.bp12.managers.interfaces.IOpenTaskManager
 import com.lenta.bp12.model.*
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.open_task.TaskOpen
@@ -16,6 +17,7 @@ import com.lenta.bp12.request.pojo.good_info.GoodInfoParams
 import com.lenta.bp12.request.pojo.good_info.GoodInfoResult
 import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.utilities.extentions.launchUITryCatch
+import com.lenta.shared.utilities.extentions.unsafeLazy
 import com.lenta.shared.utilities.orIfNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -26,9 +28,9 @@ import kotlinx.coroutines.withContext
  * @see com.lenta.bp12.features.open_task.good_list.GoodListViewModel
  * @see com.lenta.bp12.features.basket.basket_good_list.BasketOpenGoodListViewModel
  * */
-abstract class BaseGoodListOpenViewModel: BaseGoodListViewModel<TaskOpen>(), IBaseGoodListOpenViewModel {
+abstract class BaseGoodListOpenViewModel: BaseGoodListViewModel<TaskOpen, IOpenTaskManager>(), IBaseGoodListOpenViewModel {
 
-    override val task by lazy {
+    override val task by unsafeLazy {
         manager.currentTask
     }
 

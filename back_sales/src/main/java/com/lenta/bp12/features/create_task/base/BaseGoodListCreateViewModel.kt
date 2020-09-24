@@ -3,6 +3,7 @@ package com.lenta.bp12.features.create_task.base
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.features.base.BaseGoodListViewModel
 import com.lenta.bp12.features.create_task.base.interfaces.IBaseGoodListCreateViewModel
+import com.lenta.bp12.managers.interfaces.ICreateTaskManager
 import com.lenta.bp12.model.GoodKind
 import com.lenta.bp12.model.MarkScreenStatus
 import com.lenta.bp12.model.WorkType
@@ -30,14 +31,14 @@ import kotlinx.coroutines.withContext
  * @see com.lenta.bp12.features.create_task.task_content.TaskContentViewModel
  * @see com.lenta.bp12.features.basket.basket_good_list.BasketCreateGoodListViewModel
  * */
-abstract class BaseGoodListCreateViewModel : BaseGoodListViewModel<TaskCreate>(), IBaseGoodListCreateViewModel, OnOkInSoftKeyboardListener {
-
-    val requestFocusToNumberField by unsafeLazy {
-        MutableLiveData(true)
-    }
+abstract class BaseGoodListCreateViewModel : BaseGoodListViewModel<TaskCreate, ICreateTaskManager>(), IBaseGoodListCreateViewModel, OnOkInSoftKeyboardListener {
 
     override val task by unsafeLazy {
         manager.currentTask
+    }
+
+    val requestFocusToNumberField by unsafeLazy {
+        MutableLiveData(true)
     }
 
     /**
