@@ -193,6 +193,10 @@ class MarkedGoodInfoCreateFragment : CoreFragment<FragmentMarkedGoodInfoCreateBi
 //            KeyCode.KEYCODE_8 -> {
 //                vm.onScanResult("010290000004865221atgO4Cg*Z!KRp")
 //                true
+//            } //Коробка сигарет без мрц
+//            KeyCode.KEYCODE_9 -> {
+//                vm.onScanResult("01046002660121421115081921498072")
+//                true
 //            }
 //            else -> false
 //        }
