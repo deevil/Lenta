@@ -86,6 +86,7 @@
                     android:layout_gravity="center"
                     android:layout_marginTop="@dimen/size_2dp"
                     android:text="@{vm.basketNumber}"
+                    android:visibility="@{vm.isBasketNumberVisible()}"
                     android:textColor="@color/button_bg_color"
                     android:textSize="@dimen/text_12sp"
                     tools:text="5" />

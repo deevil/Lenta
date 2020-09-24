@@ -3,11 +3,13 @@ package com.lenta.bp12.model.pojo
 import com.lenta.bp12.model.ControlType
 import com.lenta.bp12.model.GoodKind
 import com.lenta.bp12.model.MarkType
+import com.lenta.bp12.platform.ZERO_QUANTITY
 import com.lenta.bp12.request.pojo.ProducerInfo
 import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.constants.Constants
+import com.lenta.shared.platform.constants.Constants.DIV_TO_KG
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.sumList
 import com.lenta.shared.utilities.extentions.sumWith
@@ -33,7 +35,7 @@ class Good(
         val purchaseGroup: String,
 
         val commonUnits: Uom,
-        private val innerUnits: Uom,
+        val innerUnits: Uom,
         val innerQuantity: Double,
 
         val producers: MutableList<ProducerInfo> = mutableListOf(),
@@ -42,13 +44,14 @@ class Good(
         val parts: MutableList<Part> = mutableListOf(),
         val markType: MarkType = MarkType.UNKNOWN,
         val markTypeGroup: MarkTypeGroup? = null,
-        val maxRetailPrice: String = "",
+        var maxRetailPrice: String = "",
+        var mprGroup: Int = 1,
 
         val type: String,
         val providers: MutableList<ProviderInfo> = mutableListOf(),
 
-        val planQuantity: Double = 0.0,
-        val factQuantity: Double = 0.0,
+        val planQuantity: Double = ZERO_QUANTITY,
+        val factQuantity: Double = ZERO_QUANTITY,
         var isCounted: Boolean = false,
         var isDeleted: Boolean = false,
         val provider: ProviderInfo = ProviderInfo.getEmptyProvider()
@@ -114,6 +117,39 @@ class Good(
     fun isCommon() = kind == GoodKind.COMMON
 
     fun isNotDeletedAndQuantityNotActual() = !this.isDeleted && !isQuantityActual()
+
+    fun getVolumeCorrespondingToUom(): Double {
+        return if (commonUnits == Uom.G) {
+            volume * DIV_TO_KG
+        } else {
+            volume
+        }
+    }
+
+    fun copyWithDifferentMrc(mrc: String) = Good(
+            ean,
+            eans.toList(),
+            material,
+            name,
+            kind,
+            section,
+            matrix,
+            volume,
+            control,
+            purchaseGroup,
+            commonUnits.copy(),
+            innerUnits.copy(),
+            innerQuantity,
+            producers.toMutableList(),
+            positions.toMutableList(),
+            marks.toMutableList(),
+            parts.toMutableList(),
+            markType,
+            markTypeGroup?.copy(),
+            mrc,
+            mprGroup,
+            type
+    )
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

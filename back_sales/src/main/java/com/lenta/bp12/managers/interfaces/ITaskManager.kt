@@ -11,6 +11,7 @@ import com.lenta.bp12.request.pojo.good_info.GoodInfoResult
 
 /**
  * Имплементации
+ * @see com.lenta.bp12.managers.base.BaseTaskManager
  * @see com.lenta.bp12.managers.CreateTaskManager
  * @see com.lenta.bp12.managers.OpenTaskManager
  *
@@ -30,7 +31,7 @@ interface ITaskManager<T : Taskable>{
     val currentTask: MutableLiveData<T>
 
     fun addBasket(basket: Basket)
-    suspend fun getBasket(providerCode: String, goodToAdd: Good): Basket?
+    suspend fun getBasket(providerCode: String, goodToAdd: Good, isSaveToTask: Boolean): Basket?
 
     suspend fun addOrDeleteGoodToBasket(good: Good, part: Part? = null, provider: ProviderInfo, count: Double)
     suspend fun addGoodToBasketWithMark(good: Good, mark: Mark, provider: ProviderInfo)

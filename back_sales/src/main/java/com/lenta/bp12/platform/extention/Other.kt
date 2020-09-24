@@ -53,11 +53,6 @@ fun GoodInfoResult.getMarkType(): MarkType {
     return enumValueOrNull<MarkType>(markTypeString).orIfNull { MarkType.UNKNOWN }
 }
 
-fun CreateTaskBasketInfo.getMarkType(): MarkType {
-    val markTypeString = marktypeGroup.orEmpty()
-    return enumValueOrNull<MarkType>(markTypeString).orIfNull { MarkType.UNKNOWN }
-}
-
 fun MarkCartonBoxGoodInfoNetRequestResult.getMarkStatus(): MarkStatus {
     return when (this.markStatus) {
         MarkRequestStatus.MARK_FOUND -> MarkStatus.GOOD_MARK
@@ -113,17 +108,28 @@ fun GoodInfoResult.getControlType(): ControlType {
     }
 }
 
-fun TaskInfo.getControlType(): ControlType {
+fun TaskInfo.getControlTypes(): Set<ControlType> {
+    val setOfControlTypes = mutableSetOf<ControlType>()
+
+    setOfControlTypes add ControlType.VET ifTrue isVet.isSapTrue()
+    setOfControlTypes add ControlType.ALCOHOL ifTrue isAlco.isSapTrue()
+    setOfControlTypes add ControlType.COMMON ifTrue isUsual.isSapTrue()
+    setOfControlTypes add ControlType.MARK ifTrue isMark.isSapTrue()
+
+    return setOfControlTypes
+}
+
+fun CreateTaskBasketInfo.getControlType(): ControlType {
     val isVet = this.isVet.isSapTrue()
-    val isAlcohol = this.isAlco.isSapTrue()
-    val isUsual = this.isUsual.isSapTrue()
+    val isAlcohol = this.isAlcohol.isSapTrue()
     val isMark = this.isMark.isSapTrue()
+    val isCommon = this.isCommon.isSapTrue()
 
     return when {
-        isUsual -> ControlType.COMMON
+        isMark -> ControlType.MARK
+        isCommon -> ControlType.COMMON
         isAlcohol -> ControlType.ALCOHOL
         isVet -> ControlType.VET
-        isMark -> ControlType.MARK
         else -> ControlType.UNKNOWN
     }
 }
@@ -220,17 +226,6 @@ fun String.extractAlcoCode(): String {
     return BigInteger(this.substring(7, 19), 36).toString().padStart(19, '0')
 }
 
-fun ControlType.isCommon(): Boolean {
-    return this == ControlType.COMMON
-}
-
-fun ControlType.isAlcohol(): Boolean {
-    return this == ControlType.ALCOHOL
-}
-
-fun ControlType.isMark(): Boolean {
-    return this == ControlType.MARK
-}
 
 fun TaskType.isWholesaleType(): Boolean {
     return this.code == TypeCode.WHOLESALE.code
@@ -244,3 +239,19 @@ fun ScanCodeInfo.getConvertedQuantityString(divider: Double): String {
     }
     return converted.dropZeros()
 }
+
+fun <T> MutableCollection<T>.addIf(predicate: Boolean, whatToAdd: () -> T) {
+    if (predicate) this.add(whatToAdd())
+}
+
+infix fun <T> MutableCollection<T>.add(whatToAdd: T): Holder<T> {
+    return Holder(whatToAdd, this)
+}
+
+infix fun<T> Holder<T>.ifTrue(predictValue: Boolean) {
+    if(predictValue) {
+        this.who.add(this.value)
+    }
+}
+
+data class Holder<T>(val value:T, val who:MutableCollection<T> )

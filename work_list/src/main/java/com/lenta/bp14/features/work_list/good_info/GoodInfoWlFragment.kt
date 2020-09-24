@@ -55,6 +55,7 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_2 -> vm.openGoodDetails()
+            //R.id.b_2 -> vm.onScanResult("010460606832927321P2XKAUcorIL6K91qrst92bqayYmJBoBksrEBIDkeDsADTYwzBIUqqmNdMXSJLWYjCFuNnzCGITHGVZWZfCIjhXZiYVJFSmyoPfduOeRgBWYoH") // 521445
             R.id.b_3 -> vm.openGoodDeliveries()
             R.id.b_4 -> vm.openGoodSales()
             R.id.b_5 -> vm.onClickApply()

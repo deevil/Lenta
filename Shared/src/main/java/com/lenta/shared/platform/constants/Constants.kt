@@ -12,6 +12,7 @@ object Constants {
     const val TIME_FORMAT_HHmm = "HH:mm"
     const val TIME_FORMAT_mmss = "mm:ss"
     const val TIME_FORMAT_hhmmss = "HH:mm:ss"
+    const val TIME_FORMAT_ERP_hhmmss = "HHmmss"
     const val TIME_FORMAT_LOGS = "yyyy-MM-dd_HH-mm-ss-SSS"
     const val CHECK_DATA_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss"
     const val TIME_FORMAT_HH = "HH"
@@ -38,8 +39,6 @@ object Constants {
     const val SAP_OR_BAR_12 = 12
 
     // Mark code length
-    const val MARK_134 = 134 // Эта марка используется в wkl для алкоголя, непонятно почему она такого размера...
-    const val MARK_39 = 39 // Эта марка используется в wkl для алкоголя, непонятно почему она такого размера...
     const val EXCISE_MARK_150 = 150
     const val EXCISE_MARK_68 = 68
     const val EXCISE_BOX_26 = 26
@@ -63,5 +62,8 @@ object Constants {
     const val OPERATING_SYSTEM_WINDOWS = "1"
     const val OPERATING_SYSTEM_ANDROID = "2"
     const val REQUEST_DEFAULT_FALSE = "X"
+
+    //Other
+    const val DIV_TO_KG = 1000
 
 }

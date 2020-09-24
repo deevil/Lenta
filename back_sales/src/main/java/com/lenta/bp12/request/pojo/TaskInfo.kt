@@ -48,7 +48,7 @@ data class TaskInfo(
         @SerializedName("IS_ALCO")
         val isAlco: String?,
         /** Флаг – маркированное задание */
-        @SerializedName("IS_MARK>")
+        @SerializedName("IS_MARK")
         val isMark: String?,
         /** Флаг – задание вет. контроля */
         @SerializedName("IS_USUAL")

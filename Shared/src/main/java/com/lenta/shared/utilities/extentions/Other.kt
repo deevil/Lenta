@@ -26,3 +26,15 @@ fun <T : LiveData<Int?>> T.getOrDefaultWithNull(default: Int = 0): Int {
 fun <T : LiveData<List<String>>> T.getOrEmpty(index: Int): String {
     return this.value?.getOrNull(index).orEmpty()
 }
+
+/**
+ * Если выполняется условие в коллекцию добавляется элемент
+ * */
+fun <T> MutableCollection<T>.addIf(predicate: Boolean, whatToAdd: () -> T) {
+    if (predicate) this.add(whatToAdd())
+}
+
+/**
+ * Возвращает или mutableList или пустой mutableList
+ * */
+fun <T> List<T>?.orEmptyMutable(): MutableList<T> = this?.toMutableList() ?: mutableListOf()

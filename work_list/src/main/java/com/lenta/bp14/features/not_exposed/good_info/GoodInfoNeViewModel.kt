@@ -16,7 +16,7 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequest
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequestParams
-import com.lenta.shared.requests.combined.scan_info.analyseCode
+import com.lenta.shared.utilities.actionByNumber
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.*
 import com.mobrun.plugin.api.HyperHive
@@ -26,12 +26,16 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
 
     @Inject
     lateinit var navigator: IScreenNavigator
+
     @Inject
     lateinit var task: INotExposedTask
+
     @Inject
     lateinit var scanInfoRequest: ScanInfoRequest
+
     @Inject
     lateinit var priceInfoParser: IPriceInfoParser
+
     @Inject
     lateinit var hyperHive: HyperHive
 
@@ -182,20 +186,16 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     private fun checkCode(code: String?) {
-        analyseCode(
-                code = code.orEmpty(),
-                funcForEan = { eanCode ->
-                    searchCode(eanCode)
-                },
-                funcForMatNr = { matNr ->
-                    navigator.showGoodNotFound()
-                },
+        actionByNumber(
+                number = code.orEmpty(),
+                funcForEan = { ean -> searchCode(ean) },
+                funcForMaterial = { material -> searchCode(material) },
                 funcForPriceQrCode = { qrCode ->
-                    priceInfoParser.getPriceInfoFromRawCode(qrCode)?.eanCode?.let {
-                        searchCode(it)
-                    }
+                    priceInfoParser.getPriceInfoFromRawCode(qrCode)?.let {
+                        searchCode(it.eanCode)
+                    } ?: navigator.showGoodNotFound()
                 },
-                funcForSapOrBar = null,
+                funcForSapOrBar = navigator::showTwelveCharactersEntered,
                 funcForNotValidFormat = navigator::showGoodNotFound
         )
     }

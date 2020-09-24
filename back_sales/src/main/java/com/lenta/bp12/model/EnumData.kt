@@ -5,7 +5,17 @@ enum class GoodKind {
     ALCOHOL,
     EXCISE,
     MARK,
-    VET
+    VET;
+
+    fun toControlType(): ControlType {
+        return when (this) {
+            COMMON -> ControlType.COMMON
+            ALCOHOL -> ControlType.ALCOHOL
+            EXCISE -> ControlType.ALCOHOL
+            MARK -> ControlType.MARK
+            VET -> ControlType.VET
+        }
+    }
 }
 
 enum class ControlType(val code: String, val description: String) {
@@ -22,6 +32,22 @@ enum class ControlType(val code: String, val description: String) {
             MARK -> "М"
             else -> ""
         }
+    }
+
+    fun isCommon(): Boolean {
+        return this == ControlType.COMMON
+    }
+
+    fun isAlcohol(): Boolean {
+        return this == ControlType.ALCOHOL
+    }
+
+    fun isMark(): Boolean {
+        return this == ControlType.MARK
+    }
+
+    fun isVet(): Boolean {
+        return this == ControlType.VET
     }
 
     companion object {

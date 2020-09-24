@@ -10,12 +10,11 @@ import com.lenta.bp12.model.pojo.create_task.TaskCreate
 import com.lenta.bp12.model.pojo.extentions.getGoodList
 import com.lenta.bp12.model.pojo.extentions.getQuantityOfGood
 import com.lenta.bp12.platform.ZERO_QUANTITY
-import com.lenta.bp12.platform.extention.isAlcohol
-import com.lenta.bp12.platform.extention.isCommon
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.request.SendTaskDataParams
 import com.lenta.bp12.request.pojo.*
 import com.lenta.shared.platform.constants.Constants
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.toSapBooleanString
 import com.lenta.shared.utilities.getStringFromDate
@@ -75,9 +74,16 @@ class CreateTaskManager @Inject constructor(
                                 basketNumber = basketNumber,
                                 isCommon = basket.control?.isCommon().toSapBooleanString(),
                                 isAlcohol = basket.control?.isAlcohol().toSapBooleanString(),
-                                providerCode = basket.provider?.code,
-                                goodType = basket.goodType,
-                                section = basket.section
+                                providerCode = basket.provider?.code.orEmpty(),
+                                goodType = basket.goodType.orEmpty(),
+                                section = basket.section.orEmpty(),
+                                groupMpr = basket.mprGroup.orEmpty(),
+                                marktypeGroup = basket.markTypeGroup?.code.orEmpty(),
+                                isMark = basket.control?.isMark().toSapBooleanString(),
+                                isVet = basket.control?.isVet().toSapBooleanString(),
+                                purchaseGroup = basket.purchaseGroup.orEmpty(),
+                                isPrint = basket.isPrinted.toSapBooleanString(),
+                                isClose = basket.isLocked.toSapBooleanString()
                         )
                 )
 
@@ -88,6 +94,10 @@ class CreateTaskManager @Inject constructor(
                             quantity = basket.getQuantityOfGood(good).dropZeros()
                     )
                 }
+            }
+
+            Logg.e {
+                baskets.toString()
             }
 
             task.goods.forEach { good ->

@@ -1,10 +1,7 @@
 package com.lenta.bp12.features.open_task.task_card
 
-import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.managers.interfaces.IOpenTaskManager
-import com.lenta.bp12.platform.extention.isAlcohol
-import com.lenta.bp12.platform.extention.isCommon
-import com.lenta.bp12.platform.extention.isMark
+import com.lenta.bp12.model.ControlType
 import com.lenta.bp12.platform.extention.isWholesaleType
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
@@ -75,9 +72,9 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
                         description = task.type?.description.orEmpty(),
                         comment = task.comment,
                         isStrict = task.isStrict,
-                        isAlcohol = task.control.isAlcohol(),
-                        isCommon = task.control.isCommon(),
-                        isMark = task.control.isMark()
+                        isAlcohol = task.controlTypes.contains(ControlType.ALCOHOL),
+                        isCommon = task.controlTypes.contains(ControlType.COMMON),
+                        isMark = task.controlTypes.contains(ControlType.MARK)
                 )
             }
         }
