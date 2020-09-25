@@ -37,12 +37,10 @@
 
                 <LinearLayout style="@style/LinearCellStyle">
 
-                    <com.lenta.shared.view.EditTextWithSuffix
+                    <EditText
                         style="@style/CellEditTextStyle"
                         android:enabled="false"
-                        android:text="@={vm.quantityWithUnits}"
-                        app:digitsForUom="@{null}"
-                        app:suffix="@{null}"
+                        android:text="@{vm.quantityWithUnits}"
                         tools:text="1 шт" />
 
                 </LinearLayout>

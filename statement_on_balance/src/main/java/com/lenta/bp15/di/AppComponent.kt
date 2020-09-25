@@ -9,6 +9,7 @@ import com.lenta.bp15.features.discrepancy_list.DiscrepancyListViewModel
 import com.lenta.bp15.features.good_info.GoodInfoViewModel
 import com.lenta.bp15.features.good_list.GoodListViewModel
 import com.lenta.bp15.features.loading.FastLoadingViewModel
+import com.lenta.bp15.features.search_task.SearchTaskViewModel
 import com.lenta.bp15.features.task_card.TaskCardViewModel
 import com.lenta.bp15.features.task_list.TaskListViewModel
 import com.lenta.bp15.main.MainViewModel
@@ -43,5 +44,6 @@ interface AppComponent : CoreComponent {
     fun inject(it: DiscrepancyListViewModel)
     fun inject(it: TaskCardViewModel)
     fun inject(it: GoodInfoViewModel)
+    fun inject(it: SearchTaskViewModel)
 
 }

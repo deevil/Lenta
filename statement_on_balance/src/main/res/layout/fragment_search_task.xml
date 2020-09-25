@@ -1,13 +1,168 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     tools:context="com.lenta.bp15.features.search_task.SearchTaskFragment">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Hello" />
+    <data>
 
-</FrameLayout>
+        <variable
+            name="vm"
+            type="com.lenta.bp15.features.search_task.SearchTaskViewModel" />
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Количество -->
+        <LinearLayout style="@style/LinearRowStyle">
+
+            <LinearLayout style="@style/LinearCellStyle">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@string/quantity"
+                    android:textColor="@color/color_text_title_header" />
+
+            </LinearLayout>
+
+            <View style="@style/VerticalDivider" />
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="2">
+
+                <EditText
+                    style="@style/CellEditTextStyle"
+                    android:text="@={vm.search}"
+                    tools:text="000044" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View style="@style/HorizontalDivider" />
+
+        <!-- Тип марки -->
+        <LinearLayout style="@style/LinearRowStyle">
+
+            <LinearLayout style="@style/LinearCellStyle">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@string/mark_type"
+                    android:textColor="@color/color_text_title_header" />
+
+            </LinearLayout>
+
+            <View style="@style/VerticalDivider" />
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="2"
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="@{vm.isMan}"
+                    android:layout_marginStart="@dimen/size_8dp" />
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    tools:text="Обувь мужская" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout style="@style/LinearRowStyle">
+
+            <LinearLayout style="@style/LinearCellStyle" />
+
+            <View style="@style/VerticalDivider" />
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="2"
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="@{vm.isWoman}"
+                    android:layout_marginStart="@dimen/size_8dp" />
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    tools:text="Обувь женская" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout style="@style/LinearRowStyle">
+
+            <LinearLayout style="@style/LinearCellStyle" />
+
+            <View style="@style/VerticalDivider" />
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="2"
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="@{vm.isChildren}"
+                    android:layout_marginStart="@dimen/size_8dp" />
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    tools:text="Обувь детская" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout style="@style/LinearRowStyle">
+
+            <LinearLayout style="@style/LinearCellStyle" />
+
+            <View style="@style/VerticalDivider" />
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="2"
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="@{vm.isUnisex}"
+                    android:layout_marginStart="@dimen/size_8dp" />
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    tools:text="Обувь унисекс" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View style="@style/HorizontalDivider" />
+
+    </LinearLayout>
+
+</layout>

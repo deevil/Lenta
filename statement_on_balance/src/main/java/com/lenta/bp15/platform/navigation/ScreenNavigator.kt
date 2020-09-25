@@ -9,6 +9,7 @@ import com.lenta.bp15.features.good_info.GoodInfoFragment
 import com.lenta.bp15.features.good_list.GoodListFragment
 import com.lenta.bp15.features.loading.FastDataLoadingFragment
 import com.lenta.bp15.features.main_menu.MainMenuFragment
+import com.lenta.bp15.features.search_task.SearchTaskFragment
 import com.lenta.bp15.features.select_market.SelectMarketFragment
 import com.lenta.bp15.features.task_card.TaskCardFragment
 import com.lenta.bp15.features.task_list.TaskListFragment
@@ -103,6 +104,12 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun openSearchTaskScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(SearchTaskFragment())
+        }
+    }
+
 
     // Информационные экраны
     override fun showMarkedGoodInfoScreen() {
@@ -129,6 +136,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openDiscrepancyListScreen()
     fun openTaskCardScreen()
     fun openGoodInfoScreen()
+    fun openSearchTaskScreen()
 
     fun showMarkedGoodInfoScreen()
 
