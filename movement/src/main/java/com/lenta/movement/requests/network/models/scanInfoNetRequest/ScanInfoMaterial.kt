@@ -34,5 +34,7 @@ data class ScanInfoMaterial(
         @SerializedName("IS_VET")
         val isVet: String?,
         @SerializedName("IS_FOOD")
-        val isFood: String?
+        val isFood: String?,
+        @SerializedName("ZMARKTYPE")
+        val markType: String?
 )
