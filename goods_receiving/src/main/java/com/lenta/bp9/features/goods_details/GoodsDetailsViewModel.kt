@@ -273,9 +273,51 @@ class GoodsDetailsViewModel : CoreViewModel() {
                         ?.shelfLifeDate
                         ?.isNotEmpty()
                         ?: false
-        //todo end
 
-        if (taskManager.getTaskType() == TaskType.DirectSupplier || (taskManager.getTaskType() == TaskType.RecalculationCargoUnit && !isShelfLifeObtainedFromEWM)) {
+        if (taskManager.getTaskType() == TaskType.RecalculationCargoUnit && !isShelfLifeObtainedFromEWM) {
+            taskManager
+                    .getReceivingTask()
+                    ?.taskRepository
+                    ?.getProductsDiscrepancies()
+                    ?.findProductDiscrepanciesOfProduct(materialNumber)
+                    ?.filter { !(it.typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM || it.typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS) }
+                    ?.groupBy { it.materialNumber}
+                    ?.forEach { groupByMaterialNumberProduct ->
+                        groupByMaterialNumberProduct.value
+                                .groupBy { it.typeDiscrepancies }
+                                .forEach { groupByProductDiscrepancies ->
+                                    val countDiscrepancies =
+                                            groupByProductDiscrepancies.value
+                                                    .map { it.numberDiscrepancies }
+                                                    .sumByDouble { it.toDoubleOrNull() ?: 0.0 }
+
+                                    groupByProductDiscrepancies.value
+                                            .first()
+                                            .let { product ->
+                                                itemsZBatchesDiscrepancies.add(
+                                                        GoodsDetailsCategoriesItem(
+                                                                number = quantityItem + 1,
+                                                                name = reasonRejectionInfo.value?.firstOrNull { it.code == product.typeDiscrepancies }?.name.orEmpty(),
+                                                                nameBatch = "",
+                                                                visibilityNameBatch = false,
+                                                                quantityWithUom = "${countDiscrepancies.toStringFormatted()} ${uom.value?.name.orEmpty()}",
+                                                                isNormDiscrepancies = isNormDiscrepancies(product.typeDiscrepancies),
+                                                                typeDiscrepancies = product.typeDiscrepancies,
+                                                                materialNumber = materialNumber,
+                                                                batchDiscrepancies = null,
+                                                                zBatchDiscrepancies = null,
+                                                                even = quantityItem % 2 == 0
+                                                        )
+                                                )
+                                                quantityItem++
+                                            }
+                                }
+                    }
+        }
+        //todo ПГЕ end
+
+        //todo ППП
+        if (taskManager.getTaskType() == TaskType.DirectSupplier) {
             taskManager
                     .getReceivingTask()
                     ?.taskRepository
