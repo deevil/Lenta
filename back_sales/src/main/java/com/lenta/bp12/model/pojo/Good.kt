@@ -123,7 +123,7 @@ class Good(
     fun isNotDeletedAndQuantityNotActual() = !this.isDeleted && !isQuantityActual()
 
     fun getVolumeCorrespondingToUom(): Double {
-        return if (commonUnits == Uom.G) {
+        return if (innerUnits == Uom.G) {
             volume * DIV_TO_KG
         } else {
             volume
@@ -173,6 +173,8 @@ class Good(
     }
 
     override fun toString(): String {
-        return "Good(ean='$ean', eans=$eans, material='$material', name='$name', kind=$kind, section='$section', matrix=$matrix, volume=$volume, control=$control, commonUnits=$commonUnits, innerUnits=$innerUnits, innerQuantity=$innerQuantity, producers=$producers, positions=$positions, marks=$marks, parts=$parts, markType=$markType, markTypeGroup=$markTypeGroup, maxRetailPrice='$maxRetailPrice')"
+        return "Good(ean='$ean', eans=$eans, material='$material', name='$name', kind=$kind, section='$section', matrix=$matrix, volume=$volume, control=$control, purchaseGroup='$purchaseGroup', commonUnits=$commonUnits, innerUnits=$innerUnits, innerQuantity=$innerQuantity, producers=$producers, positions=$positions, marks=$marks, parts=$parts, markType=$markType, markTypeGroup=$markTypeGroup, maxRetailPrice='$maxRetailPrice', mprGroup=$mprGroup, type='$type', providers=$providers, planQuantity=$planQuantity, factQuantity=$factQuantity, isCounted=$isCounted, isDeleted=$isDeleted, provider=$provider)"
     }
+
+
 }

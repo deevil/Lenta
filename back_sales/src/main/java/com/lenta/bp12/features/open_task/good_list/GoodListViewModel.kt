@@ -5,20 +5,12 @@ import androidx.lifecycle.switchMap
 import com.lenta.bp12.features.basket.ItemWholesaleBasketUi
 import com.lenta.bp12.features.create_task.task_content.ItemCommonBasketUi
 import com.lenta.bp12.features.open_task.base.BaseGoodListOpenViewModel
-import com.lenta.bp12.managers.interfaces.IMarkManager
 import com.lenta.bp12.managers.interfaces.IOpenTaskManager
 import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.extentions.*
 import com.lenta.bp12.model.pojo.open_task.TaskOpen
 import com.lenta.bp12.platform.ZERO_QUANTITY
-import com.lenta.bp12.platform.navigation.IScreenNavigator
-import com.lenta.bp12.platform.resource.IResourceManager
-import com.lenta.bp12.repository.IDatabaseRepository
-import com.lenta.bp12.request.GoodInfoNetRequest
-import com.lenta.bp12.request.PrintPalletListNetRequest
-import com.lenta.shared.account.ISessionInfo
-import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
@@ -35,50 +27,14 @@ import javax.inject.Inject
 class GoodListViewModel : BaseGoodListOpenViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
 
     @Inject
-    override lateinit var navigator: IScreenNavigator
-
-    @Inject
-    override lateinit var sessionInfo: ISessionInfo
-
-    @Inject
-    lateinit var deviceInfo: DeviceInfo
-
-    @Inject
     override lateinit var manager: IOpenTaskManager
-
-    @Inject
-    override lateinit var markManager: IMarkManager
-
-    @Inject
-    override lateinit var database: IDatabaseRepository
-
-    @Inject
-    override lateinit var resource: IResourceManager
-
-    /** "ZMP_UTZ_BKS_07_V001"
-     * Печать паллетной ведомости
-     */
-    @Inject
-    lateinit var printPalletListNetRequest: PrintPalletListNetRequest
-
-    /** "ZMP_UTZ_BKS_05_V001"
-     * Получение данных товара по ШК / SAP-коду
-     */
-    @Inject
-    override lateinit var goodInfoNetRequest: GoodInfoNetRequest
 
     val processingSelectionsHelper = SelectionItemsHelper()
 
     val processedSelectionsHelper = SelectionItemsHelper()
 
-    val basketSelectionsHelper = SelectionItemsHelper()
-
     val isTaskStrict by unsafeLazy {
         task.value?.isStrict == true
-    }
-
-    val good by lazy {
-        manager.currentGood
     }
 
     val title by lazy {
