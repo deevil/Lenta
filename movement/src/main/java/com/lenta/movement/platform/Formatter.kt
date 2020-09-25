@@ -1,5 +1,6 @@
 package com.lenta.movement.platform
 
+import com.lenta.movement.R
 import com.lenta.movement.models.*
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.models.core.getDescriptionResId
@@ -116,7 +117,13 @@ class Formatter : IFormatter {
         }
     }
 
-    override fun basketGisControl(basket: Basket): Int = basket.keys.random().type.getDescriptionResId()
+    override fun basketGisControl(basket: Basket): Int {
+        return if (basket.isEmpty()) {
+            DEFAULT_GIS_VALUE
+        } else {
+            basket.keys.random().type.getDescriptionResId()
+        }
+    }
 
     override fun getEOSubtitle(eo: ProcessingUnit): String {
         val geNumber = eo.cargoUnitNumber
@@ -209,5 +216,7 @@ class Formatter : IFormatter {
 
         private const val TRANSFER_WITH_ORDER = "Трансфер с заказа"
         private const val TRANSFER_WITHOUT_ORDER = "Трансфер без заказа"
+
+        private const val DEFAULT_GIS_VALUE = R.string.usual_good
     }
 }

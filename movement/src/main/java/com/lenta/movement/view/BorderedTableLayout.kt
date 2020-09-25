@@ -11,6 +11,7 @@ import androidx.core.view.children
 import com.lenta.movement.R
 import com.lenta.movement.platform.extensions.implementationOf
 
+private const val HALF_DIVIDER = 2
 class BorderedTableLayout(context: Context?, attrs: AttributeSet?) : TableLayout(context, attrs) {
 
     private val paint: Paint = Paint().apply {
@@ -38,9 +39,9 @@ class BorderedTableLayout(context: Context?, attrs: AttributeSet?) : TableLayout
         if (!isTopBorderDisabled) {
             canvas.drawLine(
                     0F,
-                    (paint.strokeWidth / 2),
+                    (paint.strokeWidth / HALF_DIVIDER),
                     measuredWidth.toFloat(),
-                    (paint.strokeWidth / 2),
+                    (paint.strokeWidth / HALF_DIVIDER),
                     paint
             )
         }
@@ -67,9 +68,9 @@ class BorderedTableLayout(context: Context?, attrs: AttributeSet?) : TableLayout
             sumHeight += rowView.measuredHeight
             canvas.drawLine(
                     0F,
-                    sumHeight.toFloat() - (paint.strokeWidth / 2),
+                    sumHeight.toFloat() - (paint.strokeWidth / HALF_DIVIDER),
                     measuredWidth.toFloat(),
-                    sumHeight.toFloat() - (paint.strokeWidth / 2),
+                    sumHeight.toFloat() - (paint.strokeWidth / HALF_DIVIDER),
                     paint
             )
         }
