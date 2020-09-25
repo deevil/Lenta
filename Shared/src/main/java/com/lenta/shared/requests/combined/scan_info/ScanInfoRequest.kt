@@ -124,14 +124,14 @@ class ScanInfoRequest(private val hyperHive: HyperHive, private val gson: Gson, 
         return Either.Right(
                 ScanInfoResult(
                         productInfo = ProductInfo(
-                                materialNumber = materialInfo.material,
-                                description = materialInfo.name,
+                                materialNumber = materialInfo.material.orEmpty(),
+                                description = materialInfo.name.orEmpty(),
                                 uom = Uom(code = uomInfo.uom, name = uomInfo.name.toLowerCase(Locale.getDefault())),
                                 type = materialInfo.getProductType(),
-                                isSet = zmpUtz46V001.isSet(materialInfo.material),
-                                sectionId = materialInfo.abtnr,
+                                isSet = zmpUtz46V001.isSet(materialInfo.material.orEmpty()),
+                                sectionId = materialInfo.abtnr.orEmpty(),
                                 matrixType = materialInfo.getMatrixType(),
-                                materialType = materialInfo.matype,
+                                materialType = materialInfo.matype.orEmpty(),
                                 markedGoodType = materialInfo.markType.orEmpty()
                         ),
                         quantity = quantity
@@ -157,9 +157,7 @@ class ScanInfoRequest(private val hyperHive: HyperHive, private val gson: Gson, 
                 materialType = material.materialType,
                 markedGoodType = material.markType.orEmpty()
         )
-
     }
-
 }
 
 
