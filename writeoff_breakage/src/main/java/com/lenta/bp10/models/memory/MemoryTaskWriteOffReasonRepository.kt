@@ -6,17 +6,18 @@ import com.lenta.shared.models.core.ProductInfo
 import java.util.*
 
 class MemoryTaskWriteOffReasonRepository(
-        private val arrWriteOffReason: ArrayList<TaskWriteOffReason> = ArrayList()) : ITaskWriteOffReasonRepository {
+        private val writeOffReasons: ArrayList<TaskWriteOffReason> = ArrayList()
+) : ITaskWriteOffReasonRepository {
 
     override fun getWriteOffReasons(): List<TaskWriteOffReason> {
-        return arrWriteOffReason
+        return writeOffReasons
     }
 
     override fun findWriteOffReasonsOfProduct(product: ProductInfo): List<TaskWriteOffReason> {
         val foundWriteOffReason = ArrayList<TaskWriteOffReason>()
-        for (i in arrWriteOffReason.indices) {
-            if (product.materialNumber == arrWriteOffReason[i].materialNumber) {
-                foundWriteOffReason.add(arrWriteOffReason[i])
+        for (i in writeOffReasons.indices) {
+            if (product.materialNumber == writeOffReasons[i].materialNumber) {
+                foundWriteOffReason.add(writeOffReasons[i])
             }
         }
         return foundWriteOffReason
@@ -24,14 +25,14 @@ class MemoryTaskWriteOffReasonRepository(
 
     override fun addWriteOffReason(writeOffReason: TaskWriteOffReason): Boolean {
         var index = -1
-        for (i in arrWriteOffReason.indices) {
-            if (writeOffReason.materialNumber == arrWriteOffReason[i].materialNumber && writeOffReason.writeOffReason.code == arrWriteOffReason[i].writeOffReason.code) {
+        for (i in this.writeOffReasons.indices) {
+            if (writeOffReason.materialNumber == this.writeOffReasons[i].materialNumber && writeOffReason.writeOffReason.code == this.writeOffReasons[i].writeOffReason.code) {
                 index = i
             }
         }
 
         if (index == -1) {
-            arrWriteOffReason.add(writeOffReason)
+            this.writeOffReasons.add(writeOffReason)
             return true
         }
         return false
@@ -39,8 +40,8 @@ class MemoryTaskWriteOffReasonRepository(
 
     override fun deleteWriteOffReason(writeOffReason: TaskWriteOffReason): Boolean {
         var index = -1
-        for (i in arrWriteOffReason.indices) {
-            if (writeOffReason.materialNumber == arrWriteOffReason[i].materialNumber && writeOffReason.writeOffReason.code == arrWriteOffReason[i].writeOffReason.code) {
+        for (i in this.writeOffReasons.indices) {
+            if (writeOffReason.materialNumber == this.writeOffReasons[i].materialNumber && writeOffReason.writeOffReason.code == this.writeOffReasons[i].writeOffReason.code) {
                 index = i
             }
         }
@@ -48,15 +49,15 @@ class MemoryTaskWriteOffReasonRepository(
         if (index == -1) {
             return false
         }
-        arrWriteOffReason.removeAt(index)
+        this.writeOffReasons.removeAt(index)
         return true
     }
 
     override fun deleteWriteOffReasonsForProduct(product: ProductInfo): Boolean {
         val delWriteOffReason = ArrayList<TaskWriteOffReason>()
-        for (i in arrWriteOffReason.indices) {
-            if (product.materialNumber == arrWriteOffReason[i].materialNumber) {
-                delWriteOffReason.add(arrWriteOffReason[i])
+        for (i in writeOffReasons.indices) {
+            if (product.materialNumber == writeOffReasons[i].materialNumber) {
+                delWriteOffReason.add(writeOffReasons[i])
             }
         }
 
@@ -64,19 +65,20 @@ class MemoryTaskWriteOffReasonRepository(
             return false
         }
 
-        arrWriteOffReason.removeAll(delWriteOffReason)
+        writeOffReasons.removeAll(delWriteOffReason)
         return true
     }
 
     override fun clear() {
-        arrWriteOffReason.clear()
+        writeOffReasons.clear()
     }
 
     override fun get(index: Int): TaskWriteOffReason {
-        return arrWriteOffReason[index]
+        return writeOffReasons[index]
     }
 
     override fun lenght(): Int {
-        return arrWriteOffReason.size
+        return writeOffReasons.size
     }
+
 }

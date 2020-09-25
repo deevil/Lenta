@@ -61,11 +61,11 @@ fun requestFocus(editText: EditText, @Suppress("UNUSED_PARAMETER") requestFocus:
             editText.isFocusableInTouchMode = true
             editText.requestFocus()
 
-            if (cursorToLastPos == true) {
+            if (editText.isEnabled && cursorToLastPos == true) {
                 editText.setSelection(editText.text.length)
             }
 
-            if (selectAfterFocus == true) {
+            if (editText.isEnabled && selectAfterFocus == true) {
                 editText.setSelection(0, editText.text.length)
             }
         }

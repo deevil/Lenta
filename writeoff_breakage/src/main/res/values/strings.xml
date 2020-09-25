@@ -31,7 +31,7 @@
     <string name="select_task_type">Выберите тип задания</string>
     <string name="cannot_save_negative_quantity">Невозможно сохранить отрицательные количества</string>
     <string name="select_type_code_description">Введено 12 знаков. Какой код вы ввели?</string>
-    <string name="alert_double_scan_stamp">Эта АМ уже была отсканирована</string>
+    <string name="alert_double_scan_stamp">Данная марка добавлена в задание</string>
     <string name="scan_barcode_or_enter_sapcode">Отсканируйте штрихкод или введите SAP-код</string>
     <string name="not_valid_format_stamp">Отсканированный ШК не соответствует формату марки</string>
     <string name="fail_detect_product_for_stamp">Не удалось определить принадлежность марки к компоненту. Отсканируйте EAN компонента из списка и попробуйте снова</string>
@@ -39,6 +39,8 @@
     <string name="not_possible_save_without_reason">Не возможно сохранить, выберите причину списания</string>
     <string name="not_support_type_product_for_set">Только акцизный алкоголь может быть в наборе</string>
     <string name="confirmation_back_with_scanned_stamps">Имеются отсканированные марки. Вы действительно хотите выйти?</string>
+    <string name="incorrect_mark_scan_mode">Марка числится в сети «Лента». Для списания подобного товара необходимо создать задание не специального типа.</string>
+    <string name="incorrect_product_info">Внутренняя ошибка приложения</string>
 
     <string name="quantity">Количество</string>
     <string name="properties">Свойства</string>
