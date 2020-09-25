@@ -101,8 +101,12 @@ class Good(
 
     fun isTobacco() = this.markType == MarkType.TOBACCO
 
-    fun isTobaccoAndFoundGoodHasDifferentMrc(other: Good) =
-            this.isTobacco() && maxRetailPrice.isNotEmpty() && maxRetailPrice != other.maxRetailPrice
+    fun isTobaccoAndFoundGoodHasDifferentMrc(other: Good): Boolean {
+        val isMrcNotEmpty = maxRetailPrice.isNotEmpty() && maxRetailPrice != "0"
+        val isMrcDifferent = maxRetailPrice != other.maxRetailPrice
+        return this.isTobacco() && isMrcNotEmpty && isMrcDifferent
+    }
+
 
     private fun isQuantityActual(): Boolean {
         return if (this.planQuantity > 0.0) {

@@ -185,7 +185,7 @@ class MarkManager @Inject constructor(
 
     override suspend fun loadBoxInfo(number: String, workType: WorkType): MarkScreenStatus {
         this.workType = workType
-        val goodFromManager = chooseGood()
+        val goodFromManager = chooseGood()?.copy()
 
         return goodFromManager?.let { good ->
             val container = Pair(number, Mark.Container.BOX)
@@ -237,7 +237,9 @@ class MarkManager @Inject constructor(
 
     private fun String.getEANfromGTIN(): String = if (this.startsWith("0")) {
         this.drop(1)
-    } else this
+    } else {
+        this
+    }
 
     /**
      * Метод определяет есть ли такой товар в менеджере или нет,
@@ -585,7 +587,6 @@ class MarkManager @Inject constructor(
                 }
                 MarkStatus.GOOD_BOX -> {
                     handleGoodBox(properties, mappedMarks, foundGood)
-
                 }
                 else -> {
                     failure = Failure.MessageFailure(
