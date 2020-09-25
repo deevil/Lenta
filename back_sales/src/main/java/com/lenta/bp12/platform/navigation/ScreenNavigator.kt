@@ -282,9 +282,10 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun showForGoodNeedScanFirstMark() {
+    override fun showForGoodNeedScanFirstMark(goodTitle: String) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
+                    title = goodTitle,
                     pageNumber = "85",
                     message = context.getString(R.string.for_good_need_scan_first_mark),
                     iconRes = R.drawable.ic_info_green_80dp,
@@ -515,10 +516,11 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "81",
                     message = context.getString(R.string.pallet_list_printed),
-                    iconRes = R.drawable.ic_done_green_80dp,
+                    iconRes = R.drawable.ic_info_green_80dp,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.next,
-                    leftButtonDecorationInfo = ButtonDecorationInfo.empty
+                    leftButtonDecorationInfo = ButtonDecorationInfo.empty,
+                    isVisibleLeftButton = false
             ))
         }
     }
@@ -683,7 +685,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun showScannedMarkBelongsToProduct(productName: String)
     fun showForExciseGoodNeedScanFirstMark()
 
-    fun showForGoodNeedScanFirstMark()
+    fun showForGoodNeedScanFirstMark(goodTitle: String)
     fun showRawGoodsRemainedInTask(yesCallback: () -> Unit)
     fun showBoxWasLastScanned(afterShowCallback: () -> Unit)
     fun showDoYouReallyWantSetZeroQuantity(yesCallback: () -> Unit, counted: Int)

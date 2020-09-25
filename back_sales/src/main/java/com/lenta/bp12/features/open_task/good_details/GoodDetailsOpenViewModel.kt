@@ -1,6 +1,5 @@
 package com.lenta.bp12.features.open_task.good_details
 
-import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.features.other.ItemCategory
 import com.lenta.bp12.features.other.ItemCategoryUi
 import com.lenta.bp12.managers.interfaces.IOpenTaskManager
