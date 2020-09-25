@@ -46,7 +46,7 @@ class TaskBasketInfoFragment : CoreFragment<FragmentTaskBasketInfoBinding, TaskB
             rvConfig = initRecycleAdapterDataBinding<BasketProperty, LayoutItemBasketPropertiesBinding>(
                     layoutId = R.layout.layout_item_basket_properties,
                     itemId = BR.item,
-                    recyclerView = recyclerView,
+                    recyclerView = rv,
                     items = this@TaskBasketInfoFragment.vm.propertyItems
             )
         }
