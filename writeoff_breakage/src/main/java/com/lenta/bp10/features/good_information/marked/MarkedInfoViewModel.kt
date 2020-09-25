@@ -16,6 +16,7 @@ import com.lenta.shared.utilities.actionByNumber
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.mapSkipNulls
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import javax.inject.Inject
 
@@ -59,7 +60,7 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
      */
 
     val rollBackEnabled: LiveData<Boolean> by lazy {
-        countValue.map { it ?: 0.0 > 0.0 }
+        countValue.mapSkipNulls { it > 0.0 }
     }
 
     /**
@@ -93,7 +94,7 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
 
         goodInfoNetRequest(GoodInfoParams(
                 tkNumber = sessionInfo.market.orEmpty(),
-                material = productInfo.value?.materialNumber?.takeLast(6).orEmpty()
+                material = productInfo.value?.materialNumber?.takeLast(MATERIAL_LAST_COUNT).orEmpty()
         )).also {
             navigator.hideProgress()
         }.either(::handleFailure) { result ->
@@ -157,13 +158,13 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
     }
 
     private fun addGood(): Boolean {
-        countValue.value?.let {
-            if (enabledApplyButton.value != true && it != 0.0) {
+        countValue.value?.let { currentCount ->
+            if (enabledApplyButton.value != true && currentCount != 0.0) {
                 showNotPossibleSaveScreen()
                 return false
             }
 
-            if (it != 0.0) {
+            if (currentCount != 0.0) {
                 markedGoodStampCollector.processAll(getSelectedReason())
             }
 
@@ -241,6 +242,10 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
 
     override fun updateCounter() {
         markedGoodStampCollector.onDataChanged()
+    }
+
+    companion object {
+        private const val MATERIAL_LAST_COUNT = 6
     }
 
 }
