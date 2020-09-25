@@ -752,19 +752,21 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
 
     private suspend fun addPart(result: ScanInfoResult?) {
         good.value?.let { changedGood ->
-            val quantityValue = quantity.value ?: ZERO_QUANTITY
             val parts = result?.getParts(
                     good = changedGood,
                     date = date.value.orEmpty(),
                     producerCode = getProducerCode(),
                     providerCode = getProvider().code.orEmpty()
             )
-            manager.addOrDeleteGoodToBasket(
-                    good = changedGood,
-                    parts = parts,
-                    provider = changedGood.provider,
-                    count = quantityValue
-            )
+            parts?.forEach { part ->
+                manager.addOrDeleteGoodToBasket(
+                        good = changedGood,
+                        part = part,
+                        provider = changedGood.provider,
+                        count = part.quantity
+                )
+            }
+
         }.orIfNull {
             Logg.e { "good null" }
             navigator.showInternalError(resource.goodNotFoundErrorMsg)

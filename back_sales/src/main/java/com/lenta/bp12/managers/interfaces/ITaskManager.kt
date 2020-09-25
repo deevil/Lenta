@@ -33,7 +33,7 @@ interface ITaskManager<T : Taskable>{
     fun addBasket(basket: Basket)
     suspend fun getBasket(providerCode: String, goodToAdd: Good, isSaveToTask: Boolean): Basket?
 
-    suspend fun addOrDeleteGoodToBasket(good: Good, parts: List<Part>? = null, provider: ProviderInfo, count: Double)
+    suspend fun addOrDeleteGoodToBasket(good: Good, part: Part? = null, provider: ProviderInfo, count: Double)
     suspend fun addGoodToBasketWithMark(good: Good, mark: Mark, provider: ProviderInfo)
     suspend fun addGoodToBasketWithMarks(good: Good, marks: List<Mark>, provider: ProviderInfo)
 

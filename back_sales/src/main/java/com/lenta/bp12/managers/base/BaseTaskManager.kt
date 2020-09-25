@@ -22,13 +22,13 @@ abstract class BaseTaskManager<T : Taskable> : ITaskManager<T> {
     override var ean: String = ""
 
     /** Метод добавляет обычные в товары в корзину */
-    override suspend fun addOrDeleteGoodToBasket(good: Good, parts: List<Part>?, provider: ProviderInfo, count: Double) {
+    override suspend fun addOrDeleteGoodToBasket(good: Good, part: Part?, provider: ProviderInfo, count: Double) {
         currentTask.value?.let { taskValue ->
             // Переменная которая служит счетчиком - сколько товаров надо добавить или удалить
             if (count < 0) {
                 deleteGoodFromBaskets(taskValue, good, count)
             } else {
-                addGoodToBaskets(taskValue, good, provider, parts, count)
+                addGoodToBaskets(taskValue, good, provider, part, count)
             }
         }
     }
@@ -199,13 +199,10 @@ abstract class BaseTaskManager<T : Taskable> : ITaskManager<T> {
         return basket.freeVolume > good.getVolumeCorrespondingToUom()
     }
 
-    private suspend fun addGoodToBaskets(task: T, good: Good, provider: ProviderInfo, parts: List<Part>?, count: Double) {
+    private suspend fun addGoodToBaskets(task: T, good: Good, provider: ProviderInfo, part: Part?, count: Double) {
         // Переменная которая служит счётчиком - сколько товаров надо добавить
         var leftToAdd = count
         // Пока все товары не добавлены крутимся в цикле
-        if (parts != null) {
-
-        }
         while (leftToAdd > 0) {
             // Найдем корзину в которой достаточно места для нового товара, или создадим ее
             val suitableBasket = getOrCreateSuitableBasket(task, good, provider)
@@ -219,10 +216,7 @@ abstract class BaseTaskManager<T : Taskable> : ITaskManager<T> {
                 maxQuantity // или только то количество что влезет
             }
 
-            parts?.lastOrNull {
-                it.quantity > 0
-            }?.let { part ->
-                part.quantity -= quantity
+            if (part != null) {
                 // Скопируем партию потому что сверху приходит одна, для каждой корзины будет своя партия
                 val newPart = part.copy()
                 // Укажем партии количество в корзине и номер корзины
@@ -234,7 +228,6 @@ abstract class BaseTaskManager<T : Taskable> : ITaskManager<T> {
                 addEmptyPosition(good, provider, suitableBasket)
                 // Добавим товар в корзину
             }
-
             // Добавим товар в корзину
             suitableBasket.addGood(good, quantity)
             // Уменьшим количество товара которое осталось добавить
