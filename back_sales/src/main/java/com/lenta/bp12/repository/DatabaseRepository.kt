@@ -51,13 +51,13 @@ class DatabaseRepository @Inject constructor(
         return withContext(Dispatchers.IO) {
             products.getProductInfoByMaterial(material)?.let { goodInfo ->
                 GoodInfo(
-                        ean = getEanByMaterialUnits(material, goodInfo.buom),
-                        eans = getEanListByMaterialUnits(material, goodInfo.buom),
+                        ean = getEanByMaterialUnits(material, goodInfo.buom.orEmpty()),
+                        eans = getEanListByMaterialUnits(material, goodInfo.buom.orEmpty()),
                         material = material,
-                        name = goodInfo.name,
+                        name = goodInfo.name.orEmpty(),
                         kind = goodInfo.getGoodKind(),
-                        section = goodInfo.abtnr,
-                        matrix = getMatrixType(goodInfo.matrType),
+                        section = goodInfo.abtnr.orEmpty(),
+                        matrix = getMatrixType(goodInfo.matrType.orEmpty()),
                         markType = enumValueOrNull<MarkType>(goodInfo.markType.orEmpty()).orIfNull { MarkType.UNKNOWN }
                 )
             }

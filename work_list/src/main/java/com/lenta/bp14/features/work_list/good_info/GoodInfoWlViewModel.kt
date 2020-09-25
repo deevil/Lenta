@@ -321,7 +321,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
     fun onScanResult(data: String) {
         actionByNumber(
                 number = data,
-                funcForEan = { ean -> searchCode(ean = ean) },
+                funcForEan = { ean, _ -> searchCode(ean = ean) },
                 funcForMaterial = { material -> searchCode(material = material) },
                 funcForSapOrBar = navigator::showTwelveCharactersEntered,
                 funcForPriceQrCode = { qrCode ->

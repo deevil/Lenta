@@ -18,7 +18,7 @@ data class TaskCreate(
         override val baskets: MutableList<Basket> = mutableListOf()
 ) : Taskable {
 
-    fun getFormattedName(): String {
+    override fun getFormattedName(withFullName: Boolean): String {
         return "${type.code} // $name"
     }
 
