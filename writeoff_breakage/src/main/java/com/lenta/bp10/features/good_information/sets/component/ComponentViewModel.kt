@@ -12,10 +12,9 @@ import com.lenta.bp10.models.task.ProcessExciseAlcoProductService
 import com.lenta.bp10.models.task.TaskDescription
 import com.lenta.bp10.models.task.WriteOffReason
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
-import com.lenta.shared.utilities.extentions.combineLatest
-import com.lenta.shared.utilities.extentions.launchUITryCatch
-import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.toStringFormatted
+import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.orIfNull
 import javax.inject.Inject
 
 class ComponentViewModel : BaseProductInfoViewModel() {
@@ -32,7 +31,7 @@ class ComponentViewModel : BaseProductInfoViewModel() {
     lateinit var stampsCollectorManager: StampsCollectorManager
 
     val rollBackEnabled: LiveData<Boolean> by lazy {
-        countValue.map { it ?: 0.0 > 0.0 }
+        countValue.mapSkipNulls { it > DEFAULT_STAMP_COUNT }
     }
 
     override val enabledApplyButton: MutableLiveData<Boolean> by lazy {
@@ -54,15 +53,14 @@ class ComponentViewModel : BaseProductInfoViewModel() {
         processServiceManager.getWriteOffTask()!!.processExciseAlcoProduct(productInfo.value!!)!!
     }
 
-    init {
+    fun initExciseAlcoDelegate() {
         launchUITryCatch {
             exciseAlcoDelegate.init(
                     handleNewStamp = this@ComponentViewModel::handleNewStamp,
                     tkNumber = getTaskDescription().tkNumber,
-                    materialNumber = productInfo.value!!.materialNumber
+                    materialNumber = productInfo.value?.materialNumber.orEmpty()
             )
         }
-
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
@@ -77,14 +75,13 @@ class ComponentViewModel : BaseProductInfoViewModel() {
     }
 
     private fun getCountSavedExciseStamps(): Double {
-        return stampsCollectorManager.getSetsStampCollector()!!.getCount(productInfo.value!!.materialNumber)
+        return stampsCollectorManager.getSetsStampCollector()?.getCount(productInfo.value?.materialNumber.orEmpty())
+                ?: DEFAULT_STAMP_COUNT
     }
-
 
     override fun handleProductSearchResult(scanInfoResult: ScanInfoResult?): Boolean {
         //not used search product for this screen
         return true
-
     }
 
     override fun getTaskDescription(): TaskDescription {
@@ -115,7 +112,8 @@ class ComponentViewModel : BaseProductInfoViewModel() {
 
 
     override fun onScanResult(data: String) {
-        if (totalCount.value ?: 0.0 >= targetTotalCount) {
+        val totalValue = totalCount.value ?: 0.0
+        if (totalValue >= targetTotalCount) {
             navigator.openStampsCountAlreadyScannedScreen()
             return
         }
@@ -127,13 +125,18 @@ class ComponentViewModel : BaseProductInfoViewModel() {
     }
 
     private fun handleNewStamp(isBadStamp: Boolean) {
-        if (!stampsCollectorManager.addStampToComponentsStampCollector(
-                        materialNumber = productInfo.value!!.materialNumber,
-                        setMaterialNumber = componentItem.setMaterialNumber,
-                        writeOffReason = getSelectedReason().code,
-                        isBadStamp = isBadStamp
-                )) {
-            navigator.openAlertDoubleScanStamp()
+        productInfo.value?.let {
+            if (!stampsCollectorManager.addStampToComponentsStampCollector(
+                            materialNumber = it.materialNumber,
+                            setMaterialNumber = componentItem.setMaterialNumber,
+                            writeOffReason = getSelectedReason().code,
+                            isBadStamp = isBadStamp
+                    )) {
+                navigator.openAlertDoubleScanStamp()
+            }
+        }.orIfNull {
+            Logg.e { "ComponentViewModel productInfo is null" }
+            navigator.showProductInfoNotFound()
         }
     }
 
@@ -163,6 +166,10 @@ class ComponentViewModel : BaseProductInfoViewModel() {
 
     fun getTargetCount(): String {
         return targetTotalCount.toStringFormatted()
+    }
+
+    companion object {
+        private const val DEFAULT_STAMP_COUNT = 0.0
     }
 
 }

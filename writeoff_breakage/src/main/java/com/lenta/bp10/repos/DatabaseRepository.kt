@@ -56,14 +56,14 @@ class DatabaseRepository @Inject constructor(
                 with(materialInfo) {
                     ProductInfo(
                             materialNumber = material,
-                            description = name,
-                            uom = getUnitsByCode(buom),
+                            description = name.orEmpty(),
+                            uom = getUnitsByCode(buom.orEmpty()),
                             type = getProductType(),
                             isSet = setInfo.isSet(material),
-                            sectionId = abtnr,
+                            sectionId = abtnr.orEmpty(),
                             matrixType = getMatrixType(),
-                            materialType = matype,
-                            markedGoodType = markType
+                            materialType = matype.orEmpty(),
+                            markedGoodType = markType.orEmpty()
                     )
                 }
             }
@@ -89,7 +89,6 @@ class DatabaseRepository @Inject constructor(
             } ?: Uom.ST
         }
     }
-
 }
 
 interface IDatabaseRepository {

@@ -92,7 +92,7 @@ open class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, BaseProductI
     }
 
     companion object {
-        fun create(productInfo: ProductInfo, initCount: Double): GoodInfoFragment {
+        fun newInstance(productInfo: ProductInfo, initCount: Double): GoodInfoFragment {
             GoodInfoFragment().let {
                 it.productInfo = productInfo
                 it.initCount = initCount

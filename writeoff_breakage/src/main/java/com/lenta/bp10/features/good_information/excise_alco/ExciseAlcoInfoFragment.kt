@@ -67,7 +67,7 @@ open class ExciseAlcoInfoFragment : GoodInfoFragment() {
     }
 
     companion object {
-        fun create(productInfo: ProductInfo): ExciseAlcoInfoFragment {
+        fun newInstance(productInfo: ProductInfo): ExciseAlcoInfoFragment {
             ExciseAlcoInfoFragment().let {
                 it.productInfo = productInfo
                 it.initCount = 0.0

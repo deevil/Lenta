@@ -28,6 +28,7 @@ import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
+import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import com.mobrun.plugin.api.HyperHive
 import javax.inject.Inject
@@ -174,7 +175,8 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 }
                 1 -> {
                     with(filteredSelectionsHelper) {
-                        val isEmptyCategory = selectedCategoryPosition.value == 0 && categories.value?.size ?: 0 > 1
+                        val categoriesSize = categories.value?.size ?: 0
+                        val isEmptyCategory = (selectedCategoryPosition.value == 0) && (categoriesSize > 1)
                         val countGoodsForRemove = filteredGoods.value?.size ?: 0
 
                         if (isSelectedEmpty() && isEmptyCategory) {
@@ -210,8 +212,10 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     private fun removeSelectedFilteredPositions(writeOffTask: WriteOffTask) {
         filteredSelectionsHelper.selectedPositions.value?.map { position ->
-            filteredGoods.value!![position].let { filterItem ->
+            filteredGoods.value?.getOrNull(position)?.let { filterItem ->
                 writeOffTask.deleteTaskWriteOffReason(filterItem.taskWriteOffReason)
+            }.orIfNull {
+                Logg.e { "removeSelectedFilteredPositions no item in position $position" }
             }
         }
     }
@@ -232,7 +236,6 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 screenNavigator.hideProgress()
             }
         }
-
     }
 
     fun onClickItemPosition(position: Int) {
@@ -241,7 +244,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         } else {
             filteredGoods.value?.getOrNull(position)?.productInfo
         }?.let {
-            searchProductDelegate.openProductScreen(it, 0.0)
+            searchProductDelegate.openProductScreen(it, DEFAULT_QUANTITY)
         }
     }
 
@@ -267,8 +270,6 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             analyticsHelper.onRetCodeNotEmpty("$sendWriteOffDataResult")
             screenNavigator.openAlertScreen(sendWriteOffDataResult.errorText)
         }
-
-
     }
 
     private fun onConfirmAllDelete() {
@@ -323,7 +324,8 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 categories.postValue(it)
             }
 
-            val selectedCategory = reasons.getOrNull((selectedCategoryPosition.value ?: -1) - 1)
+            val selectedPosition = selectedCategoryPosition.value ?: -1
+            val selectedCategory = reasons.getOrNull(selectedPosition - 1)
 
             filteredGoods.postValue(
                     mutableListOf<FilterItem>().apply {
@@ -353,6 +355,10 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         filteredSelectionsHelper.clearPositions()
     }
 
+    companion object {
+        private const val DEFAULT_QUANTITY = 0.0
+    }
+
 }
 
 
@@ -378,6 +384,3 @@ data class FilterItem(
     override fun isEven() = even
 
 }
-
-
-
