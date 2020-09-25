@@ -1,6 +1,5 @@
 package com.lenta.bp12.features.create_task.base
 
-import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.features.base.BaseGoodListViewModel
 import com.lenta.bp12.features.create_task.base.interfaces.IBaseGoodListCreateViewModel
 import com.lenta.bp12.managers.interfaces.ICreateTaskManager
@@ -20,7 +19,6 @@ import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.launchUITryCatch
-import com.lenta.shared.utilities.extentions.unsafeLazy
 import com.lenta.shared.utilities.orIfNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -31,15 +29,8 @@ import kotlinx.coroutines.withContext
  * @see com.lenta.bp12.features.create_task.task_content.TaskContentViewModel
  * @see com.lenta.bp12.features.basket.basket_good_list.BasketCreateGoodListViewModel
  * */
-abstract class BaseGoodListCreateViewModel : BaseGoodListViewModel<TaskCreate, ICreateTaskManager>(), IBaseGoodListCreateViewModel, OnOkInSoftKeyboardListener {
-
-    override val task by unsafeLazy {
-        manager.currentTask
-    }
-
-    val requestFocusToNumberField by unsafeLazy {
-        MutableLiveData(true)
-    }
+abstract class BaseGoodListCreateViewModel : BaseGoodListViewModel<TaskCreate, ICreateTaskManager>(),
+        IBaseGoodListCreateViewModel, OnOkInSoftKeyboardListener {
 
     /**
      * Метод проверяет длину отсканированного/введенного кода

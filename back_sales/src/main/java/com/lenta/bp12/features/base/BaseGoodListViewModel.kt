@@ -14,6 +14,7 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.SelectionItemsHelper
+import com.lenta.shared.utilities.extentions.unsafeLazy
 import javax.inject.Inject
 
 abstract class BaseGoodListViewModel<R : Taskable, T : ITaskManager<R>> : CoreViewModel() {
@@ -21,6 +22,10 @@ abstract class BaseGoodListViewModel<R : Taskable, T : ITaskManager<R>> : CoreVi
     val numberField: MutableLiveData<String> = MutableLiveData("")
 
     val basketSelectionsHelper = SelectionItemsHelper()
+
+    val requestFocusToNumberField by lazy {
+        MutableLiveData(true)
+    }
 
     @Inject
     lateinit var navigator: IScreenNavigator
@@ -51,7 +56,9 @@ abstract class BaseGoodListViewModel<R : Taskable, T : ITaskManager<R>> : CoreVi
     @Inject
     lateinit var database: IDatabaseRepository
 
-    abstract val task : MutableLiveData<R>
+    protected val task by unsafeLazy {
+        manager.currentTask
+    }
 
     abstract fun checkSearchNumber(number: String)
     abstract fun getGoodByEan(ean: String)

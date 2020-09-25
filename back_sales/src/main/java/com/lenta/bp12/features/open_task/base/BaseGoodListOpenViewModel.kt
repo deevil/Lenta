@@ -12,12 +12,12 @@ import com.lenta.bp12.platform.ZERO_VOLUME
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
 import com.lenta.bp12.platform.extention.getMarkType
+import com.lenta.bp12.request.pojo.MaterialInfo
 import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.bp12.request.pojo.good_info.GoodInfoParams
 import com.lenta.bp12.request.pojo.good_info.GoodInfoResult
 import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.utilities.extentions.launchUITryCatch
-import com.lenta.shared.utilities.extentions.unsafeLazy
 import com.lenta.shared.utilities.orIfNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -30,13 +30,6 @@ import kotlinx.coroutines.withContext
  * */
 abstract class BaseGoodListOpenViewModel: BaseGoodListViewModel<TaskOpen, IOpenTaskManager>(), IBaseGoodListOpenViewModel {
 
-    override val task by unsafeLazy {
-        manager.currentTask
-    }
-
-    val requestFocusToNumberField by lazy {
-        MutableLiveData(true)
-    }
 
     /**
      * Метод проверяет длину отсканированного/введенного кода
@@ -152,18 +145,22 @@ abstract class BaseGoodListOpenViewModel: BaseGoodListViewModel<TaskOpen, IOpenT
 
     private fun checkMark(number: String) {
         launchUITryCatch {
-            with(navigator) {
-                manager.clearEan()
-                showProgressLoadingData()
-                val screenStatus = markManager.checkMark(number, WorkType.OPEN, false)
-                hideProgress()
-                when (screenStatus) {
-                    MarkScreenStatus.OK -> openMarkedGoodInfoOpenScreen()
-                    MarkScreenStatus.CANT_SCAN_PACK -> showCantScanPackAlert()
-                    MarkScreenStatus.NO_MARKTYPE_IN_SETTINGS -> showNoMarkTypeInSettings()
-                    MarkScreenStatus.INCORRECT_EAN_FORMAT -> showIncorrectEanFormat()
-                    else -> Unit
-                }
+            manager.clearEan()
+            navigator.showProgressLoadingData()
+            val screenStatus = markManager.checkMark(number, WorkType.OPEN, false)
+            navigator.hideProgress()
+            processScreenStatusFromMark(screenStatus)
+        }
+    }
+
+    private fun processScreenStatusFromMark(screenStatus: MarkScreenStatus) {
+        with(navigator) {
+            when (screenStatus) {
+                MarkScreenStatus.OK -> openMarkedGoodInfoOpenScreen()
+                MarkScreenStatus.CANT_SCAN_PACK -> showCantScanPackAlert()
+                MarkScreenStatus.NO_MARKTYPE_IN_SETTINGS -> showNoMarkTypeInSettings()
+                MarkScreenStatus.INCORRECT_EAN_FORMAT -> showIncorrectEanFormat()
+                else -> Unit
             }
         }
     }
@@ -186,7 +183,6 @@ abstract class BaseGoodListOpenViewModel: BaseGoodListViewModel<TaskOpen, IOpenT
                     else -> showNotMatchTaskSettingsAddingNotPossible()
                 }
             }
-
         }
     }
 
@@ -203,11 +199,8 @@ abstract class BaseGoodListOpenViewModel: BaseGoodListViewModel<TaskOpen, IOpenT
                     control = getControlType(),
                     commonUnits = database.getUnitsByCode(materialInfo?.commonUnitsCode.orEmpty()),
                     innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
-                    innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull()
-                            ?: ZERO_QUANTITY,
-                    provider = task.value?.takeIf { manager.isWholesaleTaskType.not() }
-                            ?.provider
-                            ?: ProviderInfo.getEmptyProvider(),
+                    innerQuantity = materialInfo.getGoodInnerQuantity(),
+                    provider = getGoodProvider(),
                     producers = producers.orEmpty().toMutableList(),
                     volume = materialInfo?.volume?.toDoubleOrNull() ?: ZERO_VOLUME,
                     markType = markType,
@@ -218,5 +211,16 @@ abstract class BaseGoodListOpenViewModel: BaseGoodListViewModel<TaskOpen, IOpenT
 
             setFoundGood(goodOpen)
         }
+    }
+
+    private fun MaterialInfo?.getGoodInnerQuantity(): Double {
+        return this?.innerQuantity?.toDoubleOrNull()
+                ?: ZERO_QUANTITY
+    }
+
+    private fun getGoodProvider(): ProviderInfo {
+        return task.value?.takeIf { manager.isWholesaleTaskType.not() }
+                ?.provider
+                ?: ProviderInfo.getEmptyProvider()
     }
 }
