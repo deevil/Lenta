@@ -56,7 +56,9 @@ class ScanInfoNetRequest @Inject constructor(
                             uom = Uom(code = actualUom.uom, name = actualUom.name),
                             type = getProductType(
                                     isAlco = product.isAlco?.isNotEmpty() ?: false,
-                                    isExcise = product.isExcise?.isNotEmpty() ?: false
+                                    isExcise = product.isExcise?.isNotEmpty() ?: false,
+                                    isMarkedGood = product.markType?.isNotEmpty() ?: false,
+                                    isVet = product.isVet?.isNotEmpty() ?: false
                             ),
                             isSet = !set.isNullOrEmpty(),
                             sectionId = product.abtnr.orEmpty(),

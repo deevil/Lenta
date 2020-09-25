@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.managers.base.BaseTaskManager
 import com.lenta.bp12.managers.interfaces.ICreateTaskManager
 import com.lenta.bp12.managers.interfaces.IGeneralTaskManager
+import com.lenta.bp12.model.WorkType
 import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.create_task.TaskCreate
@@ -156,7 +157,8 @@ class CreateTaskManager @Inject constructor(
                             parts = parts,
                             baskets = baskets,
                             basketPositions = basketPositions
-                    )
+                    ),
+                    WorkType.CREATE
             )
         }
     }

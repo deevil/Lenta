@@ -1,5 +1,6 @@
 package com.lenta.movement.models
 
+import android.util.Log
 import com.lenta.movement.fmp.resources.fast.*
 import com.lenta.shared.fmp.resources.fast.ZmpUtz26V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz30V001
@@ -68,10 +69,10 @@ class TaskManager(
         return withContext(Dispatchers.IO) {
             allowProductsTable.all.any {
                 it.taskType == task?.taskType &&
-                        it.taskCntrl == task?.movementType?.propertyName &&
-                        it.ekgrp == product.ekGroup &&
-                        it.matkl == product.matkl &&
-                        it.mtart == product.materialType
+                        it.taskCntrl == product.type.code &&
+                        (it.ekgrp.isEmpty() || it.ekgrp == product.ekGroup) &&
+                        (it.matkl.isEmpty() || it.matkl == product.matkl) &&
+                        (it.mtart.isEmpty() || it.mtart == product.materialType)
             }
         }
     }

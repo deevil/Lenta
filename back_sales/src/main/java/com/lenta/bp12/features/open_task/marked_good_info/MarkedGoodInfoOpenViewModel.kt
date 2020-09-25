@@ -236,10 +236,10 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
 
                     MarkScreenStatus.CANT_SCAN_PACK -> showCantScanPackAlert()
 
-                    MarkScreenStatus.GOOD_IS_MISSING_IN_TASK -> navigator.showGoodIsMissingInTask()
+                    MarkScreenStatus.GOOD_IS_MISSING_IN_TASK -> showGoodIsMissingInTask()
 
                     MarkScreenStatus.MRC_NOT_SAME ->
-                        markManager.getCreatedGoodForError()?.let (::showMrcNotSameAlert)
+                        markManager.getCreatedGoodForError()?.let(::showMrcNotSameAlert)
 
                     MarkScreenStatus.MRC_NOT_SAME_IN_BASKET ->
                         showMrcNotSameInBasketAlert(::handleYesSaveCurrentMarkToBasketAndOpenAnother)
@@ -261,7 +261,7 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
         }
     }
 
-    private fun handleMarkScanError(){
+    private fun handleMarkScanError() {
         val failure = markManager.getMarkFailure()
         if (failure is Failure.MessageFailure) {
             navigator.showMarkScanError(failure.message.orEmpty())
@@ -283,7 +283,7 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
         launchUITryCatch {
             with(navigator) {
                 showProgressLoadingData()
-                val screenStatus = markManager.loadBoxInfo(number)
+                val screenStatus = markManager.loadBoxInfo(number, WorkType.OPEN)
                 hideProgress()
                 when (screenStatus) {
                     MarkScreenStatus.OK -> setMarksAndProperties()
@@ -313,25 +313,27 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
             markManager.handleYesDeleteMappedMarksFromTempCallBack()
             val tempMarksFromMarkManager = markManager.getTempMarks()
             tempMarks.postValue(tempMarksFromMarkManager)
+            isExistUnsavedData = true
             setMrc()
         }
     }
 
     override suspend fun saveChanges() {
-        navigator.showProgressLoadingData()
+        with(navigator){
+            showProgressLoadingData()
 
-        good.value?.let { good ->
-            withContext(Dispatchers.IO) {
-                manager.saveGoodInTask(good)
-                isExistUnsavedData = false
-                addMarks(good)
+            good.value?.let { good ->
+                withContext(Dispatchers.IO) {
+                    manager.saveGoodInTask(good)
+                    addMarks(good)
+                }
+            }.orIfNull {
+                Logg.e { "good null" }
+                showInternalError(resource.goodNotFoundErrorMsg)
             }
-        }.orIfNull {
-            Logg.e { "good null" }
-            navigator.showInternalError(resource.goodNotFoundErrorMsg)
-        }
 
-        navigator.hideProgress()
+            hideProgress()
+        }
     }
 
     private suspend fun addMarks(changedGood: Good) {
@@ -376,7 +378,8 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
 
     override fun saveChangesAndExit() {
         launchUITryCatch {
-            with(navigator){
+            with(navigator) {
+                isExistUnsavedData = false
                 showProgressLoadingData()
                 saveChanges()
                 hideProgress()
