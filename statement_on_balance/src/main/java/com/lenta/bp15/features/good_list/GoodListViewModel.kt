@@ -52,7 +52,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     )
 
     override fun onPageSelected(position: Int) {
-
+        selectedPage.value = position
     }
 
     override fun onOkInSoftKeyboard(): Boolean {

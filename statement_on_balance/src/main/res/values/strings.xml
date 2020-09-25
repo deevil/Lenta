@@ -5,6 +5,7 @@
     // Заголовки экранов
     <string name="setting_tasks">Задания на постановку</string>
     <string name="good_list">Список товаров</string>
+    <string name="task_card">Карточка задания</string>
 
     // Наименование вкладок
     <string name="to_processing">К обработке</string>
@@ -18,10 +19,7 @@
 
 
     // Описание иконок
-    <string name="alcohol_good">Алкогольный товар</string>
-    <string name="common_good">Обычный товар</string>
     <string name="marked_good">Маркированный товар</string>
-    <string name="vet_good">Товар животного происхождения</string>
 
     // Наименование кнопок
     <string name="work_with_tasks">Работа с заданиями</string>
@@ -35,6 +33,6 @@
     <string name="total_with_converting_info">Итого %1$s</string>
 
     // Разное
-
+    <string name="mark_quantity_to_processing">Количество марок к обработке</string>
 
 </resources>

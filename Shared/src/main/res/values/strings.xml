@@ -155,6 +155,7 @@
     <string name="tag">Признак</string>
     <string name="of_goods">Товаров</string>
     <string name="goods">Товары</string>
+    <string name="task_type">Тип задания</string>
     <string name="comment">Комментарий</string>
     <string name="list_of_goods">Список товаров</string>
     <string name="list_of_differences">Список расхождений</string>

@@ -8,6 +8,7 @@ import com.lenta.bp15.features.auth.AuthViewModel
 import com.lenta.bp15.features.discrepancy_list.DiscrepancyListViewModel
 import com.lenta.bp15.features.good_list.GoodListViewModel
 import com.lenta.bp15.features.loading.FastLoadingViewModel
+import com.lenta.bp15.features.task_card.TaskCardViewModel
 import com.lenta.bp15.features.task_list.TaskListViewModel
 import com.lenta.bp15.main.MainViewModel
 import com.lenta.bp15.main.MainActivity
@@ -39,5 +40,6 @@ interface AppComponent : CoreComponent {
     fun inject(it: TaskListViewModel)
     fun inject(it: GoodListViewModel)
     fun inject(it: DiscrepancyListViewModel)
+    fun inject(it: TaskCardViewModel)
 
 }
