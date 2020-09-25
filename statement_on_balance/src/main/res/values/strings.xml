@@ -17,7 +17,15 @@
 
 
     // Информационные сообщения
-
+    <string name="unsaved_data_found_on_device">На устройстве обнаружены несохраненные данные. Перейти к данным?</string>
+    <string name="make_task_processed_and_close">Перевести задание в статус \"Обработано\" и закрыть его для редактирования?</string>
+    <string name="success_save_report">Успешно сохранено в SAP ERP</string>
+    <string name="unprocessed_goods_in_task">В задании остались необработанные товары.\nВы можете:\n\nСохранить в \"ОПУБЛИКОВАНО\" - для последующего продолжения обработки задания;\n\nСохранить в \"ОБРАБОТАНО\" - для завершения обработки задания.</string>
+    <string name="unprocessed_stamps_required_to_be_destroyed">Требуется уничтожить необработанные марки!</string>
+    <string name="good_is_missing_from_task">Товар %1$s отсутствует в задании. Добавление невозможно.</string>
+    <string name="stamp_already_processed">Марка уже обработана.</string>
+    <string name="invalid_barcode_format_scanned">Отсканирован неверный формат штрихкода.</string>
+    <string name="scanned_stamp_is_not_on_task">Отсканированная марка не числится в задании.</string>
 
     // Описание иконок
     <string name="marked_good">Маркированный товар</string>
