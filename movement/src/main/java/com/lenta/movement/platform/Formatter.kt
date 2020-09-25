@@ -2,6 +2,7 @@ package com.lenta.movement.platform
 
 import com.lenta.movement.models.*
 import com.lenta.shared.models.core.Uom
+import com.lenta.shared.models.core.getDescriptionResId
 
 class Formatter : IFormatter {
 
@@ -115,17 +116,7 @@ class Formatter : IFormatter {
         }
     }
 
-    override fun basketGisControl(basket: Basket): String {
-        return when {
-            basket.isAlco ?: false -> ALCO
-            basket.isExciseAlco ?: false -> EXCISE_ALCO
-            basket.isNotExciseAlco ?: false -> NOT_EXCISE_ALCO
-            basket.isUsual ?: false -> USUAL
-            basket.isVet ?: false -> VET
-            basket.isFood ?: false -> FOOD
-            else -> ""
-        }
-    }
+    override fun basketGisControl(basket: Basket): Int = basket.keys.random().type.getDescriptionResId()
 
     override fun getEOSubtitle(eo: ProcessingUnit): String {
         val geNumber = eo.cargoUnitNumber

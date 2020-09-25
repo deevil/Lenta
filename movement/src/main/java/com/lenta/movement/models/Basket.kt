@@ -13,9 +13,10 @@ class Basket(
     val isUsual: Boolean?,
     val isVet: Boolean?,
     val isFood: Boolean?,
-//    val isMarked: Boolean?,
+    val isMarked: Boolean?,
     val matkl: String?,
-    val materialType: String?
+    val materialType: String?,
+    val sectionId: String?
 ) : MutableMap<ProductInfo, Int> by mutableMapOf() {
 
     override val size: Int
@@ -44,23 +45,26 @@ class Basket(
                 isFood?.equals(product.isFood) ?: true &&
                 this.supplier?.equals(supplier) ?: true &&
                 matkl?.equals(product.matkl) ?: true &&
-                materialType?.equals(product.materialType) ?: true
+                materialType?.equals(product.materialType) ?: true &&
+                sectionId?.equals(product.sectionId) ?: true
     }
 
     /**
      * Получение сведений о корзине, является ли деление по данному признаку правильным
      */
     fun isDivisionTrue(division: GoodsSignOfDivision) = when(division) {
-        GoodsSignOfDivision.ALCO -> isAlco != null
-        GoodsSignOfDivision.USUAL -> isUsual != null
-        GoodsSignOfDivision.VET -> isVet != null
-        GoodsSignOfDivision.FOOD -> isFood != null
-        GoodsSignOfDivision.LIF_NUMBER -> supplier != null
-        GoodsSignOfDivision.MATERIAL_NUMBER -> matkl != null
-        GoodsSignOfDivision.MTART -> materialType != null
-        //todo: make that division
-        GoodsSignOfDivision.SECTION -> false
-        GoodsSignOfDivision.PARTS -> false
-        GoodsSignOfDivision.MARK_PARTS -> false
+        GoodsSignOfDivision.MARK_PARTS -> isMarked != null && isMarked
+        GoodsSignOfDivision.ALCO -> isAlco != null && isAlco
+        GoodsSignOfDivision.USUAL -> isUsual != null && isUsual
+        GoodsSignOfDivision.VET -> isVet != null && isVet
+        GoodsSignOfDivision.FOOD -> isFood != null && isFood
+        else -> false
+    }
+
+    fun getStringDescription(division: GoodsSignOfDivision): String = when(division) {
+        GoodsSignOfDivision.SECTION -> "$sectionId"
+        GoodsSignOfDivision.LIF_NUMBER -> "${supplier?.code} ${supplier?.name}"
+        GoodsSignOfDivision.MATERIAL_NUMBER -> "$matkl"
+        else -> ""
     }
 }

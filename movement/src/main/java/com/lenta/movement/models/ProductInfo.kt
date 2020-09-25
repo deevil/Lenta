@@ -38,4 +38,7 @@ open class ProductInfo(
     val isUsual: Boolean
         get() = isVet.not() && isAlco.not()
 
+    val isMarked: Boolean
+        get() = type == ProductType.Marked
+
 }

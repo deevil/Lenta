@@ -107,4 +107,6 @@
     <string name="material_number">SAP-код товара</string>
     <string name="section">Секция</string>
     <string name="mtart">Вид товара</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
 </resources>

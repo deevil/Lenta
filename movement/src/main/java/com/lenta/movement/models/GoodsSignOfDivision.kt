@@ -6,7 +6,7 @@ import com.lenta.movement.R
  *  @see TaskManager.getTaskSettings
  *  @see TaskSettings
  *
- *  @param needStringValue - нужно ли получать от корзины описание товара
+ *  @param needStringValue - нужно ли получать от корзины описание поля
  *  */
 enum class GoodsSignOfDivision(val needStringValue: Boolean) {
     // Марочные и Партионные остатки
@@ -55,3 +55,9 @@ fun GoodsSignOfDivision.toDescriptionResId() = when (this) {
     GoodsSignOfDivision.SECTION -> R.string.section
     GoodsSignOfDivision.MTART -> R.string.mtart
 }
+
+fun GoodsSignOfDivision.isGisControl() =
+        this == GoodsSignOfDivision.MARK_PARTS ||
+                this == GoodsSignOfDivision.ALCO ||
+                this == GoodsSignOfDivision.USUAL ||
+                this == GoodsSignOfDivision.VET

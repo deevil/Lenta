@@ -18,7 +18,7 @@ interface IFormatter {
 
     fun getBasketTitle(basket: Basket, task: Task, taskSettings: TaskSettings) : String
 
-    fun basketGisControl(basket: Basket): String
+    fun basketGisControl(basket: Basket): Int
 
     fun getEOSubtitle(eo: ProcessingUnit): String
     fun getEOSubtitleForInsides(eo: ProcessingUnit): String
