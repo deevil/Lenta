@@ -8,6 +8,7 @@ import com.lenta.bp15.features.good_list.GoodListFragment
 import com.lenta.bp15.features.loading.FastDataLoadingFragment
 import com.lenta.bp15.features.main_menu.MainMenuFragment
 import com.lenta.bp15.features.select_market.SelectMarketFragment
+import com.lenta.bp15.features.task_card.TaskCardFragment
 import com.lenta.bp15.features.task_list.TaskListFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -86,6 +87,12 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun openTaskCardScreen() {
+        runOrPostpone {
+            getFragmentStack()?.push(TaskCardFragment())
+        }
+    }
+
 
     // Информационные экраны
 
@@ -104,5 +111,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openTaskListScreen()
     fun openGoodListScreen()
     fun openDiscrepancyListScreen()
+    fun openTaskCardScreen()
 
 }
