@@ -5,7 +5,6 @@ import com.lenta.bp10.features.good_information.base.BaseProductInfoViewModel
 import com.lenta.bp10.models.repositories.ITaskRepository
 import com.lenta.bp10.models.task.ProcessGeneralProductService
 import com.lenta.bp10.models.task.TaskDescription
-import com.lenta.bp10.models.task.WriteOffReason
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.toStringFormatted
@@ -53,7 +52,7 @@ class GoodInfoViewModel : BaseProductInfoViewModel() {
         addGood().let { wasAdded ->
             if (wasAdded) {
                 processGeneralProductService.apply()
-                screenNavigator.goBack()
+                navigator.goBack()
                 limitsChecker?.check()
             }
         }
@@ -71,7 +70,8 @@ class GoodInfoViewModel : BaseProductInfoViewModel() {
                 processGeneralProductService.add(getSelectedReason(), it)
             }
 
-            count.value = ""
+            count.value = "0"
+            requestFocusToQuantity.value = true
 
             return true
         }
@@ -86,7 +86,7 @@ class GoodInfoViewModel : BaseProductInfoViewModel() {
 
     override fun onScanResult(data: String) {
         if (addGood()) {
-            searchProductDelegate.searchCode(code = data, fromScan = true)
+            searchProductDelegate.searchCode(code = data)
         }
     }
 

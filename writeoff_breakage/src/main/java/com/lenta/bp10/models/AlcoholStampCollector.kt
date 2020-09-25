@@ -47,15 +47,25 @@ class AlcoholStampCollector(private val processExciseAlcoProductService: Process
         return true
     }
 
+    fun addBadMark(material: String, writeOffReason: String) {
+        val stamp = TaskExciseStamp(
+                material = material,
+                markNumber = "",
+                writeOffReason = writeOffReason,
+                isBadStamp = true
+        )
+
+        stamps.add(stamp)
+
+        onDataChanged()
+    }
 
     fun rollback() {
         if (stamps.isNotEmpty()) {
             stamps.removeAt(stamps.size - 1)
             onDataChanged()
         }
-
     }
-
 
     fun processAll(reason: WriteOffReason) {
         stamps.forEach { processExciseAlcoProductService.add(reason, 1.0, it) }
@@ -77,12 +87,10 @@ class AlcoholStampCollector(private val processExciseAlcoProductService: Process
                 processExciseAlcoProductService.taskRepository.getExciseStamps().isContainsStamp(code)
     }
 
-
     fun clear() {
         stamps.clear()
         onDataChanged()
     }
-
 
     private fun onDataChanged() {
         countLiveData.postValue(stamps.size.toDouble())
@@ -112,13 +120,11 @@ class AlcoholStampCollector(private val processExciseAlcoProductService: Process
             stamps.addAll(anotherAlcoholStampCollector.stamps)
             anotherAlcoholStampCollector.clear()
         }
-
     }
 
     fun getPreparedStampCode(): String? {
         return preparedStampCode
     }
-
 
 }
 

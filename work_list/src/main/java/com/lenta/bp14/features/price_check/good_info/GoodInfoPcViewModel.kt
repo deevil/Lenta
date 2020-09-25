@@ -72,7 +72,7 @@ class GoodInfoPcViewModel : CoreViewModel() {
     private fun checkCode(code: String?) {
         actionByNumber(
                 number = code.orEmpty(),
-                funcForEan = { ean -> searchCode(eanCode = ean) },
+                funcForEan = { ean, _ -> searchCode(eanCode = ean) },
                 funcForMaterial = { material -> searchCode(matNr = material) },
                 funcForPriceQrCode = { qrCode -> searchCode(qrCode = qrCode) },
                 funcForSapOrBar = navigator::showTwelveCharactersEntered,
