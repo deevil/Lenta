@@ -25,25 +25,22 @@ data class TaskTransportMarriageInfo(
     companion object {
         suspend fun from(hyperHive: HyperHive, restData: TaskProcessingUnitInfoRestData, cargoUnitNumber: String, batchNumber: String): TaskTransportMarriageInfo {
             return withContext(Dispatchers.IO) {
-                val zfmpUtz48V001: ZfmpUtz48V001 by lazy {
-                    ZfmpUtz48V001(hyperHive)
-                }
-                val materialInfo = zfmpUtz48V001.getProductInfoByMaterial(restData.materialNumber)
+                val zfmpUtz48V001: ZfmpUtz48V001 = ZfmpUtz48V001(hyperHive)
+                val zmpUtz07V001: ZmpUtz07V001 = ZmpUtz07V001(hyperHive)
 
-                val zmpUtz07V001: ZmpUtz07V001 by lazy {
-                    ZmpUtz07V001(hyperHive)
-                }
+                val materialInfo = zfmpUtz48V001.getProductInfoByMaterial(restData.materialNumber)
                 val uomInfo = zmpUtz07V001.getUomInfo(restData.uom)
-                return@withContext TaskTransportMarriageInfo(
+
+                TaskTransportMarriageInfo(
                         cargoUnitNumber = cargoUnitNumber,
-                        processingUnitNumber = restData.processingUnitNumber,
-                        materialNumber = materialInfo?.material ?: "",
-                        materialName = materialInfo?.name ?: "",
+                        processingUnitNumber = restData.processingUnitNumber.orEmpty(),
+                        materialNumber = materialInfo?.material.orEmpty(),
+                        materialName = materialInfo?.name.orEmpty(),
                         batchNumber = batchNumber,
                         quantity = 0.0,
-                        quantityInvestments = restData.menge.toDouble() ?: 0.0,
-                        uom = Uom(code = uomInfo?.uom ?: "", name = uomInfo?.name ?: ""),
-                        sectionId = materialInfo?.abtnr ?: ""
+                        quantityInvestments = restData.menge?.toDouble() ?: 0.0,
+                        uom = Uom(code = uomInfo?.uom.orEmpty(), name = uomInfo?.name.orEmpty()),
+                        sectionId = materialInfo?.abtnr.orEmpty()
                 )
             }
 
