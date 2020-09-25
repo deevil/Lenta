@@ -2,8 +2,8 @@ package com.lenta.movement.di
 
 import com.lenta.movement.features.task.basket.info.BasketPropertiesExtractor
 import com.lenta.movement.features.task.basket.info.IBasketPropertiesExtractor
-import com.lenta.movement.platform.IResourceManager
-import com.lenta.movement.platform.navigation.ResourceManager
+import com.lenta.movement.platform.IResourcesManager
+import com.lenta.movement.platform.navigation.ResourcesManager
 import com.lenta.shared.di.AppScope
 import dagger.Binds
 import dagger.Module
@@ -12,7 +12,7 @@ import dagger.Module
 interface AppBinds {
     @AppScope
     @Binds
-    fun bindResourceManger(resourceManager: ResourceManager): IResourceManager
+    fun bindResourcesManger(resourcesManager: ResourcesManager): IResourcesManager
 
     @AppScope
     @Binds
