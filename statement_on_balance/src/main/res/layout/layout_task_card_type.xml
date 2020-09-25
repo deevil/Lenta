@@ -58,7 +58,8 @@
                 <TextView
                     style="@style/CellTextStyle"
                     android:maxLines="2"
-                    android:text="@string/mark_quantity_to_processing" />
+                    android:text="@string/mark_quantity_to_processing"
+                    android:textColor="@color/color_text_title_header" />
 
             </LinearLayout>
 

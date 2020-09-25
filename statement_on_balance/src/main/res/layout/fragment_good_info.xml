@@ -1,13 +1,163 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     tools:context="com.lenta.bp15.features.good_info.GoodInfoFragment">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Hello" />
+    <data>
 
-</FrameLayout>
+        <variable
+            name="vm"
+            type="com.lenta.bp15.features.good_info.GoodInfoViewModel" />
+
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Количество -->
+            <LinearLayout style="@style/LinearRowStyle">
+
+                <LinearLayout style="@style/LinearCellStyle">
+
+                    <TextView
+                        style="@style/CellTextStyle"
+                        android:text="@string/quantity"
+                        android:textColor="@color/color_text_title_header" />
+
+                </LinearLayout>
+
+                <View style="@style/VerticalDivider" />
+
+                <LinearLayout style="@style/LinearCellStyle">
+
+                    <com.lenta.shared.view.EditTextWithSuffix
+                        style="@style/CellEditTextStyle"
+                        android:enabled="false"
+                        android:text="@={vm.quantityWithUnits}"
+                        app:digitsForUom="@{null}"
+                        app:suffix="@{null}"
+                        tools:text="1 шт" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View style="@style/HorizontalDivider" />
+
+            <!-- Итого -->
+            <LinearLayout style="@style/LinearRowStyle">
+
+                <LinearLayout style="@style/LinearCellStyle">
+
+                    <TextView
+                        style="@style/CellTextStyle"
+                        android:text="@string/total"
+                        android:textColor="@color/color_text_title_header" />
+
+                </LinearLayout>
+
+                <View style="@style/VerticalDivider" />
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/CellTextStyle"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:text="@{vm.processedOf}"
+                        tools:text="548 из 1000" />
+
+                    <CheckBox
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/size_8dp"
+                        android:checked="@{vm.allMarkProcessed}"
+                        android:enabled="false" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View style="@style/HorizontalDivider" />
+
+            <!-- Количество -->
+            <LinearLayout style="@style/LinearRowStyle">
+
+                <LinearLayout style="@style/LinearCellStyle">
+
+                    <TextView
+                        style="@style/CellTextStyle"
+                        android:text="@string/mark_type"
+                        android:textColor="@color/color_text_title_header" />
+
+                </LinearLayout>
+
+                <View style="@style/VerticalDivider" />
+
+                <LinearLayout style="@style/LinearCellStyle">
+
+                    <TextView
+                        style="@style/CellTextStyle"
+                        android:text="@{vm.goodInfo.markType}"
+                        tools:text="Обувь женская" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View style="@style/HorizontalDivider" />
+
+
+        </LinearLayout>
+
+        <!-- Блок с иконками -->
+        <LinearLayout style="@style/BottomIconBarStyle">
+
+            <LinearLayout style="@style/BottomIconContainerStyle">
+
+                <TextView
+                    style="@style/BottomCircleIconStyle"
+                    app:matrixType="@{vm.goodInfo.matrix}"
+                    tools:text="A" />
+
+            </LinearLayout>
+
+            <LinearLayout style="@style/BottomIconContainerStyle">
+
+                <TextView
+                    style="@style/BottomCircleIconStyle"
+                    app:section="@{vm.goodInfo.section}"
+                    tools:text="02" />
+
+            </LinearLayout>
+
+            <ImageView
+                style="@style/BottomIconStyle"
+                android:onClick="@{(v) -> vm.navigator.showMarkedGoodInfoScreen()}"
+                android:src="@drawable/ic_marked_white_32dp" />
+
+            <View style="@style/BottomIconEmptyPlaceStyle" />
+
+            <View style="@style/BottomIconEmptyPlaceStyle" />
+
+            <View style="@style/BottomIconEmptyPlaceStyle" />
+
+            <ImageView
+                style="@style/BottomIconStyle"
+                android:onClick="@{(v) -> vm.navigator.openESInfoScreen()}"
+                android:src="@drawable/ic_scan_barcode_es_white_32dp" />
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+</layout>

@@ -6,6 +6,7 @@
     <string name="setting_tasks">Задания на постановку</string>
     <string name="good_list">Список товаров</string>
     <string name="task_card">Карточка задания</string>
+    <string name="good_info">Информация о товаре</string>
 
     // Наименование вкладок
     <string name="to_processing">К обработке</string>
@@ -34,5 +35,6 @@
 
     // Разное
     <string name="mark_quantity_to_processing">Количество марок к обработке</string>
+    <string name="mark_type">Тип марки</string>
 
 </resources>
