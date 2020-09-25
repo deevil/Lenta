@@ -11,7 +11,6 @@ import androidx.core.view.children
 import com.lenta.movement.R
 import com.lenta.movement.platform.extensions.implementationOf
 
-private const val HALF_DIVIDER = 2
 class BorderedTableLayout(context: Context?, attrs: AttributeSet?) : TableLayout(context, attrs) {
 
     private val paint: Paint = Paint().apply {
@@ -74,5 +73,9 @@ class BorderedTableLayout(context: Context?, attrs: AttributeSet?) : TableLayout
                     paint
             )
         }
+    }
+
+    companion object {
+        private const val HALF_DIVIDER = 2
     }
 }
