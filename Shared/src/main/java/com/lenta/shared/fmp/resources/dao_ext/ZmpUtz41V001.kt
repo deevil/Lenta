@@ -10,17 +10,17 @@ fun ZmpUtz41V001.isGoodAllowed(controlType: String, taskType: String, goodGroup:
 
 fun ZmpUtz41V001.getTaskAttributeList(taskType: String): Set<String> {
     @Suppress("INACCESSIBLE_TYPE")
-    return localHelper_ET_ALLOW_MATNR.getWhere("TASK_TYPE = \"$taskType\"").map { it.taskCntrl }.toSet()
+    return localHelper_ET_ALLOW_MATNR.getWhere("TASK_TYPE = \"$taskType\"").mapNotNull { it.taskCntrl }.toSet()
 }
 
 fun ZmpUtz41V001.getAllParams(taskType: String): List<CheckParams> {
     @Suppress("INACCESSIBLE_TYPE")
-    return localHelper_ET_ALLOW_MATNR.getWhere("TASK_TYPE = \"$taskType\"").map {
+    return localHelper_ET_ALLOW_MATNR.getWhere("TASK_TYPE = \"$taskType\"").mapNotNull {
         CheckParams(
-                controlType = it.taskCntrl,
-                goodType = it.mtart,
-                goodGroup = it.matkl,
-                purchaseGroup = it.ekgrp
+                controlType = it.taskCntrl.orEmpty(),
+                goodType = it.mtart.orEmpty(),
+                goodGroup = it.matkl.orEmpty(),
+                purchaseGroup = it.ekgrp.orEmpty()
         )
     }
 }
