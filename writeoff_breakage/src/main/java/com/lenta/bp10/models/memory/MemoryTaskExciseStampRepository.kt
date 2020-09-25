@@ -109,7 +109,15 @@ class MemoryTaskExciseStampRepository(
 }
 
 fun ITaskExciseStampRepository.isContainsStamp(code: String): Boolean {
-    return getExciseStamps().firstOrNull { it.code == code } != null
+    val foundStamp = getExciseStamps().firstOrNull { stamp ->
+        if (stamp.isBadStamp) {
+            stamp.code.isNotEmpty() && stamp.code == code
+        } else {
+            stamp.code == code
+        }
+    }
+
+    return foundStamp != null
 }
 
 fun ITaskExciseStampRepository.isContainsBox(boxNumber: String): Boolean {

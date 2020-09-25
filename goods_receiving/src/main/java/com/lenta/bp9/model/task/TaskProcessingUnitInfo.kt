@@ -30,16 +30,16 @@ data class TaskProcessingUnitInfo(
                 val uomInfo = zmpUtz07V001.getUomInfo(restData.uom)
                 val purchaseOrderUnitUomInfo = zmpUtz07V001.getUomInfo(restData.purchaseOrderUnits)
                 return@withContext TaskProcessingUnitInfo(
-                        materialNumber = restData.materialNumber,
-                        processingUnitNumber = restData.processingUnitNumber,
-                        menge = restData.menge.toDouble() ?: 0.0,
-                        uom = Uom(code = uomInfo?.uom ?: "", name = uomInfo?.name ?: ""),
-                        isAlco = restData.isAlco.isNotEmpty(),
-                        isExc = restData.isExc.isNotEmpty(),
-                        purchaseOrderUnits = Uom(code = purchaseOrderUnitUomInfo?.uom ?: "", name = purchaseOrderUnitUomInfo?.name ?: ""),
-                        quantityInvestments = restData.quantityInvestments.toDouble() ?: 0.0,
-                        isBoxFl = restData.isBoxFl.isNotEmpty(),
-                        isStampFl = restData.isStampFl.isNotEmpty()
+                        materialNumber = restData.materialNumber.orEmpty(),
+                        processingUnitNumber = restData.processingUnitNumber.orEmpty(),
+                        menge = restData.menge?.toDouble() ?: 0.0,
+                        uom = Uom(code = uomInfo?.uom ?: "", name = uomInfo?.name.orEmpty()),
+                        isAlco = restData.isAlco?.isNotEmpty() == true,
+                        isExc = restData.isExc?.isNotEmpty() == true,
+                        purchaseOrderUnits = Uom(code = purchaseOrderUnitUomInfo?.uom.orEmpty(), name = purchaseOrderUnitUomInfo?.name.orEmpty()),
+                        quantityInvestments = restData.quantityInvestments?.toDouble() ?: 0.0,
+                        isBoxFl = restData.isBoxFl?.isNotEmpty() == true,
+                        isStampFl = restData.isStampFl?.isNotEmpty() == true
                 )
             }
         }
@@ -49,49 +49,51 @@ data class TaskProcessingUnitInfo(
 data class TaskProcessingUnitInfoRestData(
         //Номер товара
         @SerializedName("MATNR")
-        val materialNumber: String,
+        val materialNumber: String?,
         //Номер ЕО
         @SerializedName("EXIDV")
-        val processingUnitNumber: String,
+        val processingUnitNumber: String?,
         //Кол-во в заказе
         @SerializedName("MENGE")
-        val menge: String,
+        val menge: String?,
         //базисная единица измерения
         @SerializedName("MEINS")
-        val uom: String,
+        val uom: String?,
         //Индикатор: Алкоголь
         @SerializedName("IS_ALCO")
-        val isAlco: String,
+        val isAlco: String?,
         //Признак – товар акцизный
         @SerializedName("IS_EXC")
-        val isExc: String,
+        val isExc: String?,
         //ЕИ заказа на поставку
         @SerializedName("BSTME")
-        val purchaseOrderUnits: String,
+        val purchaseOrderUnits: String?,
         //кол-во вложения
         @SerializedName("QNTINCL")
-        val quantityInvestments: String,
+        val quantityInvestments: String?,
         //Общий флаг
         @SerializedName("IS_BOX_FL")
-        val isBoxFl: String,
+        val isBoxFl: String?,
         //Общий флаг
         @SerializedName("IS_MARK_FL")
-        val isStampFl: String
+        val isStampFl: String?
 ) {
 
     companion object {
+        private const val DEFAULT_MARKER = "X"
+
         fun from(data: TaskProcessingUnitInfo): TaskProcessingUnitInfoRestData {
             return TaskProcessingUnitInfoRestData(
                     materialNumber = data.materialNumber,
                     processingUnitNumber = data.processingUnitNumber,
                     menge = data.menge.toString(),
                     uom = data.uom.code,
-                    isAlco = if (data.isAlco) "X" else "",
-                    isExc = if (data.isExc) "X" else "",
+                    isAlco = if (data.isAlco) DEFAULT_MARKER else "",
+                    isExc = if (data.isExc) DEFAULT_MARKER else "",
                     purchaseOrderUnits = data.purchaseOrderUnits.code,
                     quantityInvestments = data.quantityInvestments.toString(),
-                    isBoxFl = if (data.isBoxFl) "X" else "",
-                    isStampFl = if (data.isStampFl) "X" else ""
+                    isBoxFl = if (data.isBoxFl) DEFAULT_MARKER else "",
+                    isStampFl = if (data.isStampFl) DEFAULT_MARKER else ""
             )
         }
     }
