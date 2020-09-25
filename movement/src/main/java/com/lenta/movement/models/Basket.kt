@@ -11,7 +11,8 @@ class Basket(
     val isNotExciseAlco: Boolean?,
     val isUsual: Boolean?,
     val isVet: Boolean?,
-    val isFood: Boolean?
+    val isFood: Boolean?,
+    val matkl: String?
 ) : MutableMap<ProductInfo, Int> by mutableMapOf() {
 
     override val size: Int
@@ -38,6 +39,7 @@ class Basket(
                 isUsual?.equals(product.isUsual) ?: true &&
                 isVet?.equals(product.isVet) ?: true &&
                 isFood?.equals(product.isFood) ?: true &&
-                this.supplier?.equals(supplier) ?: true
+                this.supplier?.equals(supplier) ?: true &&
+                matkl?.equals(product.matkl) ?: true
     }
 }

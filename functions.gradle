@@ -46,25 +46,12 @@ def getCodeVersion() {
     }
 }
 
-def getCommitHash() {
-    try {
-        def stdout = new ByteArrayOutputStream()
-        exec {
-            commandLine 'git', 'rev-parse', '--short', 'HEAD'
-            standardOutput = stdout
-        }
-        return stdout.toString().trim()
-    } catch (ignored) {
-        return ""
-    }
-}
-
 String getNameVersion(String prefixAppVersion) {
     String lastTag = getLastTag(prefixAppVersion)
     if (lastTag == null) {
         return prefixAppVersion + ".0." + getCodeVersion()
     }
-    return lastTag + "." + gitCommitsSinceTag(lastTag) + "." + getCommitHash()
+    return lastTag + "." + gitCommitsSinceTag(lastTag)
 }
 
 ext {

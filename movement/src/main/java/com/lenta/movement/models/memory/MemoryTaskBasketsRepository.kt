@@ -84,7 +84,8 @@ class MemoryTaskBasketsRepository(
                         isNotExciseAlco = product.isNotExcise.takeIf { signOfDiv.contains(GoodsSignOfDivision.PARTS) },
                         isUsual = product.isUsual.takeIf { signOfDiv.contains(GoodsSignOfDivision.USUAL) },
                         isVet = product.isVet.takeIf { signOfDiv.contains(GoodsSignOfDivision.VET) },
-                        isFood = product.isFood.takeIf { signOfDiv.contains(GoodsSignOfDivision.FOOD) }
+                        isFood = product.isFood.takeIf { signOfDiv.contains(GoodsSignOfDivision.FOOD) },
+                        matkl = product.matkl.takeIf { signOfDiv.contains(GoodsSignOfDivision.MATERIAL_NUMBER) }
                 ).also {
                     basketList.add(it)
                 }
