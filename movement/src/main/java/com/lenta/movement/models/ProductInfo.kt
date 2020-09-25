@@ -11,6 +11,7 @@ open class ProductInfo(
         isSet: Boolean,
         sectionId: String,
         matrixType: MatrixType,
+        //Вид товара
         materialType: String,
         /** Группа закупок */
         val ekGroup: String,
@@ -23,7 +24,7 @@ open class ProductInfo(
         val isVet: Boolean,
         val isFood: Boolean
 
-): ProductInfo(materialNumber, description, uom, type, isSet, sectionId, matrixType, materialType) {
+) : ProductInfo(materialNumber, description, uom, type, isSet, sectionId, matrixType, materialType) {
 
     val isAlco: Boolean
         get() = type != ProductType.General
