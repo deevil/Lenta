@@ -3,8 +3,11 @@ package com.lenta.bp12.platform.extention
 import android.text.Editable
 import com.lenta.bp12.R
 import com.lenta.bp12.model.*
+import com.lenta.bp12.model.pojo.Good
+import com.lenta.bp12.model.pojo.Part
 import com.lenta.bp12.model.pojo.TaskType
 import com.lenta.bp12.platform.ZERO_QUANTITY
+import com.lenta.bp12.request.ScanInfoResult
 import com.lenta.bp12.request.pojo.CreateTaskBasketInfo
 import com.lenta.bp12.request.pojo.TaskInfo
 import com.lenta.bp12.request.pojo.good_info.GoodInfoResult
@@ -17,7 +20,9 @@ import com.lenta.shared.utilities.enumValueOrNull
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.getConvertedQuantity
 import com.lenta.shared.utilities.extentions.isSapTrue
+import com.lenta.shared.utilities.getDateFromString
 import com.lenta.shared.utilities.orIfNull
+import java.util.*
 
 fun GoodKind.getDescriptionResId(): Int {
     return when (this) {
@@ -162,6 +167,24 @@ fun ScanCodeInfo.getConvertedQuantityString(divider: Double): String {
     return converted.dropZeros()
 }
 
+fun ScanInfoResult.getParts(good: Good, date: String, providerCode: String, producerCode: String): List<Part> {
+    val formattedDate = try {
+        getDateFromString(date, Constants.DATE_FORMAT_dd_mm_yyyy)
+    } catch (e: RuntimeException) {
+        Date()
+    }
+
+    return this.parts?.map { partFromServer ->
+        Part(
+                number = partFromServer.partNumber.orEmpty(),
+                material = good.material,
+                providerCode = providerCode,
+                producerCode = producerCode,
+                date = formattedDate
+        )
+    }.orEmpty()
+}
+
 fun <T> MutableCollection<T>.addIf(predicate: Boolean, whatToAdd: () -> T) {
     if (predicate) this.add(whatToAdd())
 }
@@ -177,3 +200,4 @@ infix fun<T> Holder<T>.ifTrue(predictValue: Boolean) {
 }
 
 data class Holder<T>(val value:T, val who:MutableCollection<T> )
+

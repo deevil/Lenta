@@ -10,12 +10,8 @@ import com.lenta.bp12.managers.interfaces.ICreateTaskManager
 import com.lenta.bp12.model.*
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.Mark
-import com.lenta.bp12.model.pojo.Part
 import com.lenta.bp12.model.pojo.Position
-import com.lenta.bp12.model.pojo.extentions.addMark
-import com.lenta.bp12.model.pojo.extentions.addMarks
-import com.lenta.bp12.model.pojo.extentions.addPosition
-import com.lenta.bp12.model.pojo.extentions.getScreenStatus
+import com.lenta.bp12.model.pojo.extentions.*
 import com.lenta.bp12.platform.*
 import com.lenta.bp12.platform.extention.*
 import com.lenta.bp12.platform.navigation.IScreenNavigator
@@ -36,12 +32,10 @@ import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.*
-import com.lenta.shared.utilities.getDateFromString
 import com.lenta.shared.utilities.getFormattedDate
 import com.lenta.shared.utilities.orIfNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.util.*
 import javax.inject.Inject
 
 class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAdapter.AfterTextChanged {
@@ -115,7 +109,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
     Ввод количества
      */
 
-    val quantityField = MutableLiveData("0")
+    val quantityField = MutableLiveData(ZERO_QUANTITY_STRING)
 
     override val quantity = quantityField.map {
         it?.toDoubleOrNull() ?: ZERO_QUANTITY
@@ -278,9 +272,9 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
         launchUITryCatch {
             result.status.let { status ->
                 if (status == PartStatus.FOUND.code) {
-                    saveChanges()
+                    saveChanges(result)
                 } else {
-                    navigator.openAlertScreen(result.statusDescription)
+                    navigator.openAlertScreen(result.statusDescription.orEmpty())
                 }
             }
         }
@@ -310,14 +304,15 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
      * */
     private fun getGoodByEan(ean: String) {
         launchUITryCatch {
-            navigator.showProgressLoadingData()
-            val foundGood = withContext(Dispatchers.IO) { manager.findGoodByEan(ean) }
-            navigator.hideProgress()
-            foundGood?.let {
-                lastSuccessSearchNumber = ean
-                isEanLastScanned = true
-                setFoundGood(it)
-            }.orIfNull { loadGoodInfoByEan(ean) }
+            loadGoodInfoByEan(ean)
+//            navigator.showProgressLoadingData()
+//            val foundGood = withContext(Dispatchers.IO) { manager.findGoodByEan(ean) }
+//            navigator.hideProgress()
+//            foundGood?.let {
+//                lastSuccessSearchNumber = ean
+//                isEanLastScanned = true
+//                setFoundGood(it)
+//            }.orIfNull { loadGoodInfoByEan(ean) }
         }
     }
 
@@ -365,22 +360,25 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
     }
 
     private fun getQuantityForCommonGood(good: Good): String {
-        val ean = manager.ean
+        val ean = originalSearchNumber
         val isEanLastScanned = ean.isNotEmpty()
         return if (good.isDifferentUnits() && isEanLastScanned) {
             ScanCodeInfo(ean).getConvertedQuantityString(good.innerQuantity)
         } else {
-            chooseOneOrZeroQuantity(isEanLastScanned)
+            getBoxOrOneQuantity(isEanLastScanned, good)
         }
     }
 
-    private fun chooseOneOrZeroQuantity(isEanLastScanned: Boolean): String {
-        return if (isEanLastScanned) {
-            DEFAULT_QUANTITY_STRING_FOR_EAN
-        } else {
-            DEFAULT_QUANTITY_STRING
+    private fun getBoxOrOneQuantity(isEanLastScanned: Boolean, good: Good): String {
+        return good.quantityForBox.takeIf { it > ZERO_QUANTITY }?.toString().orIfNull {
+            if (isEanLastScanned) {
+                DEFAULT_QUANTITY_STRING_FOR_EAN
+            } else {
+                DEFAULT_QUANTITY_STRING
+            }
         }
     }
+
 
     private fun setScreenStatus(good: Good) {
         screenStatus.value = good.getScreenStatus()
@@ -467,7 +465,9 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
                         producers = producers.orEmpty().toMutableList(),
                         volume = materialInfo?.volume?.toDoubleOrNull() ?: ZERO_VOLUME,
                         purchaseGroup = materialInfo?.purchaseGroup.orEmpty()
-                )
+                ).apply {
+                    setQuantityForBox(eanInfo)
+                }
 
                 lastSuccessSearchNumber = number
                 setFoundGood(good)
@@ -502,10 +502,10 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
                     ExciseMarkStatus.OK.code -> addMarkExciseInfo(result)
                     ExciseMarkStatus.BAD.code -> {
                         addMarkExciseInfo(result)
-                        navigator.openAlertScreen(result.statusDescription)
+                        navigator.openAlertScreen(result.statusDescription.orEmpty())
                     }
                     ExciseMarkStatus.UNKNOWN.code -> handleUnknownMark(number, result)
-                    else -> navigator.openAlertScreen(result.statusDescription)
+                    else -> navigator.openAlertScreen(result.statusDescription ?: resource.error)
                 }
             }
         }
@@ -513,7 +513,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
 
     private suspend fun handleUnknownMark(number: String, result: ScanInfoResult) {
         when (number.length) {
-            Constants.EXCISE_MARK_150 -> navigator.openAlertScreen(result.statusDescription)
+            Constants.EXCISE_MARK_150 -> navigator.openAlertScreen(result.statusDescription.orEmpty())
             Constants.EXCISE_MARK_68 -> {
                 val alcoCodeInfoList = database.getAlcoCodeInfoList(number.extractAlcoCode())
 
@@ -540,8 +540,12 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
         when (originalSearchNumber.length) {
             Constants.EXCISE_MARK_150 -> {
                 screenStatus.value = ScreenStatus.MARK_150
-                updateProducers(result.producers.toMutableList())
-                date.value = getFormattedDate(result.producedDate, Constants.DATE_FORMAT_yyyy_mm_dd, Constants.DATE_FORMAT_dd_mm_yyyy)
+                updateProducers(result.producers.orEmptyMutable())
+                try {
+                    date.value = getFormattedDate(result.producedDate.orEmpty(), Constants.DATE_FORMAT_yyyy_mm_dd, Constants.DATE_FORMAT_dd_mm_yyyy)
+                } catch (e: RuntimeException) {
+
+                }
             }
             Constants.EXCISE_MARK_68 -> {
                 screenStatus.value = ScreenStatus.MARK_68
@@ -579,7 +583,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
         launchUITryCatch {
             when (result.status) {
                 BoxStatus.OK.code -> addBoxInfo(result)
-                else -> navigator.openAlertScreen(result.statusDescription)
+                else -> navigator.openAlertScreen(result.statusDescription ?: resource.error)
             }
         }
     }
@@ -589,19 +593,27 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
         lastSuccessSearchNumber = originalSearchNumber
         isExistUnsavedData = true
         scanInfoResult.value = result
-        quantityField.value = result.exciseMarks.size.toString()
-        date.value = getFormattedDate(result.producedDate, Constants.DATE_FORMAT_yyyy_mm_dd, Constants.DATE_FORMAT_dd_mm_yyyy)
-        updateProducers(result.producers.toMutableList())
+        quantityField.value = result.exciseMarks?.size?.toString().orIfNull { ZERO_QUANTITY_STRING }
+        try {
+            date.value = getFormattedDate(result.producedDate.orEmpty(), Constants.DATE_FORMAT_yyyy_mm_dd, Constants.DATE_FORMAT_dd_mm_yyyy)
+        } catch (e: java.lang.RuntimeException) {
+
+        }
+        updateProducers(result.producers.orEmptyMutable())
     }
 
     private suspend fun checkPart(): Either<Failure, ScanInfoResult> {
         navigator.showProgressLoadingData(::handleFailure)
 
-        val formattedDate = getFormattedDate(
-                date = date.value.orEmpty(),
-                sourcePattern = Constants.DATE_FORMAT_dd_mm_yyyy,
-                targetPattern = Constants.DATE_FORMAT_yyyy_mm_dd
-        )
+        val formattedDate = try {
+            getFormattedDate(
+                    date = date.value.orEmpty(),
+                    sourcePattern = Constants.DATE_FORMAT_dd_mm_yyyy,
+                    targetPattern = Constants.DATE_FORMAT_yyyy_mm_dd
+            )
+        } catch (e: RuntimeException) {
+            return Either.Left(Failure.MessageFailure(resource.wrongDate))
+        }
 
         val quantityFromField = quantity.value ?: ZERO_QUANTITY
 
@@ -659,7 +671,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
         sourceProducers.value = producers
     }
 
-    override suspend fun saveChanges() {
+    override suspend fun saveChanges(result: ScanInfoResult?) {
         screenStatus.value?.let { status ->
             good.value?.let { good ->
                 manager.saveGoodInTask(good)
@@ -672,7 +684,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
             when (status) {
                 ScreenStatus.COMMON -> addPosition()
                 ScreenStatus.MARK_150, ScreenStatus.MARK_68 -> addMark()
-                ScreenStatus.ALCOHOL, ScreenStatus.PART -> addPart()
+                ScreenStatus.ALCOHOL, ScreenStatus.PART -> addPart(result)
                 ScreenStatus.BOX -> addBox()
                 else -> Unit
             }
@@ -719,28 +731,18 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
         }
     }
 
-    private suspend fun addPart() {
+    private suspend fun addPart(result: ScanInfoResult?) {
         good.value?.let { changedGood ->
             val quantityValue = quantity.value ?: ZERO_QUANTITY
-
-            val localDate = date.value?.let {
-                try {
-                    getDateFromString(it, Constants.DATE_FORMAT_dd_mm_yyyy)
-                } catch (e: RuntimeException) {
-                    Date()
-                }
-            } ?: Date()
-
-            val part = Part(
-                    number = lastSuccessSearchNumber,
-                    material = changedGood.material,
+            val parts = result?.getParts(
+                    good = changedGood,
+                    date = date.value.orEmpty(),
                     providerCode = getProviderCode(),
-                    producerCode = getProducerCode(),
-                    date = localDate
+                    producerCode = getProducerCode()
             )
             manager.addOrDeleteGoodToBasket(
                     good = changedGood,
-                    part = part,
+                    parts = parts,
                     provider = getProvider(),
                     count = quantityValue
             )
@@ -810,9 +812,10 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
                     checkPart().either(::handleCheckPartFailure) { result ->
                         result.status.let { status ->
                             if (status == PartStatus.FOUND.code) {
-                                saveChangesAndExit()
+                                saveChangesAndExit(result)
                             } else {
-                                navigator.openAlertScreen(result.statusDescription)
+                                navigator.openAlertScreen(result.statusDescription
+                                        ?: resource.error)
                             }
                         }
                     }
@@ -822,10 +825,10 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
         }
     }
 
-    override fun saveChangesAndExit() {
+    override fun saveChangesAndExit(result: ScanInfoResult?) {
         launchUITryCatch {
             navigator.showProgressLoadingData()
-            saveChanges()
+            saveChanges(result)
             navigator.hideProgress()
             if (task.value?.baskets?.isEmpty() == false) {
                 navigator.openBasketCreateGoodListScreen()
@@ -847,5 +850,9 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
 
     override fun afterTextChanged(s: Editable?) {
         quantityField.value = s.returnWithNoSecondMinus()
+    }
+
+    companion object {
+        private const val ZERO_QUANTITY_STRING = "0"
     }
 }

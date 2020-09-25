@@ -3,6 +3,8 @@ package com.lenta.bp12.model.pojo.extentions
 import com.lenta.bp12.model.GoodKind
 import com.lenta.bp12.model.ScreenStatus
 import com.lenta.bp12.model.pojo.*
+import com.lenta.bp12.request.pojo.EanInfo
+import com.lenta.shared.models.core.Uom
 import com.lenta.shared.utilities.extentions.sumWith
 
 fun Good.addPosition(position: Position) {
@@ -108,4 +110,17 @@ fun Good.clearMarksPartsPositions() {
     this.marks.clear()
     this.parts.clear()
     this.positions.clear()
+}
+
+fun Good.setQuantityForBox(eanInfo: EanInfo?){
+    if (eanInfo?.unitCode == Uom.DATA_KAR) {
+        eanInfo.umrez?.toIntOrNull()?.let { umrez ->
+            eanInfo.umren?.toIntOrNull()?.let { umren ->
+                val boxQuantity = umrez / umren
+                quantityForBox = boxQuantity
+            }
+        }
+    } else {
+        quantityForBox = -1
+    }
 }

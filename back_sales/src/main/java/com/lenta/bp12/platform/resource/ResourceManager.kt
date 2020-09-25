@@ -16,6 +16,8 @@ class ResourceManager @Inject constructor(
     override val basketNotFoundErrorMsg: String by lazy { context.getString(R.string.basket_not_found_error_msg) }
     override val taskNotFoundErrorMsg: String by lazy { context.getString(R.string.task_not_found_error_msg) }
     override val rub: String by lazy { context.getString(R.string.rub) }
+    override val wrongDate: String by lazy { context.getString(R.string.wrong_date_error_msg) }
+    override val error: String by lazy { context.getString(R.string.error) }
     override val noStatusMark: String by lazy { context.getString(R.string.no_status_mark) }
 
     override fun tk(number: String): String = context.getString(R.string.tk_number, number)
@@ -49,7 +51,7 @@ class ResourceManager @Inject constructor(
     override fun goodList(): String = context.getString(R.string.good_list)
 
     override fun taskContent(): String = context.getString(R.string.task_content)
-    
+
     override fun mrcDashCostRub(mrc: String): String = context.getString(R.string.mrc_dash_cost_rub, mrc)
 
     override fun mrcSpaceRub(mrc: String): String = context.getString(R.string.mrc_space_rub, mrc)
@@ -64,6 +66,8 @@ interface IResourceManager {
     val taskNotFoundErrorMsg: String
     val noStatusMark: String
     val rub: String
+    val wrongDate: String
+    val error: String
 
     fun tk(number: String): String
     fun backSalesFromDate(date: String): String

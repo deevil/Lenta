@@ -9,6 +9,7 @@ import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.request.ScanInfoNetRequest
+import com.lenta.bp12.request.ScanInfoResult
 import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.account.ISessionInfo
 
@@ -63,9 +64,9 @@ interface IBaseGoodInfoCreateViewModel {
 
     fun updateData()
     fun onClickApply()
-    fun saveChangesAndExit()
+    fun saveChangesAndExit(result: ScanInfoResult? = null)
 
-    suspend fun saveChanges()
+    suspend fun saveChanges(result: ScanInfoResult? = null)
     fun onClickDetails()
     fun onClickRollback()
     fun onClickClose()

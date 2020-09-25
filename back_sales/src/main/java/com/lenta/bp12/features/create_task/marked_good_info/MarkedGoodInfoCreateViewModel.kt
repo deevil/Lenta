@@ -20,6 +20,7 @@ import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.request.GoodInfoNetRequest
 import com.lenta.bp12.request.MarkCartonBoxGoodInfoNetRequest
 import com.lenta.bp12.request.ScanInfoNetRequest
+import com.lenta.bp12.request.ScanInfoResult
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.utilities.Logg
@@ -344,7 +345,7 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
         good.postValue(goodValue)
     }
 
-    override suspend fun saveChanges() {
+    override suspend fun saveChanges(result: ScanInfoResult?) {
         good.value?.let { good ->
             manager.saveGoodInTask(good)
             addMarks(good)
@@ -388,12 +389,12 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
         saveChangesAndExit()
     }
 
-    override fun saveChangesAndExit() {
+    override fun saveChangesAndExit(result: ScanInfoResult?) {
         launchUITryCatch {
             with(navigator) {
                 isExistUnsavedData = false
                 showProgressLoadingData()
-                saveChanges()
+                saveChanges(result)
                 hideProgress()
                 openBasketCreateGoodListScreen()
                 manager.isBasketsNeedsToBeClosed = false
