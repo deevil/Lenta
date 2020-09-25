@@ -1,5 +1,7 @@
 package com.lenta.shared.fmp.resources.slow;
 
+import androidx.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 import com.mobrun.plugin.api.HyperHive;
 import com.mobrun.plugin.api.helper.LocalTableResourceHelper;
@@ -37,95 +39,117 @@ public class ZfmpUtz48V001 {
 
     public static class ItemLocal_ET_MATNR_LIST {
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("MATERIAL")
         public String material;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("NAME")
         public String name;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("MATYPE")
         public String matype;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("MATCODE")
         public String matcode;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("BUOM")
         public String buom;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("BSTME")
         public String bstme;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("MATR_TYPE")
         public String matrType;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("ABTNR")
         public String abtnr;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("IS_RETURN")
         public String isReturn;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("IS_EXC")
         public String isExc;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("IS_ALCO")
         public String isAlco;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("IS_SET")
         public String isSet;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("MATKL")
         public String matkl;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("EKGRP")
         public String ekgrp;
 
         //  type: BIGINT, source: {'name': 'SAP', 'type': 'I'}
+        @Nullable
         @SerializedName("MHDHB_DAYS")
         public Integer mhdhbDays;
 
         //  type: BIGINT, source: {'name': 'SAP', 'type': 'I'}
+        @Nullable
         @SerializedName("MHDRZ_DAYS")
         public Integer mhdrzDays;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("IS_MARK")
         public String isMark;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("IS_VET")
         public String isVet;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("IS_VRUS")
         public String isRusWine;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("IS_HF")
         public String isHf;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("IS_NEW")
         public String isNew;
 
+        @Nullable
         @SerializedName("ZMARKTYPE")
         public String markType;
 
+        @Nullable
         @SerializedName("IS_MRK_MIX")
         public String isMarkedGood;
-
     }
 
 

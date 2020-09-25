@@ -2,6 +2,7 @@ package com.lenta.movement.requests.network.models.scanInfoNetRequest
 
 import com.google.gson.annotations.SerializedName
 import com.lenta.shared.models.core.Supplier
+import com.lenta.shared.requests.SapResponse
 
 data class ScanInfoResult(
         @SerializedName("ES_EAN")
@@ -15,7 +16,7 @@ data class ScanInfoResult(
         @SerializedName("ET_PROD")
         val egaisOrg: List<ScanInfoEgaisOrg>?,
         @SerializedName("EV_ERROR_TEXT")
-        val errorText: String?,
+        override val errorText: String?,
         @SerializedName("EV_RETCODE")
-        val retCode: Int?
-)
+        override val retCode: Int?
+): SapResponse
