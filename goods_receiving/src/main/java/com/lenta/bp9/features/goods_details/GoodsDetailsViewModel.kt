@@ -499,13 +499,6 @@ class GoodsDetailsViewModel : CoreViewModel() {
                                             ?.isNotEmpty()
                                             ?: false
                             //todo end
-                            val isDepProductDiscrepancies = (taskManager.getTaskType() == TaskType.DirectSupplier && typeDiscrepancies != TYPE_DISCREPANCIES_QUALITY_NORM)
-                                    || (taskManager.getTaskType() == TaskType.RecalculationCargoUnit && !isShelfLifeObtainedFromEWM)
-                            if (isDepProductDiscrepancies) { //todo это надо для ППП и для ПГЕ, но для ПГЕ только в случае, когда isShelfLifeObtainedFromEWM == false (СГ не получены из EWM)
-                                taskRepository
-                                        ?.getProductsDiscrepancies()
-                                        ?.deleteProductDiscrepancy(materialNumber, typeDiscrepancies)
-                            }
 
                             if (taskManager.getTaskType() == TaskType.DirectSupplier) {
                                 if (typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM) { //todo в ППП сохраняем норму как по z-партиям, так и по товару, поэтому чистим обе таблицы
@@ -525,24 +518,29 @@ class GoodsDetailsViewModel : CoreViewModel() {
                                             ?.getProductsDiscrepancies()
                                             ?.deleteProductDiscrepancy(materialNumber, typeDiscrepancies)
                                 }
-
+                                return@map
                             }
 
                             if (taskManager.getTaskType() == TaskType.RecalculationCargoUnit) { //todo в ПГЕ сохраняем норму как по z-партиям, так и по товару, а брак по z-партиям сохраняем только, когда isShelfLifeObtainedFromEWM == true (СГ получены из EWM), если не получены, то брак по z-партиям не сохраням, только по товарам
+                                if ((typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM || typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS)  || isShelfLifeObtainedFromEWM) {
+                                    goodsDetailsItem
+                                            ?.zBatchDiscrepancies
+                                            ?.let {
+                                                taskRepository
+                                                        ?.getZBatchesDiscrepancies()
+                                                        ?.deleteZBatchDiscrepancies(it)
 
+                                                taskRepository
+                                                        ?.getProductsDiscrepancies()
+                                                        ?.deleteProductDiscrepancyByBatch(materialNumber, typeDiscrepancies, it.numberDiscrepancies.toDouble())
+                                            }
+                                } else {
+                                    taskRepository
+                                            ?.getProductsDiscrepancies()
+                                            ?.deleteProductDiscrepancy(materialNumber, typeDiscrepancies)
+                                }
                             }
-
-                            goodsDetailsItem
-                                    ?.zBatchDiscrepancies
-                                    ?.let {
-                                        taskRepository
-                                                ?.getZBatchesDiscrepancies()
-                                                ?.deleteZBatchDiscrepancies(it)
-
-                                        taskRepository
-                                                ?.getProductsDiscrepancies()
-                                                ?.deleteProductDiscrepancyByBatch(materialNumber, typeDiscrepancies, it.numberDiscrepancies.toDouble())
-                                    }
+                            return@map
                         }
                         else -> {
                             taskRepository

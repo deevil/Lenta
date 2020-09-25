@@ -227,9 +227,12 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepo
                         ?.let { it - quantityByDiscrepancyForBatch }
                         ?: 0.0
 
-        findProductDiscrepanciesOfProduct(materialNumber)
-                .findLast { it.typeDiscrepancies == typeDiscrepancies }
-                ?.let { changeProductDiscrepancy(it.copy(numberDiscrepancies = residueByDiscrepancyForProduct.toString())) }
+        val productDiscrepanciesOfProduct = findProductDiscrepanciesOfProduct(materialNumber).findLast { it.typeDiscrepancies == typeDiscrepancies }
+        if (residueByDiscrepancyForProduct > 0.0) {
+            productDiscrepanciesOfProduct?.let { changeProductDiscrepancy(it.copy(numberDiscrepancies = residueByDiscrepancyForProduct.toString())) }
+        } else {
+            productDiscrepanciesOfProduct?.let { deleteProductDiscrepancy(it) }
+        }
     }
 
     override fun getCountAcceptOfProduct(product: TaskProductInfo): Double {

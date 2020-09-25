@@ -2,6 +2,7 @@ package com.lenta.bp9.model.processing
 
 import com.lenta.bp9.model.task.*
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS
 import com.lenta.shared.di.AppScope
 import javax.inject.Inject
 
@@ -120,7 +121,8 @@ class ProcessZBatchesPGEService
     ) {
         changeProductDiscrepancy(count, typeDiscrepancies, processingUnit)
 
-        if (typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM || isShelfLifeObtainedFromEWM) {
+        if ((typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM || typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS)
+                || isShelfLifeObtainedFromEWM) {
             changeZBatchDiscrepancy(count, typeDiscrepancies, manufactureCode, shelfLifeDate, shelfLifeTime, processingUnit)
             changePartySign(typeDiscrepancies, manufactureCode, shelfLifeDate, shelfLifeTime, productionDate, processingUnit, partySignsType)
         }
