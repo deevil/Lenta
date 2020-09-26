@@ -71,6 +71,7 @@
     <string name="untie">Отвязать</string>
     <string name="published">Опубликовано</string>
     <string name="counted">Посчитано</string>
+    <string name="processed">Обработано</string>
     <string name="full">Полный</string>
     <string name="temporary">Временный</string>
     <string name="deliveries">Поставки</string>

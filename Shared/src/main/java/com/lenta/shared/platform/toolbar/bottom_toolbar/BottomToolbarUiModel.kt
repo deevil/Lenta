@@ -285,6 +285,10 @@ data class ButtonDecorationInfo(
             ButtonDecorationInfo(R.drawable.ic_calc_done_white_24dp, R.string.counted)
         }
 
+        val processed: ButtonDecorationInfo by lazy {
+            ButtonDecorationInfo(R.drawable.ic_calc_done_white_24dp, R.string.processed)
+        }
+
         val find: ButtonDecorationInfo by lazy {
             ButtonDecorationInfo(R.drawable.ic_loupe_white_24dp, R.string.find)
         }

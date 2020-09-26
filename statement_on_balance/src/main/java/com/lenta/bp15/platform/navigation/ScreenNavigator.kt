@@ -19,6 +19,7 @@ import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.CustomAnimation
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.navigation.runOrPostpone
+import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.progress.IProgressUseCaseInformator
 import javax.inject.Inject
 
@@ -116,7 +117,104 @@ class ScreenNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.marked_good),
-                    iconRes = com.lenta.shared.R.drawable.ic_marked_white_32dp), CustomAnimation.vertical)
+                    iconRes = R.drawable.ic_marked_white_32dp), CustomAnimation.vertical
+            )
+        }
+    }
+
+    override fun showUnsavedDataFoundOnDevice(deleteCallback: () -> Unit, goOverCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.unsaved_data_found_on_device),
+                    iconRes = R.drawable.ic_question_yellow_80dp,
+                    codeConfirmForButton3 = backFragmentResultHelper.setFuncForResult(deleteCallback),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(goOverCallback),
+                    buttonDecorationInfo3 = ButtonDecorationInfo.delete,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.goOver
+            ))
+        }
+    }
+
+    override fun showMakeTaskProcessedAndClose(yesCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.make_task_processed_and_close),
+                    iconRes = R.drawable.ic_question_yellow_80dp,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.yes
+            ))
+        }
+    }
+
+    override fun showSuccessSaveData(callbackFunc: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.success_save_report),
+                    iconRes = R.drawable.ic_done_green_80dp,
+                    timeAutoExitInMillis = 3000,
+                    leftButtonDecorationInfo = ButtonDecorationInfo.empty,
+                    codeConfirmForExit = backFragmentResultHelper.setFuncForResult(callbackFunc)
+            ))
+        }
+    }
+
+    override fun showUnprocessedGoodsInTask(publishedCallback: () -> Unit, processedCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.unprocessed_goods_in_task),
+                    iconRes = R.drawable.ic_warning_red_80dp,
+                    codeConfirmForButton3 = backFragmentResultHelper.setFuncForResult(publishedCallback),
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(processedCallback),
+                    buttonDecorationInfo3 = ButtonDecorationInfo.published,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.processed
+            ))
+        }
+    }
+
+    override fun showRequiredToDestroyNonGluedStamps(nextCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.required_to_destroy_non_glued_stamps),
+                    iconRes = R.drawable.ic_warning_red_80dp,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.next
+            ))
+        }
+    }
+
+    override fun showGoodIsMissingFromTask(material: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.good_is_missing_from_task, material),
+                    iconRes = R.drawable.ic_warning_red_80dp
+            ))
+        }
+    }
+
+    override fun showStampAlreadyProcessed() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.stamp_already_processed),
+                    iconRes = R.drawable.ic_warning_red_80dp
+            ))
+        }
+    }
+
+    override fun showInvalidBarcodeFormatScanned() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.invalid_barcode_format_scanned),
+                    iconRes = R.drawable.ic_warning_red_80dp
+            ))
+        }
+    }
+
+    override fun showScannedStampIsNotOnTask() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.scanned_stamp_is_not_on_task),
+                    iconRes = R.drawable.ic_warning_red_80dp
+            ))
         }
     }
 
@@ -139,5 +237,14 @@ interface IScreenNavigator : ICoreNavigator {
     fun openSearchTaskScreen()
 
     fun showMarkedGoodInfoScreen()
+    fun showUnsavedDataFoundOnDevice(deleteCallback: () -> Unit, goOverCallback: () -> Unit)
+    fun showMakeTaskProcessedAndClose(yesCallback: () -> Unit)
+    fun showSuccessSaveData(callbackFunc: () -> Unit)
+    fun showUnprocessedGoodsInTask(publishedCallback: () -> Unit, processedCallback: () -> Unit)
+    fun showRequiredToDestroyNonGluedStamps(nextCallback: () -> Unit)
+    fun showGoodIsMissingFromTask(material: String)
+    fun showStampAlreadyProcessed()
+    fun showInvalidBarcodeFormatScanned()
+    fun showScannedStampIsNotOnTask()
 
 }
