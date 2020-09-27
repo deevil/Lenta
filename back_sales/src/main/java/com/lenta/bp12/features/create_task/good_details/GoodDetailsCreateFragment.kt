@@ -14,7 +14,6 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
@@ -23,9 +22,6 @@ import com.lenta.shared.utilities.orIfNull
 
 class GoodDetailsCreateFragment : CoreFragment<FragmentGoodDetailsCreateBinding, GoodDetailsCreateViewModel>(),
         ViewPagerSettings, ToolbarButtonsClickListener {
-
-    private var basketRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
-    private var categoryRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_good_details_create
 
@@ -85,7 +81,6 @@ class GoodDetailsCreateFragment : CoreFragment<FragmentGoodDetailsCreateBinding,
                         binding.tvItemNumber.tag = position
                         binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                         binding.selectedForDelete = vm.basketSelectionsHelper.isSelected(position)
-                        basketRecyclerViewKeyHandler?.onItemClicked(position)
                     },
                     keyHandlerId = TAB_BASKETS,
                     recyclerView = layoutBinding.rv,
@@ -119,7 +114,6 @@ class GoodDetailsCreateFragment : CoreFragment<FragmentGoodDetailsCreateBinding,
                         binding.tvItemNumber.tag = position
                         binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                         binding.selectedForDelete = vm.categorySelectionsHelper.isSelected(position)
-                        categoryRecyclerViewKeyHandler?.onItemClicked(position)
                     },
                     keyHandlerId = TAB_CATEGORIES,
                     recyclerView = layoutBinding.rv,
@@ -143,10 +137,9 @@ class GoodDetailsCreateFragment : CoreFragment<FragmentGoodDetailsCreateBinding,
 
     override fun countTab(): Int {
         return vm.good.value?.let {
-            val isGoodCommonOrMarkedOrAlco = it.isCommon() || it.isMarked() || it.isAlco()
             when {
                 (!vm.manager.isWholesaleTaskType && it.isCommon()) -> ONE_TAB
-                (vm.manager.isWholesaleTaskType && isGoodCommonOrMarkedOrAlco) -> ONE_TAB
+                (vm.manager.isWholesaleTaskType && it.isGoodCommonOrMarkedOrAlco()) -> ONE_TAB
                 else -> TWO_TABS
             }
         }.orIfNull { ONE_TAB }

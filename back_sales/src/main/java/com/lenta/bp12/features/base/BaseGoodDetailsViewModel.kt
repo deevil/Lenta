@@ -5,6 +5,7 @@ import com.lenta.bp12.features.other.ItemCategory
 import com.lenta.bp12.features.other.ItemCategoryUi
 import com.lenta.bp12.managers.interfaces.ITaskManager
 import com.lenta.bp12.model.CategoryType
+import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.extentions.getDescription
 import com.lenta.bp12.model.pojo.extentions.getPosition
 import com.lenta.bp12.model.pojo.extentions.removeAllMark
@@ -76,33 +77,31 @@ abstract class BaseGoodDetailsViewModel<T : ITaskManager<*>> : CoreViewModel(), 
     }
 
     val categories by lazy {
-        good.map { good ->
+        good.mapSkipNulls { goodValue ->
             val categories = mutableListOf<ItemCategory>()
-            good?.getMarkQuantity()?.let { quantity ->
-                if (quantity > ZERO_QUANTITY) {
-                    categories.add(
-                            ItemCategory(
-                                    type = CategoryType.MARK,
-                                    quantity = quantity
-                            )
-                    )
-                }
+            val markQuantity = goodValue.getMarkQuantity()
+            if (markQuantity > ZERO_QUANTITY) {
+                categories.add(
+                        ItemCategory(
+                                type = CategoryType.MARK,
+                                quantity = markQuantity
+                        )
+                )
             }
 
-            good?.getPartQuantity()?.let { quantity ->
-                if (quantity > ZERO_QUANTITY) {
-                    categories.add(
-                            ItemCategory(
-                                    type = CategoryType.PART,
-                                    quantity = quantity
-                            )
-                    )
-                }
+            val partQuantity = goodValue.getPartQuantity()
+            if (partQuantity > ZERO_QUANTITY) {
+                categories.add(
+                        ItemCategory(
+                                type = CategoryType.PART,
+                                quantity = partQuantity
+                        )
+                )
             }
 
             categories.mapIndexed { index, itemCategory ->
                 val quantity = itemCategory.quantity.dropZeros()
-                val units = good?.commonUnits?.name
+                val units = goodValue.commonUnits.name
 
                 ItemCategoryUi(
                         position = "${index + 1}",
@@ -132,7 +131,9 @@ abstract class BaseGoodDetailsViewModel<T : ITaskManager<*>> : CoreViewModel(), 
             when (page) {
                 BASKETS_TAB -> handleDeleteBaskets()
                 CATEGORIES_TAB -> handleDeleteCategories()
-                else -> throw IllegalArgumentException("Wrong pager position!")
+                else -> launchUITryCatch {
+                    throw IllegalArgumentException("Wrong pager position!")
+                }
             }
         }
     }
@@ -148,21 +149,28 @@ abstract class BaseGoodDetailsViewModel<T : ITaskManager<*>> : CoreViewModel(), 
 
     private fun handleDeleteCategories() {
         good.value?.let { changedGood ->
-            categorySelectionsHelper.selectedPositions.value?.forEach { position ->
-                categories.value?.getOrNull(position)?.type?.let { category ->
-                    when (category) {
-                        CategoryType.MARK.description -> changedGood.removeAllMark()
-                        CategoryType.PART.description -> changedGood.removeAllPart()
-                    }
+            val categoriesValue = categories.value.orEmpty()
+            if (categoriesValue.isNotEmpty()) {
+                categorySelectionsHelper.selectedPositions.value?.forEach { position ->
+                    categoriesValue.getOrNull(position)?.let { changedGood.processCategoryType(it) }
                 }
             }
 
             categorySelectionsHelper.clearPositions()
-            manager.updateCurrentGood(changedGood)
-            manager.saveGoodInTask(changedGood)
+            with(manager) {
+                updateCurrentGood(changedGood)
+                saveGoodInTask(changedGood)
+            }
         }.orIfNull {
             Logg.e { "good null" }
             navigator.showInternalError(resource.goodNotFoundErrorMsg)
+        }
+    }
+
+    private fun Good.processCategoryType(item: ItemCategoryUi) {
+        when (item.type) {
+            CategoryType.MARK.description -> this.removeAllMark()
+            CategoryType.PART.description -> this.removeAllPart()
         }
     }
 
@@ -171,3 +179,4 @@ abstract class BaseGoodDetailsViewModel<T : ITaskManager<*>> : CoreViewModel(), 
         private const val CATEGORIES_TAB = 1
     }
 }
+

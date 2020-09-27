@@ -14,18 +14,14 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
+import com.lenta.shared.utilities.orIfNull
 
 class GoodDetailsOpenFragment : CoreFragment<FragmentGoodDetailsOpenBinding, GoodDetailsOpenViewModel>(),
         ViewPagerSettings, ToolbarButtonsClickListener {
-
-
-    private var basketRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
-    private var categoryRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_good_details_open
 
@@ -60,13 +56,7 @@ class GoodDetailsOpenFragment : CoreFragment<FragmentGoodDetailsOpenBinding, Goo
     override fun getPagerItemView(container: ViewGroup, position: Int): View {
         return when (position) {
             TAB_BASKETS -> initGoodDetailsBaskets(container)
-            TAB_CATEGORIES -> {
-                if (vm.isGoodTobaccoOrExcise) {
-                    View(context)
-                } else {
-                    initGoodDetailsCategories(container)
-                }
-            }
+            TAB_CATEGORIES -> initGoodDetailsCategories(container)
             else -> View(context)
         }
     }
@@ -78,7 +68,7 @@ class GoodDetailsOpenFragment : CoreFragment<FragmentGoodDetailsOpenBinding, Goo
                 false).let { layoutBinding ->
 
             val onClickSelectionListener = View.OnClickListener {
-                (it.tag as? Int)?.let{ position ->
+                (it.tag as? Int)?.let { position ->
                     vm.basketSelectionsHelper.revert(position = position)
                     layoutBinding.rv.adapter?.notifyItemChanged(position)
                 }
@@ -91,7 +81,6 @@ class GoodDetailsOpenFragment : CoreFragment<FragmentGoodDetailsOpenBinding, Goo
                         binding.tvItemNumber.tag = position
                         binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                         binding.selectedForDelete = vm.basketSelectionsHelper.isSelected(position)
-                        basketRecyclerViewKeyHandler?.onItemClicked(position)
                     },
                     keyHandlerId = TAB_BASKETS,
                     recyclerView = layoutBinding.rv,
@@ -112,7 +101,7 @@ class GoodDetailsOpenFragment : CoreFragment<FragmentGoodDetailsOpenBinding, Goo
                 false).let { layoutBinding ->
 
             val onClickSelectionListener = View.OnClickListener {
-                (it.tag as? Int)?.let{ position ->
+                (it.tag as? Int)?.let { position ->
                     vm.categorySelectionsHelper.revert(position = position)
                     layoutBinding.rv.adapter?.notifyItemChanged(position)
                 }
@@ -125,8 +114,8 @@ class GoodDetailsOpenFragment : CoreFragment<FragmentGoodDetailsOpenBinding, Goo
                         binding.tvItemNumber.tag = position
                         binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                         binding.selectedForDelete = vm.categorySelectionsHelper.isSelected(position)
-                        categoryRecyclerViewKeyHandler?.onItemClicked(position)
                     },
+                    keyHandlerId = TAB_CATEGORIES,
                     recyclerView = layoutBinding.rv,
                     items = vm.categories
             )
@@ -146,7 +135,13 @@ class GoodDetailsOpenFragment : CoreFragment<FragmentGoodDetailsOpenBinding, Goo
     }
 
     override fun countTab(): Int {
-        return TABS
+        return vm.good.value?.let {
+            when {
+                (!vm.manager.isWholesaleTaskType && it.isCommon()) -> ONE_TAB
+                (vm.manager.isWholesaleTaskType && it.isGoodCommonOrMarkedOrAlco()) -> ONE_TAB
+                else -> TWO_TABS
+            }
+        }.orIfNull { ONE_TAB }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -157,7 +152,8 @@ class GoodDetailsOpenFragment : CoreFragment<FragmentGoodDetailsOpenBinding, Goo
     companion object {
         const val SCREEN_NUMBER = "56"
 
-        private const val TABS = 2
+        private const val ONE_TAB = 1
+        private const val TWO_TABS = 2
         private const val TAB_BASKETS = 0
         private const val TAB_CATEGORIES = 1
     }
