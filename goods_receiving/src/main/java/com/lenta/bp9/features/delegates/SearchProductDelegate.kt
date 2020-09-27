@@ -255,9 +255,12 @@ class SearchProductDelegate @Inject constructor(
         if (taskProductInfo.isZBatches && !taskProductInfo.isVet) {
             if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.DirectSupplier) {
                 screenNavigator.openZBatchesInfoPPPScreen(taskProductInfo, isDiscrepancy)
-            } else {
+            }
+
+            if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
                 screenNavigator.openZBatchesInfoPGEScreen(taskProductInfo, isDiscrepancy)
             }
+
             return
         }
 

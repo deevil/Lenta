@@ -21,6 +21,7 @@ interface ITaskZBatchesDiscrepanciesRepository {
     fun getCountRefusalOfZBatchPGE(discrepancies: TaskZBatchesDiscrepancies): Double
     fun findPartySignOfZBatch(zBatchesDiscrepancies: TaskZBatchesDiscrepancies): PartySignsOfZBatches?
     fun findPartySignsOfProduct(materialNumber: String, processingUnit: String): List<PartySignsOfZBatches>
+    fun updatePartySignFromZBatch(zBatchesDiscrepancies: TaskZBatchesDiscrepancies, productionDate: String)
     fun addPartySignOfZBatches(partySign: PartySignsOfZBatches): Boolean
     fun changePartySign(partySign: PartySignsOfZBatches): Boolean
     fun deletePartySignOfZBatches(partySign: PartySignsOfZBatches): Boolean

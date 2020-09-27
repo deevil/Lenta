@@ -216,7 +216,7 @@ class ProcessZBatchesPPPService
 
     private fun changePartySign(typeDiscrepancies: String, manufactureCode: String, shelfLifeDate: String, shelfLifeTime: String, productionDate: String, partySignsType: PartySignsTypeOfZBatches) {
 
-        var foundDiscrepancy =
+        var foundPartySign =
                 taskRepository
                         ?.getZBatchesDiscrepancies()
                         ?.findPartySignsOfProduct(productInfo.materialNumber, productInfo.processingUnit)
@@ -228,8 +228,8 @@ class ProcessZBatchesPPPService
                                     && it.productionDate == productionDate
                         }
 
-        foundDiscrepancy =
-                foundDiscrepancy
+        foundPartySign =
+                foundPartySign
                         ?.copy(partySign = partySignsType)
                         ?: PartySignsOfZBatches(
                                 processingUnit = productInfo.processingUnit,
@@ -245,7 +245,7 @@ class ProcessZBatchesPPPService
 
         taskRepository
                 ?.getZBatchesDiscrepancies()
-                ?.changePartySign(foundDiscrepancy)
+                ?.changePartySign(foundPartySign)
     }
 
 }
