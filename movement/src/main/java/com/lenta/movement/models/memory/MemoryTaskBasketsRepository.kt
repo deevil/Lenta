@@ -64,7 +64,7 @@ class MemoryTaskBasketsRepository(
             }
         }
     }
-    
+
     override suspend fun getOrCreateSuitableBasket(
             product: ProductInfo,
             supplier: Supplier?,
@@ -84,7 +84,11 @@ class MemoryTaskBasketsRepository(
                         isNotExciseAlco = product.isNotExcise.takeIf { signOfDiv.contains(GoodsSignOfDivision.PARTS) },
                         isUsual = product.isUsual.takeIf { signOfDiv.contains(GoodsSignOfDivision.USUAL) },
                         isVet = product.isVet.takeIf { signOfDiv.contains(GoodsSignOfDivision.VET) },
-                        isFood = product.isFood.takeIf { signOfDiv.contains(GoodsSignOfDivision.FOOD) }
+                        isFood = product.isFood.takeIf { signOfDiv.contains(GoodsSignOfDivision.FOOD) },
+                        isMarked = product.isMarked.takeIf { signOfDiv.contains(GoodsSignOfDivision.MARK_PARTS) },
+                        matkl = product.matkl.takeIf { signOfDiv.contains(GoodsSignOfDivision.MATERIAL_NUMBER) },
+                        materialType = product.materialType.takeIf { signOfDiv.contains(GoodsSignOfDivision.MTART) },
+                        sectionId = product.sectionId.takeIf { signOfDiv.contains(GoodsSignOfDivision.SECTION) }
                 ).also {
                     basketList.add(it)
                 }

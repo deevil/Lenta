@@ -1,5 +1,6 @@
 package com.lenta.bp12.managers.interfaces
 
+import com.lenta.bp12.model.WorkType
 import com.lenta.bp12.request.SendTaskDataParams
 
 /**
@@ -7,6 +8,7 @@ import com.lenta.bp12.request.SendTaskDataParams
  * @see com.lenta.bp12.managers.GeneralTaskManager
  * */
 interface IGeneralTaskManager {
-    fun setSendTaskDataParams(params: SendTaskDataParams)
+    fun setSendTaskDataParams(params: SendTaskDataParams, newWorkType: WorkType)
     fun getSendTaskDataParams(): SendTaskDataParams
+    fun getWorkType(): WorkType
 }

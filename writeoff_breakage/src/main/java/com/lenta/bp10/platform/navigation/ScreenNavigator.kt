@@ -111,7 +111,7 @@ class ScreenNavigator(
 
     override fun openGoodInfoScreen(productInfo: ProductInfo, quantity: Double) {
         runOrPostpone {
-            getFragmentStack()?.push(GoodInfoFragment.create(productInfo, quantity))
+            getFragmentStack()?.push(GoodInfoFragment.newInstance(productInfo, quantity))
         }
     }
 
@@ -123,7 +123,7 @@ class ScreenNavigator(
 
     override fun openExciseAlcoScreen(productInfo: ProductInfo) {
         runOrPostpone {
-            getFragmentStack()?.push(ExciseAlcoInfoFragment.create(productInfo))
+            getFragmentStack()?.push(ExciseAlcoInfoFragment.newInstance(productInfo))
         }
     }
 
@@ -147,7 +147,7 @@ class ScreenNavigator(
                 return@runOrPostpone
             }
 
-            getFragmentStack()?.push(ComponentFragment.create(
+            getFragmentStack()?.push(ComponentFragment.newInstance(
                     productInfo = productInfo,
                     componentItem = componentItem,
                     targetTotalCount = targetTotalCount
@@ -180,6 +180,17 @@ class ScreenNavigator(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.remove_lines_confirmation, count),
                     iconRes = R.drawable.ic_delete_red_80dp, codeConfirmForRight = codeConfirmation, pageNumber = "89"))
+        }
+    }
+
+    override fun openRemoveItemsFromSelectedCategory(count: Int, applyCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.remove_lines_confirmation, count),
+                    iconRes = R.drawable.ic_delete_red_80dp,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(applyCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.apply)
+            )
         }
     }
 
@@ -308,9 +319,26 @@ class ScreenNavigator(
         }
     }
 
+    override fun showIncorrectMarkScanMode() {
+        openAlertScreen(
+                message = context.getString(R.string.incorrect_mark_scan_mode),
+                iconRes = R.drawable.ic_warning_yellow_80dp,
+                pageNumber = "96"
+        )
+    }
+
+    override fun showProductInfoNotFound() {
+        openAlertScreen(
+                message = context.getString(R.string.incorrect_product_info),
+                iconRes = R.drawable.ic_warning_yellow_80dp,
+                pageNumber = "96"
+        )
+    }
+
 }
 
 interface IScreenNavigator : ICoreNavigator {
+
     fun openFirstScreen()
     fun openLoginScreen()
     fun openSelectMarketScreen()
@@ -331,6 +359,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openComponentSetScreen(productInfo: ProductInfo, componentItem: ComponentItem, targetTotalCount: Double)
     fun openDetectionSavedDataScreen()
     fun openRemoveLinesConfirmationScreen(taskDescription: String, count: Int, codeConfirmation: Int)
+    fun openRemoveItemsFromSelectedCategory(count: Int, applyCallback: () -> Unit)
     fun openMatrixAlertScreen(matrixType: MatrixType, yesCallback: () -> Unit)
     fun openAlertGoodsNotForTaskScreen()
     fun openNotPossibleSaveNegativeQuantityScreen()
@@ -344,4 +373,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openNotPossibleSaveWithoutReasonScreen()
     fun openConfirmationToBackNotEmptyStampsScreen(callbackFunc: () -> Unit)
     fun showWriteOffToProductionConfirmation(nextCallback: () -> Unit)
+    fun showIncorrectMarkScanMode()
+    fun showProductInfoNotFound()
+
 }

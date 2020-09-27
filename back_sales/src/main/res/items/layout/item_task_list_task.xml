@@ -7,7 +7,7 @@
 
         <variable
             name="item"
-            type="com.lenta.bp12.features.open_task.task_list.ItemTaskUi" />
+            type="com.lenta.bp12.features.open_task.task_list.ItemTaskListUi" />
 
         <variable
             name="selectedForDelete"
