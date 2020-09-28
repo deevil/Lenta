@@ -1,5 +1,7 @@
 package com.lenta.bp10.fmp.resources.tasks_settings;
 
+import androidx.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 import com.mobrun.plugin.api.HyperHive;
 import com.mobrun.plugin.api.helper.LocalTableResourceHelper;
@@ -37,22 +39,27 @@ public class ZmpUtz29V001Rfc {
 
     public static class ItemLocal_ET_TASK_TPS {
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("TASK_TYPE")
         public String taskType;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("BWART")
         public String bwart;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("KOSTL")
         public String kostl;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("LGORTTO")
         public String lgortto;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("SEND_GIS")
         public String sendGis;
 
@@ -61,14 +68,17 @@ public class ZmpUtz29V001Rfc {
         public String noGrund;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("LONG_NAME")
         public String longName;
 
         //  type: DOUBLE, source: {'name': 'SAP', 'type': 'P'}
+        @Nullable
         @SerializedName("LIMIT")
         public Double limit;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("CHK_OWNPR")
         public String chkOwnpr;
 
