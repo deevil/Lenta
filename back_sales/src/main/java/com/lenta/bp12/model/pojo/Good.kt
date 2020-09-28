@@ -96,7 +96,7 @@ class Good(
     }
 
     fun isEmpty(): Boolean {
-        return positions.isEmpty() && marks.isEmpty() && parts.isEmpty()
+        return (positions.isEmpty() || positions.all { it.quantity == ZERO_QUANTITY }) && marks.isEmpty() && parts.isEmpty()
     }
 
     fun isTobacco() = this.markType == MarkType.TOBACCO

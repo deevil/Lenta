@@ -64,7 +64,7 @@ abstract class BaseGoodDetailsViewModel<T : ITaskManager<*>> : CoreViewModel(), 
                                 isDivBySection = task.type?.isDivBySection == true,
                                 isWholeSale = manager.isWholesaleTaskType
                         ),
-                        quantity = "${basket.goods[good]}"
+                        quantity = "${basket.goods[good].dropZeros()} ${good.commonUnits.name}"
                 )
             }
         }
@@ -78,6 +78,7 @@ abstract class BaseGoodDetailsViewModel<T : ITaskManager<*>> : CoreViewModel(), 
 
     val categories by lazy {
         good.mapSkipNulls { goodValue ->
+            Logg.e { goodValue.toString() }
             val categories = mutableListOf<ItemCategory>()
             val markQuantity = goodValue.getMarkQuantity()
             if (markQuantity > ZERO_QUANTITY) {
@@ -139,12 +140,15 @@ abstract class BaseGoodDetailsViewModel<T : ITaskManager<*>> : CoreViewModel(), 
     }
 
     private fun handleDeleteBaskets() {
-        val basketList = basketSelectionsHelper.selectedPositions.value?.mapNotNullTo(mutableListOf()) { position ->
-            baskets.value?.get(position)?.basket
-        }.orEmptyMutable()
+        good.value?.let{
+            val basketList = basketSelectionsHelper.selectedPositions.value?.mapNotNullTo(mutableListOf()) { position ->
+                baskets.value?.get(position)?.basket
+            }.orEmptyMutable()
 
-        basketSelectionsHelper.clearPositions()
-        manager.removeBaskets(basketList)
+            basketSelectionsHelper.clearPositions()
+            manager.removeBaskets(basketList)
+            manager.updateCurrentGood(it)
+        }
     }
 
     private fun handleDeleteCategories() {
@@ -158,8 +162,15 @@ abstract class BaseGoodDetailsViewModel<T : ITaskManager<*>> : CoreViewModel(), 
 
             categorySelectionsHelper.clearPositions()
             with(manager) {
-                updateCurrentGood(changedGood)
-                saveGoodInTask(changedGood)
+                task.value?.let {
+                    if (changedGood.isEmpty()) {
+                        deleteGood(changedGood)
+                        navigator.goBack()
+                    } else {
+                        updateCurrentGood(changedGood)
+                        saveGoodInTask(changedGood)
+                    }
+                }
             }
         }.orIfNull {
             Logg.e { "good null" }
