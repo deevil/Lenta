@@ -1,7 +1,11 @@
 package com.lenta.movement.features.task.basket.info
 
+import android.os.Bundle
+import android.view.View
+import com.lenta.movement.BR
 import com.lenta.movement.R
 import com.lenta.movement.databinding.FragmentTaskBasketInfoBinding
+import com.lenta.movement.databinding.LayoutItemBasketPropertiesBinding
 import com.lenta.movement.platform.extensions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -10,9 +14,9 @@ import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
 
-class TaskBasketInfoFragment: CoreFragment<FragmentTaskBasketInfoBinding, TaskBasketInfoViewModel>() {
+class TaskBasketInfoFragment : CoreFragment<FragmentTaskBasketInfoBinding, TaskBasketInfoViewModel>() {
 
-    private var basketIndex : Int by state( DEFAULT_BASKET_INDEX )
+    private var basketIndex: Int by state(DEFAULT_BASKET_INDEX)
 
     override fun getLayoutId() = R.layout.fragment_task_basket_info
 
@@ -34,6 +38,18 @@ class TaskBasketInfoFragment: CoreFragment<FragmentTaskBasketInfoBinding, TaskBa
         bottomToolbarUiModel.cleanAll()
 
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding?.apply {
+            rvConfig = initRecycleAdapterDataBinding<BasketProperty, LayoutItemBasketPropertiesBinding>(
+                    layoutId = R.layout.layout_item_basket_properties,
+                    itemId = BR.item,
+                    recyclerView = rv,
+                    items = this@TaskBasketInfoFragment.vm.propertyItems
+            )
+        }
     }
 
     companion object {
