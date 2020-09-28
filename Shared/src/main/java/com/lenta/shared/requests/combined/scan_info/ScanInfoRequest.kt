@@ -21,6 +21,7 @@ import com.lenta.shared.utilities.extentions.hhive.getFailure
 import com.lenta.shared.utilities.extentions.hhive.isNotBad
 import com.mobrun.plugin.api.HyperHive
 import com.mobrun.plugin.api.callparams.WebCallParams
+import java.util.*
 
 class ScanInfoRequest(private val hyperHive: HyperHive, private val gson: Gson, private val sessionInfo: ISessionInfo) : UseCase<ScanInfoResult, ScanInfoRequestParams> {
 
@@ -125,7 +126,7 @@ class ScanInfoRequest(private val hyperHive: HyperHive, private val gson: Gson, 
                         productInfo = ProductInfo(
                                 materialNumber = materialInfo.material.orEmpty(),
                                 description = materialInfo.name.orEmpty(),
-                                uom = Uom(code = uomInfo.uom, name = uomInfo.name),
+                                uom = Uom(code = uomInfo.uom, name = uomInfo.name.toLowerCase(Locale.getDefault())),
                                 type = materialInfo.getProductType(),
                                 isSet = zmpUtz46V001.isSet(materialInfo.material.orEmpty()),
                                 sectionId = materialInfo.abtnr.orEmpty(),
@@ -148,7 +149,7 @@ class ScanInfoRequest(private val hyperHive: HyperHive, private val gson: Gson, 
         return ProductInfo(
                 materialNumber = material.material,
                 description = material.name,
-                uom = Uom(code = uomInfo.uom, name = uomInfo.name),
+                uom = Uom(code = uomInfo.uom, name = uomInfo.name.toLowerCase(Locale.getDefault())),
                 type = getProductType(isAlco = material.isAlco.isNotEmpty(), isExcise = material.isExcise.isNotEmpty(), isMarkedGood = isMarkedGood),
                 isSet = !set.isNullOrEmpty(),
                 sectionId = material.abtnr,

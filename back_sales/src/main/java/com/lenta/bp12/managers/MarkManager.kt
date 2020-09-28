@@ -639,6 +639,22 @@ class MarkManager @Inject constructor(
             tempGood.value = foundGood
             MarkScreenStatus.MRC_NOT_SAME_IN_BASKET
         } else {
+            checkThatMarksLessThanPlannedQuantity(foundGood, restProperties, localTempMarks, mappedMarks)
+        }
+    }
+
+    private fun checkThatMarksLessThanPlannedQuantity(
+            foundGood: Good,
+            restProperties: List<PropertiesInfo>?,
+            localTempMarks: MutableList<Mark>,
+            mappedMarks: List<Mark>
+    ): MarkScreenStatus {
+        val totalMarksSize = localTempMarks.size + mappedMarks.size
+        val isPlannedQuantityMoreThanZero = foundGood.planQuantity > 0
+        val isTotalMarksMoreThanPlannedQuantity = totalMarksSize > foundGood.planQuantity
+        return if (isPlannedQuantityMoreThanZero && isTotalMarksMoreThanPlannedQuantity) {
+            MarkScreenStatus.MARKS_MORE_THAN_PLANNED
+        } else {
             val manager = chooseManager()
             manager.updateCurrentGood(foundGood)
             val restPropertiesMapped = restProperties?.map { propertyFromRest ->
@@ -649,9 +665,7 @@ class MarkManager @Inject constructor(
                 )
             }.orEmpty()
             properties = properties.union(restPropertiesMapped).toMutableList()
-
             localTempMarks.addAll(mappedMarks)
-
             tempMarks = localTempMarks
             lastScannedMarks = mappedMarks
 

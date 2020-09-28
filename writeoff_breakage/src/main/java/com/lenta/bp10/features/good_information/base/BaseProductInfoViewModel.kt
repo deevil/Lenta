@@ -11,14 +11,13 @@ import com.lenta.bp10.models.task.TaskDescription
 import com.lenta.bp10.models.task.WriteOffReason
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.platform.resources.IStringResourceManager
+import com.lenta.bp10.repos.DatabaseRepository
+import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
-import com.lenta.shared.utilities.extentions.combineLatest
-import com.lenta.shared.utilities.extentions.launchUITryCatch
-import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.toStringFormatted
+import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.delay
 import javax.inject.Inject
@@ -29,7 +28,7 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardLis
     lateinit var processServiceManager: IWriteOffTaskManager
 
     @Inject
-    lateinit var screenNavigator: IScreenNavigator
+    lateinit var navigator: IScreenNavigator
 
     @Inject
     lateinit var resourceManager: IStringResourceManager
@@ -40,6 +39,16 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardLis
     @Inject
     lateinit var searchProductDelegate: SearchProductDelegate
 
+    @Inject
+    lateinit var database: DatabaseRepository
+
+    @Inject
+    lateinit var sessionInfo: ISessionInfo
+
+
+    /**
+    Переменные
+     */
 
     val productInfo: MutableLiveData<ProductInfo> = MutableLiveData()
 
@@ -51,7 +60,7 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardLis
         initCountLiveData()
     }
 
-    val suffix: MutableLiveData<String> = MutableLiveData()
+    val suffix = MutableLiveData("")
 
     val requestFocusToQuantity = MutableLiveData(false)
 
@@ -69,14 +78,28 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardLis
         }
     }
 
+    val isSpecialMode = MutableLiveData(false)
+
+    open val totalCountWithUom: MutableLiveData<String> by lazy {
+        totalCount.map { getCountWithUom(count = it, productInfo = productInfo) }
+    }
+
+    val reasonPosition = MutableLiveData(0)
+
+    val onSelectReason = object : OnPositionClickListener {
+        override fun onClickPosition(position: Int) {
+            reasonPosition.value = position
+        }
+    }
+
+    /**
+    Кнопки нижнего тулбара
+     */
+
     val enabledDetailsButton: MutableLiveData<Boolean> by lazy {
         totalCount.map {
             isEnabledDetailsButton(getProcessTotalCount())
         }
-    }
-
-    open val totalCountWithUom: MutableLiveData<String> by lazy {
-        totalCount.map { getCountWithUom(count = it, productInfo = productInfo) }
     }
 
     open val enabledApplyButton: MutableLiveData<Boolean> by lazy {
@@ -91,20 +114,24 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardLis
         }
     }
 
-    val reasonPosition = MutableLiveData(0)
-
-    val onSelectReason = object : OnPositionClickListener {
-        override fun onClickPosition(position: Int) {
-            reasonPosition.value = position
+    val damagedEnabled: LiveData<Boolean> by lazy {
+        enabledApplyButton.combineLatest(isSpecialMode).mapSkipNulls {
+            val (enabledApplyButton, isSpecialMode) = it
+            if (isSpecialMode) isSpecialMode else enabledApplyButton
         }
     }
 
+    /**
+    Блок инициализации
+     */
+
     init {
         launchUITryCatch {
+            initSpecialMode()
 
             limitsChecker = LimitsChecker(
                     limit = goodInformationRepo.getLimit(getTaskDescription().taskType.code, productInfo.value!!.type),
-                    observer = { screenNavigator.openLimitExceededScreen() },
+                    observer = { navigator.openLimitExceededScreen() },
                     countLiveData = totalCount,
                     viewModelScope = this@BaseProductInfoViewModel::viewModelScope
 
@@ -117,25 +144,13 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardLis
 
             processServiceManager.getWriteOffTask()?.let {
                 getTaskDescription().moveTypes.let { reasons ->
-                    if (reasons.isEmpty()) {
-                        writeOffReasons.value = listOf(WriteOffReason.emptyWithTitle(resourceManager.emptyCategory()))
+                    writeOffReasons.value = if (reasons.isEmpty()) {
+                        listOf(WriteOffReason.emptyWithTitle(resourceManager.emptyCategory()))
                     } else {
-                        productInfo.value?.let { it ->
-                            val defaultReason = goodInformationRepo.getDefaultReason(
-                                    taskType = processServiceManager.getWriteOffTask()!!.taskDescription.taskType.code,
-                                    sectionId = it.sectionId,
-                                    materialNumber = it.materialNumber
-                            )
-
-                            writeOffReasons.value = mutableListOf(WriteOffReason.empty)
-                                    .apply {
-                                        addAll(reasons)
-                                    }.filter { filterReason(it) }
-
-                            writeOffReasons.value!!.indexOfFirst { reason -> reason.code == defaultReason }.let { position ->
-                                reasonPosition.value = position
-                                requestFocusToQuantity.value = true
-                            }
+                        mutableListOf(WriteOffReason.empty).apply {
+                            addAll(reasons)
+                        }.filter { writeOffReason ->
+                            filterReason(writeOffReason)
                         }
                     }
                 }
@@ -143,6 +158,15 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardLis
 
             suffix.value = productInfo.value?.uom?.name
         }
+    }
+
+    /**
+    Методы
+     */
+
+    private suspend fun initSpecialMode() {
+        val taskType = getTaskDescription().taskType.code
+        isSpecialMode.value = database.isSpecialMode(taskType)
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
@@ -167,9 +191,9 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardLis
 
     protected fun showNotPossibleSaveScreen() {
         if (getSelectedReason() === WriteOffReason.empty) {
-            screenNavigator.openNotPossibleSaveWithoutReasonScreen()
+            navigator.openNotPossibleSaveWithoutReasonScreen()
         } else {
-            screenNavigator.openNotPossibleSaveNegativeQuantityScreen()
+            navigator.openNotPossibleSaveNegativeQuantityScreen()
         }
     }
 
@@ -189,8 +213,12 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardLis
 
     fun onClickDetails() {
         productInfo.value?.let {
-            screenNavigator.openGoodsReasonsScreen(productInfo = it)
+            navigator.openGoodsReasonsScreen(productInfo = it)
         }
+    }
+
+    open fun updateCounter() {
+        count.value = initCountLiveData().value
     }
 
     abstract fun onBackPressed(): Boolean
