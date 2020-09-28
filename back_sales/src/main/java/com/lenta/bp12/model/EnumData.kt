@@ -173,6 +173,8 @@ enum class MarkScreenStatus {
     NO_MARKTYPE_IN_SETTINGS,
     NOT_SAME_GOOD,
     ENTER_MRC_FROM_BOX
+    NOT_SAME_GOOD,
+    MARKS_MORE_THAN_PLANNED
 }
 
 enum class WorkType {

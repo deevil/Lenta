@@ -215,9 +215,7 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
                     MarkScreenStatus.MRC_NOT_SAME_IN_BASKET ->
                         showMrcNotSameInBasketAlert(::handleYesSaveCurrentMarkToBasketAndOpenAnother)
 
-                    MarkScreenStatus.OK_BUT_NEED_TO_SCAN_MARK -> {
-                        Unit
-                    }
+                    MarkScreenStatus.OK_BUT_NEED_TO_SCAN_MARK -> Unit
 
                     MarkScreenStatus.NO_MARKTYPE_IN_SETTINGS -> showNoMarkTypeInSettings()
 
@@ -225,6 +223,8 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
                         showScannedMarkBelongsToProduct(
                                 productName = markManager.getCreatedGoodForError()?.name.orEmpty()
                         )
+
+                    MarkScreenStatus.MARKS_MORE_THAN_PLANNED -> showQuantityMoreThanPlannedScreen()
 
                     else -> showIncorrectEanFormat()
                 }
