@@ -10,9 +10,10 @@ import com.mobrun.plugin.api.request_assistant.RequestBuilder;
 import com.mobrun.plugin.api.request_assistant.ScalarParameter;
 import com.mobrun.plugin.models.StatusSelectTable;
 
+@Deprecated
 public class ZmpUtz35V001Rfc {
 
-    public static final String NAME_RESOURCE = "ZMP_UTZ_35_V001_RFC";
+    public static final String NAME_RESOURCE = "ZFMP_UTZ_54_V001";
     public static final String NAME_OUT_PARAM_ET_CNTRL = "ET_CNTRL";
     public static final String LIFE_TIME = null;
 
@@ -25,11 +26,11 @@ public class ZmpUtz35V001Rfc {
 
         this.hyperHive = hyperHive;
 
-        localHelper_ET_CNTRL = 
-                 new LocalTableResourceHelper<ItemLocal_ET_CNTRL, Status_ET_CNTRL>(NAME_RESOURCE, 
-                         NAME_OUT_PARAM_ET_CNTRL, 
-                         hyperHive,
-                         Status_ET_CNTRL.class);
+        localHelper_ET_CNTRL =
+                new LocalTableResourceHelper<ItemLocal_ET_CNTRL, Status_ET_CNTRL>(NAME_RESOURCE,
+                        NAME_OUT_PARAM_ET_CNTRL,
+                        hyperHive,
+                        Status_ET_CNTRL.class);
 
     }
 

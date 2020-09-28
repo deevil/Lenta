@@ -2,6 +2,7 @@ package com.lenta.bp10.features.loading.tasks_settings
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp10.platform.navigation.IScreenNavigator
+import com.lenta.bp10.repos.IRepoInMemoryHolder
 import com.lenta.bp10.requests.network.GetUserResourcesNetRequest
 import com.lenta.bp10.requests.network.UserResourceInfoParams
 import com.lenta.bp10.requests.network.UserResourcesResult
@@ -21,6 +22,9 @@ class LoadingTaskSettingsViewModel : CoreLoadingViewModel() {
 
     @Inject
     lateinit var userResourcesMultiRequest: GetUserResourcesNetRequest
+
+    @Inject
+    lateinit var repoInMemoryHolder: IRepoInMemoryHolder
 
     @Inject
     lateinit var sessionInfo: ISessionInfo
@@ -43,7 +47,8 @@ class LoadingTaskSettingsViewModel : CoreLoadingViewModel() {
         screenNavigator.openAlertScreen(failure)
     }
 
-    private fun handleSuccess(@Suppress("UNUSED_PARAMETER") b: UserResourcesResult) {
+    private fun handleSuccess(@Suppress("UNUSED_PARAMETER") userResourcesResult: UserResourcesResult) {
+        repoInMemoryHolder.userResourceResult = userResourcesResult
         screenNavigator.openMainMenuScreen()
         screenNavigator.openJobCardScreen()
     }
