@@ -2,8 +2,7 @@ package com.lenta.bp9.features.goods_information.excise_alco.task_pge.alco_stamp
 
 import android.annotation.SuppressLint
 import android.content.Context
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.lenta.bp9.R
 import com.lenta.bp9.features.delegates.SearchProductDelegate
 import com.lenta.bp9.model.processing.ProcessExciseAlcoStampAccPGEService
@@ -30,10 +29,8 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
 import com.lenta.shared.utilities.Logg
-import com.lenta.shared.utilities.extentions.combineLatest
-import com.lenta.shared.utilities.extentions.launchUITryCatch
+import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import com.mobrun.plugin.api.HyperHive
@@ -273,37 +270,25 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
     val checkBoxStampList: MutableLiveData<Boolean> = checkStampListVisibility.map {
         val enteredCount = countValue.value ?: 0.0
         val countExciseStampsScannedValue = countExciseStampsScanned.value?.toDouble() ?: 0.0
-        enteredCount> 0.0 && countExciseStampsScannedValue >= enteredCount
+        enteredCount > 0.0 && countExciseStampsScannedValue >= enteredCount
     }
 
     val enabledRollbackBtn: MutableLiveData<Boolean> = countExciseStampsScanned.map {
         (it ?: 0) > 0
     }
 
-    val enabledApplyBtn: MutableLiveData<Boolean> =
-            countValue
-                    .combineLatest(spinQualitySelectedPosition)
-                    .combineLatest(enteredProcessingUnitNumber)
-                    .combineLatest(checkBoxStampList)
-                    .map {
-                        val enteredCount = countValue.value ?: 0.0
-                        val enteredProcessingUnitNumberLength = enteredProcessingUnitNumber.value?.length ?: 0
-                        when (currentQualityInfoCode) {
-                            TYPE_DISCREPANCIES_QUALITY_NORM -> {
-                                enteredCount > 0.0
-                            }
-                            TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS -> {
-                                if (isGoodsAddedAsSurplus.value == true) {
-                                    checkBoxStampList.value == true && enteredProcessingUnitNumberLength == PROCESSING_UNIT_NUMBER_LENGTH
-                                } else {
-                                    checkBoxSurplusControl.value
-                                }
-                            }
-                            else -> {
-                                checkBoxStampList.value
+    val enabledApplyBtn: LiveData<Boolean> =
+            countValue.switchMap { enteredCount ->
+                spinQualitySelectedPosition.switchMap {
+                    enteredProcessingUnitNumber.switchMap { enteredProcessingUnitNumberValue ->
+                        checkBoxStampList.switchMap {
+                            liveData {
+                                emit(checkCurrentQualityCodeValid(enteredProcessingUnitNumberValue, enteredCount))
                             }
                         }
                     }
+                }
+            }
 
     val enabledAddBtn: MutableLiveData<Boolean> = enabledApplyBtn.map {
         if (isGoodsAddedAsSurplus.value == true) {
@@ -347,6 +332,23 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
             }
 
             count.value = count.value //почему-то без этой строки не выводится в tvBoxControlVal Не требуется, если включить дебаггер, то все отрабатывается, а без дебаггера пришлось дописать эту строчку
+        }
+    }
+
+    private fun checkCurrentQualityCodeValid(enteredProcessingUnitNumberValue: String, enteredCount: Double): Boolean {
+        return when (currentQualityInfoCode) {
+            TYPE_DISCREPANCIES_QUALITY_NORM -> (enteredCount > 0.0)
+            TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS -> getIsGoodAddedValid(enteredProcessingUnitNumberValue)
+            else -> checkBoxStampList.value == true
+        }
+    }
+
+    private fun getIsGoodAddedValid(enteredProcessingUnitNumberValue: String): Boolean {
+        val enteredProcessingUnitNumberLength = enteredProcessingUnitNumberValue.length
+        return if (isGoodsAddedAsSurplus.value == true) {
+            checkBoxStampList.value == true && enteredProcessingUnitNumberLength == PROCESSING_UNIT_NUMBER_LENGTH
+        } else {
+            checkBoxSurplusControl.value == true
         }
     }
 
