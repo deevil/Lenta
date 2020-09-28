@@ -6,11 +6,7 @@ import androidx.lifecycle.*
 import com.lenta.bp9.R
 import com.lenta.bp9.features.delegates.SearchProductDelegate
 import com.lenta.bp9.model.processing.ProcessExciseAlcoStampAccPGEService
-import com.lenta.bp9.model.task.IReceivingTaskManager
-import com.lenta.bp9.model.task.TaskExciseStampInfo
-import com.lenta.bp9.model.task.TaskProductInfo
-import com.lenta.bp9.model.task.TaskType
-import com.lenta.bp9.platform.TypeDiscrepanciesConstants
+import com.lenta.bp9.model.task.*
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_MARRIAGE_SHIPMENT
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS
@@ -19,6 +15,7 @@ import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUAL
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
+import com.lenta.bp9.repos.findManufacturerNameByCodeOrEGAIS
 import com.lenta.bp9.requests.network.ZmpUtzGrz31V001NetRequest
 import com.lenta.bp9.requests.network.ZmpUtzGrz31V001Params
 import com.lenta.bp9.requests.network.ZmpUtzGrz31V001Result
@@ -35,7 +32,6 @@ import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import com.mobrun.plugin.api.HyperHive
 import java.text.ParseException
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import javax.inject.Inject
 
@@ -364,61 +360,39 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
 
         //возвращаем данные предыдущей остканированной марки, если таковая есть
         val lastExciseStampInfo = processExciseAlcoStampAccPGEService.getLastAddExciseStamp()
-        val manufacturerCode =
-                taskManager
-                        .getReceivingTask()
-                        ?.taskRepository
-                        ?.getBatches()
-                        ?.getBatches()
-                        ?.findLast { it.batchNumber == lastExciseStampInfo?.batchNumber }
-                        ?.egais
-                        .orEmpty()
+        val lastBottlingDate = lastExciseStampInfo?.bottlingDate
+        val lastBatchNumber = lastExciseStampInfo?.batchNumber.orEmpty()
+        val manufacturerCode = taskManager.getEgaisOrEmpty(lastBatchNumber)
 
-        val manufacturerName =
-                repoInMemoryHolder
-                        .manufacturers.value
-                        ?.findLast { it.code == manufacturerCode }
-                        ?.name
-                        ?: repoInMemoryHolder
-                                .manufacturers.value
-                                ?.findLast { manufacture -> //это в случае излишка
-                                    manufacture.code == lastExciseStampInfo?.organizationCodeEGAIS
-                                }
-                                ?.name
-                                .orEmpty()
-
+        val manufacturerName = repoInMemoryHolder.findManufacturerNameByCodeOrEGAIS(manufacturerCode, lastExciseStampInfo?.organizationCodeEGAIS)
         spinManufacturers.value = listOf(manufacturerName)
-
-        val dateOfPour =
-                taskManager
-                        .getReceivingTask()
-                        ?.taskRepository
-                        ?.getBatches()
-                        ?.getBatches()
-                        ?.findLast { it.batchNumber == lastExciseStampInfo?.batchNumber }
-                        ?.bottlingDate
-                        ?: lastExciseStampInfo?.bottlingDate.orEmpty() //exciseStampInfo.value!!.bottlingDate это в случае излишка
-
-        if (dateOfPour.isNotEmpty()) {
-            try {
-                spinBottlingDate.value = listOf(formatterRU.format(formatterEN.parse(dateOfPour)))
-            } catch (e: Exception) {
-                Logg.e { "e: $e" }
-                spinBottlingDate.value = listOf("")
-            }
-        } else {
-            spinBottlingDate.value = listOf("")
-        }
+        setSpinBoilingDate(lastBatchNumber, lastBottlingDate)
 
         val countExciseStampsScannedValue = countExciseStampsScanned.value ?: 0
         if (countExciseStampsScannedValue <= 0) isGradeControl.value = false //отключаем Режим 100% контроля грейда
+    }
+
+    private fun setSpinBoilingDate(lastBatchNumber: String, lastBottlingDate: String?) {
+        val dateOfPour =
+                taskManager.getBottlingDateOrDefault(lastBatchNumber, lastBottlingDate) //exciseStampInfo.value!!.bottlingDate это в случае излишка
+
+        spinBottlingDate.value = if (dateOfPour.isNotEmpty()) {
+            try {
+                listOf(formatterRU.format(formatterEN.parse(dateOfPour)))
+            } catch (e: Exception) {
+                Logg.e { "e: $e" }
+                listOf("")
+            }
+        } else {
+            listOf("")
+        }
     }
 
     fun onClickDetails() {
         productInfo.value?.let { screenNavigator.openGoodsDetailsScreen(it) }
     }
 
-    fun onClickAdd() : Boolean {
+    fun onClickAdd(): Boolean {
         val enteredCount = countValue.value ?: 0.0
         return if (processExciseAlcoStampAccPGEService.overLimit(enteredCount)) {
             screenNavigator.openAlertOverLimitAlcoPGEScreen(
