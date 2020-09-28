@@ -25,7 +25,7 @@ class MarkingInfoBoxPGEFragment : CoreFragment<FragmentMarkingInfoBoxPgeBinding,
         ToolbarButtonsClickListener,
         OnScanResultListener,
         OnBackPresserListener
-        , OnKeyDownListener
+//        , OnKeyDownListener
 {
 
     private var productInfo by state<TaskProductInfo?>(null)
@@ -98,7 +98,7 @@ class MarkingInfoBoxPGEFragment : CoreFragment<FragmentMarkingInfoBoxPgeBinding,
 
     override fun onResume() {
         super.onResume()
-//        vm.requestFocusToCount.value = false
+        vm.requestFocusToCount.value = false
     }
 
     override fun onBackPressed(): Boolean {
@@ -117,49 +117,49 @@ class MarkingInfoBoxPGEFragment : CoreFragment<FragmentMarkingInfoBoxPgeBinding,
     }
 
     // Для тестов
-    override fun onKeyDown(keyCode: KeyCode): Boolean {
-        return when (keyCode) {
-
-            KeyCode.KEYCODE_0 -> {
-                vm.onScanResult("346060680015914878")
-                true
-            }
-
-            KeyCode.KEYCODE_1 -> {
-                vm.onScanResult("010467003610609821FFu3<d(DYt:c;")
-                true
-            }
-
-            KeyCode.KEYCODE_2 -> {
-                vm.onScanResult("010467003610609821FFf!:sAV<NmhH")
-                true
-            }
-
-            KeyCode.KEYCODE_3 -> {
-                vm.onScanResult("010467003610609821FF64D'U7&jY*0")
-                true
-            }
-            //Марка Лента гн из задания
-            KeyCode.KEYCODE_4 -> {
-                vm.onScanResult("010290000004865221jKU/\"RG(eUD4N\n")
-                true
-            }
-            //Короб Лента не из задания
-            KeyCode.KEYCODE_5 -> {
-                vm.onScanResult("346060680018702229")
-                true
-            }
-            //Марка НЕ Лента
-            KeyCode.KEYCODE_6 -> {
-                vm.onScanResult("010467003610609821FFu3<d(DYt:c1")
-                true
-            }//Корб НЕ Лента
-            KeyCode.KEYCODE_7 -> {
-                vm.onScanResult("346060680018702229")
-                true
-            }
-            else -> false
-        }
-    }
+//    override fun onKeyDown(keyCode: KeyCode): Boolean {
+//        return when (keyCode) {
+//
+//            KeyCode.KEYCODE_0 -> {
+//                vm.onScanResult("346060680015914878")
+//                true
+//            }
+//
+//            KeyCode.KEYCODE_1 -> {
+//                vm.onScanResult("010467003610609821FFu3<d(DYt:c;")
+//                true
+//            }
+//
+//            KeyCode.KEYCODE_2 -> {
+//                vm.onScanResult("010467003610609821FFf!:sAV<NmhH")
+//                true
+//            }
+//
+//            KeyCode.KEYCODE_3 -> {
+//                vm.onScanResult("010467003610609821FF64D'U7&jY*0")
+//                true
+//            }
+//            //Марка Лента гн из задания
+//            KeyCode.KEYCODE_4 -> {
+//                vm.onScanResult("010290000004865221jKU/\"RG(eUD4N\n")
+//                true
+//            }
+//            //Короб Лента не из задания
+//            KeyCode.KEYCODE_5 -> {
+//                vm.onScanResult("346060680018702229")
+//                true
+//            }
+//            //Марка НЕ Лента
+//            KeyCode.KEYCODE_6 -> {
+//                vm.onScanResult("010467003610609821FFu3<d(DYt:c1")
+//                true
+//            }//Корб НЕ Лента
+//            KeyCode.KEYCODE_7 -> {
+//                vm.onScanResult("346060680018702229")
+//                true
+//            }
+//            else -> false
+//        }
+//    }
 
 }

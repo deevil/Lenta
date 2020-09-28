@@ -496,12 +496,12 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
         } else {
             data
         }
-        val boxMaterialNumber = taskRepository?.getBoxes()?.findBox(barcode)?.materialNumber.orEmpty()
-        if (boxMaterialNumber.isEmpty()) { //короб числится в обработанных
+        val boxMaterialNumber = taskRepository?.getBoxesRepository()?.findBox(barcode)?.materialNumber.orEmpty()
+        if (boxMaterialNumber.isNotEmpty()) { //короб числится в обработанных
             //   screenNavigator.openBoxCard() -> isScan = true //переход на карточку коробу, проставляя по марке признак IS_SCAN (если его не было)
         } else {
             val boxNumber = processMarkingBoxProductService.searchBoxDiscrepancies(data)?.materialNumber.orEmpty()
-            if (boxNumber == boxMaterialNumber) {
+            if (boxNumber != boxMaterialNumber) {
                 //Нет в задании Отсканированная коробка принадлежит товару <SAP-код> <Название>
                 val materialName = ZfmpUtz48V001(hyperHive).getProductInfoByMaterial(boxNumber)?.name.orEmpty()
                 screenNavigator.openAlertScannedBoxBelongsAnotherProductScreen(
