@@ -11,6 +11,12 @@ import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskExciseStampInfo
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.model.task.TaskType
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_MARRIAGE_SHIPMENT
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_UNDERLOAD
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_PGE_WAREHOUSE_MARRIAGE
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.bp9.repos.IDataBaseRepo
 import com.lenta.bp9.repos.IRepoInMemoryHolder
@@ -36,6 +42,7 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import javax.inject.Inject
 
+//ПГЕ https://trello.com/c/Bx03dgxE
 class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListener {
 
     @Inject
@@ -110,10 +117,34 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
         MutableLiveData(productInfo.value?.purchaseOrderUnits?.code != productInfo.value?.uom?.code && isGoodsAddedAsSurplus.value == false)
     }
 
-    val acceptTotalCount: MutableLiveData<Double> = countValue.combineLatest(spinQualitySelectedPosition).map {
-        val countAccept = taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProductPGE(productInfo.value!!)
+    private val currentQualityInfoCode: String
+        get() {
+            val position = spinQualitySelectedPosition.value ?: -1
+            return position
+                    .takeIf { it >= 0 }
+                    ?.let {
+                        qualityInfo.value
+                                ?.getOrNull(it)
+                                ?.code
+                                .orEmpty()
+                    }.orEmpty()
+        }
 
-        if (qualityInfo.value?.get(it!!.second)?.code == "1" || qualityInfo.value?.get(it!!.second)?.code == "2") {
+    val acceptTotalCount: MutableLiveData<Double> = countValue.combineLatest(spinQualitySelectedPosition).map {
+        val currentQualityInfoCodeValue = currentQualityInfoCode
+        val countAccept =
+                productInfo.value
+                        ?.let {
+                            taskManager
+                                    .getReceivingTask()
+                                    ?.taskRepository
+                                    ?.getProductsDiscrepancies()
+                                    ?.getCountAcceptOfProductPGE(it)
+                        }
+                        ?: 0.0
+
+        if (currentQualityInfoCodeValue == TYPE_DISCREPANCIES_QUALITY_NORM
+                || currentQualityInfoCodeValue == TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS) {
             convertEizToBei() + countAccept
         } else {
             countAccept
@@ -121,20 +152,43 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
     }
 
     val acceptTotalCountWithUom: MutableLiveData<String> = acceptTotalCount.map {
-        val countAccept = taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountAcceptOfProductPGE(productInfo.value!!)
+        val countAccept =
+                productInfo.value
+                        ?.let {
+                            taskManager
+                                    .getReceivingTask()
+                                    ?.taskRepository
+                                    ?.getProductsDiscrepancies()
+                                    ?.getCountAcceptOfProductPGE(it)
+                        }
+                        ?: 0.0
+
         when {
             (it ?: 0.0) > 0.0 -> {
-                "+ ${it.toStringFormatted()} ${productInfo.value?.uom?.name}"
+                "+ ${it.toStringFormatted()} ${productInfo.value?.uom?.name.orEmpty()}"
             }
             else -> { //если было введено отрицательное значение
-                "${if (countAccept > 0.0) "+ " + countAccept.toStringFormatted() else countAccept.toStringFormatted()} ${productInfo.value?.uom?.name}"
+                "${if (countAccept > 0.0) "+ " + countAccept.toStringFormatted() else countAccept.toStringFormatted()} ${productInfo.value?.uom?.name.orEmpty()}"
             }
         }
     }
 
     val refusalTotalCount: MutableLiveData<Double> = countValue.combineLatest(spinQualitySelectedPosition).map {
-        val countRefusal = taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProductPGE(productInfo.value!!)
-        if (qualityInfo.value?.get(it!!.second)?.code == "3" || qualityInfo.value?.get(it!!.second)?.code == "4" || qualityInfo.value?.get(it!!.second)?.code == "5") {
+        val currentQualityInfoCodeValue = currentQualityInfoCode
+        val countRefusal =
+                productInfo.value
+                        ?.let {
+                            taskManager
+                                    .getReceivingTask()
+                                    ?.taskRepository
+                                    ?.getProductsDiscrepancies()
+                                    ?.getCountRefusalOfProductPGE(it)
+                        }
+                        ?: 0.0
+
+        if (currentQualityInfoCodeValue == TYPE_DISCREPANCIES_QUALITY_PGE_UNDERLOAD
+                || currentQualityInfoCodeValue == TYPE_DISCREPANCIES_QUALITY_PGE_MARRIAGE_SHIPMENT
+                || currentQualityInfoCodeValue == TYPE_DISCREPANCIES_QUALITY_PGE_WAREHOUSE_MARRIAGE) {
             convertEizToBei() + countRefusal
         } else {
             countRefusal
@@ -142,19 +196,28 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
     }
 
     val refusalTotalCountWithUom: MutableLiveData<String> = refusalTotalCount.map {
-        val countRefusal = taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountRefusalOfProductPGE(productInfo.value!!)
+        val countRefusal =
+                productInfo.value
+                        ?.let {
+                            taskManager
+                                    .getReceivingTask()
+                                    ?.taskRepository
+                                    ?.getProductsDiscrepancies()
+                                    ?.getCountRefusalOfProductPGE(it)
+                        }
+                        ?: 0.0
 
         if ((it ?: 0.0) > 0.0) {
-            "- ${it.toStringFormatted()} ${productInfo.value?.uom?.name}"
+            "- ${it.toStringFormatted()} ${productInfo.value?.uom?.name.orEmpty()}"
         } else { //если было введено отрицательное значение
-            "${if (countRefusal > 0.0) "- " + countRefusal.toStringFormatted() else countRefusal.toStringFormatted()} ${productInfo.value?.uom?.name}"
+            "${if (countRefusal > 0.0) "- " + countRefusal.toStringFormatted() else countRefusal.toStringFormatted()} ${productInfo.value?.uom?.name.orEmpty()}"
         }
     }
 
     val checkStampControlVisibility: MutableLiveData<Boolean> = MutableLiveData()
 
     val tvStampControlVal: MutableLiveData<String> = countValue.combineLatest(spinQualitySelectedPosition).combineLatest(countExciseStampsScanned).map {
-        if (qualityInfo.value?.get(it?.first?.second ?: 0)?.code == "1") {
+        if (currentQualityInfoCode == TYPE_DISCREPANCIES_QUALITY_NORM) {
             if ((productInfo.value?.numberBoxesControl?.toInt() == 0 && productInfo.value?.numberStampsControl?.toInt() == 0) ||
                     ((it?.first?.first ?: 0.0) <= 0.0)) {
                 checkStampControlVisibility.value = false
@@ -197,46 +260,50 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
     val tvListStampVal: MutableLiveData<String> = countValue.combineLatest(countExciseStampsScanned).map {
         val enteredCount = it?.first ?: 0.0
         val countExciseStampsScannedValue = it?.second.toString()
-        val acceptTotalCountValue = acceptTotalCount.value ?: 0.0
-        val refusalTotalCountValue = refusalTotalCount.value ?: 0.0
-        val productOrderQuantity = productInfo.value?.orderQuantity?.toDoubleOrNull() ?: 0.0
-        val totalCount = (acceptTotalCountValue + refusalTotalCountValue + productOrderQuantity).toStringFormatted()
 
         if (enteredCount <= 0.0) {
             checkStampListVisibility.value = false
             context.getString(R.string.not_required)
         } else {
             checkStampListVisibility.value = true
-            "$countExciseStampsScannedValue из $totalCount"
+            "$countExciseStampsScannedValue из ${enteredCount.toStringFormatted()}"
         }
     }
 
     val checkBoxStampList: MutableLiveData<Boolean> = checkStampListVisibility.map {
-        (countValue.value ?: 0.0) > 0.0 && (countExciseStampsScanned.value
-                ?: 0) >= (countValue.value ?: 0.0)
+        val enteredCount = countValue.value ?: 0.0
+        val countExciseStampsScannedValue = countExciseStampsScanned.value?.toDouble() ?: 0.0
+        enteredCount> 0.0 && countExciseStampsScannedValue >= enteredCount
     }
 
     val enabledRollbackBtn: MutableLiveData<Boolean> = countExciseStampsScanned.map {
         (it ?: 0) > 0
     }
 
-    val enabledApplyBtn: MutableLiveData<Boolean> = countValue.combineLatest(spinQualitySelectedPosition).combineLatest(enteredProcessingUnitNumber).map {
-        when (qualityInfo.value?.get(it?.first?.second ?: 0)?.code) {
-            "1" -> {
-                (it?.first?.first ?: 0.0) > 0.0
-            }
-            "2" -> {
-                if (isGoodsAddedAsSurplus.value == true) {
-                    checkBoxStampList.value == true && it?.second?.length == 18
-                } else {
-                    checkBoxSurplusControl.value
-                }
-            }
-            else -> {
-                checkBoxStampList.value
-            }
-        }
-    }
+    val enabledApplyBtn: MutableLiveData<Boolean> =
+            countValue
+                    .combineLatest(spinQualitySelectedPosition)
+                    .combineLatest(enteredProcessingUnitNumber)
+                    .combineLatest(checkBoxStampList)
+                    .map {
+                        val enteredCount = countValue.value ?: 0.0
+                        val enteredProcessingUnitNumberLength = enteredProcessingUnitNumber.value?.length ?: 0
+                        when (currentQualityInfoCode) {
+                            TYPE_DISCREPANCIES_QUALITY_NORM -> {
+                                enteredCount > 0.0
+                            }
+                            TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS -> {
+                                if (isGoodsAddedAsSurplus.value == true) {
+                                    checkBoxStampList.value == true && enteredProcessingUnitNumberLength == PROCESSING_UNIT_NUMBER_LENGTH
+                                } else {
+                                    checkBoxSurplusControl.value
+                                }
+                            }
+                            else -> {
+                                checkBoxStampList.value
+                            }
+                        }
+                    }
 
     val enabledAddBtn: MutableLiveData<Boolean> = enabledApplyBtn.map {
         if (isGoodsAddedAsSurplus.value == true) {
@@ -292,38 +359,66 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
         processExciseAlcoStampAccPGEService.rollbackScannedExciseStamp()
         //уменьшаем кол-во отсканированных марок на единицу в текущей сессии
         countExciseStampsScanned.value = countExciseStampsScanned.value?.minus(1)
+
         //возвращаем данные предыдущей остканированной марки, если таковая есть
         val lastExciseStampInfo = processExciseAlcoStampAccPGEService.getLastAddExciseStamp()
-        val manufacturerCode = taskManager.getReceivingTask()?.taskRepository?.getBatches()?.getBatches()?.findLast {
-            it.batchNumber == lastExciseStampInfo?.batchNumber
-        }?.egais ?: ""
-        val manufacturerName = repoInMemoryHolder.manufacturers.value?.findLast {
-            it.code == manufacturerCode
-        }?.name
-                ?: repoInMemoryHolder.manufacturers.value?.findLast { manufacture -> //это в случае излишка
-                    manufacture.code == lastExciseStampInfo?.organizationCodeEGAIS
-                }?.name ?: ""
+        val manufacturerCode =
+                taskManager
+                        .getReceivingTask()
+                        ?.taskRepository
+                        ?.getBatches()
+                        ?.getBatches()
+                        ?.findLast { it.batchNumber == lastExciseStampInfo?.batchNumber }
+                        ?.egais
+                        .orEmpty()
+
+        val manufacturerName =
+                repoInMemoryHolder
+                        .manufacturers.value
+                        ?.findLast { it.code == manufacturerCode }
+                        ?.name
+                        ?: repoInMemoryHolder
+                                .manufacturers.value
+                                ?.findLast { manufacture -> //это в случае излишка
+                                    manufacture.code == lastExciseStampInfo?.organizationCodeEGAIS
+                                }
+                                ?.name
+                                .orEmpty()
+
         spinManufacturers.value = listOf(manufacturerName)
 
-        val dateOfPour = taskManager.getReceivingTask()?.taskRepository?.getBatches()?.getBatches()?.findLast {
-            it.batchNumber == lastExciseStampInfo?.batchNumber
-        }?.bottlingDate
-                ?: lastExciseStampInfo?.bottlingDate //exciseStampInfo.value!!.bottlingDate это в случае излишка
-        if (!dateOfPour.isNullOrEmpty()) {
-            spinBottlingDate.value = listOf(formatterRU.format(formatterEN.parse(dateOfPour)))
+        val dateOfPour =
+                taskManager
+                        .getReceivingTask()
+                        ?.taskRepository
+                        ?.getBatches()
+                        ?.getBatches()
+                        ?.findLast { it.batchNumber == lastExciseStampInfo?.batchNumber }
+                        ?.bottlingDate
+                        ?: lastExciseStampInfo?.bottlingDate.orEmpty() //exciseStampInfo.value!!.bottlingDate это в случае излишка
+
+        if (dateOfPour.isNotEmpty()) {
+            try {
+                spinBottlingDate.value = listOf(formatterRU.format(formatterEN.parse(dateOfPour)))
+            } catch (e: Exception) {
+                Logg.e { "e: $e" }
+                spinBottlingDate.value = listOf("")
+            }
         } else {
             spinBottlingDate.value = listOf("")
         }
 
-        if (countExciseStampsScanned.value!! <= 0) isGradeControl.value = false //отключаем Режим 100% контроля грейда
+        val countExciseStampsScannedValue = countExciseStampsScanned.value ?: 0
+        if (countExciseStampsScannedValue <= 0) isGradeControl.value = false //отключаем Режим 100% контроля грейда
     }
 
     fun onClickDetails() {
-        screenNavigator.openGoodsDetailsScreen(productInfo.value!!)
+        productInfo.value?.let { screenNavigator.openGoodsDetailsScreen(it) }
     }
 
     fun onClickAdd() : Boolean {
-        return if (processExciseAlcoStampAccPGEService.overLimit(countValue.value!!)) {
+        val enteredCount = countValue.value ?: 0.0
+        return if (processExciseAlcoStampAccPGEService.overLimit(enteredCount)) {
             screenNavigator.openAlertOverLimitAlcoPGEScreen(
                     nextCallbackFunc = {
                         /**По товару ХХХХХХ было превышено количество. Необходимо найти излишек" с кнопками "Назад" и "Далее",
@@ -334,10 +429,16 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
             false
         } else {
             if (isGoodsAddedAsSurplus.value == true) { //GRZ. ПГЕ. Добавление товара, который не числится в задании https://trello.com/c/im9rJqrU
-                processExciseAlcoStampAccPGEService.setProcessingUnitNumber(enteredProcessingUnitNumber.value!!)
+                processExciseAlcoStampAccPGEService.setProcessingUnitNumber(enteredProcessingUnitNumber.value.orEmpty())
             }
-            processExciseAlcoStampAccPGEService.addProduct(convertEizToBei().toString(), qualityInfo.value!![spinQualitySelectedPosition.value!!].code)
+            processExciseAlcoStampAccPGEService.addProduct(convertEizToBei().toString(), currentQualityInfoCode)
             processExciseAlcoStampAccPGEService.apply()
+            count.value = "0"
+            spinQualitySelectedPosition.value =
+                    qualityInfo.value
+                            ?.indexOfLast { it.code == TYPE_DISCREPANCIES_QUALITY_NORM }
+                            ?: -1
+            countExciseStampsScanned.value = 0
             true
         }
     }
@@ -385,7 +486,7 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
     private fun addExciseStampDiscrepancy() {
         processExciseAlcoStampAccPGEService.addExciseStampDiscrepancy(
                 exciseStamp = exciseStampInfo.value,
-                typeDiscrepancies = if (isExciseStampSurplus.value == true) "2" else qualityInfo.value!![spinQualitySelectedPosition.value!!].code, //(Марка-излишек) карточка об этом условии if (isExciseStampSurplus.value == true) "2"
+                typeDiscrepancies = if (isExciseStampSurplus.value == true) TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS else currentQualityInfoCode, //(Марка-излишек) карточка об этом условии if (isExciseStampSurplus.value == true) "2"
                 isScan = true
         )
         //увеличиваем кол-во отсканированных марок на единицу для отображения на экране
@@ -551,5 +652,9 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
             return
         }
         screenNavigator.goBack()
+    }
+
+    companion object {
+        private const val PROCESSING_UNIT_NUMBER_LENGTH = 18
     }
 }
