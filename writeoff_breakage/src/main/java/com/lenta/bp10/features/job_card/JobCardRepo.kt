@@ -16,19 +16,23 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class JobCardRepo @Inject constructor(val hyperHive: HyperHive,
-                                      val context: Context,
-                                      val sessionInfo: ISessionInfo,
-                                      val repoInMemoryHolder: IRepoInMemoryHolder) : IJobCardRepo {
+class JobCardRepo @Inject constructor(
+        val hyperHive: HyperHive,
+        val context: Context,
+        val sessionInfo: ISessionInfo,
+        val repoInMemoryHolder: IRepoInMemoryHolder
+) : IJobCardRepo {
     override suspend fun getAllTaskSettings(): List<TaskSetting> {
         return withContext(Dispatchers.IO) {
             @Suppress("INACCESSIBLE_TYPE")
-            return@withContext ZmpUtz29V001Rfc(hyperHive).localHelper_ET_TASK_TPS.all.map {
-                TaskSetting(
-                        name = it.longName,
-                        motionType = it.bwart,
-                        taskType = it.taskType
-                )
+            return@withContext ZmpUtz29V001Rfc(hyperHive).localHelper_ET_TASK_TPS.all.mapNotNull {
+                it.takeIf { it.longName != null && it.taskType != null }?.run {
+                    TaskSetting(
+                            name = longName.orEmpty(),
+                            motionType = bwart.orEmpty(),
+                            taskType = taskType.orEmpty()
+                    )
+                }
             }
         }
     }
@@ -38,7 +42,7 @@ class JobCardRepo @Inject constructor(val hyperHive: HyperHive,
             return emptyList()
         }
         return withContext(Dispatchers.IO) {
-            return@withContext ZmpUtz34V001(hyperHive).getMaterialTypes(taskType).map {
+            return@withContext ZmpUtz34V001(hyperHive).getMaterialTypes(taskType).mapNotNull {
                 it.mtart
             }
         }
@@ -52,15 +56,16 @@ class JobCardRepo @Inject constructor(val hyperHive: HyperHive,
 
             @Suppress("INACCESSIBLE_TYPE")
             return@withContext ZmpUtz35V001Rfc(hyperHive).localHelper_ET_CNTRL
-                    .getWhere("TASK_TYPE = \"$taskType\"").map {
-                        GisControl(
-                                name =
-                                ZmpUtz36V001(hyperHive).localHelper_ET_CNTRL_TXT
-                                        .getWhere("TASK_CNTRL = \"${it.taskCntrl}\"")
-                                        .getOrNull(0)?.cntrlTxt.orEmpty(),
-                                code = it.taskCntrl
-                        )
-
+                    .getWhere("TASK_TYPE = \"$taskType\"")
+                    .mapNotNull {
+                        ZmpUtz36V001(hyperHive).localHelper_ET_CNTRL_TXT
+                                .getWhere("TASK_CNTRL = \"${it.taskCntrl}\"")
+                                .getOrNull(0)?.cntrlTxt?.run {
+                                    GisControl(
+                                            name = this,
+                                            code = it.taskCntrl.orEmpty()
+                                    )
+                                }
                     }
         }
     }
@@ -76,19 +81,16 @@ class JobCardRepo @Inject constructor(val hyperHive: HyperHive,
                     .getWhere("TASK_TYPE = \"$taskType\" and (WERKS = \"*\" OR WERKS = \"${sessionInfo.market}\")")
 
             if (lgortList.size == 1 && lgortList[0].lgort == "*") {
-                return@withContext repoInMemoryHolder.stockLockRequestResult!!.stocksLocks.filter { it.locked == "" }.map { it.storloc }
+                return@withContext repoInMemoryHolder.stockLockRequestResult?.run { stocksLocks?.filter { it.locked == "" }?.mapNotNull { it.storloc } }.orEmpty()
             }
 
-            return@withContext lgortList.map {
+            return@withContext lgortList.mapNotNull {
                 it.lgort
             }
         }
     }
 
-
     override fun generateNameTask(): String = context.getString(R.string.write_off_from, formatCurrentDate("dd.MM HH:mm"))
-
-
 }
 
 interface IJobCardRepo {

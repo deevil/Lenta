@@ -1,5 +1,7 @@
 package com.lenta.bp10.fmp.resources.gis_control;
 
+import androidx.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 import com.mobrun.plugin.api.HyperHive;
 import com.mobrun.plugin.api.helper.LocalTableResourceHelper;
@@ -37,14 +39,14 @@ public class ZmpUtz35V001Rfc {
 
     public static class ItemLocal_ET_CNTRL {
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("TASK_TYPE")
         public String taskType;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("TASK_CNTRL")
         public String taskCntrl;
-
-
     }
 
 
