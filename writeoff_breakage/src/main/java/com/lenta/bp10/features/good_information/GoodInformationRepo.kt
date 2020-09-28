@@ -1,9 +1,8 @@
 package com.lenta.bp10.features.good_information
 
 import com.lenta.bp10.fmp.resources.dao_ext.getDefaultReason
-import com.lenta.bp10.fmp.resources.dao_ext.getLimit
 import com.lenta.bp10.fmp.resources.fast.ZmpUtz31V001
-import com.lenta.bp10.fmp.resources.tasks_settings.ZmpUtz29V001Rfc
+import com.lenta.bp10.repos.IRepoInMemoryHolder
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
@@ -13,9 +12,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 @AppScope
-class GoodInformationRepo(hyperHive: HyperHive) : IGoodInformationRepo {
+class GoodInformationRepo(
+        hyperHive: HyperHive,
+        private val repoInMemoryHolder: IRepoInMemoryHolder
+) : IGoodInformationRepo {
 
-    val zmpUt29V001 by lazy { ZmpUtz29V001Rfc(hyperHive) }
     val zfmpUtz48V001 by lazy { ZfmpUtz48V001(hyperHive) }
     val zmpUtz31V001 by lazy { ZmpUtz31V001(hyperHive) }
 
@@ -33,8 +34,8 @@ class GoodInformationRepo(hyperHive: HyperHive) : IGoodInformationRepo {
             return 0.0
         }
         return withContext(Dispatchers.IO) {
-            return@withContext zmpUt29V001.getLimit(
-                    taskTypeCode = taskTypeCode)
+            val allSettings = repoInMemoryHolder.userResourceResult?.taskSettings.orEmpty()
+            allSettings.firstOrNull { it.taskType == taskTypeCode }?.limit ?: 0.0
         }
     }
 }
