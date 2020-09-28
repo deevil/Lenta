@@ -367,7 +367,7 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
         val lastExciseStampInfo = processExciseAlcoStampAccPGEService.getLastAddExciseStamp()
         val lastBottlingDate = lastExciseStampInfo?.bottlingDate
         val lastBatchNumber = lastExciseStampInfo?.batchNumber.orEmpty()
-        val manufacturerCode = taskManager.findEgaisOrEmpty(lastBatchNumber)
+        val manufacturerCode = taskManager.findManufacturerCodeInBatchOrEmpty(lastBatchNumber)
 
         val manufacturerName = repoInMemoryHolder.findManufacturerNameByCodeOrEGAIS(manufacturerCode, lastExciseStampInfo?.organizationCodeEGAIS)
         spinManufacturers.value = listOf(manufacturerName)
@@ -379,7 +379,7 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
 
     private fun setSpinBoilingDate(lastBatchNumber: String, lastBottlingDate: String?) {
         val dateOfPour =
-                taskManager.findBottlingDateOrDefault(lastBatchNumber, lastBottlingDate) //exciseStampInfo.value!!.bottlingDate это в случае излишка
+                taskManager.findBottlingDateInBatchOrDefault(lastBatchNumber, lastBottlingDate) //exciseStampInfo.value!!.bottlingDate это в случае излишка
 
         spinBottlingDate.value = if (dateOfPour.isNotEmpty()) {
             try {

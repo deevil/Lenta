@@ -15,21 +15,17 @@ interface IReceivingTaskManager {
     fun getTaskType(): TaskType
 }
 
-fun IReceivingTaskManager.findEgaisOrEmpty(lastBatchNumber: String): String {
+fun IReceivingTaskManager.findManufacturerCodeInBatchOrEmpty(lastBatchNumber: String): String {
     return this.getReceivingTask()
-            ?.taskRepository
-            ?.getBatches()
-            ?.getBatches()
+            ?.getProcessedBatches()
             ?.findLast { it.batchNumber == lastBatchNumber }
             ?.egais
             .orEmpty()
 }
 
-fun IReceivingTaskManager.findBottlingDateOrDefault(lastBatchNumber: String, defaultDate: String?): String {
+fun IReceivingTaskManager.findBottlingDateInBatchOrDefault(lastBatchNumber: String, defaultDate: String?): String {
     return this.getReceivingTask()
-            ?.taskRepository
-            ?.getBatches()
-            ?.getBatches()
+            ?.getProcessedBatches()
             ?.findLast { it.batchNumber == lastBatchNumber }
             ?.bottlingDate
             ?: defaultDate.orEmpty()
