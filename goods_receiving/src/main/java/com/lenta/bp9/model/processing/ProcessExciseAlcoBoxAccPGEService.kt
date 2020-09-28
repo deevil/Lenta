@@ -27,7 +27,7 @@ class ProcessExciseAlcoBoxAccPGEService
         return if (productInfo.type == ProductType.ExciseAlcohol && productInfo.isBoxFl) { //алкоголь, коробочный учет https://trello.com/c/TzUSGIH7
             this.productInfo = productInfo.copy()
             boxes.clear()
-            taskManager.getReceivingTask()?.taskRepository?.getBoxes()?.getBoxes()?.map {
+            taskManager.getReceivingTask()?.taskRepository?.getBoxesRepository()?.getTaskBoxes()?.map {
                 boxes.add(it.copy())
             }
             currentBoxDiscrepancies.clear()

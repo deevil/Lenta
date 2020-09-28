@@ -4,6 +4,7 @@ import com.lenta.bp9.features.delegates.SearchProductDelegate
 
 enum class MarkingGoodsRegime {
     UomStWithoutBoxes,
+    UomSTWithBoxesPGE,
     UomStWithBoxes,
     Unknown
 }
@@ -35,5 +36,9 @@ fun getMarkingGoodsRegime(taskManager: IReceivingTaskManager, productInfo: TaskP
         return MarkingGoodsRegime.UomStWithBoxes
     }
 
+
+    if (isExciseStampsNotEmpty && productInfo.markType != MarkType.None) {
+        return MarkingGoodsRegime.UomSTWithBoxesPGE
+    }
     return MarkingGoodsRegime.Unknown
 }

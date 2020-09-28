@@ -4,7 +4,7 @@ import com.lenta.bp9.model.task.TaskBoxInfo
 import com.lenta.bp9.model.task.TaskProductInfo
 
 interface ITaskBoxesRepository {
-    fun getBoxes(): List<TaskBoxInfo>
+    fun getTaskBoxes(): List<TaskBoxInfo>
     fun findBox(box: TaskBoxInfo): TaskBoxInfo?
     fun findBox(boxNumber: String): TaskBoxInfo?
     fun findBoxesOfProduct(productInfo: TaskProductInfo): List<TaskBoxInfo>?

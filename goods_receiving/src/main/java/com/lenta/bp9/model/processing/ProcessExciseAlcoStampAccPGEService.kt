@@ -37,7 +37,7 @@ class ProcessExciseAlcoStampAccPGEService
         taskManager.getReceivingTask()?.taskRepository?.getProducts()?.changeProduct(productInfo)
     }
 
-    fun apply() {
+    fun filterAndUpdateBlockDiscrepansies() {
         if (currentExciseStampsDiscrepancies.isNotEmpty()) {
             currentExciseStampsDiscrepancies.map {
                 taskManager.getReceivingTask()?.
