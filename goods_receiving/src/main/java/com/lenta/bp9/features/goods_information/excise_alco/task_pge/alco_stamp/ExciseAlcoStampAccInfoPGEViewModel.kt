@@ -124,7 +124,6 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
         }
 
     val acceptTotalCount: MutableLiveData<Double> = countValue.combineLatest(spinQualitySelectedPosition).map {
-        val currentQualityInfoCodeValue = currentQualityInfoCode
         val countAccept =
                 productInfo.value
                         ?.let {
@@ -136,12 +135,18 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
                         }
                         ?: 0.0
 
-        if (currentQualityInfoCodeValue == TYPE_DISCREPANCIES_QUALITY_NORM
-                || currentQualityInfoCodeValue == TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS) {
+        if (isQualityInfoCodeValid()) {
             convertEizToBei() + countAccept
         } else {
             countAccept
         }
+    }
+
+    private fun isQualityInfoCodeValid(): Boolean {
+        val currentQualityInfoCodeValue = currentQualityInfoCode
+
+        return (currentQualityInfoCodeValue == TYPE_DISCREPANCIES_QUALITY_NORM)
+                || (currentQualityInfoCodeValue == TYPE_DISCREPANCIES_QUALITY_PGE_SURPLUS)
     }
 
     val acceptTotalCountWithUom: MutableLiveData<String> = acceptTotalCount.map {
@@ -362,7 +367,7 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
         val lastExciseStampInfo = processExciseAlcoStampAccPGEService.getLastAddExciseStamp()
         val lastBottlingDate = lastExciseStampInfo?.bottlingDate
         val lastBatchNumber = lastExciseStampInfo?.batchNumber.orEmpty()
-        val manufacturerCode = taskManager.getEgaisOrEmpty(lastBatchNumber)
+        val manufacturerCode = taskManager.findEgaisOrEmpty(lastBatchNumber)
 
         val manufacturerName = repoInMemoryHolder.findManufacturerNameByCodeOrEGAIS(manufacturerCode, lastExciseStampInfo?.organizationCodeEGAIS)
         spinManufacturers.value = listOf(manufacturerName)
@@ -374,7 +379,7 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
 
     private fun setSpinBoilingDate(lastBatchNumber: String, lastBottlingDate: String?) {
         val dateOfPour =
-                taskManager.getBottlingDateOrDefault(lastBatchNumber, lastBottlingDate) //exciseStampInfo.value!!.bottlingDate это в случае излишка
+                taskManager.findBottlingDateOrDefault(lastBatchNumber, lastBottlingDate) //exciseStampInfo.value!!.bottlingDate это в случае излишка
 
         spinBottlingDate.value = if (dateOfPour.isNotEmpty()) {
             try {

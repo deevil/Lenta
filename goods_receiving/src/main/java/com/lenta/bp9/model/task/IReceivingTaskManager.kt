@@ -15,7 +15,7 @@ interface IReceivingTaskManager {
     fun getTaskType(): TaskType
 }
 
-fun IReceivingTaskManager.getEgaisOrEmpty(lastBatchNumber: String): String {
+fun IReceivingTaskManager.findEgaisOrEmpty(lastBatchNumber: String): String {
     return this.getReceivingTask()
             ?.taskRepository
             ?.getBatches()
@@ -25,7 +25,7 @@ fun IReceivingTaskManager.getEgaisOrEmpty(lastBatchNumber: String): String {
             .orEmpty()
 }
 
-fun IReceivingTaskManager.getBottlingDateOrDefault(lastBatchNumber: String, defaultDate: String?): String {
+fun IReceivingTaskManager.findBottlingDateOrDefault(lastBatchNumber: String, defaultDate: String?): String {
     return this.getReceivingTask()
             ?.taskRepository
             ?.getBatches()
