@@ -805,7 +805,7 @@ class MarkingBoxInfoViewModel : BaseGoodsInfo(),  OnPositionClickListener {
     private fun boxCheck(boxNumber: String) {
         val boxMaterialNumber =
                 taskRepository
-                        ?.getBoxes()
+                        ?.getBoxesRepository()
                         ?.findBox(boxNumber)
                         ?.materialNumber
                         .orEmpty()

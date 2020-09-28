@@ -68,8 +68,7 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
         selectedType.map { type ->
             if (type?.isWholesaleType() == false) {
                 resource.allSuppliers()
-            }
-            else {
+            } else {
                 resource.wholesaleBuyer()
             }
         }
@@ -89,10 +88,9 @@ class TaskCardCreateViewModel : CoreViewModel(), PageSelectionListener {
 
     private val selectedType by lazy {
         types.combineLatest(taskTypePosition).mapSkipNulls {
-            it.let {
-                val (list, position) = it
-                list.getOrNull(position)
-            }
+            updateLists()
+            val (list, position) = it
+            list.getOrNull(position)
         }
     }
 

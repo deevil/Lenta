@@ -2,6 +2,7 @@ package com.lenta.bp12.features.save_data
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.managers.interfaces.IGeneralTaskManager
+import com.lenta.bp12.model.WorkType
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.request.SendTaskDataNetRequest
@@ -30,7 +31,6 @@ class SaveDataViewModel : CoreViewModel() {
 
     @Inject
     lateinit var resource: IResourceManager
-
 
     val title by lazy {
         resource.tk(sessionInfo.market.orEmpty())
@@ -79,10 +79,20 @@ class SaveDataViewModel : CoreViewModel() {
     }
 
     fun onClickNext() {
-        navigator.closeAllScreen()
-        navigator.openMainMenuScreen()
+        with(navigator) {
+            when (generalTaskManager.getWorkType()) {
+                WorkType.OPEN -> {
+                    closeAllScreen()
+                    openMainMenuScreen()
+                    openTaskListScreen()
+                }
+                WorkType.CREATE -> {
+                    closeAllScreen()
+                    openMainMenuScreen()
+                }
+            }
+        }
     }
-
 }
 
 data class SaveDataUi(

@@ -10,8 +10,10 @@ import com.lenta.bp12.managers.interfaces.IMarkManager
 import com.lenta.bp12.managers.interfaces.IOpenTaskManager
 import com.lenta.bp12.model.MarkType
 import com.lenta.bp12.model.pojo.Basket
+import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.extentions.*
 import com.lenta.bp12.model.pojo.open_task.TaskOpen
+import com.lenta.bp12.platform.ZERO_QUANTITY
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -20,9 +22,9 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
+import com.lenta.shared.utilities.extentions.asyncTryCatchLiveData
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.mapSkipNulls
 import com.lenta.shared.utilities.extentions.unsafeLazy
 import com.lenta.shared.utilities.orIfNull
 import javax.inject.Inject
@@ -75,23 +77,27 @@ class BasketOpenGoodListViewModel : BaseGoodListOpenViewModel(), OnOkInSoftKeybo
     }
 
     val goods by lazy {
-        Logg.e { basket.value.toString() }
-        basket.mapSkipNulls { activeBasket ->
-                val list = activeBasket.getGoodList()
-                list.mapIndexed { index, good ->
-                    val units = good.commonUnits.name
-                    val quantity = activeBasket.goods[good]
+        basket.switchMap { activeBasket ->
+            task.switchMap { task ->
+                asyncTryCatchLiveData {
+                    val list = activeBasket.getGoodList()
+                    list.mapIndexed { index, good ->
+                        val units = good.commonUnits.name
+                        val quantity = activeBasket.goods[good]
 
-                    Logg.d { "-> freeVolume: ${activeBasket.freeVolume}, isPrinted: ${activeBasket.isPrinted}, isLocked: ${activeBasket.isLocked} ${activeBasket.goods}" }
+                        Logg.d { "-> freeVolume: ${activeBasket.freeVolume}, isPrinted: ${activeBasket.isPrinted}, isLocked: ${activeBasket.isLocked} ${activeBasket.goods}" }
 
-                    ItemGoodUi(
-                            position = "${index + 1}",
-                            name = good.getNameWithMaterial(),
-                            quantity = "${quantity.dropZeros()} $units",
-                            material = good.material,
-                            good = good
-                    )
+                        ItemGoodUi(
+                                position = "${index + 1}",
+                                name = good.getNameWithMaterial(),
+                                mrc = getMrc(good, task),
+                                quantity = "${quantity.dropZeros()} $units",
+                                material = good.material,
+                                good = good
+                        )
+                    }
                 }
+            }
         }
     }
 
@@ -136,8 +142,8 @@ class BasketOpenGoodListViewModel : BaseGoodListOpenViewModel(), OnOkInSoftKeybo
                 manager.updateCurrentGood(item.good)
                 navigator.goBack()
                 if (item.good.markType == MarkType.UNKNOWN)
-                    navigator.openGoodInfoCreateScreen()
-                else navigator.openMarkedGoodInfoCreateScreen()
+                    navigator.openGoodInfoOpenScreen()
+                else navigator.openMarkedGoodInfoOpenScreen()
             }
         }.orIfNull {
             Logg.e { "goods null" }
@@ -180,10 +186,13 @@ class BasketOpenGoodListViewModel : BaseGoodListOpenViewModel(), OnOkInSoftKeybo
                             goodFromBasket = goodFromBasket,
                             basketToGetQuantity = basket
                     )
+                    if (goodFromBasket.getTotalQuantity() == ZERO_QUANTITY) {
+                        goodFromBasket.isCounted = false
+                    }
                     //Удалим товар из корзины
                     basket.deleteGood(goodFromBasket)
                 }
-                removeEmptyBasketsAndGoods(task, basket)
+                removeEmptyBaskets(task, basket)
                 manager.updateBasketAndTask(task, basket)
             }.orIfNull {
                 Logg.e { "basket null" }
@@ -200,8 +209,7 @@ class BasketOpenGoodListViewModel : BaseGoodListOpenViewModel(), OnOkInSoftKeybo
         updateCurrentTask(task)
     }
 
-    private fun removeEmptyBasketsAndGoods(task: TaskOpen, basket: Basket) {
-        task.removeEmptyGoods()
+    private fun removeEmptyBaskets(task: TaskOpen, basket: Basket) {
         //Если корзина пуста удалим ее из задания и вернемся назад
         if (basket.goods.isEmpty()) {
             task.removeEmptyBaskets()
@@ -233,6 +241,22 @@ class BasketOpenGoodListViewModel : BaseGoodListOpenViewModel(), OnOkInSoftKeybo
             }
             navigator.goBack()
         }
+    }
 
+    private fun getMrc(good: Good, task: TaskOpen): String {
+        val mrc = good.maxRetailPrice
+
+        return mrc.takeIf { isDivByMrcAndItsNotZero(mrc, task) }
+                ?.let { resource.mrcDashCostRub(it) }
+                .orEmpty()
+    }
+
+    private fun isDivByMrcAndItsNotZero(mrc: String, task: TaskOpen): Boolean {
+        val isDivByMinimalPrice = task.type?.isDivByMinimalPrice == true
+        return isDivByMinimalPrice && (mrc.isEmpty().not() || mrc != ZERO_MRC_STRING)
+    }
+
+    companion object {
+        private const val ZERO_MRC_STRING = "0"
     }
 }
