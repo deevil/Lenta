@@ -479,7 +479,8 @@ data class GoodOptions(
         val section: String,
         val goodType: GoodType,
         val healthFood: Boolean = false,
-        val novelty: Boolean = false
+        val novelty: Boolean = false,
+        val isZPart: Boolean = false
 )
 
 data class Stock(

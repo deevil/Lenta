@@ -1,22 +1,33 @@
 package com.lenta.bp14.models.work_list.repo
 
 import com.lenta.bp14.models.data.getGoodType
+import com.lenta.bp14.models.general.AppTaskTypes
+import com.lenta.bp14.models.general.IGeneralRepo
+import com.lenta.bp14.models.general.ITaskTypeInfo
 import com.lenta.bp14.models.work_list.Good
 import com.lenta.bp14.models.work_list.GoodOptions
+import com.lenta.bp14.models.work_list.IWorkListTask
 import com.lenta.bp14.platform.extentions.WorkListGoodInfo
 import com.lenta.bp14.platform.extentions.toWorkListGoodInfo
+import com.lenta.bp14.requests.EanParam
+import com.lenta.bp14.requests.MatNrParam
+import com.lenta.bp14.requests.ProductInfoNetRequest
+import com.lenta.bp14.requests.ProductInfoParams
+import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.fmp.resources.dao_ext.*
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz17V001
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
+import com.lenta.shared.functional.toRight
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.requests.combined.scan_info.pojo.EanInfo
 import com.lenta.shared.utilities.extentions.getQuantity
 import com.lenta.shared.utilities.extentions.isSapTrue
+import com.lenta.shared.utilities.extentions.toSapBooleanString
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -24,7 +35,10 @@ import java.util.*
 import javax.inject.Inject
 
 class WorkListRepo @Inject constructor(
-        private val hyperHive: HyperHive
+        private val hyperHive: HyperHive,
+        private val generalRepo: IGeneralRepo,
+        private val sessionInfo: ISessionInfo,
+        private val productInfoNetRequest: ProductInfoNetRequest
 ) : IWorkListRepo {
 
     val units: ZmpUtz07V001 by lazy { ZmpUtz07V001(hyperHive) } // Единицы измерения
@@ -41,6 +55,7 @@ class WorkListRepo @Inject constructor(
                 val ean = getEanByMaterialUnits(material, defaultUnits.code)
                 val shelfLifeTypes = getShelfLifeTypes()
                 val comments = getWorkListComments()
+                val isZPart = getIsZPart(ean.orEmpty(), goodInfo.material)
 
                 return@withContext Good(
                         ean = ean,
@@ -64,7 +79,8 @@ class WorkListRepo @Inject constructor(
                                         rusWine = goodInfo.isRusWine.orEmpty()
                                 ),
                                 healthFood = goodInfo.healthFood.isSapTrue(),
-                                novelty = goodInfo.novelty.isSapTrue()
+                                novelty = goodInfo.novelty.isSapTrue(),
+                                isZPart = isZPart
                         )
                 )
             }
@@ -84,6 +100,7 @@ class WorkListRepo @Inject constructor(
                     val shelfLifeTypes = getShelfLifeTypes()
                     val comments = getWorkListComments()
                     val quantity = scanCodeInfo.getQuantity(defaultUnits)
+                    val isZPart = getIsZPart(eanInfo.ean, goodInfo.material)
 
                     return@withContext Good(
                             ean = eanInfo.ean,
@@ -108,7 +125,8 @@ class WorkListRepo @Inject constructor(
                                             rusWine = goodInfo.isRusWine.orEmpty()
                                     ),
                                     healthFood = goodInfo.healthFood.isSapTrue(),
-                                    novelty = goodInfo.novelty.isSapTrue()
+                                    novelty = goodInfo.novelty.isSapTrue(),
+                                    isZPart = isZPart
                             )
                     )
                 }
@@ -165,6 +183,33 @@ class WorkListRepo @Inject constructor(
         }
     }
 
+    private suspend fun getIsZPart(ean: String, material: String): Boolean {
+        val response = productInfoNetRequest(params = getProductInfoParams(ean, material))
+
+        var result = false
+        response.either(
+                fnR = {
+                    if (it.productsInfo.isNotEmpty()) {
+                        result = it.productsInfo[0].isZPart?.isNotEmpty() ?: false
+                    }
+                }
+        )
+
+        return result
+    }
+
+    private fun getProductInfoParams(ean: String, material: String) = ProductInfoParams(
+            withProductInfo = true.toSapBooleanString(),
+            withAdditionalInf = false.toSapBooleanString(),
+            tkNumber = sessionInfo.market.orEmpty(),
+            taskType = getTaskType().taskType,
+            eanList = listOf(EanParam(ean)),
+            matNrList = listOf(MatNrParam(material))
+    )
+
+    private fun getTaskType(): ITaskTypeInfo {
+        return generalRepo.getTasksTypeInfo(AppTaskTypes.WorkList.taskType)!!
+    }
 }
 
 interface IWorkListRepo {
