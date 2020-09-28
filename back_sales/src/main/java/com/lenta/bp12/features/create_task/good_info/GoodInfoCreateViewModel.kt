@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
 import com.lenta.bp12.features.create_task.base.BaseGoodInfoCreateViewModel
+import com.lenta.bp12.features.create_task.task_content.TaskContentFragment
 import com.lenta.bp12.managers.interfaces.ICreateTaskManager
 import com.lenta.bp12.model.*
 import com.lenta.bp12.model.pojo.Good
@@ -774,12 +775,14 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
 
 
     override fun onBackPressed() {
-        if (isExistUnsavedData) {
-            navigator.showUnsavedDataWillBeLost {
-                navigator.goBack()
+        with(navigator){
+            if (isExistUnsavedData) {
+                showUnsavedDataWillBeLost {
+                    goBack()
+                }
+            } else {
+                goBack()
             }
-        } else {
-            navigator.goBack()
         }
     }
 
@@ -815,15 +818,18 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
 
     override fun saveChangesAndExit(result: ScanInfoResult?) {
         launchUITryCatch {
-            navigator.showProgressLoadingData()
-            saveChanges(result)
-            navigator.hideProgress()
-            if (task.value?.baskets?.isEmpty() == false) {
-                navigator.openBasketCreateGoodListScreen()
-            } else {
-                navigator.goBack()
+            with(navigator){
+                showProgressLoadingData()
+                saveChanges(result)
+                hideProgress()
+                val baskets = task.value?.baskets
+                if (baskets?.isEmpty() == false) {
+                    openBasketCreateGoodListScreen()
+                } else {
+                    goBackTo(TaskContentFragment::class.simpleName)
+                }
+                manager.isBasketsNeedsToBeClosed = false
             }
-            manager.isBasketsNeedsToBeClosed = false
         }
     }
 

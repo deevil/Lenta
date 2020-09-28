@@ -646,6 +646,16 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showAlertDialogWithRedTriangle(errorText: String, screenNumber: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = screenNumber,
+                    message = errorText,
+                    iconRes = R.drawable.ic_warning_red_80dp
+            ))
+        }
+    }
+
     override fun showChooseProviderFirst() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
@@ -743,4 +753,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun showCantAddVetToWholeSale()
 
     fun showMarkScanError(errorText: String)
+
+    fun showAlertDialogWithRedTriangle(errorText: String, screenNumber: String = "97")
 }
