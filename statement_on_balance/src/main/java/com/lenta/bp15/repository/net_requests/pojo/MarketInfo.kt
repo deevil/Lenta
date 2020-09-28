@@ -1,4 +1,4 @@
-package com.lenta.bp15.request.pojo
+package com.lenta.bp15.repository.net_requests.pojo
 
 import com.google.gson.annotations.SerializedName
 

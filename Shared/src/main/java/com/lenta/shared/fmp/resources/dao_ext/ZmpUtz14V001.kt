@@ -35,6 +35,10 @@ fun ZmpUtz14V001.getAllowedBksAppVersion(): String? {
     return getParams("BKS_ALLOWED_VRSN_A").firstOrNull()
 }
 
+fun ZmpUtz14V001.getAllowedSobAppVersion(): String? {
+    return getParams("SOB_ALLOWED_VERSION").firstOrNull()
+}
+
 fun ZmpUtz14V001.getSelfControlPinCode(): String? {
     return getParams("PLE_INTERNAL_PINCODE").firstOrNull()
 }

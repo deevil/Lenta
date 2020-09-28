@@ -2,7 +2,7 @@ package com.lenta.bp15.features.loading
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp15.platform.navigation.IScreenNavigator
-import com.lenta.bp15.repository.IDatabaseRepository
+import com.lenta.bp15.repository.database.IDatabaseRepository
 import com.lenta.bp15.request.FastResourcesMultiRequest
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
@@ -16,14 +16,19 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
 
     @Inject
     lateinit var navigator: IScreenNavigator
+
     @Inject
     lateinit var failureInterpreter: IFailureInterpreter
+
     @Inject
     lateinit var fastResourcesNetRequest: FastResourcesMultiRequest
+
     @Inject
     lateinit var appUpdateChecker: AppUpdateChecker
+
     @Inject
-    lateinit var repository: IDatabaseRepository
+    lateinit var database: IDatabaseRepository
+
     @Inject
     lateinit var auth: Auth
 
@@ -48,7 +53,7 @@ class FastLoadingViewModel : CoreLoadingViewModel() {
 
     private fun handleSuccess(notUsed: Boolean) {
         launchUITryCatch {
-            if (appUpdateChecker.isNeedUpdate(repository.getAllowedAppVersion())) {
+            if (appUpdateChecker.isNeedUpdate(database.getAllowedAppVersion())) {
                 auth.cancelAuthorization()
                 navigator.closeAllScreen()
                 navigator.openLoginScreen()

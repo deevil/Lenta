@@ -3,8 +3,8 @@ package com.lenta.bp15.features.auth
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp15.platform.navigation.IScreenNavigator
 import com.lenta.bp15.repository.IRepoInMemoryHolder
-import com.lenta.bp15.request.PermissionsRequestParams
-import com.lenta.bp15.request.UserPermissionsNetRequest
+import com.lenta.bp15.repository.net_requests.INetRequestsRepository
+import com.lenta.bp15.repository.net_requests.pojo.UserPermissionsParams
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.login.CoreAuthViewModel
@@ -25,14 +25,19 @@ class AuthViewModel : CoreAuthViewModel() {
 
     @Inject
     lateinit var auth: Auth
+
     @Inject
     lateinit var navigator: IScreenNavigator
+
     @Inject
     lateinit var sessionInfo: ISessionInfo
+
     @Inject
     lateinit var appSettings: IAppSettings
+
     @Inject
-    lateinit var userPermissionsNetRequest: UserPermissionsNetRequest
+    lateinit var netRequests: INetRequestsRepository
+
     @Inject
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
 
@@ -64,7 +69,7 @@ class AuthViewModel : CoreAuthViewModel() {
                 sessionInfo.userName = login
                 sessionInfo.basicAuth = getBaseAuth(login, getPassword())
                 appSettings.lastLogin = login
-                userPermissionsNetRequest(PermissionsRequestParams(
+                netRequests.getUserPermissions(UserPermissionsParams(
                         userName = login
                 )).either(::handleFailure) {
                     repoInMemoryHolder.storesRequestResult = it

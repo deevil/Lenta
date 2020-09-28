@@ -1,4 +1,4 @@
-package com.lenta.bp15.repository
+package com.lenta.bp15.repository.database
 
 
 import com.lenta.shared.fmp.resources.dao_ext.*
@@ -54,7 +54,7 @@ class DatabaseRepository @Inject constructor(
 
     override suspend fun getAllowedAppVersion(): String? {
         return withContext(Dispatchers.IO) {
-            settings.getAllowedBksAppVersion()
+            settings.getAllowedSobAppVersion()
         }
     }
 
