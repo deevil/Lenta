@@ -1,6 +1,6 @@
 package com.lenta.bp12.features.open_task.task_list
 
-import com.lenta.bp12.model.BlockType
+import com.lenta.shared.utilities.BlockType
 
 data class ItemTaskListUi(
         val position: String,

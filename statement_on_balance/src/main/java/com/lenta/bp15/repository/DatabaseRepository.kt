@@ -13,13 +13,17 @@ class DatabaseRepository @Inject constructor(
         private val hyperHive: HyperHive
 ) : IDatabaseRepository {
 
-    private val products: ZfmpUtz48V001 by lazy { ZfmpUtz48V001(hyperHive) } // Информация о товаре
-    private val eanInfo: ZmpUtz25V001 by lazy { ZmpUtz25V001(hyperHive) } // Информация о штрих-коде
-    private val dictionary: ZmpUtz17V001 by lazy { ZmpUtz17V001(hyperHive) } // Справочник с наборами данных
     private val settings: ZmpUtz14V001 by lazy { ZmpUtz14V001(hyperHive) } // Настройки
+    private val icons: ZmpUtz38V001 by lazy { ZmpUtz38V001(hyperHive) } // Описание иконок
+    private val taskTypes: ZfmpUtz52V001 by lazy { ZfmpUtz52V001(hyperHive) } // Типы заданий
+    private val markTypes: ZfmpUtz53V001 by lazy { ZfmpUtz53V001(hyperHive) } // Типы марок
+
+    private val eanInfo: ZmpUtz25V001 by lazy { ZmpUtz25V001(hyperHive) } // Информация о штрих-коде
+    private val products: ZfmpUtz48V001 by lazy { ZfmpUtz48V001(hyperHive) } // Информация о товаре
+
+    /*private val dictionary: ZmpUtz17V001 by lazy { ZmpUtz17V001(hyperHive) } // Справочник с наборами данных
     private val units: ZmpUtz07V001 by lazy { ZmpUtz07V001(hyperHive) } // Единицы измерения
     private val printers: ZmpUtz26V001 by lazy { ZmpUtz26V001(hyperHive) } // Принтеры
-    private val iconDescriptions: ZmpUtz38V001 by lazy { ZmpUtz38V001(hyperHive) } // Описание иконок
     private val taskTypes: ZmpUtz39V001 by lazy { ZmpUtz39V001(hyperHive) } // Типы заданий
     private val storages: ZmpUtz40V001 by lazy { ZmpUtz40V001(hyperHive) } // Склады
     private val allowed: ZmpUtz41V001 by lazy { ZmpUtz41V001(hyperHive) } // Разрешенные товары
@@ -29,8 +33,7 @@ class DatabaseRepository @Inject constructor(
     private val alcoCodes: ZmpUtz22V001 by lazy { ZmpUtz22V001(hyperHive) } // Алкокоды
     private val goods: ZmpUtz30V001 by lazy { ZmpUtz30V001(hyperHive) } // Товары
     private val producers: ZmpUtz43V001 by lazy { ZmpUtz43V001(hyperHive) } // Производители
-    private val markGroup: ZmpUtz109V001 by lazy { ZmpUtz109V001(hyperHive) } //группы маркировки
-
+    private val markGroup: ZmpUtz109V001 by lazy { ZmpUtz109V001(hyperHive) } //группы маркировки*/
 
 
     private suspend fun getEanByMaterialUnits(material: String, unitsCode: String): String {
