@@ -15,7 +15,7 @@ interface IReceivingTaskManager {
     fun getTaskType(): TaskType
 }
 
-fun IReceivingTaskManager.getEgaisOrEmpty(lastBatchNumber: String): String {
+fun IReceivingTaskManager.findEgaisOrEmpty(lastBatchNumber: String): String {
     return this.getReceivingTask()
             ?.taskRepository
             ?.getBatches()

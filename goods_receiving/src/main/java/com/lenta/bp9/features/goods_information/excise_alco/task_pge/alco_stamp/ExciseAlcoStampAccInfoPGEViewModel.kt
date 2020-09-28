@@ -362,7 +362,7 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
         val lastExciseStampInfo = processExciseAlcoStampAccPGEService.getLastAddExciseStamp()
         val lastBottlingDate = lastExciseStampInfo?.bottlingDate
         val lastBatchNumber = lastExciseStampInfo?.batchNumber.orEmpty()
-        val manufacturerCode = taskManager.getEgaisOrEmpty(lastBatchNumber)
+        val manufacturerCode = taskManager.findEgaisOrEmpty(lastBatchNumber)
 
         val manufacturerName = repoInMemoryHolder.findManufacturerNameByCodeOrEGAIS(manufacturerCode, lastExciseStampInfo?.organizationCodeEGAIS)
         spinManufacturers.value = listOf(manufacturerName)
