@@ -15,6 +15,7 @@ import com.lenta.bp12.model.pojo.extentions.addMark
 import com.lenta.bp12.model.pojo.extentions.addMarks
 import com.lenta.bp12.model.pojo.extentions.addPosition
 import com.lenta.bp12.model.pojo.extentions.getScreenStatus
+import com.lenta.bp12.platform.DEFAULT_QUANTITY_STRING
 import com.lenta.bp12.platform.FIRST_POSITION
 import com.lenta.bp12.platform.ZERO_QUANTITY
 import com.lenta.bp12.platform.ZERO_VOLUME
@@ -405,15 +406,17 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
         return if (good.isDifferentUnits() && isEanLastScanned) {
             ScanCodeInfo(ean).getConvertedQuantityString(good.innerQuantity)
         } else {
-            chooseOneOrZeroQuantity(isEanLastScanned)
+            getBoxOrOneQuantity(isEanLastScanned, good, ean)
         }
     }
 
-    private fun chooseOneOrZeroQuantity(isEanLastScanned: Boolean): String {
-        return if (isEanLastScanned) {
-            DEFAULT_QUANTITY_STRING_FOR_EAN
-        } else {
-            ZERO_QUANTITY_STRING
+    private fun getBoxOrOneQuantity(isEanLastScanned: Boolean, good: Good, ean: String): String {
+        return good.eans[ean]?.dropZeros().orIfNull {
+            if (isEanLastScanned) {
+                com.lenta.bp12.platform.DEFAULT_QUANTITY_STRING_FOR_EAN
+            } else {
+                DEFAULT_QUANTITY_STRING
+            }
         }
     }
 
@@ -472,13 +475,28 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
                     isWholesaleTask && isGoodExcise -> showCantAddExciseGoodForWholesale()
                     isGoodCorrespondToTask && isGoodCanBeAdded -> {
                         isExistUnsavedData = true
-                        setGood(result, number)
+                        val material = result.materialInfo?.material.orEmpty()
+                        findGoodByMaterial(material)?.let { good ->
+                            good.eans[number] = result.eanInfo.getQuantityForBox()
+                            lastSuccessSearchNumber = material
+                            isEanLastScanned = false
+                            setFoundGood(good)
+                        }.orIfNull {
+                            setGood(result, number)
+                        }
                     }
                     isGoodCorrespondToTask -> showGoodCannotBeAdded()
                     else -> showNotMatchTaskSettingsAddingNotPossible()
                 }
             }
         }
+    }
+
+    private suspend fun findGoodByMaterial(material: String): Good? {
+        navigator.showProgressLoadingData()
+        val foundGood = withContext(Dispatchers.IO) { manager.findGoodByMaterial(material) }
+        navigator.hideProgress()
+        return foundGood
     }
 
     override fun handleFailure(failure: Failure) {

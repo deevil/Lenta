@@ -9,11 +9,14 @@ import com.lenta.bp12.model.pojo.TaskType
 import com.lenta.bp12.platform.ZERO_QUANTITY
 import com.lenta.bp12.request.ScanInfoResult
 import com.lenta.bp12.request.pojo.CreateTaskBasketInfo
+import com.lenta.bp12.request.pojo.EanInfo
 import com.lenta.bp12.request.pojo.TaskInfo
 import com.lenta.bp12.request.pojo.good_info.GoodInfoResult
 import com.lenta.bp12.request.pojo.markCartonBoxGoodInfoNetRequest.MarkCartonBoxGoodInfoNetRequestResult
 import com.lenta.bp12.request.pojo.markCartonBoxGoodInfoNetRequest.MarkRequestStatus
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
+import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
+import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.utilities.enumValueOrNull
@@ -60,7 +63,8 @@ fun MarkCartonBoxGoodInfoNetRequestResult.getMarkStatus(): MarkStatus {
 
         MarkRequestStatus.MARK_NOT_FOUND_IN_TASK,
         MarkRequestStatus.MARK_NOT_FOUND_OR_PROBLEMATIC,
-        MarkRequestStatus.MARK_OF_DIFFERENT_GOOD -> MarkStatus.BAD_MARK
+        MarkRequestStatus.MARK_OF_DIFFERENT_GOOD
+        -> MarkStatus.BAD_MARK
 
         MarkRequestStatus.CARTON_FOUND_OR_GRAYZONE -> MarkStatus.GOOD_CARTON
 
@@ -69,7 +73,8 @@ fun MarkCartonBoxGoodInfoNetRequestResult.getMarkStatus(): MarkStatus {
         MarkRequestStatus.CARTON_NOT_FOUND_IN_TASK,
         MarkRequestStatus.CARTON_OF_DIFFERENT_GOOD,
         MarkRequestStatus.CARTON_OLD,
-        MarkRequestStatus.CARTON_NOT_SAME_IN_SYSTEM -> MarkStatus.BAD_CARTON
+        MarkRequestStatus.CARTON_NOT_SAME_IN_SYSTEM
+        -> MarkStatus.BAD_CARTON
 
         MarkRequestStatus.BOX_FOUND -> MarkStatus.GOOD_BOX
 
@@ -77,7 +82,8 @@ fun MarkCartonBoxGoodInfoNetRequestResult.getMarkStatus(): MarkStatus {
         MarkRequestStatus.BOX_OF_DIFFERENT_GOOD,
         MarkRequestStatus.BOX_INCOMPLETE,
         MarkRequestStatus.BOX_NOT_FOUND_IN_TASK,
-        MarkRequestStatus.BOX_NOT_SAME_IN_SYSTEM -> MarkStatus.BAD_BOX
+        MarkRequestStatus.BOX_NOT_SAME_IN_SYSTEM
+        -> MarkStatus.BAD_BOX
 
         else -> MarkStatus.UNKNOWN
     }
@@ -167,6 +173,13 @@ fun ScanCodeInfo.getConvertedQuantityString(divider: Double): String {
     return converted.dropZeros()
 }
 
+fun Float.dropZeros(): String {
+    return if (this == this.toLong().toFloat())
+        String.format("%d", this.toLong())
+    else
+        String.format("%s", this)
+}
+
 fun ScanInfoResult.getParts(good: Good, date: String, providerCode: String, producerCode: String): List<Part> {
     val formattedDate = try {
         getDateFromString(date, Constants.DATE_FORMAT_dd_mm_yyyy)
@@ -185,6 +198,23 @@ fun ScanInfoResult.getParts(good: Good, date: String, providerCode: String, prod
     }.orEmpty()
 }
 
+fun ZmpUtz25V001.getEanMapByMaterialUnits(material: String, unitsCode: String): MutableMap<String, Float> {
+    @Suppress("INACCESSIBLE_TYPE")
+    return localHelper_ET_EANS.getWhere("MATERIAL = \"$material\" AND UOM = \"${unitsCode.toUpperCase(Locale.getDefault())}\"")
+            .associateByTo(
+                    destination = mutableMapOf<String, Float>(),
+                    keySelector = { it.ean.orEmpty() },
+                    valueTransform = { cell ->
+                        cell.umrez?.let { umrez ->
+                            cell.umren?.let { umren ->
+                                    (umrez.toFloat() / umren.toFloat()).takeIf { cell.uom == Uom.DATA_KAR }
+                            }
+                        } ?: 1.0f
+                    }
+            )
+}
+
+
 fun <T> MutableCollection<T>.addIf(predicate: Boolean, whatToAdd: () -> T) {
     if (predicate) this.add(whatToAdd())
 }
@@ -193,11 +223,20 @@ infix fun <T> MutableCollection<T>.add(whatToAdd: T): Holder<T> {
     return Holder(whatToAdd, this)
 }
 
-infix fun<T> Holder<T>.ifTrue(predictValue: Boolean) {
-    if(predictValue) {
+infix fun <T> Holder<T>.ifTrue(predictValue: Boolean) {
+    if (predictValue) {
         this.who.add(this.value)
     }
 }
 
-data class Holder<T>(val value:T, val who:MutableCollection<T> )
+data class Holder<T>(val value: T, val who: MutableCollection<T>)
 
+fun EanInfo?.getQuantityForBox(): Float {
+    return this?.let {
+        it.umrez?.toFloatOrNull()?.let { umrez ->
+            it.umren?.toFloatOrNull()?.let { umren ->
+                (umrez / umren).takeIf { unitCode == Uom.DATA_KAR }
+            }
+        }
+    } ?: 1.0f
+}

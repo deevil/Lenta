@@ -370,7 +370,7 @@ class MarkManager @Inject constructor(
             val markType = getMarkType()
             val createdGood = Good(
                     ean = goodEan,
-                    eans = database.getEanListByMaterialUnits(
+                    eans = database.getEanMapByMaterialUnits(
                             material = materialInfo?.material.orEmpty(),
                             unitsCode = materialInfo?.commonUnitsCode.orEmpty()
                     ),

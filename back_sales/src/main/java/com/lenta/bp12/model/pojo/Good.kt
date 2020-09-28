@@ -24,7 +24,7 @@ import com.lenta.shared.utilities.getDateFromString
  * */
 class Good(
         var ean: String,
-        val eans: List<String> = emptyList(),
+        val eans: MutableMap<String, Float> = mutableMapOf(),
         val material: String,
         val name: String,
         val kind: GoodKind,
@@ -56,8 +56,6 @@ class Good(
         var isDeleted: Boolean = false,
         val provider: ProviderInfo = ProviderInfo.getEmptyProvider()
 ) {
-    var quantityForBox = -1
-
     fun getNameWithMaterial(delimiter: String = " "): String {
         return "${material.takeLast(6)}$delimiter$name"
     }
@@ -134,7 +132,7 @@ class Good(
 
     fun copy() = Good(
             ean,
-            eans.toList(),
+            eans.toMutableMap(),
             material,
             name,
             kind,

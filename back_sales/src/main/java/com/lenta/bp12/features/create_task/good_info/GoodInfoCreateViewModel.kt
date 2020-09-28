@@ -11,7 +11,10 @@ import com.lenta.bp12.model.*
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.Position
-import com.lenta.bp12.model.pojo.extentions.*
+import com.lenta.bp12.model.pojo.extentions.addMark
+import com.lenta.bp12.model.pojo.extentions.addMarks
+import com.lenta.bp12.model.pojo.extentions.addPosition
+import com.lenta.bp12.model.pojo.extentions.getScreenStatus
 import com.lenta.bp12.platform.*
 import com.lenta.bp12.platform.extention.*
 import com.lenta.bp12.platform.navigation.IScreenNavigator
@@ -195,7 +198,6 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
                                             ScreenStatus.COMMON ->
                                                 enteredQuantity != ZERO_QUANTITY &&
                                                         totalQuantity >= ZERO_QUANTITY &&
-//                                                        basketQuantity > DEFAULT_QUANTITY &&
                                                         isProviderSelected
                                             ScreenStatus.ALCOHOL -> isEnteredMoreThanZeroAndProviderSelected && isProducerSelected && isDateEntered
                                             ScreenStatus.MARK_150 -> isEnteredMoreThanZeroAndProviderSelected
@@ -300,19 +302,20 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
     /**
      * Метод ищет есть ли уже товар в задании по EAN,
      * если есть то отправляет на его карточку
-     * если нет то создает товар
+     * если нет то ищет товар
      * */
     private fun getGoodByEan(ean: String) {
         launchUITryCatch {
-            loadGoodInfoByEan(ean)
-//            navigator.showProgressLoadingData()
-//            val foundGood = withContext(Dispatchers.IO) { manager.findGoodByEan(ean) }
-//            navigator.hideProgress()
-//            foundGood?.let {
-//                lastSuccessSearchNumber = ean
-//                isEanLastScanned = true
-//                setFoundGood(it)
-//            }.orIfNull { loadGoodInfoByEan(ean) }
+            navigator.showProgressLoadingData()
+            val foundGood = withContext(Dispatchers.IO) { manager.findGoodByEan(ean) }
+            navigator.hideProgress()
+            foundGood?.let {
+                lastSuccessSearchNumber = ean
+                isEanLastScanned = true
+                setFoundGood(it)
+            }.orIfNull {
+                loadGoodInfoByEan(ean)
+            }
         }
     }
 
@@ -323,15 +326,19 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
      * */
     private fun getGoodByMaterial(material: String) {
         launchUITryCatch {
-            navigator.showProgressLoadingData()
-            val foundGood = withContext(Dispatchers.IO) { manager.findGoodByMaterial(material) }
-            navigator.hideProgress()
-            foundGood?.let {
+            findGoodByMaterial(material)?.let {
                 lastSuccessSearchNumber = material
                 isEanLastScanned = false
                 setFoundGood(it)
             }.orIfNull { loadGoodInfoByMaterial(material) }
         }
+    }
+
+    private suspend fun findGoodByMaterial(material: String): Good? {
+        navigator.showProgressLoadingData()
+        val foundGood = withContext(Dispatchers.IO) { manager.findGoodByMaterial(material) }
+        navigator.hideProgress()
+        return foundGood
     }
 
     private fun setFoundGood(foundGood: Good) {
@@ -365,12 +372,12 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
         return if (good.isDifferentUnits() && isEanLastScanned) {
             ScanCodeInfo(ean).getConvertedQuantityString(good.innerQuantity)
         } else {
-            getBoxOrOneQuantity(isEanLastScanned, good)
+            getBoxOrOneQuantity(isEanLastScanned, good, ean)
         }
     }
 
-    private fun getBoxOrOneQuantity(isEanLastScanned: Boolean, good: Good): String {
-        return good.quantityForBox.takeIf { it > ZERO_QUANTITY }?.toString().orIfNull {
+    private fun getBoxOrOneQuantity(isEanLastScanned: Boolean, good: Good, ean: String): String {
+        return good.eans[ean]?.dropZeros().orIfNull {
             if (isEanLastScanned) {
                 DEFAULT_QUANTITY_STRING_FOR_EAN
             } else {
@@ -378,7 +385,6 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
             }
         }
     }
-
 
     private fun setScreenStatus(good: Good) {
         screenStatus.value = good.getScreenStatus()
@@ -389,6 +395,9 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
         producerPosition.value = FIRST_POSITION
     }
 
+    /**
+     * Ищет товар по шк через ZMP_UTZ_BKS_05_V001
+     * */
     private suspend fun loadGoodInfoByEan(ean: String) {
         navigator.showProgressLoadingData(::handleFailure)
         goodInfoNetRequest(
@@ -421,6 +430,13 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
         }
     }
 
+    /**
+     * Проверяет результат запроса ZMP_UTZ_BKS_05_V001
+     * Если это ОПТ и товар Акциза или Животного происхождения то показывает ошибку
+     * Если товар подходит по заданию (isGoodCanBeAdded) то ищет нет ли товара с тем же материалом
+     * в задании, если есть, то добавляет этот шк в eans и сразу расчитывает вложенность
+     * если нет то создает его и добавляет в задание
+     * */
     private fun handleLoadGoodInfoResult(result: GoodInfoResult, number: String) {
         launchUITryCatch {
             val isGoodCanBeAdded = manager.isGoodCanBeAdded(result)
@@ -434,7 +450,15 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
                     isWholesaleTask && isGoodExcise -> showCantAddExciseGoodForWholesale()
                     isGoodCanBeAdded -> {
                         isExistUnsavedData = true
-                        setGood(result, number)
+                        val material = result.materialInfo?.material.orEmpty()
+                        findGoodByMaterial(material)?.let { good ->
+                            good.eans[number] = result.eanInfo.getQuantityForBox()
+                            lastSuccessSearchNumber = material
+                            isEanLastScanned = false
+                            setFoundGood(good)
+                        }.orIfNull {
+                            setGood(result, number)
+                        }
                     }
                     else -> showGoodCannotBeAdded()
                 }
@@ -447,7 +471,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
             with(result) {
                 val good = Good(
                         ean = eanInfo?.ean.orEmpty(),
-                        eans = database.getEanListByMaterialUnits(
+                        eans = database.getEanMapByMaterialUnits(
                                 material = materialInfo?.material.orEmpty(),
                                 unitsCode = materialInfo?.commonUnitsCode.orEmpty()
                         ),
@@ -465,9 +489,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
                         producers = producers.orEmpty().toMutableList(),
                         volume = materialInfo?.volume?.toDoubleOrNull() ?: ZERO_VOLUME,
                         purchaseGroup = materialInfo?.purchaseGroup.orEmpty()
-                ).apply {
-                    setQuantityForBox(eanInfo)
-                }
+                )
 
                 lastSuccessSearchNumber = number
                 setFoundGood(good)
