@@ -340,22 +340,6 @@ class ProcessMarkingBoxPGEProductService
         return countAddBlocks
     }
 
-    fun markPassageControlBlock(blockNumber: String) {
-        val blockDiscrepancies =
-                currentBlocksDiscrepancies
-                        .findLast { it.blockDiscrepancies.blockNumber == blockNumber }
-                        ?.blockDiscrepancies
-
-        blockDiscrepancies?.let {
-            for (i in currentBlocksDiscrepancies.indices) {
-                if (currentBlocksDiscrepancies[i].blockDiscrepancies.blockNumber == blockNumber) {
-                    currentBlocksDiscrepancies[i] = MarkingBlocksDiscrepanciesInfo(it, true)
-                    break
-                }
-            }
-        }
-    }
-
     fun addAllUntreatedBlocksAsDefect(typeDiscrepancies: String) {
         //отмечаем все не обработанные блоки/марки для продукта категорией выбранной категорией для брака
         blocks.filter { block ->
@@ -374,82 +358,10 @@ class ProcessMarkingBoxPGEProductService
         return currentBlocksDiscrepancies.size
     }
 
-    fun getLastScannedBlock(): TaskBlockInfo? {
-        return currentBlocksDiscrepancies
-                .takeIf { !it.isNullOrEmpty() }
-                ?.run { searchBlock(currentBlocksDiscrepancies.last().blockDiscrepancies.blockNumber) }
-    }
-
-    fun addGtin(gtinCode: String) {
-        var index = currentGtin.indexOfFirst { it == gtinCode }
-        val currentGtinIndecis = currentGtin.indices
-        for (i in currentGtinIndecis) {
-            if (gtinCode == currentGtin[i]) {
-                index = i
-                break
-            }
-        }
-
-        if (index == -1) {
-            currentGtin.add(gtinCode)
-            addTypeLastStampScanned(TypeLastStampScanned.GTIN)
-        }
-    }
-
-    fun getLastScannedGtin(): String? {
-        return currentGtin
-                .takeIf { !it.isNullOrEmpty() }
-                ?.run { currentGtin.last() }
-    }
-
     fun getCountProcessedBlockForDiscrepancies(typeDiscrepancies: String): Int {
         return currentBlocksDiscrepancies.count { it.blockDiscrepancies.typeDiscrepancies == typeDiscrepancies && it.isGtinControlPassed }
     }
 
-    fun checkBlocksCategoriesDifferentCurrent(boxNumber: String, typeDiscrepancies: String): Boolean {
-        return currentBlocksDiscrepancies.any {
-            it.blockDiscrepancies.typeDiscrepancies != typeDiscrepancies
-                    && it.blockDiscrepancies.boxNumber == boxNumber
-        }
-    }
-
-    private fun rollbackScannedBlock() {
-        currentBlocksDiscrepancies
-                .takeIf { it.isNotEmpty() }
-                ?.apply {
-                    removeAt(size - 1)
-                }
-    }
-
-    private fun rollbackScannedGtin() {
-        currentGtin
-                .takeIf { it.isNotEmpty() }
-                ?.apply {
-                    removeAt(size - 1)
-                }
-    }
-
-    private fun rollbackScannedBox(): Int {
-        var boxNumber = ""
-        currentBoxDiscrepancies
-                .takeIf { it.isNotEmpty() }
-                ?.apply {
-                    val box = this.last()
-                    boxNumber = box.boxNumber
-                    this.remove(box)
-                }
-
-        val countDelBlocksForBox =
-                currentBlocksDiscrepancies.count { it.blockDiscrepancies.boxNumber == boxNumber && !it.blockDiscrepancies.isScan }
-
-        //удаляем блоки, которые были добавлены при скане коробки, т.е. без признака isScan
-        currentBlocksDiscrepancies
-                .removeItemFromListWithPredicate {
-                    it.blockDiscrepancies.boxNumber == boxNumber && !it.blockDiscrepancies.isScan
-                }
-
-        return countDelBlocksForBox
-    }
 
     fun isOverLimit(count: Double): Boolean {
         return productInfo.origQuantity.toDouble() < (getCountAcceptOfProduct() + getCountRefusalOfProduct() + count)
@@ -458,6 +370,13 @@ class ProcessMarkingBoxPGEProductService
     fun searchBlock(blockNumber: String): TaskBlockInfo? {
         return blocks.findLast {
             it.blockNumber == blockNumber
+        }
+    }
+
+
+    fun searchBoxDiscrepancies(blockNumber: String): TaskBoxDiscrepancies? {
+        return currentBoxDiscrepancies.findLast {
+            it.boxNumber == blockNumber
         }
     }
 
@@ -500,40 +419,8 @@ class ProcessMarkingBoxPGEProductService
                 ?: 0.0
     }
 
-    fun delBoxAndBlockDiscrepancy(typeDiscrepancies: String) {
-        currentBoxDiscrepancies.removeItemFromListWithPredicate {
-            it.typeDiscrepancies == typeDiscrepancies
-        }
-
-        currentBlocksDiscrepancies.removeItemFromListWithPredicate {
-            it.blockDiscrepancies.typeDiscrepancies == typeDiscrepancies
-        }
-    }
-
     private fun addTypeLastStampScanned(typeLastStampScanned: TypeLastStampScanned) {
         currentScannedTypesStamps.add(typeLastStampScanned)
-    }
-
-    fun rollbackTypeLastStampScanned(): Int {
-        var countDelBlocksForBox = 0
-        currentScannedTypesStamps
-                .takeIf { it.isNotEmpty() }
-                ?.apply {
-                    val stamp = this.last()
-                    when (stamp) {
-                        TypeLastStampScanned.BLOCK -> rollbackScannedBlock()
-                        TypeLastStampScanned.GTIN -> rollbackScannedGtin()
-                        TypeLastStampScanned.BOX -> countDelBlocksForBox = rollbackScannedBox()
-                        else -> return@apply
-                    }
-                    this.remove(stamp)
-                }
-
-        return countDelBlocksForBox
-    }
-
-    fun getLastScannedTypesStamps(): TypeLastStampScanned {
-        return currentScannedTypesStamps.last()
     }
 
     fun modifications(): Boolean {

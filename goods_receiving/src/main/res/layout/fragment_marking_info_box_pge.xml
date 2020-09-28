@@ -236,6 +236,7 @@
                 android:checked="@{vm.checkStampControl}"
                 android:enabled="false"
                 android:visibility="@{vm.checkStampControlVisibility}"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/div_vert2"
                 app:layout_constraintTop_toTopOf="@+id/div_vert2" />
 
@@ -300,7 +301,7 @@
                 android:layout_marginEnd="@dimen/size_8dp"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:text="@{vm.tvStampListVal}"
+                android:text="@{vm.tvBoxListVal}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/checkBox_stamp_list"
                 app:layout_constraintTop_toTopOf="@+id/div_vert3"
