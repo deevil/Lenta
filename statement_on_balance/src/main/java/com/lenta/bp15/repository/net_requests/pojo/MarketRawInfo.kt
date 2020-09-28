@@ -2,14 +2,17 @@ package com.lenta.bp15.repository.net_requests.pojo
 
 import com.google.gson.annotations.SerializedName
 
-data class MarketInfo(
+data class MarketRawInfo(
         /** Номер магазина */
         @SerializedName("WERKS")
         val tkNumber: String,
         /** Адрес магазина */
         @SerializedName("ADDRES")
         val address: String,
-        /** Тип магазина */
+        /** Формат магазина */
         @SerializedName("RETAIL_TYPE")
-        val retailType: String
+        val retailType: String,
+        /** Версия */
+        @SerializedName("VERSION")
+        val version: String
 )

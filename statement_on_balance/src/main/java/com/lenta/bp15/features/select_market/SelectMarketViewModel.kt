@@ -21,16 +21,22 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
 
     @Inject
     lateinit var navigator: IScreenNavigator
+
     @Inject
     lateinit var sessionInfo: ISessionInfo
+
     @Inject
     lateinit var appSettings: IAppSettings
+
     @Inject
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
+
     @Inject
     lateinit var timeMonitor: ITimeMonitor
+
     @Inject
     lateinit var serverTimeRequest: ServerTimeRequest
+
     @Inject
     lateinit var printerManager: PrinterManager
 
@@ -59,7 +65,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
 
     private fun takeSelectedPositionForAction() {
         launchUITryCatch {
-            repoInMemoryHolder.storesRequestResult?.marketInfos?.let { list ->
+            repoInMemoryHolder.storesRequestResult?.markets?.let { list ->
                 markets.value = list.map {
                     MarketUi(number = it.tkNumber, address = it.address)
                 }
@@ -93,7 +99,7 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
                 appSettings.lastTK = tkNumber
                 navigator.showProgress(serverTimeRequest)
                 serverTimeRequest(ServerTimeRequestParam(sessionInfo.market
-                       .orEmpty())).either(::handleFailure, ::handleSuccessServerTime)
+                        .orEmpty())).either(::handleFailure, ::handleSuccessServerTime)
             }
         }
     }
@@ -115,8 +121,3 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     }
 
 }
-
-data class MarketUi(
-        val number: String,
-        val address: String
-)
