@@ -21,7 +21,17 @@ enum class GoodKind {
     ALCOHOL,
     EXCISE,
     MARK,
-    VET
+    VET;
+
+    fun toControlType(): ControlType {
+        return when (this) {
+            COMMON -> ControlType.COMMON
+            ALCOHOL -> ControlType.ALCOHOL
+            EXCISE -> ControlType.ALCOHOL
+            MARK -> ControlType.MARK
+            VET -> ControlType.VET
+        }
+    }
 }
 
 enum class ControlType(val code: String, val description: String) {
@@ -161,7 +171,8 @@ enum class MarkScreenStatus {
     MRC_NOT_SAME_IN_BASKET,
     NOT_MARKED_GOOD,
     NO_MARKTYPE_IN_SETTINGS,
-    NOT_SAME_GOOD
+    NOT_SAME_GOOD,
+    MARKS_MORE_THAN_PLANNED
 }
 
 enum class WorkType {

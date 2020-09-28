@@ -24,19 +24,18 @@ fun ZfmpUtz48V001.getProductInfoByMatcode(matcode: String?): ZfmpUtz48V001.ItemL
 
 fun ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST.toMaterialInfo(): ProductInfo {
     return ProductInfo(
-            material = material,
-            name = name,
-            matcode = matcode,
-            buom = buom
+            material = material.orEmpty(),
+            name = name.orEmpty(),
+            matcode = matcode.orEmpty(),
+            buom = buom.orEmpty()
     )
 }
 
 fun ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST.getMatrixType(): MatrixType {
-    return getMatrixType(matrType)
+    return getMatrixType(matrType.orEmpty())
 }
 
 fun ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST.getProductType(): ProductType {
-    return getProductType(isAlco.isNotEmpty(), isExc.isNotEmpty())
-    //val isMarkedGood = markType.isNotEmpty() || isMark.isNotEmpty()
-    //return getProductType(isAlco.isNotEmpty(), isExc.isNotEmpty(), isMarkedGood)
+    val isMarkedGood = markType?.isNotEmpty() == true || isMark?.isNotEmpty() == true
+    return getProductType(isAlco?.isNotEmpty() == true, isExc?.isNotEmpty() == true, isMarkedGood)
 }

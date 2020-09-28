@@ -31,3 +31,15 @@ interface IRepoInMemoryHolder {
     var manufacturersForZBatches: MutableLiveData<List<TaskManufacturersForZBatches>>
     var taskZBatchInfo: MutableLiveData<List<TaskZBatchInfo>>
 }
+
+fun IRepoInMemoryHolder.findManufacturerNameByCodeOrEGAIS(manufacturerCode: String, organizationCodeEGAIS: String?): String {
+    return this.manufacturers.value
+            ?.findLast { it.code == manufacturerCode }
+            ?.name
+            ?: this.manufacturers.value
+                    ?.findLast { manufacture -> //это в случае излишка
+                        manufacture.code == organizationCodeEGAIS
+                    }
+                    ?.name
+                    .orEmpty()
+}

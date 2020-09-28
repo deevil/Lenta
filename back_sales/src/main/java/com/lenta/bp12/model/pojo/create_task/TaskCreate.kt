@@ -1,6 +1,5 @@
 package com.lenta.bp12.model.pojo.create_task
 
-import com.lenta.bp12.model.ControlType
 import com.lenta.bp12.model.Taskable
 import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.Good
@@ -13,14 +12,13 @@ data class TaskCreate(
         val storage: String,
         val reason: ReturnReason?,
         override val type: TaskType,
-        override val control: ControlType = ControlType.UNKNOWN,
         var isProcessed: Boolean = false,
 
         override val goods: MutableList<Good> = mutableListOf(),
         override val baskets: MutableList<Basket> = mutableListOf()
 ) : Taskable {
 
-    fun getFormattedName(): String {
+    override fun getFormattedName(withFullName: Boolean): String {
         return "${type.code} // $name"
     }
 

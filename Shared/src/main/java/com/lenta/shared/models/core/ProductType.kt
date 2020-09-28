@@ -8,14 +8,16 @@ enum class ProductType(val code: String) {
     ExciseAlcohol("A"),
     Marked("M"),
     ZBatch("Z"),
+    Vet("V"),
     Unknown("UNKNOWN")
 }
 
-fun getProductType(isAlco: Boolean, isExcise: Boolean, isMarkedGood: Boolean = false, isZBatch: Boolean = false): ProductType {
+fun getProductType(isAlco: Boolean, isExcise: Boolean, isMarkedGood: Boolean = false, isZBatch: Boolean = false, isVet: Boolean = false): ProductType {
     return when{
         isMarkedGood -> ProductType.Marked
         isExcise -> ProductType.ExciseAlcohol
         isAlco -> ProductType.NonExciseAlcohol
+        isVet -> ProductType.Vet
         isZBatch -> ProductType.ZBatch
         else -> ProductType.General
     }
@@ -28,6 +30,7 @@ fun ProductType?.getDescriptionResId(): Int {
         ProductType.NonExciseAlcohol -> R.string.non_excise_alco
         ProductType.Marked -> R.string.marked_good
         ProductType.ZBatch -> R.string.zbatch_goods
+        ProductType.Vet -> R.string.vet_good
         else -> 0
     }
 }

@@ -7,7 +7,6 @@ import com.lenta.bp12.model.pojo.TaskType
 interface Taskable{
 
     val name: String
-    val control: ControlType
     val baskets: MutableList<Basket>
     val goods: MutableList<Good>
     val type: TaskType?
@@ -17,4 +16,5 @@ interface Taskable{
     fun getBasketsByGood(good: Good): List<Basket>
     fun removeEmptyGoods()
     fun removeEmptyBaskets()
+    fun getFormattedName(withFullName: Boolean = false): String
 }

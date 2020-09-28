@@ -4,6 +4,7 @@ import com.lenta.bp12.model.ControlType
 import com.lenta.bp12.model.Taskable
 import com.lenta.bp12.model.pojo.*
 import com.lenta.bp12.model.pojo.extentions.*
+import com.lenta.bp12.platform.ZERO_QUANTITY
 import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.bp12.request.pojo.taskContentNetRequest.Mrc
 
@@ -13,7 +14,7 @@ data class TaskOpen(
 
         override val name: String,
         override val type: TaskType?,
-        override val control: ControlType,
+        val controlTypes: Set<ControlType>,
 
         val storage: String,
 
@@ -52,7 +53,7 @@ data class TaskOpen(
         }
     }
 
-    fun getFormattedName(withFullName: Boolean = false): String {
+    override fun getFormattedName(withFullName: Boolean): String {
         var formattedName = name
         if (!withFullName) {
             runCatching {
@@ -98,7 +99,11 @@ data class TaskOpen(
     }
 
     override fun removeEmptyGoods() {
-        goods.removeAll(goods.filter { it.getTotalQuantity() == 0.0 })
+        goods.forEach {
+            if (it.getTotalQuantity() == ZERO_QUANTITY) {
+                it.isCounted = false
+            }
+        }
     }
 
     override fun removeEmptyBaskets() {
@@ -112,4 +117,9 @@ data class TaskOpen(
     }
 
     fun isMrcNotInTaskMrcList(formattedMrc: String) = this.mrcList.none { it.maxRetailPrice == formattedMrc }
+
+    fun clearGoodsAndBaskets() {
+        goods.clear()
+        baskets.clear()
+    }
 }

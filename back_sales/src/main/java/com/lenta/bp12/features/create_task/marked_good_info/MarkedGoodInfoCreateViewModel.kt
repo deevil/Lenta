@@ -217,7 +217,7 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
         launchUITryCatch {
             with(navigator) {
                 showProgressLoadingData()
-                val result = markManager.loadBoxInfo(number)
+                val result = markManager.loadBoxInfo(number, WorkType.CREATE)
                 hideProgress()
                 when (result) {
                     MarkScreenStatus.OK -> setMarksAndProperties()
@@ -307,6 +307,7 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
     }
 
     private fun setMarksAndProperties() {
+        isExistUnsavedData = true
         tempMarks.value = markManager.getTempMarks()
         properties.value = markManager.getProperties()
         setMrc()
@@ -317,6 +318,7 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
             saveChanges()
             markManager.handleYesSaveAndOpenAnotherBox()
             tempMarks.value = markManager.getTempMarks()
+            isExistUnsavedData = true
             setMrc()
         }
     }
@@ -340,7 +342,6 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
     override suspend fun saveChanges() {
         good.value?.let { good ->
             manager.saveGoodInTask(good)
-            isExistUnsavedData = false
             addMarks(good)
         }.orIfNull {
             Logg.e { "good null" }
@@ -385,6 +386,7 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
     override fun saveChangesAndExit() {
         launchUITryCatch {
             with(navigator) {
+                isExistUnsavedData = false
                 showProgressLoadingData()
                 saveChanges()
                 hideProgress()
