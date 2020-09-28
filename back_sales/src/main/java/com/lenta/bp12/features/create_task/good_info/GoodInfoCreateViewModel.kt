@@ -17,17 +17,11 @@ import com.lenta.bp12.model.pojo.extentions.addPosition
 import com.lenta.bp12.model.pojo.extentions.getScreenStatus
 import com.lenta.bp12.platform.*
 import com.lenta.bp12.platform.extention.*
-import com.lenta.bp12.platform.navigation.IScreenNavigator
-import com.lenta.bp12.platform.resource.IResourceManager
-import com.lenta.bp12.repository.IDatabaseRepository
-import com.lenta.bp12.request.GoodInfoNetRequest
-import com.lenta.bp12.request.ScanInfoNetRequest
 import com.lenta.bp12.request.ScanInfoParams
 import com.lenta.bp12.request.ScanInfoResult
 import com.lenta.bp12.request.pojo.ProducerInfo
 import com.lenta.bp12.request.pojo.good_info.GoodInfoParams
 import com.lenta.bp12.request.pojo.good_info.GoodInfoResult
-import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.models.core.getMatrixType
@@ -44,29 +38,7 @@ import javax.inject.Inject
 class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAdapter.AfterTextChanged {
 
     @Inject
-    override lateinit var navigator: IScreenNavigator
-
-    @Inject
     override lateinit var manager: ICreateTaskManager
-
-    @Inject
-    override lateinit var sessionInfo: ISessionInfo
-
-    /** Получение данных товара по ШК\SAP-коду
-     * "ZMP_UTZ_BKS_05_V001" */
-    @Inject
-    lateinit var goodInfoNetRequest: GoodInfoNetRequest
-
-    /** Получение данных по акцизному товару
-     * "ZMP_UTZ_100_V001" */
-    @Inject
-    override lateinit var scanInfoNetRequest: ScanInfoNetRequest
-
-    @Inject
-    override lateinit var database: IDatabaseRepository
-
-    @Inject
-    override lateinit var resource: IResourceManager
 
     /**
     Переменные
@@ -332,13 +304,6 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
                 setFoundGood(it)
             }.orIfNull { loadGoodInfoByMaterial(material) }
         }
-    }
-
-    private suspend fun findGoodByMaterial(material: String): Good? {
-        navigator.showProgressLoadingData()
-        val foundGood = withContext(Dispatchers.IO) { manager.findGoodByMaterial(material) }
-        navigator.hideProgress()
-        return foundGood
     }
 
     private fun setFoundGood(foundGood: Good) {
