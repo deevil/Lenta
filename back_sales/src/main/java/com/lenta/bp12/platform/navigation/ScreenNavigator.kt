@@ -541,7 +541,7 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "93",
                     message = context.getString(R.string.mark_already_scanned_delete),
-                    iconRes = R.drawable.ic_warning_red_80dp,
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback)
             ))
@@ -553,7 +553,7 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "91",
                     message = context.getString(R.string.carton_already_scanned_delete),
-                    iconRes = R.drawable.ic_warning_red_80dp,
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback)
             ))
@@ -565,7 +565,7 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "89",
                     message = context.getString(R.string.box_already_scanned_delete),
-                    iconRes = R.drawable.ic_warning_red_80dp,
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback)
             ))
@@ -628,6 +628,16 @@ class ScreenNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "98",
+                    message = errorText,
+                    iconRes = R.drawable.ic_warning_red_80dp
+            ))
+        }
+    }
+
+    override fun showAlertDialogWithRedTriangle(errorText: String, screenNumber: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = screenNumber,
                     message = errorText,
                     iconRes = R.drawable.ic_warning_red_80dp
             ))
@@ -730,4 +740,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun showCantAddVetToWholeSale()
 
     fun showMarkScanError(errorText: String)
+
+    fun showAlertDialogWithRedTriangle(errorText: String, screenNumber: String = "97")
 }

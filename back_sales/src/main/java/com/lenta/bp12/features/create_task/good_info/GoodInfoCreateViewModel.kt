@@ -280,7 +280,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
                 if (status == PartStatus.FOUND.code) {
                     saveChanges()
                 } else {
-                    navigator.openAlertScreen(result.statusDescription)
+                    navigator.showAlertDialogWithRedTriangle(result.statusDescription, "12")
                 }
             }
         }
@@ -812,7 +812,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
                             if (status == PartStatus.FOUND.code) {
                                 saveChangesAndExit()
                             } else {
-                                navigator.openAlertScreen(result.statusDescription)
+                                navigator.showAlertDialogWithRedTriangle(result.statusDescription, "12")
                             }
                         }
                     }

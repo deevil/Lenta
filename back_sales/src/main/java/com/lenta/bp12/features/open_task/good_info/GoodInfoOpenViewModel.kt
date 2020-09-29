@@ -298,7 +298,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
                 if (status == PartStatus.FOUND.code) {
                     saveChanges()
                 } else {
-                    navigator.openAlertScreen(result.statusDescription)
+                    navigator.showAlertDialogWithRedTriangle(result.statusDescription, "12")
                 }
             }
         }
@@ -854,7 +854,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
                             if (status == PartStatus.FOUND.code) {
                                 saveChangesAndExit()
                             } else {
-                                navigator.openAlertScreen(result.statusDescription)
+                                navigator.showAlertDialogWithRedTriangle(result.statusDescription, "12")
                             }
                         }
                     }
