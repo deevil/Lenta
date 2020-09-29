@@ -35,6 +35,7 @@ import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.getDateFromString
 import com.lenta.shared.utilities.getFormattedDate
@@ -44,7 +45,8 @@ import kotlinx.coroutines.withContext
 import java.util.*
 import javax.inject.Inject
 
-class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAdapter.AfterTextChanged {
+class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAdapter.AfterTextChanged,
+        OnOkInSoftKeyboardListener {
 
     @Inject
     override lateinit var navigator: IScreenNavigator
@@ -201,7 +203,6 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
                                             ScreenStatus.COMMON ->
                                                 enteredQuantity != ZERO_QUANTITY &&
                                                         totalQuantity >= ZERO_QUANTITY &&
-//                                                        basketQuantity > DEFAULT_QUANTITY &&
                                                         isProviderSelected
                                             ScreenStatus.ALCOHOL -> isEnteredMoreThanZeroAndProviderSelected && isProducerSelected && isDateEntered
                                             ScreenStatus.MARK_150 -> isEnteredMoreThanZeroAndProviderSelected
@@ -847,5 +848,14 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
 
     override fun afterTextChanged(s: Editable?) {
         quantityField.value = s.returnWithNoSecondMinus()
+    }
+
+    override fun onOkInSoftKeyboard(): Boolean {
+        return if (applyEnabled.value == true) {
+            onClickApply()
+            true
+        } else {
+            false
+        }
     }
 }
