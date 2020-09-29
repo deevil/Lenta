@@ -58,14 +58,6 @@ abstract class BaseGoodInfoViewModel<R : Taskable, T : ITaskManager<R>> : CoreVi
     @Inject
     lateinit var resource: IResourceManager
 
-    abstract var manager: T
-    abstract val quantity: MutableLiveData<Double>
-    abstract val applyEnabled: LiveData<Boolean>
-    abstract val totalWithUnits: MutableLiveData<String>
-    abstract val basketNumber: LiveData<String>
-    abstract val basketQuantity: LiveData<Double>
-    abstract val closeEnabled: MutableLiveData<Boolean>
-
     /**
     Количество товара итого
      */
@@ -133,14 +125,6 @@ abstract class BaseGoodInfoViewModel<R : Taskable, T : ITaskManager<R>> : CoreVi
         MutableLiveData(resource.byBasket())
     }
 
-    abstract fun checkSearchNumber(number: String)
-    abstract fun onClickApply()
-    abstract fun saveChangesAndExit(result: ScanInfoResult? = null)
-    abstract suspend fun saveChanges(result: ScanInfoResult? = null)
-    abstract fun onClickRollback()
-    abstract fun onBackPressed()
-    abstract fun loadBoxInfo(number: String)
-
     val totalTitle by unsafeLazy {
         good.mapSkipNulls { good ->
             resource.totalWithConvertingInfo(good.getConvertingInfo())
@@ -180,6 +164,14 @@ abstract class BaseGoodInfoViewModel<R : Taskable, T : ITaskManager<R>> : CoreVi
         isProviderEnabledAndPositionChanged(isEnabled, position)  or
                 isProviderNotEnabledAndPositionDidntChanged(isEnabled, position)
     }
+
+    abstract var manager: T
+    abstract val quantity: MutableLiveData<Double>
+    abstract val applyEnabled: LiveData<Boolean>
+    abstract val totalWithUnits: MutableLiveData<String>
+    abstract val basketNumber: LiveData<String>
+    abstract val basketQuantity: LiveData<Double>
+    abstract val closeEnabled: MutableLiveData<Boolean>
 
     private fun isProviderEnabledAndPositionChanged(isEnabled: Boolean, position: Int)
             = isEnabled && position > FIRST_POSITION
@@ -237,4 +229,12 @@ abstract class BaseGoodInfoViewModel<R : Taskable, T : ITaskManager<R>> : CoreVi
         manager.updateCurrentGood(good.value)
         navigator.openGoodDetailsCreateScreen()
     }
+
+    abstract fun checkSearchNumber(number: String)
+    abstract fun onClickApply()
+    abstract fun saveChangesAndExit(result: ScanInfoResult? = null)
+    abstract suspend fun saveChanges(result: ScanInfoResult? = null)
+    abstract fun onClickRollback()
+    abstract fun onBackPressed()
+    abstract fun loadBoxInfo(number: String)
 }

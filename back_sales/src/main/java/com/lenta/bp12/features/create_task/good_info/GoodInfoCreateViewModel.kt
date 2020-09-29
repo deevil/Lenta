@@ -106,20 +106,18 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
 
     private val sourceProducers = MutableLiveData(mutableListOf<ProducerInfo>())
 
-    private val producers = sourceProducers.map {
-        it?.let { producers ->
-            val list = producers.toMutableList()
-            if (list.size > 1) {
-                list.add(0, ProducerInfo(name = resource.chooseProducer()))
-            }
-
-            list.toList()
+    private val producers = sourceProducers.mapSkipNulls { producers ->
+        val list = producers.toMutableList()
+        if (list.size > 1) {
+            list.add(0, ProducerInfo(name = resource.chooseProducer()))
         }
+
+        list.toList()
     }
 
     val producerList by lazy {
-        producers.map { list ->
-            list?.map { it.name }
+        producers.mapSkipNulls { list ->
+            list.map { it.name }
         }
     }
 
@@ -775,7 +773,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
 
 
     override fun onBackPressed() {
-        with(navigator){
+        with(navigator) {
             if (isExistUnsavedData) {
                 showUnsavedDataWillBeLost {
                     goBack()
@@ -818,7 +816,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
 
     override fun saveChangesAndExit(result: ScanInfoResult?) {
         launchUITryCatch {
-            with(navigator){
+            with(navigator) {
                 showProgressLoadingData()
                 saveChanges(result)
                 hideProgress()
