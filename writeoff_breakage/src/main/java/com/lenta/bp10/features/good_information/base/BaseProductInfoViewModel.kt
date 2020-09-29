@@ -175,9 +175,7 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardLis
         return if (reasons.isEmpty()) {
             listOf(WriteOffReason.emptyWithTitle(resourceManager.emptyCategory()))
         } else {
-            mutableListOf(WriteOffReason.emptyWithTitle(resourceManager.emptyCategory())).apply {
-                addAll(reasons)
-            }.filter { writeOffReason ->
+            reasons.filter { writeOffReason ->
                 filterReason(writeOffReason)
             }
         }
