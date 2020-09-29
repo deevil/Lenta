@@ -1,8 +1,5 @@
 package com.lenta.bp12.features.create_task.base.interfaces
 
-import com.lenta.bp12.model.pojo.Basket
-import com.lenta.bp12.model.pojo.Good
-
 /**
  * Базовый интерфейс для viewmodel карточки товара в разделе Создание задания
  * Имплементации:
@@ -14,5 +11,4 @@ interface IBaseGoodInfoCreateViewModel {
 
     fun updateData()
     fun loadBoxInfo(number: String)
-    suspend fun getBasket(good: Good): Basket?
 }

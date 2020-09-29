@@ -2,10 +2,15 @@ package com.lenta.bp12.features.base
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.switchMap
 import com.lenta.bp12.managers.interfaces.ITaskManager
 import com.lenta.bp12.model.Taskable
+import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.Good
+import com.lenta.bp12.model.pojo.extentions.getQuantityOfGood
+import com.lenta.bp12.platform.FIRST_BASKET
 import com.lenta.bp12.platform.FIRST_POSITION
+import com.lenta.bp12.platform.ZERO_QUANTITY
 import com.lenta.bp12.platform.extention.isWholesaleType
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
@@ -70,6 +75,47 @@ abstract class BaseGoodInfoViewModel<R : Taskable, T : ITaskManager<R>> : CoreVi
             val current = it.second
 
             total.sumWith(current)
+        }
+    }
+
+    /**
+     * Корзины
+     *
+     * Номер корзины, если есть подходящая под товар корзина, то берем ее индекс,
+     * если нет то берем следующий номер от последней, если последний нет то номер будет 1
+     * */
+
+    val basketNumber by unsafeLazy {
+        isProviderSelected.switchMap { isProviderSelected ->
+            task.switchMap { task ->
+                asyncTryCatchLiveData {
+                    if (isProviderSelected) {
+                        getBasket()?.index?.toString()
+                                .orIfNull {
+                                    task.baskets.lastOrNull()?.index?.plus(1)?.toString()
+                                            .orIfNull { FIRST_BASKET }
+                                }
+                    } else ""
+                }
+            }
+        }
+    }
+    
+    /**
+     * Количество по корзине
+     * */
+    val basketQuantity by unsafeLazy {
+        good.switchMap { good ->
+            quantity.switchMap { enteredQuantity ->
+                isProviderSelected.switchMap { isProviderSelected ->
+                    asyncTryCatchLiveData {
+                        good.takeIf { isProviderSelected }?.run {
+                            getBasket()?.getQuantityOfGood(this).sumWith(enteredQuantity)
+                                    .orIfNull { enteredQuantity }
+                        }.orIfNull { ZERO_QUANTITY }
+                    }
+                }
+            }
         }
     }
 
@@ -169,14 +215,10 @@ abstract class BaseGoodInfoViewModel<R : Taskable, T : ITaskManager<R>> : CoreVi
     abstract val quantity: MutableLiveData<Double>
     abstract val applyEnabled: LiveData<Boolean>
     abstract val totalWithUnits: MutableLiveData<String>
-    abstract val basketNumber: LiveData<String>
-    abstract val basketQuantity: LiveData<Double>
     abstract val closeEnabled: MutableLiveData<Boolean>
 
-    private fun isProviderEnabledAndPositionChanged(isEnabled: Boolean, position: Int)
-            = isEnabled && position > FIRST_POSITION
-    private fun isProviderNotEnabledAndPositionDidntChanged(isEnabled: Boolean, position: Int)
-            = !isEnabled && position == FIRST_POSITION
+    private fun isProviderEnabledAndPositionChanged(isEnabled: Boolean, position: Int) = isEnabled && position > FIRST_POSITION
+    private fun isProviderNotEnabledAndPositionDidntChanged(isEnabled: Boolean, position: Int) = !isEnabled && position == FIRST_POSITION
 
     protected suspend fun findGoodByMaterial(material: String): Good? {
         navigator.showProgressLoadingData()
@@ -236,6 +278,13 @@ abstract class BaseGoodInfoViewModel<R : Taskable, T : ITaskManager<R>> : CoreVi
             true
         } else {
             false
+        }
+    }
+
+    suspend fun getBasket(): Basket? {
+        val good = good.value
+        return good?.let {
+            manager.getBasket(it.provider.code.orEmpty(), it, false)
         }
     }
 

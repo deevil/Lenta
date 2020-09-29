@@ -1,17 +1,12 @@
 package com.lenta.bp12.features.create_task.base
 
-import androidx.lifecycle.switchMap
 import com.lenta.bp12.features.base.BaseGoodInfoViewModel
 import com.lenta.bp12.features.create_task.base.interfaces.IBaseGoodInfoCreateViewModel
 import com.lenta.bp12.managers.interfaces.ICreateTaskManager
-import com.lenta.bp12.model.pojo.Basket
-import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.create_task.TaskCreate
-import com.lenta.bp12.model.pojo.extentions.getQuantityOfGood
-import com.lenta.bp12.platform.ZERO_QUANTITY
-import com.lenta.bp12.request.pojo.ProviderInfo
-import com.lenta.shared.utilities.extentions.*
-import com.lenta.shared.utilities.orIfNull
+import com.lenta.shared.utilities.extentions.dropZeros
+import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.unsafeLazy
 
 /**
  * Класс содержащий общую логику для
@@ -27,46 +22,6 @@ abstract class BaseGoodInfoCreateViewModel : BaseGoodInfoViewModel<TaskCreate, I
     }
 
     /**
-     * Корзины
-     * */
-    override val basketNumber by unsafeLazy {
-        good.combineLatest(quantity)
-                .combineLatest(isProviderSelected)
-                .switchMap {
-                    asyncTryCatchLiveData {
-                        val good = it.first.first
-                        val isProviderSelected = it.second
-
-                        good.takeIf { isProviderSelected }
-                                ?.run { getBasket(this)?.index?.toString() }
-                                .orIfNull {
-                                    task.value?.baskets?.size?.plus(1)?.toString()
-                                }.orEmpty()
-                    }
-                }
-    }
-
-    override val basketQuantity by unsafeLazy {
-        good.combineLatest(quantity)
-                .combineLatest(isProviderSelected)
-                .switchMap {
-                    asyncTryCatchLiveData {
-                        val good = it.first.first
-                        val enteredQuantity = it.first.second
-                        val isProviderSelected = it.second
-
-                        good.takeIf { isProviderSelected }?.run {
-                            getBasket(this)?.run {
-                                getQuantityOfGood(good).sumWith(enteredQuantity)
-                            }.orIfNull {
-                                enteredQuantity
-                            }
-                        }.orIfNull { ZERO_QUANTITY }
-                    }
-                }
-    }
-
-    /**
     Список поставщиков
      */
 
@@ -74,10 +29,6 @@ abstract class BaseGoodInfoCreateViewModel : BaseGoodInfoViewModel<TaskCreate, I
         basketQuantity.map { basketQuantityValue ->
             basketQuantityValue?.let { it > 0 }
         }
-    }
-
-    override suspend fun getBasket(good: Good): Basket? {
-        return manager.getBasket(ProviderInfo.getEmptyCode(), good, false)
     }
 
     override fun updateData() {

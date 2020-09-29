@@ -204,7 +204,7 @@ class MarkedGoodInfoOpenFragment : CoreFragment<FragmentMarkedGoodInfoOpenBindin
 //            }
 //            //Марка 198794
 //            KeyCode.KEYCODE_7 -> {
-//                vm.onScanResult("010467003610609821fDiwLb=cO6vkb")
+//                vm.onScanResult("010467003610609821j3qd?s9G2pJZJ")
 //                true
 //            }
 //            else -> false
