@@ -268,7 +268,8 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
                 if (status == PartStatus.FOUND.code) {
                     saveChanges(result)
                 } else {
-                    navigator.openAlertScreen(result.statusDescription ?: resource.error)
+                    navigator.showAlertDialogWithRedTriangle(result.statusDescription
+                            ?: resource.error)
                 }
             }
         }
@@ -446,14 +447,18 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
                     isWholesaleTask && isGoodExcise -> showCantAddExciseGoodForWholesale()
                     isGoodCorrespondToTask && isGoodCanBeAdded -> {
                         isExistUnsavedData = true
-                        val material = result.materialInfo?.material.orEmpty()
-                        findGoodByMaterial(material)?.let { good ->
-                            good.eans[number] = result.eanInfo.getQuantityForBox()
-                            lastSuccessSearchNumber = material
-                            isEanLastScanned = false
-                            setFoundGood(good)
+                        result.materialInfo?.material?.let { material ->
+                            findGoodByMaterial(material)?.let { good ->
+                                good.eans[number] = result.eanInfo.getQuantityForBox()
+                                lastSuccessSearchNumber = material
+                                isEanLastScanned = false
+                                setFoundGood(good)
+                            }.orIfNull {
+                                setGood(result, number)
+                            }
                         }.orIfNull {
-                            setGood(result, number)
+                            Logg.e { "material null"}
+                            navigator.showInternalError(resource.goodNotFoundErrorMsg)
                         }
                     }
                     isGoodCorrespondToTask -> showGoodCannotBeAdded()
@@ -839,7 +844,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
                             if (status == PartStatus.FOUND.code) {
                                 saveChangesAndExit(result)
                             } else {
-                                navigator.openAlertScreen(result.statusDescription
+                                navigator.showAlertDialogWithRedTriangle(result.statusDescription
                                         ?: resource.error)
                             }
                         }

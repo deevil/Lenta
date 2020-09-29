@@ -245,7 +245,8 @@ class ScreenNavigator @Inject constructor(
                     message = context.getString(R.string.unsaved_data_will_be_lost),
                     iconRes = R.drawable.ic_question_yellow_80dp,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(proceedCallback),
-                    rightButtonDecorationInfo = ButtonDecorationInfo.proceed
+                    rightButtonDecorationInfo = ButtonDecorationInfo.proceed,
+                    leftButtonDecorationInfo = ButtonDecorationInfo.cancel
             ))
         }
     }
@@ -553,7 +554,7 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "93",
                     message = context.getString(R.string.mark_already_scanned_delete),
-                    iconRes = R.drawable.ic_warning_red_80dp,
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback)
             ))
@@ -565,7 +566,7 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "91",
                     message = context.getString(R.string.carton_already_scanned_delete),
-                    iconRes = R.drawable.ic_warning_red_80dp,
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback)
             ))
@@ -577,7 +578,7 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "89",
                     message = context.getString(R.string.box_already_scanned_delete),
-                    iconRes = R.drawable.ic_warning_red_80dp,
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback)
             ))

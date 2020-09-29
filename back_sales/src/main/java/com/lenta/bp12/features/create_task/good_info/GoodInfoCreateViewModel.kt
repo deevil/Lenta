@@ -246,7 +246,8 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
                 if (status == PartStatus.FOUND.code) {
                     saveChanges(result)
                 } else {
-                    navigator.openAlertScreen(result.statusDescription ?: resource.error)
+                    navigator.showAlertDialogWithRedTriangle(result.statusDescription
+                            ?: resource.error)
                 }
             }
         }
@@ -418,7 +419,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
         }
     }
 
-    private suspend fun findByMaterialOrSetGood(result: GoodInfoResult, number: String){
+    private suspend fun findByMaterialOrSetGood(result: GoodInfoResult, number: String) {
         isExistUnsavedData = true
         result.materialInfo?.material?.let { material ->
             findGoodByMaterial(material)?.let { good ->
@@ -504,7 +505,8 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
 
     private suspend fun handleUnknownMark(number: String, result: ScanInfoResult) {
         when (number.length) {
-            Constants.EXCISE_MARK_150 -> navigator.openAlertScreen(result.statusDescription.orEmpty())
+            Constants.EXCISE_MARK_150 -> navigator.openAlertScreen(result.statusDescription
+                    ?: resource.error)
             Constants.EXCISE_MARK_68 -> {
                 val alcoCodeInfoList = database.getAlcoCodeInfoList(number.extractAlcoCode())
 
@@ -535,7 +537,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
                 try {
                     date.value = getFormattedDate(result.producedDate.orEmpty(), Constants.DATE_FORMAT_yyyy_mm_dd, Constants.DATE_FORMAT_dd_mm_yyyy)
                 } catch (e: RuntimeException) {
-
+                    Logg.e { "getFormattedDate parse exception: ${e.message}" }
                 }
             }
             Constants.EXCISE_MARK_68 -> {
@@ -808,8 +810,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
                             if (status == PartStatus.FOUND.code) {
                                 saveChangesAndExit(result)
                             } else {
-                                navigator.openAlertScreen(result.statusDescription
-                                        ?: resource.error)
+                                navigator.showAlertDialogWithRedTriangle(result.statusDescription ?: resource.error)
                             }
                         }
                     }
