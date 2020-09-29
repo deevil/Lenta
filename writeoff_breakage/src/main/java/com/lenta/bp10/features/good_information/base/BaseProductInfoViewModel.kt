@@ -2,6 +2,7 @@ package com.lenta.bp10.features.good_information.base
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.features.good_information.*
 import com.lenta.bp10.features.goods_list.SearchProductDelegate
@@ -52,29 +53,44 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardLis
 
     val productInfo: MutableLiveData<ProductInfo> = MutableLiveData()
 
-    val writeOffReasons: MutableLiveData<List<WriteOffReason>> = MutableLiveData()
+    private val writeOffReasons: LiveData<List<WriteOffReason>> = productInfo.switchMap {
+        asyncLiveData<List<WriteOffReason>> {
+            emit(getWriteOffReasons())
+        }
+    }
 
-    val writeOffReasonTitles: LiveData<List<String>> = writeOffReasons.map { it?.map { reason -> reason.name } }
+    val writeOffReasonTitles: LiveData<List<String>> by unsafeLazy {
+        writeOffReasons.switchMap {
+            asyncLiveData<List<String>> {
+                val reasons = it.map { reason ->
+                    reason.name
+                }
+                emit(reasons)
+            }
+        }
+    }
 
     val count: MutableLiveData<String> by lazy {
         initCountLiveData()
     }
 
-    val suffix = MutableLiveData("")
+    val suffix = productInfo.mapSkipNulls {
+        it.uom.name
+    }
 
     val requestFocusToQuantity = MutableLiveData(false)
 
     internal var limitsChecker: LimitsChecker? = null
 
     protected val countValue: MutableLiveData<Double> by lazy {
-        count.map {
-            (it?.toDoubleOrNull() ?: 0.0)
+        count.mapSkipNulls {
+            (it.toDoubleOrNull() ?: 0.0)
         }
     }
 
     val totalCount: MutableLiveData<Double> by lazy {
-        countValue.map {
-            (it ?: 0.0) + getProcessTotalCount()
+        countValue.mapSkipNulls {
+            it + getProcessTotalCount()
         }
     }
 
@@ -126,43 +142,44 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardLis
      */
 
     init {
+        initViewModel()
+    }
+
+    private fun initViewModel() {
         launchUITryCatch {
             initSpecialMode()
 
-            limitsChecker = LimitsChecker(
-                    limit = goodInformationRepo.getLimit(getTaskDescription().taskType.code, productInfo.value!!.type),
-                    observer = { navigator.openLimitExceededScreen() },
-                    countLiveData = totalCount,
-                    viewModelScope = this@BaseProductInfoViewModel::viewModelScope
+            productInfo.value?.let {
+                limitsChecker = LimitsChecker(
+                        limit = goodInformationRepo.getLimit(getTaskDescription().taskType.code, it.type),
+                        observer = { navigator.openLimitExceededScreen() },
+                        countLiveData = totalCount,
+                        viewModelScope = this@BaseProductInfoViewModel::viewModelScope
 
-            )
+                )
 
-            searchProductDelegate.init(
-                    scanResultHandler = this@BaseProductInfoViewModel::handleProductSearchResult,
-                    limitsChecker = limitsChecker
-            )
-
-            processServiceManager.getWriteOffTask()?.let {
-                getTaskDescription().moveTypes.let { reasons ->
-                    writeOffReasons.value = if (reasons.isEmpty()) {
-                        listOf(WriteOffReason.emptyWithTitle(resourceManager.emptyCategory()))
-                    } else {
-                        mutableListOf(WriteOffReason.empty).apply {
-                            addAll(reasons)
-                        }.filter { writeOffReason ->
-                            filterReason(writeOffReason)
-                        }
-                    }
-                }
+                searchProductDelegate.init(
+                        scanResultHandler = this@BaseProductInfoViewModel::handleProductSearchResult,
+                        limitsChecker = limitsChecker
+                )
             }
-
-            suffix.value = productInfo.value?.uom?.name
         }
     }
 
     /**
     Методы
      */
+
+    private fun getWriteOffReasons(): List<WriteOffReason> {
+        val reasons = getTaskDescription().moveTypes
+        return if (reasons.isEmpty()) {
+            listOf(WriteOffReason.emptyWithTitle(resourceManager.emptyCategory()))
+        } else {
+            reasons.filter { writeOffReason ->
+                filterReason(writeOffReason)
+            }
+        }
+    }
 
     private suspend fun initSpecialMode() {
         val taskType = getTaskDescription().taskType.code
@@ -177,7 +194,9 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardLis
     }
 
     open fun filterReason(writeOffReason: WriteOffReason): Boolean {
-        return writeOffReason === WriteOffReason.empty || writeOffReason.gisControl == productInfo.value?.type?.code
+        val typeCode = productInfo.value?.type?.code.orEmpty()
+        val gisControl = writeOffReason.gisControl
+        return writeOffReason === WriteOffReason.empty || gisControl == typeCode
     }
 
     fun setProductInfo(productInfo: ProductInfo) {
