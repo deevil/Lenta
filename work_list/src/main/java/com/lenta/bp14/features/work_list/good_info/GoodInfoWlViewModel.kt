@@ -12,6 +12,7 @@ import com.lenta.bp14.models.work_list.AdditionalGoodInfo
 import com.lenta.bp14.models.work_list.ScanResult
 import com.lenta.bp14.models.work_list.WorkListTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
+import com.lenta.bp14.platform.resource.IResourceFormatter
 import com.lenta.bp14.platform.resource.IResourceManager
 import com.lenta.bp14.requests.pojo.MarkStatus
 import com.lenta.bp14.requests.work_list.AdditionalGoodInfoParams
@@ -53,6 +54,9 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
 
     @Inject
     lateinit var resourceManager: IResourceManager
+
+    @Inject
+    lateinit var resourceFormatter: IResourceFormatter
 
 
     val loadingIndicatorVisibility = MutableLiveData<Boolean>(true)
@@ -177,6 +181,20 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
         }
     }
 
+    val zParts: LiveData<List<ZPartUi>> by unsafeLazy {
+        good.map { good ->
+            good?.additional?.zParts?.mapIndexed { index, zPart ->
+                val quantity = "${zPart.quantity.dropZeros()} ${good.units.name}"
+                ZPartUi(
+                        index,
+                        zPart.stock,
+                        resourceFormatter.getFormattedZPartInfo(zPart),
+                        quantity
+                )
+            }
+        }
+    }
+
     val providers: MutableLiveData<List<ItemProviderUi>> by lazy {
         good.map { good ->
             good?.additional?.providers?.mapIndexed { index, provider ->
@@ -267,7 +285,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
 
     private fun handleAdditionalInfoFailure(failure: Failure) {
         super.handleFailure(failure)
-        dataLoadingError.value = if (failure is Failure.SapError) failure.message else resourceManager.serverConnectionError()
+        dataLoadingError.value = if (failure is Failure.SapError) failure.message else resourceManager.serverConnectionError
         dataLoadingErrorVisibility.value = true
     }
 

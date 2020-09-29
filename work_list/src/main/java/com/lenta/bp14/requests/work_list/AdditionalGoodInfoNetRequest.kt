@@ -68,7 +68,9 @@ class AdditionalGoodInfoNetRequest
             stock.orEmpty(),
             producer.orEmpty(),
             quantity.toDoubleOrZero(),
-            meins.orEmpty()
+            meins.orEmpty(),
+            dateExpir.orEmpty(),
+            dateProd.orEmpty()
     )
 
     private fun String?.toDoubleOrZero(): Double = this?.toDoubleOrNull() ?: 0.0

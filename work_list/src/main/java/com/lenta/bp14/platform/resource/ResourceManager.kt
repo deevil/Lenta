@@ -6,9 +6,15 @@ import com.lenta.bp14.R
 import javax.inject.Inject
 
 class ResourceManager @Inject constructor(val context: Context) : IResourceManager {
-    override fun serverConnectionError(): String = context.getString(R.string.server_connection_error)
+    override val serverConnectionError: String
+        get() = context.getString(SERVER_CONNECTION_ERROR)
+
+    override val zPartInfoPattern: String
+        get() = context.getString(Z_PART_INFO_PATTERN)
+
+    companion object {
+        private const val SERVER_CONNECTION_ERROR = R.string.server_connection_error
+        private const val Z_PART_INFO_PATTERN = R.string.z_part_info_pattern
+    }
 }
 
-interface IResourceManager {
-    fun serverConnectionError(): String
-}

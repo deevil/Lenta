@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.lenta.bp14.features.work_list.good_info.GoodInfoWlViewModel" />
+
+        <variable
+            name="rvConfig"
+            type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig" />
+
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="@{vm.dataVisibility}">
+
+
+            <!-- Наименования колонок -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout style="@style/FirstRowStyle">
+
+                    <LinearLayout
+                        style="@style/LinearCellStyle"
+                        android:layout_weight="@integer/three_one_1">
+
+                        <TextView
+                            style="@style/FirstRowTextStyle"
+                            android:text="@string/number" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        style="@style/LinearCellStyle"
+                        android:layout_weight="@integer/three_one_2">
+
+                        <TextView
+                            style="@style/FirstRowTextStyle"
+                            android:text="@string/provider" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        style="@style/LinearCellStyle"
+                        android:layout_weight="@integer/three_one_3">
+
+                        <TextView
+                            style="@style/FirstRowTextStyle"
+                            android:text="@string/period_kip" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <View
+                    style="@style/HorizontalDivider" />
+
+            </LinearLayout>
+
+
+            <!-- Список поставщиков -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                app:items="@{vm.providers}"
+                app:rv_config="@{rvConfig}"
+                tools:listitem="@layout/item_good_provider_period" />
+
+        </LinearLayout>
+
+        <!-- Индикатор загрузки -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            app:isGone="@{!vm.loadingIndicatorVisibility}">
+
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/data_loading" />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="20dp"
+            android:gravity="center"
+            android:text="@{vm.dataLoadingError}"
+            android:visibility="@{vm.dataLoadingErrorVisibility}"
+            tools:text="Описание ошибки произошедшей при загрузке данных" />
+
+    </FrameLayout>
+</layout>

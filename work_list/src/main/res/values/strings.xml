@@ -25,6 +25,7 @@
     <string name="processing">К обработке</string>
     <string name="processed">Обработанные</string>
     <string name="search">Поиск</string>
+    <string name="parts">Партии</string>
     <string name="z_parts">Z-партии</string>
 
     <!-- Информационные сообщения -->
@@ -124,4 +125,9 @@
     <string name="vrus">Вино России</string>
     <string name="self_life">Срок годности</string>
 
+    <!-- ZPart info -->
+    <string name="z_part_info_pattern">
+        %s\n
+        %s\n
+        ДП:%s / СГ:%s</string>
 </resources>

@@ -5,10 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.observe
 import com.lenta.bp14.BR
 import com.lenta.bp14.R
 import com.lenta.bp14.databinding.*
 import com.lenta.bp14.di.WorkListComponent
+import com.lenta.bp14.models.ui.AdditionalInfoUi
 import com.lenta.shared.di.CoreInjectHelper
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -17,13 +21,14 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListe
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
+import com.lenta.shared.utilities.databinding.DynamicViewPagerSettings
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlViewModel>(),
-        ViewPagerSettings, ToolbarButtonsClickListener, OnScanResultListener {
+        DynamicViewPagerSettings<AdditionalInfoUi>, ToolbarButtonsClickListener, OnScanResultListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_good_info_wl
 
@@ -62,8 +67,8 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
         }
     }
 
-    override fun getPagerItemView(container: ViewGroup, position: Int): View {
-        if (position == 0) {
+    override fun getPagerItemView(container: ViewGroup, position: Int): View = when (position) {
+        0 -> {
             DataBindingUtil.inflate<LayoutWlGoodInfoCommonBinding>(LayoutInflater.from(container.context),
                     R.layout.layout_wl_good_info_common,
                     container,
@@ -74,11 +79,11 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
 
                 vm.dateFields = listOf(layoutBinding.dayField, layoutBinding.monthField, layoutBinding.yearField)
 
-                return layoutBinding.root
+                layoutBinding.root
             }
         }
 
-        if (position == 1) {
+        1 -> {
             DataBindingUtil.inflate<LayoutWlGoodInfoAdditionalBinding>(LayoutInflater.from(container.context),
                     R.layout.layout_wl_good_info_additional,
                     container,
@@ -87,11 +92,11 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
                 layoutBinding.vm = vm
                 layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-                return layoutBinding.root
+                layoutBinding.root
             }
         }
 
-        if (position == 2) {
+        2 -> {
             DataBindingUtil.inflate<LayoutWlGoodInfoProvidersBinding>(LayoutInflater.from(container.context),
                     R.layout.layout_wl_good_info_providers,
                     container,
@@ -104,29 +109,47 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
                 layoutBinding.vm = vm
                 layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-                return layoutBinding.root
+                layoutBinding.root
             }
         }
 
-//        if (position == 3) {
-        DataBindingUtil.inflate<LayoutWlGoodInfoStocksBinding>(LayoutInflater.from(container.context),
-                R.layout.layout_wl_good_info_stocks,
-                container,
-                false).let { layoutBinding ->
+        3 -> {
+            DataBindingUtil.inflate<LayoutWlGoodInfoStocksBinding>(LayoutInflater.from(container.context),
+                    R.layout.layout_wl_good_info_stocks,
+                    container,
+                    false).let { layoutBinding ->
 
-            layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemStorageStockBinding>(
-                    layoutId = R.layout.item_storage_stock,
-                    itemId = BR.stock)
+                layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemStorageStockBinding>(
+                        layoutId = R.layout.item_storage_stock,
+                        itemId = BR.stock)
 
-            layoutBinding.vm = vm
-            layoutBinding.lifecycleOwner = viewLifecycleOwner
+                layoutBinding.vm = vm
+                layoutBinding.lifecycleOwner = viewLifecycleOwner
 
-            return layoutBinding.root
+                layoutBinding.root
+            }
         }
-//        }
 
+        4 -> {
+            DataBindingUtil.inflate<LayoutWlGoodInfoStocksBinding>(LayoutInflater.from(container.context),
+                    R.layout.layout_wl_good_info_stocks,
+                    container,
+                    false).let { layoutBinding ->
 
+                layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemStorageStockBinding>(
+                        layoutId = R.layout.item_storage_stock,
+                        itemId = BR.stock)
+
+                layoutBinding.vm = vm
+                layoutBinding.lifecycleOwner = viewLifecycleOwner
+
+                layoutBinding.root
+            }
+        }
+
+        else -> throw IllegalArgumentException("Wrong pager position!")
     }
+
 
     override fun getTextTitle(position: Int): String {
         return when (position) {
@@ -134,11 +157,22 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
             1 -> getString(R.string.additional_good_info_title)
             2 -> getString(R.string.good_providers_list_title)
             3 -> getString(R.string.stocks_list_title)
+            4 -> getString(R.string.parts)
             else -> throw IllegalArgumentException("Wrong pager position!")
         }
     }
 
-    override fun countTab() = 4
+    override fun countTab(): Int {
+        return if (vm.additional.value?.hasZParts == true) {
+            5
+        } else {
+            4
+        }
+    }
+
+    override fun getLifecycleOwner(): LifecycleOwner = viewLifecycleOwner
+    override fun getDynamicData() = vm.additional
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -147,6 +181,10 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
 
     override fun onScanResult(data: String) {
         vm.onScanResult(data)
+    }
+
+    companion object {
+//        private const val
     }
 
 }

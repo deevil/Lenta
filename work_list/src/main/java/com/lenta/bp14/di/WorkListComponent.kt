@@ -14,7 +14,10 @@ import com.lenta.bp14.models.work_list.WorkListTaskDescription
 import com.lenta.bp14.models.work_list.WorkListTaskManager
 import com.lenta.bp14.models.work_list.repo.IWorkListRepo
 import com.lenta.bp14.models.work_list.repo.WorkListRepo
+import com.lenta.bp14.platform.resource.IResourceFormatter
+import com.lenta.bp14.platform.resource.ResourceFormatter
 import com.lenta.bp14.requests.work_list.*
+import com.lenta.shared.di.AppScope
 import dagger.Binds
 import dagger.Component
 import dagger.Module
@@ -66,6 +69,11 @@ class WorkListModule(private val taskDescription: WorkListTaskDescription) {
         @Binds
         @WorkListScope
         fun bindCheckMarkNetRequest(realisation: CheckMarkNetRequest): ICheckMarkNetRequest
+
+
+        @Binds
+        @WorkListScope
+        fun bindResourceFormatter(realization: ResourceFormatter): IResourceFormatter
 
     }
 

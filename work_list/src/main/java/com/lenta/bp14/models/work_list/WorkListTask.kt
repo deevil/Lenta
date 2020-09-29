@@ -483,7 +483,9 @@ data class ZPart(
         val stock: String,
         val producer: String,
         val quantity: Double,
-        val meins: String
+        val meins: String,
+        val dateExpir: String,
+        val dateProd: String
 )
 
 data class GoodOptions(

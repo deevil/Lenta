@@ -20,5 +20,11 @@ data class ZPartDTO(
         val quantity: String?,
         /** Единица измерения */
         @SerializedName("MEINS")
-        val meins: String?
+        val meins: String?,
+        /** Срок годности */
+        @SerializedName("DATE_EXPIR")
+        val dateExpir: String?,
+        /** Дата производства */
+        @SerializedName("DATE_ROD")
+        val dateProd: String?
 )

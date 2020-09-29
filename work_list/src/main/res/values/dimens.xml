@@ -49,4 +49,10 @@
     <integer name="four_three_3">22</integer>
     <integer name="four_three_4">35</integer>
 
+    <!-- Четыре колонки / Тип 4 -->
+    <integer name="four_four_1">15</integer>
+    <integer name="four_four_2">20</integer>
+    <integer name="four_four_3">40</integer>
+    <integer name="four_four_4">25</integer>
+
 </resources>
