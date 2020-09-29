@@ -15,6 +15,11 @@ fun ZmpUtz110V001.getAllGroups(): List<ZmpUtz110V001.ItemLocal_ET_GR_WEIGHT> {
     return localHelper_ET_GR_WEIGHT.all
 }
 
+fun ZmpUtz110V001.getGroupsToSelectedMarket(marketNumber: String): List<ZmpUtz110V001.ItemLocal_ET_GR_WEIGHT> {
+    @Suppress("INACCESSIBLE_TYPE")
+    return localHelper_ET_GR_WEIGHT.getWhere("WERKS_D = \"$marketNumber\"")
+}
+
 fun List<ZmpUtz110V001.ItemLocal_ET_GR_WEIGHT>.toGroupInfoList(): List<GroupInfo> {
     return this.map {
         GroupInfo(
