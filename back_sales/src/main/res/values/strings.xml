@@ -60,7 +60,7 @@
     <string name="good_is_missing_in_task">Товар отсутствует в задании</string>
     <string name="incorrect_ean_format">Неверный формат штрихкода</string>
     <string name="cant_scan_tobacco_pack_scan_carton">Добавление отдельной пачки запрещено. Отсканируйте целый блок.</string>
-    <string name="for_good_need_scan_first_mark">Для данного товара, необходимо дополнительно отсканировать марку.</string>
+    <string name="for_good_need_scan_first_mark">Для данного товара необходимо дополнительно отсканировать марку.</string>
     <string name="cant_scan_excise_for_wholesale_task">Невозможно добавление акцизного алкоголя в тип задания "ПКО"</string>
     <string name="cant_scan_vet_for_wholesale_task">Невозможно добавление товаров ветеринарного контроля в тип задания "ПКО"</string>
 
