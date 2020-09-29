@@ -523,10 +523,10 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
                     ExciseMarkStatus.OK.code -> addExciseMarkInfo(result)
                     ExciseMarkStatus.BAD.code -> {
                         addExciseMarkInfo(result)
-                        navigator.openAlertScreen(result.statusDescription?: resource.error)
+                        navigator.openAlertScreen(result.statusDescription ?: resource.error)
                     }
                     ExciseMarkStatus.UNKNOWN.code -> handleUnknownMark(number, result)
-                    else -> navigator.openAlertScreen(result.statusDescription?: resource.error)
+                    else -> navigator.openAlertScreen(result.statusDescription ?: resource.error)
                 }
             }
         }
@@ -534,7 +534,8 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
 
     private suspend fun handleUnknownMark(number: String, result: ScanInfoResult) {
         when (number.length) {
-            Constants.EXCISE_MARK_150 -> navigator.openAlertScreen(result.statusDescription?: resource.error)
+            Constants.EXCISE_MARK_150 -> navigator.openAlertScreen(result.statusDescription
+                    ?: resource.error)
             Constants.EXCISE_MARK_68 -> {
                 val alcoCodeInfoList = database.getAlcoCodeInfoList(number.extractAlcoCode())
 
@@ -600,7 +601,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
         launchUITryCatch {
             when (result.status) {
                 BoxStatus.OK.code -> addBoxInfo(result)
-                else -> navigator.openAlertScreen(result.statusDescription?: resource.error)
+                else -> navigator.openAlertScreen(result.statusDescription ?: resource.error)
             }
         }
     }
@@ -614,7 +615,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
         try {
             date.value = getFormattedDate(result.producedDate.orEmpty(), Constants.DATE_FORMAT_yyyy_mm_dd, Constants.DATE_FORMAT_dd_mm_yyyy)
         } catch (e: RuntimeException) {
-
+            Logg.e { "getFormattedDate parse error: ${e.message}" }
         }
         updateProducers(result.producers.orEmptyMutable())
     }
@@ -838,7 +839,8 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
                             if (status == PartStatus.FOUND.code) {
                                 saveChangesAndExit(result)
                             } else {
-                                navigator.openAlertScreen(result.statusDescription ?: resource.error)
+                                navigator.openAlertScreen(result.statusDescription
+                                        ?: resource.error)
                             }
                         }
                     }

@@ -6,6 +6,7 @@ import com.lenta.bp12.model.*
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.Part
 import com.lenta.bp12.model.pojo.TaskType
+import com.lenta.bp12.platform.ONE_QUANTITY_IN_FLOAT
 import com.lenta.bp12.platform.ZERO_QUANTITY
 import com.lenta.bp12.request.ScanInfoResult
 import com.lenta.bp12.request.pojo.CreateTaskBasketInfo
@@ -25,6 +26,8 @@ import com.lenta.shared.utilities.extentions.getConvertedQuantity
 import com.lenta.shared.utilities.extentions.isSapTrue
 import com.lenta.shared.utilities.getDateFromString
 import com.lenta.shared.utilities.orIfNull
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.util.*
 
 fun GoodKind.getDescriptionResId(): Int {
@@ -198,20 +201,22 @@ fun ScanInfoResult.getParts(good: Good, date: String, providerCode: String, prod
     }.orEmpty()
 }
 
-fun ZmpUtz25V001.getEanMapByMaterialUnits(material: String, unitsCode: String): MutableMap<String, Float> {
+suspend fun ZmpUtz25V001.getEanMapByMaterialUnits(material: String, unitsCode: String): MutableMap<String, Float> {
     @Suppress("INACCESSIBLE_TYPE")
-    return localHelper_ET_EANS.getWhere("MATERIAL = \"$material\" AND UOM = \"${unitsCode.toUpperCase(Locale.getDefault())}\"")
-            .associateByTo(
-                    destination = mutableMapOf<String, Float>(),
-                    keySelector = { it.ean.orEmpty() },
-                    valueTransform = { cell ->
-                        cell.umrez?.let { umrez ->
-                            cell.umren?.let { umren ->
+    return withContext(Dispatchers.IO) {
+        localHelper_ET_EANS.getWhere("MATERIAL = \"$material\" AND UOM = \"${unitsCode.toUpperCase(Locale.getDefault())}\"")
+                .associateByTo(
+                        destination = mutableMapOf<String, Float>(),
+                        keySelector = { it.ean.orEmpty() },
+                        valueTransform = { cell ->
+                            cell.umrez?.let { umrez ->
+                                cell.umren?.let { umren ->
                                     (umrez.toFloat() / umren.toFloat()).takeIf { cell.uom == Uom.DATA_KAR }
-                            }
-                        } ?: 1.0f
-                    }
-            )
+                                }
+                            } ?: ONE_QUANTITY_IN_FLOAT
+                        }
+                )
+    }
 }
 
 
@@ -238,5 +243,5 @@ fun EanInfo?.getQuantityForBox(): Float {
                 (umrez / umren).takeIf { unitCode == Uom.DATA_KAR }
             }
         }
-    } ?: 1.0f
+    } ?: ONE_QUANTITY_IN_FLOAT
 }

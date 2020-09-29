@@ -107,12 +107,11 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
     private val sourceProducers = MutableLiveData(mutableListOf<ProducerInfo>())
 
     private val producers = sourceProducers.mapSkipNulls { producers ->
-        val list = producers.toMutableList()
-        if (list.size > 1) {
-            list.add(0, ProducerInfo(name = resource.chooseProducer()))
+        producers.toMutableList().apply {
+            if (size > 1) {
+                add(0, ProducerInfo(name = resource.chooseProducer()))
+            }
         }
-
-        list.toList()
     }
 
     val producerList by lazy {
@@ -412,21 +411,27 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
                 when {
                     isWholesaleTask && isGoodVet -> showCantAddVetToWholeSale()
                     isWholesaleTask && isGoodExcise -> showCantAddExciseGoodForWholesale()
-                    isGoodCanBeAdded -> {
-                        isExistUnsavedData = true
-                        val material = result.materialInfo?.material.orEmpty()
-                        findGoodByMaterial(material)?.let { good ->
-                            good.eans[number] = result.eanInfo.getQuantityForBox()
-                            lastSuccessSearchNumber = material
-                            isEanLastScanned = false
-                            setFoundGood(good)
-                        }.orIfNull {
-                            setGood(result, number)
-                        }
-                    }
+                    isGoodCanBeAdded -> findByMaterialOrSetGood(result, number)
                     else -> showGoodCannotBeAdded()
                 }
             }
+        }
+    }
+
+    private suspend fun findByMaterialOrSetGood(result: GoodInfoResult, number: String){
+        isExistUnsavedData = true
+        result.materialInfo?.material?.let { material ->
+            findGoodByMaterial(material)?.let { good ->
+                good.eans[number] = result.eanInfo.getQuantityForBox()
+                lastSuccessSearchNumber = material
+                isEanLastScanned = false
+                setFoundGood(good)
+            }.orIfNull {
+                setGood(result, number)
+            }
+        }.orIfNull {
+            Logg.e { "material null" }
+            navigator.showInternalError(resource.goodNotFoundErrorMsg)
         }
     }
 
@@ -583,7 +588,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
         try {
             date.value = getFormattedDate(result.producedDate.orEmpty(), Constants.DATE_FORMAT_yyyy_mm_dd, Constants.DATE_FORMAT_dd_mm_yyyy)
         } catch (e: java.lang.RuntimeException) {
-
+            Logg.e { "getFormattedDate parse error: ${e.message}" }
         }
         updateProducers(result.producers.orEmptyMutable())
     }

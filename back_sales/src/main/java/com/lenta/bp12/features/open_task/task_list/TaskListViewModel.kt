@@ -299,7 +299,8 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                             handleFailure(it)
                         }
                     },
-                    fnR = ::handleTaskListResult)
+                    fnR = ::handleTaskListResult
+            )
         }
     }
 

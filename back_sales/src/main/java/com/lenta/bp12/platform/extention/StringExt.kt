@@ -2,7 +2,9 @@ package com.lenta.bp12.platform.extention
 
 import com.lenta.bp12.platform.DEFAULT_DATE_LENGTH
 import com.lenta.shared.platform.constants.Constants
+import com.lenta.shared.platform.constants.Constants.DIV_TO_RUB
 import com.lenta.shared.utilities.extentions.dropZeros
+import com.lenta.shared.utilities.orIfNull
 import java.math.BigInteger
 import java.text.SimpleDateFormat
 import java.util.*
@@ -80,9 +82,13 @@ fun String.deleteSecondMinus(): String {
 }
 
 fun String.extractAlcoCode(): String {
-    return BigInteger(this.substring(7, 19), 36).toString().padStart(19, '0')
+    return this.takeIf {
+        it.length >= 19
+    }?.run {
+        BigInteger(this.substring(7, 19), 36).toString().padStart(19, '0')
+    }.orIfNull { this }
 }
 
 fun String.convertMprToRub(): String {
-    return this.toDoubleOrNull()?.div(100).dropZeros()
+    return this.toDoubleOrNull()?.div(DIV_TO_RUB).dropZeros()
 }
