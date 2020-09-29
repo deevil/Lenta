@@ -97,8 +97,8 @@ class AppModule {
 
     @Provides
     @AppScope
-    internal fun provideIGoodInformationRepo(hyperHive: HyperHive): IGoodInformationRepo {
-        return GoodInformationRepo(hyperHive)
+    internal fun provideIGoodInformationRepo(hyperHive: HyperHive, repoInMemoryHolder: IRepoInMemoryHolder): IGoodInformationRepo {
+        return GoodInformationRepo(hyperHive, repoInMemoryHolder)
     }
 
     @Provides
