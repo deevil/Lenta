@@ -14,16 +14,16 @@ fun ZmpUtz31V001.getDefaultReason(taskType: String, sectionId: String, material:
 
         (getWhere("TASK_TYPE = \"$taskType\" AND " +
                 "SECTION_ID = \"$sectionId\" AND " +
-                "EKGRP=\"${material.ekgrp}\"  LIMIT 1").getOrNull(0)
+                "EKGRP=\"${material.ekgrp.orEmpty()}\"  LIMIT 1").getOrNull(0)
                 ?: getWhere("TASK_TYPE = \"$taskType\" AND " +
                         "SECTION_ID = \"$sectionId\" AND " +
-                        "MATKL=\"${material.matkl}\"  LIMIT 1").getOrNull(0)
+                        "MATKL=\"${material.matkl.orEmpty()}\"  LIMIT 1").getOrNull(0)
                 ?: getWhere("TASK_TYPE = \"$taskType\" AND " +
-                        "EKGRP = \"${material.ekgrp}\" AND " +
-                        "MATKL = \"${material.matkl}\"  LIMIT 1").getOrNull(0)
+                        "EKGRP = \"${material.ekgrp.orEmpty()}\" AND " +
+                        "MATKL = \"${material.matkl.orEmpty()}\"  LIMIT 1").getOrNull(0)
                 ?: getWhere("TASK_TYPE = \"$taskType\" AND " +
                         "SECTION_ID = \"$sectionId\" AND EKGRP = \"\"  AND MATKL = \"\" LIMIT 1").getOrNull(0))?.let {
-            return it.reason
+            return it.reason.orEmpty()
         }
     }
 
