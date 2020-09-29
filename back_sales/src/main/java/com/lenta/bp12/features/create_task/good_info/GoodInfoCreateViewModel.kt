@@ -247,7 +247,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
                     saveChanges(result)
                 } else {
                     navigator.showAlertDialogWithRedTriangle(result.statusDescription
-                            ?: resource.error, "12")
+                            ?: resource.error)
                 }
             }
         }
@@ -810,7 +810,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
                             if (status == PartStatus.FOUND.code) {
                                 saveChangesAndExit(result)
                             } else {
-                                navigator.showAlertDialogWithRedTriangle(result.statusDescription ?: resource.error, "12")
+                                navigator.showAlertDialogWithRedTriangle(result.statusDescription ?: resource.error)
                             }
                         }
                     }
