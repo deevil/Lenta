@@ -185,9 +185,22 @@ abstract class BaseGoodDetailsViewModel<T : ITaskManager<*>> : CoreViewModel(), 
         }
     }
 
+    fun countTab(): Int {
+        return good.value?.let {
+            when {
+                (!manager.isWholesaleTaskType && it.isCommon()) -> ONE_TAB
+                (manager.isWholesaleTaskType && it.isGoodCommonOrMarkedOrAlco()) -> ONE_TAB
+                else -> TWO_TABS
+            }
+        }.orIfNull { ONE_TAB }
+    }
+
     companion object {
         private const val BASKETS_TAB = 0
         private const val CATEGORIES_TAB = 1
+
+        private const val ONE_TAB = 1
+        private const val TWO_TABS = 2
     }
 }
 

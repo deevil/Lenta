@@ -18,7 +18,6 @@ import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
-import com.lenta.shared.utilities.orIfNull
 
 class GoodDetailsOpenFragment : CoreFragment<FragmentGoodDetailsOpenBinding, GoodDetailsOpenViewModel>(),
         ViewPagerSettings, ToolbarButtonsClickListener {
@@ -135,13 +134,7 @@ class GoodDetailsOpenFragment : CoreFragment<FragmentGoodDetailsOpenBinding, Goo
     }
 
     override fun countTab(): Int {
-        return vm.good.value?.let {
-            when {
-                (!vm.manager.isWholesaleTaskType && it.isCommon()) -> ONE_TAB
-                (vm.manager.isWholesaleTaskType && it.isGoodCommonOrMarkedOrAlco()) -> ONE_TAB
-                else -> TWO_TABS
-            }
-        }.orIfNull { ONE_TAB }
+        return vm.countTab()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -152,8 +145,6 @@ class GoodDetailsOpenFragment : CoreFragment<FragmentGoodDetailsOpenBinding, Goo
     companion object {
         const val SCREEN_NUMBER = "56"
 
-        private const val ONE_TAB = 1
-        private const val TWO_TABS = 2
         private const val TAB_BASKETS = 0
         private const val TAB_CATEGORIES = 1
     }
