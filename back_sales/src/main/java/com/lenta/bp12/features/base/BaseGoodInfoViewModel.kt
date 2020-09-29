@@ -16,6 +16,7 @@ import com.lenta.bp12.request.ScanInfoResult
 import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.orIfNull
 import kotlinx.coroutines.Dispatchers
@@ -33,7 +34,8 @@ import javax.inject.Inject
  * @see com.lenta.bp12.features.create_task.good_info.GoodInfoCreateViewModel
  * @see com.lenta.bp12.features.create_task.marked_good_info.MarkedGoodInfoCreateViewModel
  * */
-abstract class BaseGoodInfoViewModel<R : Taskable, T : ITaskManager<R>> : CoreViewModel() {
+abstract class BaseGoodInfoViewModel<R : Taskable, T : ITaskManager<R>> : CoreViewModel(),
+        OnOkInSoftKeyboardListener {
 
     /** "ZMP_UTZ_BKS_05_V001"
      * Получение данных товара по ШК / SAP-коду
@@ -226,6 +228,15 @@ abstract class BaseGoodInfoViewModel<R : Taskable, T : ITaskManager<R>> : CoreVi
     fun onClickDetails() {
         manager.updateCurrentGood(good.value)
         navigator.openGoodDetailsCreateScreen()
+    }
+
+    override fun onOkInSoftKeyboard(): Boolean {
+        return if (applyEnabled.value == true) {
+            onClickApply()
+            true
+        } else {
+            false
+        }
     }
 
     abstract fun checkSearchNumber(number: String)

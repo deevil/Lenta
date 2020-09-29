@@ -32,7 +32,6 @@ import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.utilities.Logg
-import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.getFormattedDate
 import com.lenta.shared.utilities.orIfNull
@@ -40,8 +39,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapter.AfterTextChanged,
-        OnOkInSoftKeyboardListener {
+class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapter.AfterTextChanged {
 
     @Inject
     override lateinit var manager: IOpenTaskManager
@@ -883,14 +881,5 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
     companion object {
         private const val DEFAULT_QUANTITY_STRING_FOR_EAN = "1"
         private const val ZERO_QUANTITY_STRING = "0"
-    }
-
-    override fun onOkInSoftKeyboard(): Boolean {
-        return if (applyEnabled.value == true) {
-            onClickApply()
-            true
-        } else {
-            false
-        }
     }
 }

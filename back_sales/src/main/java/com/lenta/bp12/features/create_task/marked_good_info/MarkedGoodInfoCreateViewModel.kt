@@ -28,7 +28,6 @@ import javax.inject.Inject
 
 class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelectionListener {
 
-
     /**
      * Менеджер ответственный за хранение задания и товаров
      * Имплементация:
