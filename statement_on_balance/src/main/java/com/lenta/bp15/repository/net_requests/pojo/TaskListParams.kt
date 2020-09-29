@@ -20,5 +20,5 @@ data class TaskListParams(
         val userNumber: String,
         /** Структура для поиска заданий */
         @SerializedName("IS_SEARCH_TASK")
-        val searchParams: TaskSearchParams
+        val searchParams: TaskSearchParams? = null
 )

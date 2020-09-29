@@ -1,7 +1,7 @@
 package com.lenta.bp15.di
 
-import com.lenta.bp15.data.ITaskManager
-import com.lenta.bp15.data.TaskManager
+import com.lenta.bp15.model.ITaskManager
+import com.lenta.bp15.model.TaskManager
 import com.lenta.bp15.platform.navigation.IScreenNavigator
 import com.lenta.bp15.platform.navigation.ScreenNavigator
 import com.lenta.bp15.platform.resource.IResourceManager

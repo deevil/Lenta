@@ -86,7 +86,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_self_lock_status_gray_24dp"
-                    app:blockTypeIcon="@{item.blockType}" />
+                    app:blockTypeIcon="@{item.lockType}" />
 
             </LinearLayout>
 

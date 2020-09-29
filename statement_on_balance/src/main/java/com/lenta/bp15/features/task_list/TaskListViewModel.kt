@@ -1,14 +1,18 @@
 package com.lenta.bp15.features.task_list
 
 import androidx.lifecycle.MutableLiveData
-import com.lenta.bp15.data.ITaskManager
+import androidx.lifecycle.map
+import com.lenta.bp15.model.ITaskManager
+import com.lenta.bp15.model.pojo.Task
 import com.lenta.bp15.platform.navigation.IScreenNavigator
 import com.lenta.bp15.platform.resource.IResourceManager
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.BlockType
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
+import com.lenta.shared.utilities.extentions.mapSkipNulls
 import javax.inject.Inject
 
 class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
@@ -26,44 +30,65 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     lateinit var manager: ITaskManager
 
 
+    /**
+    Переменные
+     */
+
     val title by lazy {
         resource.tk(sessionInfo.market.orEmpty())
     }
 
-    val numberField = MutableLiveData("")
+    val processingField by lazy {
+        MutableLiveData(sessionInfo.userName)
+    }
 
-    val requestFocusToNumberField = MutableLiveData(false)
+    val searchField = MutableLiveData("")
 
-    val taskList = MutableLiveData(
-            List((3..7).random()) {
-                val position = (it + 1).toString()
-                ItemTaskUi(
-                        position = position,
-                        name = "Test name $position",
-                        description = "Test description $position",
-                        isFinished = false,
-                        blockType = BlockType.UNLOCK,
-                        quantity = (1..25).random().toString()
-                )
+    val requestFocusToProcessingField = MutableLiveData(false)
+
+    val requestFocusToSearchField = MutableLiveData(false)
+
+    val taskList by lazy {
+        manager.tasks.combineLatest(processingField).mapSkipNulls {
+            val (tasks, _) = it
+            tasks
+        }.map(taskListFilterFunc)
+    }
+
+    val searchList by lazy {
+        manager.foundTasks.combineLatest(searchField).mapSkipNulls {
+            val (tasks, _) = it
+            tasks
+        }.map(taskListFilterFunc)
+    }
+
+    private val taskListFilterFunc = { tasks: List<Task> ->
+        when {
+            isEnteredLogin() -> tasks
+            else -> tasks.filter { task -> task.number.contains(getCurrentFieldValue().orEmpty()) }
+        }.let { list ->
+            list.mapIndexed { index, task ->
+                task.convertToItemTaskUi(index)
             }
-    )
+        }
+    }
 
-    val searchList = MutableLiveData(
-            List((3..7).random()) {
-                val position = (it + 1).toString()
-                ItemTaskUi(
-                        position = position,
-                        name = "Test name $position",
-                        description = "Test description $position",
-                        isFinished = false,
-                        blockType = BlockType.UNLOCK,
-                        quantity = (1..25).random().toString()
-                )
-            }
-    )
+    /**
+    Блок инициализации
+     */
 
     init {
+        updateTaskList()
+    }
 
+    /**
+    Методы
+     */
+
+    private fun updateTaskList() {
+        launchUITryCatch {
+            manager.updateTaskList()
+        }
     }
 
     override fun onPageSelected(position: Int) {
@@ -74,6 +99,24 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         return false
     }
 
+    private fun isEnteredLogin(): Boolean {
+        return getCurrentFieldValue()?.let { numberOrLogin ->
+            numberOrLogin.isNotEmpty() && !numberOrLogin.all { it.isDigit() }
+        } ?: false
+    }
+
+    private fun getCurrentFieldValue(): String? {
+        return when (selectedPage.value) {
+            0 -> processingField.value
+            1 -> searchField.value
+            else -> throw IllegalArgumentException("Wrong pager position!")
+        }
+    }
+
+    /**
+    Обработка нажатий
+     */
+
     fun onClickItemTaskPosition(position: Int) {
 
     }
@@ -82,12 +125,12 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     }
 
-    fun onScanResult(data: String) {
-
+    fun onClickUpdate() {
+        updateTaskList()
     }
 
-    fun onClickUpdate() {
-
+    fun onClickFilter() {
+        navigator.openSearchTaskScreen()
     }
 
 }

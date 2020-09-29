@@ -7,6 +7,6 @@ data class ItemTaskUi(
         val name: String,
         val description: String,
         val isFinished: Boolean,
-        val blockType: BlockType,
+        val lockType: BlockType,
         val quantity: String
 )

@@ -5,12 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import com.lenta.bp15.R
 import com.lenta.bp15.BR
-import com.lenta.bp15.databinding.FragmentTaskListBinding
-import com.lenta.bp15.databinding.ItemTaskListBinding
-import com.lenta.bp15.databinding.LayoutSearchListBinding
-import com.lenta.bp15.databinding.LayoutTaskListBinding
+import com.lenta.bp15.databinding.*
 import com.lenta.bp15.platform.extention.getAppComponent
 import com.lenta.shared.platform.fragment.KeyDownCoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -23,7 +21,7 @@ import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class TaskListFragment : KeyDownCoreFragment<FragmentTaskListBinding, TaskListViewModel>(),
-        ToolbarButtonsClickListener, ViewPagerSettings, OnScanResultListener {
+        ToolbarButtonsClickListener, ViewPagerSettings {
 
     override fun getLayoutId(): Int = R.layout.fragment_task_list
 
@@ -43,18 +41,32 @@ class TaskListFragment : KeyDownCoreFragment<FragmentTaskListBinding, TaskListVi
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.update)
+
+        viewLifecycleOwner.apply {
+            vm.selectedPage.observe(this, Observer {
+                if (it == 0) {
+                    bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.update)
+                } else {
+                    bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.filter)
+                }
+            })
+        }
     }
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            R.id.b_5 -> vm.onClickUpdate()
+            R.id.b_5 -> if (vm.selectedPage.value == 0) vm.onClickUpdate() else vm.onClickFilter()
         }
     }
 
     override fun onResume() {
         super.onResume()
-        vm.requestFocusToNumberField.value = true
+
+        if (vm.selectedPage.value == 0) {
+            vm.requestFocusToProcessingField.value = true
+        } else {
+            vm.requestFocusToSearchField.value = true
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -71,8 +83,8 @@ class TaskListFragment : KeyDownCoreFragment<FragmentTaskListBinding, TaskListVi
     }
 
     private fun initTaskList(container: ViewGroup): View {
-        val layoutBinding = DataBindingUtil.inflate<LayoutTaskListBinding>(LayoutInflater.from(container.context),
-                R.layout.layout_task_list,
+        val layoutBinding = DataBindingUtil.inflate<LayoutTaskListProcessingBinding>(LayoutInflater.from(container.context),
+                R.layout.layout_task_list_processing,
                 container,
                 false)
 
@@ -92,8 +104,8 @@ class TaskListFragment : KeyDownCoreFragment<FragmentTaskListBinding, TaskListVi
     }
 
     private fun initSearchList(container: ViewGroup): View {
-        val layoutBinding = DataBindingUtil.inflate<LayoutSearchListBinding>(LayoutInflater.from(container.context),
-                R.layout.layout_search_list,
+        val layoutBinding = DataBindingUtil.inflate<LayoutTaskListSearchBinding>(LayoutInflater.from(container.context),
+                R.layout.layout_task_list_search,
                 container,
                 false)
 
@@ -123,10 +135,6 @@ class TaskListFragment : KeyDownCoreFragment<FragmentTaskListBinding, TaskListVi
 
     override fun countTab(): Int {
         return TABS
-    }
-
-    override fun onScanResult(data: String) {
-        vm.onScanResult(data)
     }
 
     companion object {

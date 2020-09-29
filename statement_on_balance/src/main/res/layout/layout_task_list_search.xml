@@ -84,6 +84,23 @@
             app:rv_config="@{rvConfig}"
             tools:listitem="@layout/item_task_list" />
 
+        <!-- Ввод номера -->
+        <LinearLayout style="@style/EnterNumberFieldLayout">
+
+            <EditText
+                style="@style/EnterNumberField"
+                android:drawableEnd="@drawable/ic_filter_white_16dp"
+                android:hint="@string/enter_task_number_or_login"
+                android:inputType="textNoSuggestions|textVisiblePassword"
+                android:maxLength="20"
+                android:text="@={vm.searchField}"
+                app:cursorToLastPos="@{true}"
+                app:onOkInSoftKeyboard="@{vm}"
+                app:requestFocus="@{vm.requestFocusToSearchField}"
+                tools:ignore="Autofill" />
+
+        </LinearLayout>
+
     </LinearLayout>
 
 </layout>

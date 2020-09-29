@@ -11,7 +11,7 @@ def prefixAppVersion = "15"
 android {
     compileSdkVersion build_versions.target_sdk
     defaultConfig {
-        applicationId "com.lenta.bp12"
+        applicationId "com.lenta.bp15"
         minSdkVersion build_versions.min_sdk
         targetSdkVersion build_versions.target_sdk
         versionCode getCodeVersion()
@@ -61,11 +61,12 @@ android {
 
         if (variant.buildType.name == "debug") {
             variant.outputs.all {
-                def name = outputFileName.replace("app-", "LentaBackSales-debug")
+                def name = outputFileName.replace("app-", "LentaStatementOnBalance-debug")
                 outputFileName = name.replace(".apk", "-${variant.versionName}-${variant.versionCode}.apk")
             }
         }
     }
+
 
     sourceSets {
         main {
@@ -104,9 +105,6 @@ dependencies {
 
     // Okhttp
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
 
     // Dagger2
     kapt deps.dagger.compiler
