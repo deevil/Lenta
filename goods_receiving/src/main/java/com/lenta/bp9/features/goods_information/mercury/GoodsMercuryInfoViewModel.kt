@@ -6,12 +6,14 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
 import com.lenta.bp9.features.goods_information.base.BaseGoodsInfo
 import com.lenta.bp9.features.delegates.SearchProductDelegate
+import com.lenta.bp9.data.BarcodeParser
 import com.lenta.bp9.model.processing.*
 import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
@@ -433,8 +435,10 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
         }
     }
 
-    fun onClickDetails(){
-        screenNavigator.openGoodsDetailsScreen(productInfo.value!!)
+    fun onClickDetails() {
+        //todo
+        onScanResult("2324850520005")
+        //screenNavigator.openGoodsDetailsScreen(productInfo.value!!)
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -770,11 +774,16 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
     }
 
     fun onScanResult(data: String) {
-        addGoods.value = false
+        launchUITryCatch {
+            val barcodeData = BarcodeParser().getBarcodeData(data)
+            Logg.d { "testddi ${barcodeData.barcodeInfo.weight}" }
+        }
+
+        /**addGoods.value = false
         onClickAdd()
         if (addGoods.value == true) {
             searchProductDelegate.searchCode(code = data, fromScan = true, isBarCode = true)
-        }
+        }*/
     }
 
     fun onBackPressed() {
@@ -811,3 +820,4 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
         return addNewCount
     }
 }
+
