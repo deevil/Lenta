@@ -3,6 +3,9 @@ package com.lenta.shared.utilities.databinding
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.BindingAdapter
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.observe
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.lenta.shared.utilities.Logg
@@ -23,7 +26,7 @@ fun setupViewPager(viewPager: ViewPager,
 
     if (viewPager.adapter == null) {
         viewPager.apply {
-            adapter = ViewPagerAdapter(viewPagerSettings)
+            adapter = getViewPagerAdapter(viewPagerSettings)
             offscreenPageLimit = viewPagerSettings.countTab()
             tabPosition?.let {
                 if (it != currentItem) {
@@ -63,25 +66,52 @@ fun setupViewPager(viewPager: ViewPager,
     }
 
     viewPager.tag = pageSelectionListener
+}
 
-
+/**
+ * Получение адаптера, в зависимости яляется ли viewPagerSettings настройками динамического
+ * адаптера или обычного
+ */
+private fun getViewPagerAdapter(viewPagerSettings: ViewPagerSettings): ViewPagerAdapter {
+    return if (viewPagerSettings is DynamicViewPagerSettings<*>) {
+        DynamicViewPagerAdapter(viewPagerSettings)
+    } else {
+        ViewPagerAdapter(viewPagerSettings)
+    }
 }
 
 interface ViewPagerSettings {
-
     fun getPagerItemView(container: ViewGroup, position: Int): View
-
     fun getTextTitle(position: Int): String
-
     fun countTab(): Int
+}
 
+/**
+ * Настройки динамического ViewPager'а, используется как обычные ViewPagerSettings,
+ * только добавляется getDynamicData (LiveData, при изменении значения которой
+ * происходит notifyDataSetChanged у адаптера) и lifecycleOwner (для избежания утечек памяти
+ * при обсерве liveDat'ы)
+ */
+interface DynamicViewPagerSettings<T : Any> : ViewPagerSettings {
+    /**
+     * Получение LifecycleOwner для обсерва лайвдаты
+     *
+     * @return lifecycleOwner на котором будет обсервиться liveData
+     */
+    fun getLifecycleOwner(): LifecycleOwner
+
+    /**
+     * LiveData, которую слушает adapter, при изменении данных в которой происходит
+     * notifyDataSetChanged
+     */
+    fun getDynamicData(): LiveData<T>
 }
 
 interface PageSelectionListener {
     fun onPageSelected(position: Int)
 }
 
-internal class ViewPagerAdapter(val viewPagerSettings: ViewPagerSettings) : PagerAdapter() {
+internal open class ViewPagerAdapter(private val viewPagerSettings: ViewPagerSettings) : PagerAdapter() {
 
     override fun getCount(): Int = viewPagerSettings.countTab()
 
@@ -101,5 +131,23 @@ internal class ViewPagerAdapter(val viewPagerSettings: ViewPagerSettings) : Page
 
     override fun getPageTitle(position: Int): CharSequence {
         return viewPagerSettings.getTextTitle(position)
+    }
+}
+
+/**
+ * Динамический адаптер viewPager'a, для облегчения изменения количества страниц в viewPager,
+ * расширяет дефолтный ViewPagerAdapter, позволяет вызывать обновление страниц pager'а, при
+ * изменении значения liveDat'ы, переданной в viewPagerSettings
+ *
+ * @param viewPagerSettings - настройки динамического viewPager'а
+ * @see DynamicViewPagerAdapter
+ */
+internal class DynamicViewPagerAdapter<out T : Any>(
+        viewPagerSettings: DynamicViewPagerSettings<T>
+) : ViewPagerAdapter(viewPagerSettings) {
+    init {
+        viewPagerSettings.getDynamicData().observe(viewPagerSettings.getLifecycleOwner()) {
+            notifyDataSetChanged()
+        }
     }
 }
