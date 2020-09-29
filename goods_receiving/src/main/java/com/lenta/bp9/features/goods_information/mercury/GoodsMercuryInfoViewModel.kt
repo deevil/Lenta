@@ -10,6 +10,7 @@ import com.lenta.bp9.data.BarcodeParser
 import com.lenta.bp9.model.processing.*
 import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants
+import com.lenta.shared.models.core.BarcodeData
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
@@ -37,6 +38,7 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
     lateinit var timeMonitor: ITimeMonitor
 
     val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData(false)
+    val barcodeData: MutableLiveData<BarcodeData> = MutableLiveData()
     val uom: MutableLiveData<Uom?> by lazy {
         if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.DirectSupplier) {
             MutableLiveData(productInfo.value?.purchaseOrderUnits)
@@ -335,6 +337,16 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
                                     ?.indexOfLast { it.code == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_DELIVERY_ERRORS }
                                     ?: -1
                 } else {
+                    //https://trello.com/c/3AnfqLKo про barcodeData
+                    barcodeData.value?.let {
+                        if (it.barcodeInfo.isWeight) {
+                            //quantity = quantity * it.umrez / it.umren
+                            val quantity = it.barcodeInfo.weight.toDoubleOrNull() ?: 0.0
+                            val numeratorConvertBaseUnitMeasure = productInfo.value?.numeratorConvertBaseUnitMeasure ?: 0.0
+                            val denominatorConvertBaseUnitMeasure = productInfo.value?.denominatorConvertBaseUnitMeasure ?: 1.0
+                            count.value = (quantity * numeratorConvertBaseUnitMeasure / denominatorConvertBaseUnitMeasure).toStringFormatted()
+                        }
+                    }
                     qualityInfo.value = dataBase.getQualityMercuryInfo().orEmpty()
                 }
             }
@@ -437,7 +449,7 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
 
     fun onClickDetails() {
         //todo
-        onScanResult("2324850520005")
+        onScanResult("22924803")
         //screenNavigator.openGoodsDetailsScreen(productInfo.value!!)
     }
 
@@ -774,16 +786,12 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
     }
 
     fun onScanResult(data: String) {
-        launchUITryCatch {
-            val barcodeData = BarcodeParser().getBarcodeData(data)
-            Logg.d { "testddi ${barcodeData.barcodeInfo.weight}" }
-        }
-
-        /**addGoods.value = false
-        onClickAdd()
-        if (addGoods.value == true) {
+        //todo
+        //addGoods.value = false
+        //onClickAdd()
+        //if (addGoods.value == true) {
             searchProductDelegate.searchCode(code = data, fromScan = true, isBarCode = true)
-        }*/
+        //}
     }
 
     fun onBackPressed() {

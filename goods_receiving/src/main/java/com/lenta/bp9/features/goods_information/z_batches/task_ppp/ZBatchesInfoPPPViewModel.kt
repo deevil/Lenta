@@ -87,7 +87,7 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
             val quantity =
                     denominatorConvertBaseUnitMeasure
                             .takeIf { it > 0.0 }
-                            ?.let { numeratorConvertBaseUnitMeasure / denominatorConvertBaseUnitMeasure }
+                            ?.let { numeratorConvertBaseUnitMeasure / it }
                             ?: 0.0
 
             MutableLiveData(context.getString(R.string.accept, "$purchaseOrderUnitsName=${quantity.toStringFormatted()} $uomName"))
