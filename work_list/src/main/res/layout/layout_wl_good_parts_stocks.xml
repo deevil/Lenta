@@ -36,7 +36,7 @@
 
                     <LinearLayout
                         style="@style/LinearCellStyle"
-                        android:layout_weight="@integer/three_one_1">
+                        android:layout_weight="@integer/four_four_1">
 
                         <TextView
                             style="@style/FirstRowTextStyle"
@@ -46,21 +46,30 @@
 
                     <LinearLayout
                         style="@style/LinearCellStyle"
-                        android:layout_weight="@integer/three_one_2">
+                        android:layout_weight="@integer/four_four_2">
 
                         <TextView
                             style="@style/FirstRowTextStyle"
-                            android:text="@string/provider" />
+                            android:text="@string/storage" />
 
                     </LinearLayout>
 
                     <LinearLayout
                         style="@style/LinearCellStyle"
-                        android:layout_weight="@integer/three_one_3">
+                        android:layout_weight="@integer/four_four_3">
 
                         <TextView
                             style="@style/FirstRowTextStyle"
-                            android:text="@string/period_kip" />
+                            android:text="@string/z_parts" />
+
+                    </LinearLayout>
+                    <LinearLayout
+                        style="@style/LinearCellStyle"
+                        android:layout_weight="@integer/four_four_4">
+
+                        <TextView
+                            style="@style/FirstRowTextStyle"
+                            android:text="@string/quantity" />
 
                     </LinearLayout>
 
@@ -78,9 +87,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                app:items="@{vm.providers}"
+                app:items="@{vm.zParts}"
                 app:rv_config="@{rvConfig}"
-                tools:listitem="@layout/item_good_provider_period" />
+                tools:listitem="@layout/item_good_z_part" />
 
         </LinearLayout>
 

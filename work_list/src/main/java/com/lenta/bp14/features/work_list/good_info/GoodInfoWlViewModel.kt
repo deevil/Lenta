@@ -186,7 +186,7 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
             good?.additional?.zParts?.mapIndexed { index, zPart ->
                 val quantity = "${zPart.quantity.dropZeros()} ${good.units.name}"
                 ZPartUi(
-                        index,
+                        "${index + 1}",
                         zPart.stock,
                         resourceFormatter.getFormattedZPartInfo(zPart),
                         quantity

@@ -411,6 +411,13 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun openPictogrammInfoZPart() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.z_part),
+                    iconRes = R.drawable.ic_z), CustomAnimation.vertical)
+        }
+    }
+
     override fun openPictogrammInfoHealthyFood() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.healthy_food),
@@ -534,6 +541,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openConfirmationExitTask(taskName: String, callbackFunc: () -> Unit)
     fun openVideoScanProductScreen()
     fun openPictogrammInfoNova()
+    fun openPictogrammInfoZPart()
     fun openPictogrammInfoHealthyFood()
     fun openConfirmationNotSaveChanges(yesCallback: () -> Unit)
 

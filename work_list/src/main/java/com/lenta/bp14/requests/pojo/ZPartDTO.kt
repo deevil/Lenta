@@ -25,6 +25,6 @@ data class ZPartDTO(
         @SerializedName("DATE_EXPIR")
         val dateExpir: String?,
         /** Дата производства */
-        @SerializedName("DATE_ROD")
+        @SerializedName("DATE_PROD")
         val dateProd: String?
 )

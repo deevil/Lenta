@@ -6,13 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.observe
 import com.lenta.bp14.BR
 import com.lenta.bp14.R
 import com.lenta.bp14.databinding.*
 import com.lenta.bp14.di.WorkListComponent
-import com.lenta.bp14.models.ui.AdditionalInfoUi
 import com.lenta.shared.di.CoreInjectHelper
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -21,14 +19,13 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListe
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
-import com.lenta.shared.utilities.databinding.DynamicViewPagerSettings
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlViewModel>(),
-        DynamicViewPagerSettings<AdditionalInfoUi>, ToolbarButtonsClickListener, OnScanResultListener {
+        ViewPagerSettings, ToolbarButtonsClickListener, OnScanResultListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_good_info_wl
 
@@ -131,14 +128,14 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
         }
 
         4 -> {
-            DataBindingUtil.inflate<LayoutWlGoodInfoStocksBinding>(LayoutInflater.from(container.context),
-                    R.layout.layout_wl_good_info_stocks,
+            DataBindingUtil.inflate<LayoutWlGoodPartsStocksBinding>(LayoutInflater.from(container.context),
+                    R.layout.layout_wl_good_parts_stocks,
                     container,
                     false).let { layoutBinding ->
 
-                layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemStorageStockBinding>(
-                        layoutId = R.layout.item_storage_stock,
-                        itemId = BR.stock)
+                layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemGoodZPartBinding>(
+                        layoutId = R.layout.item_good_z_part,
+                        itemId = BR.zPart)
 
                 layoutBinding.vm = vm
                 layoutBinding.lifecycleOwner = viewLifecycleOwner
@@ -170,13 +167,14 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
         }
     }
 
-    override fun getLifecycleOwner(): LifecycleOwner = viewLifecycleOwner
-    override fun getDynamicData() = vm.additional
-
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding?.viewPagerSettings = this
+        binding?.apply {
+            viewPagerSettings = this@GoodInfoWlFragment
+            vm?.additional?.observe(viewLifecycleOwner) {
+                viewPager.adapter?.notifyDataSetChanged()
+            }
+        }
     }
 
     override fun onScanResult(data: String) {

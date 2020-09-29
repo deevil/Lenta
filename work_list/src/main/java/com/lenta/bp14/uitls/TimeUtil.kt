@@ -25,6 +25,7 @@ fun String.convertToApplicationTime(): String = try {
     sdf.applyPattern(APPLICATION_DATE_FORMAT)
     sdf.format(date)
 } catch (ex: Exception) {
-    Log.w(javaClass.simpleName, ex.message)
+    Log.w(javaClass.simpleName, "Bad time format, input: $this, pattern $SERVER_DATE_FORMAT, " +
+            "\nException:${ex.message}")
     BAD_FORMAT_MESSAGE
 }
