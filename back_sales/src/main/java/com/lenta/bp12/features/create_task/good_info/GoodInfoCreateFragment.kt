@@ -17,8 +17,7 @@ import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodInfoCreateFragment : CoreFragment<FragmentGoodInfoCreateBinding, GoodInfoCreateViewModel>(),
-        ToolbarButtonsClickListener, OnScanResultListener, OnBackPresserListener
-        /*, OnKeyDownListener*/ {
+        ToolbarButtonsClickListener, OnScanResultListener, OnBackPresserListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_good_info_create
 
@@ -57,6 +56,8 @@ class GoodInfoCreateFragment : CoreFragment<FragmentGoodInfoCreateBinding, GoodI
             R.id.b_3 -> vm.onClickDetails()
             R.id.b_4 -> vm.onClickClose()
             R.id.b_5 -> vm.onClickApply()
+
+//            R.id.b_3 -> vm.onScanResult("2811189041504")
         }
     }
 
@@ -88,26 +89,17 @@ class GoodInfoCreateFragment : CoreFragment<FragmentGoodInfoCreateBinding, GoodI
     }
 
 //    //Для тестов
-//    override fun onKeyDown(keyCode: KeyCode): Boolean {
-//        return when (keyCode) {
-//            //ШК товара 335533
-//            KeyCode.KEYCODE_0 -> {
-//                vm.onScanResult("4606068253837") // Марка
-//                true
-//            }
-//            //Коробка 335533
-//            KeyCode.KEYCODE_1 -> {
-//                vm.onScanResult("14606471564053")
-//                true
-//            }
-//            //пачка
-//            KeyCode.KEYCODE_2 -> {
-//                vm.onScanResult("236200647504871018001FCCBM6EJ4RTKG5J6SZPIOVDIA4G3QGAZLK3HVONWWBVHXJYO3HOAX633MX756X27L27QPWSTGUNJM5IZL2X67XID6FSVVZAFI5OXWE5XJNHQMELI76JC45KQN2GH5VD7Y") // SAP-код: 444877
-//                true
-//            }
-//            //Коробка обуви
-//            KeyCode.KEYCODE_3 -> {
-//                vm.onScanResult("22N00000XOIJT87CH2W0123456789012345678901234567890123456789000000001") // Марка 156641
+//    //ШК товара 335533
+//    //vm.onScanResult("4606068253837") // Марка
+
+//    //Коробка 335533
+//    //vm.onScanResult("14606471564053")
+
+//    //011189 ШК
+//    //vm.onScanResult("2811189041504") // SAP-код: 444877
+
+//    //Коробка обуви
+//    vm.onScanResult("22N00000XOIJT87CH2W0123456789012345678901234567890123456789000000001") // Марка 156641
 //                true
 //            }
 //            //Марка из этой коробки
