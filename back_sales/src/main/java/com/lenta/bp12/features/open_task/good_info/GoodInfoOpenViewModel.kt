@@ -268,7 +268,8 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
                 if (status == PartStatus.FOUND.code) {
                     saveChanges(result)
                 } else {
-                    navigator.showAlertDialogWithRedTriangle(result.statusDescription ?: resource.error, "12")
+                    navigator.showAlertDialogWithRedTriangle(result.statusDescription
+                            ?: resource.error)
                 }
             }
         }
