@@ -15,6 +15,7 @@ class ResourceManager @Inject constructor(
     override val goodsNotFoundErrorMsg: String by lazy { context.getString(R.string.goods_not_found_error_msg) }
     override val basketNotFoundErrorMsg: String by lazy { context.getString(R.string.basket_not_found_error_msg) }
     override val taskNotFoundErrorMsg: String by lazy { context.getString(R.string.task_not_found_error_msg) }
+    override val pageNotFoundErrorMsg: String by lazy { context.getString(R.string.page_not_found_error_msg ) }
     override val rub: String by lazy { context.getString(R.string.rub) }
     override val noStatusMark: String by lazy { context.getString(R.string.no_status_mark) }
 
@@ -62,6 +63,7 @@ interface IResourceManager {
     val goodsNotFoundErrorMsg: String
     val basketNotFoundErrorMsg: String
     val taskNotFoundErrorMsg: String
+    val pageNotFoundErrorMsg: String
     val noStatusMark: String
     val rub: String
 

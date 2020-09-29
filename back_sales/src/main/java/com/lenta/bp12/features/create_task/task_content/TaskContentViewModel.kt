@@ -5,21 +5,13 @@ import androidx.lifecycle.switchMap
 import com.lenta.bp12.features.basket.ItemWholesaleBasketUi
 import com.lenta.bp12.features.create_task.base.BaseGoodListCreateViewModel
 import com.lenta.bp12.managers.interfaces.ICreateTaskManager
-import com.lenta.bp12.managers.interfaces.IMarkManager
 import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.create_task.TaskCreate
 import com.lenta.bp12.model.pojo.extentions.getDescription
 import com.lenta.bp12.model.pojo.extentions.isAnyNotLocked
 import com.lenta.bp12.model.pojo.extentions.isAnyPrinted
-import com.lenta.bp12.platform.navigation.IScreenNavigator
-import com.lenta.bp12.platform.resource.IResourceManager
-import com.lenta.bp12.repository.IDatabaseRepository
-import com.lenta.bp12.request.GoodInfoNetRequest
-import com.lenta.bp12.request.PrintPalletListNetRequest
-import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.Uom
-import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
@@ -36,42 +28,13 @@ import javax.inject.Inject
 class TaskContentViewModel : BaseGoodListCreateViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
 
     @Inject
-    override lateinit var navigator: IScreenNavigator
-
-    @Inject
     override lateinit var manager: ICreateTaskManager
-
-    @Inject
-    override lateinit var markManager: IMarkManager
-
-    @Inject
-    override lateinit var sessionInfo: ISessionInfo
-
-    @Inject
-    lateinit var deviceInfo: DeviceInfo
-
-    @Inject
-    override lateinit var resource: IResourceManager
-
-    @Inject
-    lateinit var printPalletListNetRequest: PrintPalletListNetRequest
-
-    /** "ZMP_UTZ_BKS_05_V001"
-     * Получение данных товара по ШК / SAP-коду
-     */
-    @Inject
-    override lateinit var goodInfoNetRequest: GoodInfoNetRequest
-
-    @Inject
-    override lateinit var database: IDatabaseRepository
 
     /**
     Переменные
      */
 
     val goodSelectionsHelper = SelectionItemsHelper()
-
-    val basketSelectionsHelper = SelectionItemsHelper()
 
     val title by lazy {
         task.map { task ->
@@ -347,7 +310,7 @@ class TaskContentViewModel : BaseGoodListCreateViewModel(), PageSelectionListene
         //отображать сообщение «Паллетный лист был успешно распечатан», с кнопкой «Далее»
         navigator.showPalletListPrintedScreen(
                 nextCallback = {
-                    navigator.goBack()
+                    navigator.goBackTo(TaskContentFragment::class.simpleName)
                 }
         )
     }

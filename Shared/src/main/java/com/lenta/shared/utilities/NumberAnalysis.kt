@@ -5,7 +5,7 @@ import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 
 fun actionByNumber(
         number: String,
-        funcForEan: ((ean: String) -> Unit)? = null,
+        funcForEan: ((ean: String, weight: Double) -> Unit)? = null,
         funcForMaterial: ((material: String) -> Unit)? = null,
         funcForSapOrBar: ((sapCallback: () -> Unit, barCallback: () -> Unit) -> Unit)? = null,
         funcForExcise: ((exciseNumber: String) -> Unit)? = null,
@@ -29,10 +29,10 @@ fun actionByNumber(
             Constants.SAP_OR_BAR_12 -> {
                 funcForSapOrBar?.invoke(
                         { funcForMaterial?.invoke(getMaterialInCommonFormat(number)) },
-                        { funcForEan?.invoke(numberInfo.eanWithoutWeight) }
+                        { funcForEan?.invoke(numberInfo.eanWithoutWeight, numberInfo.weight) }
                 ) ?: funcForNotValidFormat()
             }
-            else -> funcForEan?.invoke(numberInfo.eanWithoutWeight)
+            else -> funcForEan?.invoke(numberInfo.eanWithoutWeight, numberInfo.weight)
         }
 
         return
@@ -47,7 +47,7 @@ fun actionByNumber(
             Logg.d { "--> Shoes mark / markWithoutTail = $markWithoutTail / gtin = $gtin / ean = $ean" }
 
             funcForShoes?.invoke(markWithoutTail)
-                    ?: funcForEan?.invoke(ean)
+                    ?: funcForEan?.invoke(ean, 0.0)
                     ?: funcForNotValidFormat()
         } ?: funcForNotValidFormat()
 
@@ -62,7 +62,9 @@ fun actionByNumber(
 
             Logg.d { "--> Cigarette mark / markWithoutTail = $markWithoutTail / gtin = $gtin / ean = $ean" }
 
-            funcForCigarettes?.invoke(markWithoutTail) ?: funcForNotValidFormat()
+            funcForCigarettes?.invoke(markWithoutTail)
+                    ?: funcForEan?.invoke(ean, 0.0)
+                    ?: funcForNotValidFormat()
         } ?: funcForNotValidFormat()
 
         return
@@ -76,7 +78,9 @@ fun actionByNumber(
 
             Logg.d { "--> Cigarette box mark / markWithoutTail = $markWithoutTail / gtin = $gtin / ean = $ean" }
 
-            funcForCigaretteBox?.invoke(markWithoutTail) ?: funcForNotValidFormat()
+            funcForCigaretteBox?.invoke(markWithoutTail)
+                    ?: funcForEan?.invoke(ean, 0.0)
+                    ?: funcForNotValidFormat()
         } ?: funcForNotValidFormat()
 
         return

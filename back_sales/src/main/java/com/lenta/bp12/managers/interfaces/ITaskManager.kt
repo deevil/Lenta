@@ -20,7 +20,7 @@ import com.lenta.bp12.request.pojo.good_info.GoodInfoResult
  * @see IOpenTaskManager
  * */
 
-interface ITaskManager<T : Taskable>{
+interface ITaskManager<T : Taskable> {
 
     var ean: String
     var isWholesaleTaskType: Boolean
@@ -42,7 +42,7 @@ interface ITaskManager<T : Taskable>{
 
     fun saveGoodInTask(good: Good)
     fun findGoodByEan(ean: String): Good?
-    fun findGoodByEanAndMRC(ean:String, mrc: String = ""): Good?
+    fun findGoodByEanAndMRC(ean: String, mrc: String = ""): Good?
 
     fun findGoodByMaterial(material: String): Good?
 
@@ -56,4 +56,6 @@ interface ITaskManager<T : Taskable>{
     fun removeMarksFromGoods(mappedMarks: List<Mark>)
 
     fun clearEan()
+
+    fun deleteGood(good: Good)
 }

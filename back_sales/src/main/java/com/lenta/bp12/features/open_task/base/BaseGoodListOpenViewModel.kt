@@ -1,19 +1,22 @@
 package com.lenta.bp12.features.open_task.base
 
 import androidx.lifecycle.MutableLiveData
+import com.lenta.bp12.features.base.BaseGoodListViewModel
 import com.lenta.bp12.features.open_task.base.interfaces.IBaseGoodListOpenViewModel
+import com.lenta.bp12.managers.interfaces.IOpenTaskManager
 import com.lenta.bp12.model.*
 import com.lenta.bp12.model.pojo.Good
+import com.lenta.bp12.model.pojo.open_task.TaskOpen
 import com.lenta.bp12.platform.ZERO_QUANTITY
 import com.lenta.bp12.platform.ZERO_VOLUME
 import com.lenta.bp12.platform.extention.getControlType
 import com.lenta.bp12.platform.extention.getGoodKind
 import com.lenta.bp12.platform.extention.getMarkType
+import com.lenta.bp12.request.pojo.MaterialInfo
 import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.bp12.request.pojo.good_info.GoodInfoParams
 import com.lenta.bp12.request.pojo.good_info.GoodInfoResult
 import com.lenta.shared.models.core.getMatrixType
-import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.orIfNull
 import kotlinx.coroutines.Dispatchers
@@ -25,21 +28,8 @@ import kotlinx.coroutines.withContext
  * @see com.lenta.bp12.features.open_task.good_list.GoodListViewModel
  * @see com.lenta.bp12.features.basket.basket_good_list.BasketOpenGoodListViewModel
  * */
-abstract class BaseGoodListOpenViewModel: CoreViewModel(), IBaseGoodListOpenViewModel {
+abstract class BaseGoodListOpenViewModel: BaseGoodListViewModel<TaskOpen, IOpenTaskManager>(), IBaseGoodListOpenViewModel {
 
-    val numberField: MutableLiveData<String> = MutableLiveData("")
-
-    val task by lazy {
-        manager.currentTask
-    }
-
-    val requestFocusToNumberField by lazy {
-        MutableLiveData(true)
-    }
-
-    fun onScanResult(data: String) {
-        checkSearchNumber(data)
-    }
 
     /**
      * Метод проверяет длину отсканированного/введенного кода
@@ -83,7 +73,7 @@ abstract class BaseGoodListOpenViewModel: CoreViewModel(), IBaseGoodListOpenView
         }
     }
 
-    suspend fun loadGoodInfoByEan(ean: String) {
+    private suspend fun loadGoodInfoByEan(ean: String) {
         navigator.showProgressLoadingData(::handleFailure)
         goodInfoNetRequest(
                 GoodInfoParams(
@@ -104,7 +94,7 @@ abstract class BaseGoodListOpenViewModel: CoreViewModel(), IBaseGoodListOpenView
             manager.updateCurrentGood(foundGood)
             if (foundGood.isMarked()) {
                 openMarkedGoodInfoOpenScreen()
-                showForGoodNeedScanFirstMark()
+                checkThatNoneOfGoodAreMarkType(foundGood.getNameWithMaterial())
             } else {
                 openGoodInfoOpenScreen()
             }
@@ -155,17 +145,22 @@ abstract class BaseGoodListOpenViewModel: CoreViewModel(), IBaseGoodListOpenView
 
     private fun checkMark(number: String) {
         launchUITryCatch {
-            with(navigator) {
-                manager.clearEan()
-                showProgressLoadingData()
-                val screenStatus = markManager.checkMark(number, WorkType.OPEN, false)
-                hideProgress()
-                when (screenStatus) {
-                    MarkScreenStatus.OK -> openMarkedGoodInfoOpenScreen()
-                    MarkScreenStatus.NO_MARKTYPE_IN_SETTINGS -> showNoMarkTypeInSettings()
-                    MarkScreenStatus.INCORRECT_EAN_FORMAT -> showIncorrectEanFormat()
-                    else -> Unit
-                }
+            manager.clearEan()
+            navigator.showProgressLoadingData()
+            val screenStatus = markManager.checkMark(number, WorkType.OPEN, false)
+            navigator.hideProgress()
+            processScreenStatusFromMark(screenStatus)
+        }
+    }
+
+    private fun processScreenStatusFromMark(screenStatus: MarkScreenStatus) {
+        with(navigator) {
+            when (screenStatus) {
+                MarkScreenStatus.OK -> openMarkedGoodInfoOpenScreen()
+                MarkScreenStatus.CANT_SCAN_PACK -> showCantScanPackAlert()
+                MarkScreenStatus.NO_MARKTYPE_IN_SETTINGS -> showNoMarkTypeInSettings()
+                MarkScreenStatus.INCORRECT_EAN_FORMAT -> showIncorrectEanFormat()
+                else -> Unit
             }
         }
     }
@@ -188,7 +183,6 @@ abstract class BaseGoodListOpenViewModel: CoreViewModel(), IBaseGoodListOpenView
                     else -> showNotMatchTaskSettingsAddingNotPossible()
                 }
             }
-
         }
     }
 
@@ -205,11 +199,8 @@ abstract class BaseGoodListOpenViewModel: CoreViewModel(), IBaseGoodListOpenView
                     control = getControlType(),
                     commonUnits = database.getUnitsByCode(materialInfo?.commonUnitsCode.orEmpty()),
                     innerUnits = database.getUnitsByCode(materialInfo?.innerUnitsCode.orEmpty()),
-                    innerQuantity = materialInfo?.innerQuantity?.toDoubleOrNull()
-                            ?: ZERO_QUANTITY,
-                    provider = task.value?.takeIf { manager.isWholesaleTaskType.not() }
-                            ?.provider
-                            ?: ProviderInfo.getEmptyProvider(),
+                    innerQuantity = materialInfo.getGoodInnerQuantity(),
+                    provider = getGoodProvider(),
                     producers = producers.orEmpty().toMutableList(),
                     volume = materialInfo?.volume?.toDoubleOrNull() ?: ZERO_VOLUME,
                     markType = markType,
@@ -220,5 +211,16 @@ abstract class BaseGoodListOpenViewModel: CoreViewModel(), IBaseGoodListOpenView
 
             setFoundGood(goodOpen)
         }
+    }
+
+    private fun MaterialInfo?.getGoodInnerQuantity(): Double {
+        return this?.innerQuantity?.toDoubleOrNull()
+                ?: ZERO_QUANTITY
+    }
+
+    private fun getGoodProvider(): ProviderInfo {
+        return task.value?.takeIf { manager.isWholesaleTaskType.not() }
+                ?.provider
+                ?: ProviderInfo.getEmptyProvider()
     }
 }

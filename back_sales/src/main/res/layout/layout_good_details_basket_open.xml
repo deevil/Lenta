@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".features.create_task.good_details.GoodDetailsCreateFragment">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.lenta.bp12.features.open_task.good_details.GoodDetailsOpenViewModel" />
+
+        <variable
+            name="rvConfig"
+            type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig" />
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- Наименования колонок -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout style="@style/FirstRowStyle">
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="@integer/three_one_1">
+
+                    <TextView
+                        style="@style/FirstRowTextStyle"
+                        android:layout_width="wrap_content"
+                        android:text="@string/number" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="@integer/three_one_2">
+
+                    <TextView
+                        style="@style/FirstRowTextStyle"
+                        android:text="@string/basket" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="@integer/three_one_3">
+
+                    <TextView
+                        style="@style/FirstRowTextStyle"
+                        android:text="@string/of_goods" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <View style="@style/HorizontalDivider" />
+
+        </LinearLayout>
+
+        <!-- Список корзин -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv"
+            style="@style/RecyclerWithSomethingBellowStyle"
+            app:items="@{vm.baskets}"
+            app:rv_config="@{rvConfig}"
+            tools:listitem="@layout/item_basket_details" />
+
+    </LinearLayout>
+
+</layout>
