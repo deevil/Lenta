@@ -168,7 +168,8 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
                 markedGoodStampCollector.processAll(getSelectedReason())
             }
 
-            count.value = ""
+            count.value = "0"
+            requestFocusToQuantity.value = true
 
             return true
         }
