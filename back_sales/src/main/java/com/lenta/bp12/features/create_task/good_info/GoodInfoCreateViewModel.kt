@@ -247,7 +247,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
                 if (status == PartStatus.FOUND.code) {
                     saveChanges(result)
                 } else {
-                    navigator.openAlertScreen(result.statusDescription.orEmpty())
+                    navigator.openAlertScreen(result.statusDescription ?: resource.error)
                 }
             }
         }
