@@ -193,6 +193,10 @@ class MarkedGoodInfoCreateFragment : CoreFragment<FragmentMarkedGoodInfoCreateBi
 //            KeyCode.KEYCODE_8 -> {
 //                vm.onScanResult("010290000004865221atgO4Cg*Z!KRp")
 //                true
+//            }// 198794
+//            KeyCode.KEYCODE_9 -> {
+//                vm.onScanResult("010467003610609821j3qd?s9G2pJZJ")
+//                true
 //            }
 //            else -> false
 //        }
