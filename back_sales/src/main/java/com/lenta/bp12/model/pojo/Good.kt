@@ -96,7 +96,7 @@ class Good(
     }
 
     fun isEmpty(): Boolean {
-        return positions.isEmpty() && marks.isEmpty() && parts.isEmpty()
+        return (positions.isEmpty() || positions.all { it.quantity == ZERO_QUANTITY }) && marks.isEmpty() && parts.isEmpty()
     }
 
     fun isTobacco() = this.markType == MarkType.TOBACCO
@@ -116,9 +116,11 @@ class Good(
         }
     }
 
+    fun isAlco() = kind == GoodKind.ALCOHOL
     fun isExciseAlco() = kind == GoodKind.EXCISE
     fun isMarked() = markType != MarkType.UNKNOWN
     fun isCommon() = kind == GoodKind.COMMON
+    fun isGoodCommonOrMarkedOrAlco() = isCommon() || isMarked() || isAlco()
 
     fun isNotDeletedAndQuantityNotActual() = !this.isDeleted && !isQuantityActual()
 

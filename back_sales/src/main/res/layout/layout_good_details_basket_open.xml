@@ -8,7 +8,7 @@
 
         <variable
             name="vm"
-            type="com.lenta.bp12.features.create_task.good_details.GoodDetailsCreateViewModel" />
+            type="com.lenta.bp12.features.open_task.good_details.GoodDetailsOpenViewModel" />
 
         <variable
             name="rvConfig"
@@ -46,7 +46,7 @@
 
                     <TextView
                         style="@style/FirstRowTextStyle"
-                        android:text="@string/categories" />
+                        android:text="@string/basket" />
 
                 </LinearLayout>
 
@@ -56,7 +56,7 @@
 
                     <TextView
                         style="@style/FirstRowTextStyle"
-                        android:text="@string/quantity" />
+                        android:text="@string/of_goods" />
 
                 </LinearLayout>
 
@@ -66,16 +66,13 @@
 
         </LinearLayout>
 
-        <!-- Список категорий -->
+        <!-- Список корзин -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginBottom="8dp"
-            android:layout_weight="1"
-            app:items="@{vm.categories}"
+            style="@style/RecyclerWithSomethingBellowStyle"
+            app:items="@{vm.baskets}"
             app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_category" />
+            tools:listitem="@layout/item_basket_details" />
 
     </LinearLayout>
 
