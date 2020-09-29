@@ -1,6 +1,7 @@
 package com.lenta.bp15.features.task_list
 
 import androidx.lifecycle.MutableLiveData
+import com.lenta.bp15.data.ITaskManager
 import com.lenta.bp15.platform.navigation.IScreenNavigator
 import com.lenta.bp15.platform.resource.IResourceManager
 import com.lenta.shared.account.ISessionInfo
@@ -20,6 +21,9 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     @Inject
     lateinit var resource: IResourceManager
+
+    @Inject
+    lateinit var manager: ITaskManager
 
 
     val title by lazy {
@@ -57,6 +61,10 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                 )
             }
     )
+
+    init {
+
+    }
 
     override fun onPageSelected(position: Int) {
         selectedPage.value = position

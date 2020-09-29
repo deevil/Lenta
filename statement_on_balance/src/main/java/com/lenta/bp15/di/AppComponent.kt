@@ -1,6 +1,7 @@
 package com.lenta.bp15.di
 
 import com.lenta.bp15.ExceptionHandler
+import com.lenta.bp15.data.ITaskManager
 import com.lenta.bp15.features.auth.AuthViewModel
 import com.lenta.bp15.features.discrepancy_list.DiscrepancyListViewModel
 import com.lenta.bp15.features.enter_employee_number.EnterEmployeeNumberViewModel
@@ -30,6 +31,7 @@ interface AppComponent : CoreComponent {
     fun getResourceManager(): IResourceManager
     fun getDatabaseRepository(): IDatabaseRepository
     fun getNetRequestsRepository(): INetRequestsRepository
+    fun getTaskManager(): ITaskManager
 
     fun inject(mainActivity: MainActivity)
     fun inject(mainViewModel: MainViewModel)
