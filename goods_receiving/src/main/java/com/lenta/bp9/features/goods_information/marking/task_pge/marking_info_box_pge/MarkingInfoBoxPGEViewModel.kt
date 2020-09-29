@@ -3,6 +3,7 @@ package com.lenta.bp9.features.goods_information.marking.task_pge.marking_info_b
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
+import com.lenta.bp9.features.delegates.ISaveProductDelegate
 import com.lenta.bp9.features.delegates.SearchProductDelegate
 import com.lenta.bp9.features.goods_information.base.BaseGoodsInfo
 import com.lenta.bp9.model.processing.ProcessMarkingBoxPGEProductService
@@ -25,7 +26,7 @@ import javax.inject.Inject
 class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
 
     @Inject
-    lateinit var processMarkingBoxProductService: ProcessMarkingBoxPGEProductService
+    lateinit var processMarkingBoxPGEProductService: ProcessMarkingBoxPGEProductService
 
     @Inject
     lateinit var searchProductDelegate: SearchProductDelegate
@@ -40,9 +41,9 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
         paramGrzAlternMeins.map {
             val uomName = paramGrzAlternMeins.value?.name?.toLowerCase().orEmpty()
 
-            val nestingInOneBlock = productInfo.value?.quantityInvest?.toDouble().toStringFormatted()
+            val nestingInOneStamp = productInfo.value?.quantityInvest?.toDouble().toStringFormatted()
             val productUomName = productInfo.value?.uom?.name.orEmpty()
-            context.getString(R.string.accept, "$uomName=$nestingInOneBlock $productUomName")
+            context.getString(R.string.accept, "$uomName=$nestingInOneStamp $productUomName")
         }
     }
 
@@ -57,7 +58,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
     private val allTypeDiscrepancies: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     private val paramGrzAlternMeins: MutableLiveData<Uom> = MutableLiveData()
 
-    private val unprocessedQuantityOfBlocks: MutableLiveData<Double> = MutableLiveData(0.0)
+    private val unprocessedQuantityOfStamps: MutableLiveData<Double> = MutableLiveData(0.0)
 
     val count: MutableLiveData<String> = MutableLiveData("0")
     private val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
@@ -65,7 +66,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
     val enabled: MutableLiveData<Boolean> = MutableLiveData(false)
 
 
-    private val enteredCountInBlockUnits: Double
+    private val enteredCountInStampUnits: Double
         get() {
             var addNewCount = countValue.value?.toDouble() ?: 0.0
 
@@ -84,23 +85,23 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
                     .map {
                         currentQualityInfoCode
                                 .takeIf { code -> code == TYPE_DISCREPANCIES_QUALITY_NORM }
-                                ?.run { enteredCountInBlockUnits + countAcceptOfProduct }
+                                ?.run { enteredCountInStampUnits + countAcceptOfProduct }
                                 ?: countAcceptOfProduct
                     }
 
     val acceptTotalCountWithUom: MutableLiveData<String> = acceptTotalCount.map {
         val acceptTotalCount = it ?: 0.0
         val purchaseOrderUnits = productInfo.value?.uom?.name.orEmpty()
-        val nestingInOneBlock = productInfo.value?.quantityInvest?.toDouble().toStringFormatted()
+        val nestingInOneStamp = productInfo.value?.quantityInvest?.toDouble().toStringFormatted()
         val countAcceptOfProductValue = countAcceptOfProduct
         val totalCountAcceptOfProduct =
                 countAcceptOfProductValue
                         .takeIf { count -> count > 0.0 }
-                        ?.run { "+ ${(this * nestingInOneBlock.toInt()).toStringFormatted()}" }
+                        ?.run { "+ ${(this * nestingInOneStamp.toInt()).toStringFormatted()}" }
                         ?: countAcceptOfProductValue.toStringFormatted()
         acceptTotalCount
                 .takeIf { count1 -> count1 > 0.0 }
-                ?.run { "+ ${(this * nestingInOneBlock.toInt()).toStringFormatted()} $purchaseOrderUnits" }
+                ?.run { "+ ${(this * nestingInOneStamp.toInt()).toStringFormatted()} $purchaseOrderUnits" }
                 ?: "$totalCountAcceptOfProduct $purchaseOrderUnits"
     }
 
@@ -111,7 +112,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
                     .map {
                         currentQualityInfoCode
                                 .takeIf { code -> code != TYPE_DISCREPANCIES_QUALITY_NORM }
-                                ?.run { enteredCountInBlockUnits + countRefusalOfProduct }
+                                ?.run { enteredCountInStampUnits + countRefusalOfProduct }
                                 ?: countRefusalOfProduct
                     }
 
@@ -147,14 +148,14 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
         return productInfo.value
                 ?.let { product ->
                     val countBoxScannedValue = countScannedBoxes.value ?: 0
-                    val totalBlocksProduct = product.origQuantity.toDouble()
-                    val countProcessedBlocksCurrentDiscrepancies = processMarkingBoxProductService.getTotalScannedBlocks()
+                    val totalStampProduct = product.origQuantity.toDouble()
+                    val countProcessedBoxesCurrentDiscrepancies = processMarkingBoxPGEProductService.getTotalScannedBoxes()
                     if (countBoxScannedValue <= 0) { //фиксируем необработанное количество после первого сканирования марок, чтобы не учитывать их в текущей сессии, иначе это кол-во будет уменьшаться и появиться текст Не требуется
-                        unprocessedQuantityOfBlocks.value = totalBlocksProduct - countProcessedBlocksCurrentDiscrepancies
+                        unprocessedQuantityOfStamps.value = totalStampProduct - countProcessedBoxesCurrentDiscrepancies
                     }
-                    val unprocessedQuantityOfBlocksVal = unprocessedQuantityOfBlocks.value ?: 0.0
+                    val unprocessedQuantityOfBoxesVal = unprocessedQuantityOfStamps.value ?: 0.0
                     if (currentTypeDiscrepanciesCode == TYPE_DISCREPANCIES_QUALITY_NORM) {
-                        checkBoxes(unprocessedQuantityOfBlocksVal)
+                        checkBoxes(unprocessedQuantityOfBoxesVal)
                     } else {
                         ""
                     }
@@ -168,14 +169,14 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
                 getTvStampControlVal()
             }
 
-    private fun checkBoxes(unprocessedQuantityOfBlocksVal: Double): String {
-        return if (unprocessedQuantityOfBlocksVal == enteredCountInBlockUnits) {
-            checkBoxStampListVisibility.value = false
+    private fun checkBoxes(unprocessedQuantityOfBoxesVal: Double): String {
+        return if (unprocessedQuantityOfBoxesVal == enteredCountInStampUnits) {
+            checkBoxListVisibility.value = false
             context.getString(R.string.not_required)
         } else {
-                checkBoxStampListVisibility.value = true
-            val  numberStampsControl = if (productInfo.value?.numberStampsControl.orEmpty().toInt() > enteredCountInBlockUnits.toInt()){
-                enteredCountInBlockUnits.toStringFormatted()
+            checkBoxListVisibility.value = true
+            val  numberStampsControl = if (productInfo.value?.numberStampsControl.orEmpty().toInt() > enteredCountInStampUnits.toInt()){
+                enteredCountInStampUnits.toStringFormatted()
             } else {
                 productInfo.value?.numberStampsControl.orEmpty()
             }
@@ -184,7 +185,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
                 append(" ")
                 append(context.getString(R.string.of))
                 append(" ")
-                append(enteredCountInBlockUnits.toStringFormatted())
+                append(enteredCountInStampUnits.toStringFormatted())
             }
         }
     }
@@ -225,24 +226,24 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
     }
 
     val checkStampControl: MutableLiveData<Boolean> = checkStampControlVisibility.map {
-        val countBlockScanned = processMarkingBoxProductService.getCountProcessedBlockForDiscrepancies(TYPE_DISCREPANCIES_QUALITY_NORM).toDouble()
+        val countStampScanned = processMarkingBoxPGEProductService.getCountProcessedStampForDiscrepancies(TYPE_DISCREPANCIES_QUALITY_NORM).toDouble()
         val numberStampsControl = productInfo.value?.numberStampsControl?.toDouble() ?: 0.0
-        countBlockScanned >= numberStampsControl
+        countStampScanned >= numberStampsControl
     }
 
 
-    val checkBoxStampListVisibility: MutableLiveData<Boolean> = MutableLiveData()
+    val checkBoxListVisibility: MutableLiveData<Boolean> = MutableLiveData()
 
-    val checkBoxStampList: MutableLiveData<Boolean> = checkBoxStampListVisibility.map {
-        val countBlockScanned = countScannedBoxes.value ?: 0
+    val checkBoxList: MutableLiveData<Boolean> = checkBoxListVisibility.map {
+        val countBoxScanned = countScannedBoxes.value ?: 0
         (currentTypeDiscrepanciesCode != TYPE_DISCREPANCIES_QUALITY_NORM && it == false)
-                || (countBlockScanned >= enteredCountInBlockUnits && enteredCountInBlockUnits > 0.0)
+                || (countBoxScanned >= enteredCountInStampUnits && enteredCountInStampUnits > 0.0)
     }
 
     val enabledApplyButton: MutableLiveData<Boolean> =
             spinQualitySelectedPosition
                     .combineLatest(checkStampControl)
-                    .combineLatest(checkBoxStampList)
+                    .combineLatest(checkBoxList)
                     .combineLatest(acceptTotalCount)
                     .map {
                         getEnabledApplyButton()
@@ -250,10 +251,10 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
 
     private fun getEnabledApplyButton(): Boolean {
         val checkStampControlValue = checkStampControl.value ?: false
-        val checkBoxStampListValue = checkBoxStampList.value ?: false
+        val checkBoxStampListValue = checkBoxList.value ?: false
         val acceptTotalCountValue = acceptTotalCount.value ?: 0.0
 
-        return (enteredCountInBlockUnits > 0.0 || (acceptTotalCountValue > 0.0 && currentTypeDiscrepanciesCode == TYPE_DISCREPANCIES_QUALITY_NORM))
+        return (enteredCountInStampUnits > 0.0 || (acceptTotalCountValue > 0.0 && currentTypeDiscrepanciesCode == TYPE_DISCREPANCIES_QUALITY_NORM))
                 && (currentTypeDiscrepanciesCode == TYPE_DISCREPANCIES_QUALITY_NORM
                 || checkStampControlValue
                 || checkBoxStampListValue)
@@ -271,7 +272,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
         launchUITryCatch {
             productInfo.value
                     ?.let {
-                        if (processMarkingBoxProductService.newProcessMarkingProductService(it) == null) {
+                        if (processMarkingBoxPGEProductService.newProcessMarkingProductService(it) == null) {
                             screenNavigator.goBackAndShowAlertWrongProductType()
                             return@launchUITryCatch
                         }
@@ -315,11 +316,11 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
 
     fun initProduct(initProduct: TaskProductInfo) {
         productInfo.value = initProduct
-        processMarkingBoxProductService.initProduct(initProduct)
+        processMarkingBoxPGEProductService.initProduct(initProduct)
     }
 
     fun onClickBoxes() {
-        if (processMarkingBoxProductService.isOverLimit(enteredCountInBlockUnits)) {
+        if (processMarkingBoxPGEProductService.isOverLimit(enteredCountInStampUnits)) {
             screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen()
             return
         }
@@ -329,21 +330,32 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
         productInfo.value?.let { screenNavigator.openMarkingGoodsDetailsScreen(it) }
     }
 
+
+    fun onClickApply() {
+        val isAll = if (processMarkingBoxPGEProductService.isOverLimit(enteredCountInStampUnits)) {
+                    screenNavigator.openAlertOverLimitPlannedScreen()
+                    false
+                } else {
+                    addInfo()
+                }
+        if (isAll) screenNavigator.goBack()
+    }
+
     private fun addInfo(): Boolean {
         return if (currentTypeDiscrepanciesCode.isNotEmpty()) {
 
-            with(processMarkingBoxProductService) {
+            with(processMarkingBoxPGEProductService) {
                 if (currentTypeDiscrepanciesCode != TYPE_DISCREPANCIES_QUALITY_NORM
-                        && checkBoxStampListVisibility.value == false) {//выбрана категория брака и в поле Список марок отображается Не требуется
+                        && checkBoxListVisibility.value == false) {//выбрана категория брака и в поле Список марок отображается Не требуется
                     //сохраняем все необработанные блоки с текущей категорией брака
-                    addAllUntreatedBlocksAsDefect(currentTypeDiscrepanciesCode)
+                    addAllUntreatedStampsAsDefect()
                 }
-                addProduct(enteredCountInBlockUnits.toStringFormatted(), currentTypeDiscrepanciesCode)
-                filterAndUpdateBlockDiscrepansies()
+                addProduct(enteredCountInStampUnits.toStringFormatted(), currentTypeDiscrepanciesCode)
+                filterAndUpdateStampDiscrepancies()
             }
 
             if (currentTypeDiscrepanciesCode != TYPE_DISCREPANCIES_QUALITY_NORM) {
-                processMarkingBoxProductService.clearModifications()
+                processMarkingBoxPGEProductService.clearModifications()
                 //обнуляем кол-во отсканированных марок (блок/gtin)
                 countScannedStamps.value = 0
                 //обнуляем кол-во отсканированных блоков
@@ -358,19 +370,9 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
         }
     }
 
-    fun onClickApply() {
-        val isAll = if (processMarkingBoxProductService.isOverLimit(enteredCountInBlockUnits)) {
-                    screenNavigator.openAlertOverLimitPlannedScreen()
-                    false
-                } else {
-                    addInfo()
-                }
-        if (isAll) screenNavigator.goBack()
-    }
-
     fun onScanResult(data: String) {
         val acceptTotalCountValue = acceptTotalCount.value ?: 0.0
-        if (enteredCountInBlockUnits <= 0.0) {
+        if (enteredCountInStampUnits <= 0.0) {
             if (!(currentTypeDiscrepanciesCode == TYPE_DISCREPANCIES_QUALITY_NORM && acceptTotalCountValue > 0.0)) {
                 screenNavigator.openAlertMustEnterQuantityInfoGreenScreen()
                 return
@@ -379,8 +381,13 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
         checkScanResult(data)
     }
 
+    private fun barcodeStampCheck(data: String): Boolean {
+        val regex = REGEX_BARCODE_STAMP.toRegex()
+        return regex.find(data) != null
+    }
+
     private fun checkScanResult(data: String) {
-        if (barcodeBlockCheck(data)) {
+        if (barcodeStampCheck(data)) {
             val barcode = barcodeStamp(data)
             stampInTask(barcode)
         } else {
@@ -426,16 +433,16 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
     }
 
     private fun checkBoxOrStamp(barcode: String) {
-        val blockInfo = taskManager.getReceivingTask()?.getProcessedBlocks()?.findLast {
-            it.blockNumber == barcode
+        val stampInfo = taskManager.getReceivingTask()?.getProcessedExciseStamps()?.findLast {
+            it.materialNumber == barcode
         }
         val boxInfo = taskManager.getReceivingTask()?.getProcessedBoxes()?.findLast {
             it.boxNumber == barcode
         }
 
-        if (blockInfo != null) {
+        if (stampInfo != null) {
             addStamp(
-                    blockInfo = blockInfo,
+                    stampInfo = stampInfo,
                     typeDiscrepancies = currentTypeDiscrepanciesCode
             )
             //   screenNavigator.openBoxCard() ->  передаем № короба, в котором карточка
@@ -454,8 +461,8 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
                     taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber.orEmpty(),
                     stampCode = stamp,
                     materialNumber = materialNumberStamp,
-                    blockCode = "",
-                    boxCode = ""
+                    boxCode = "",
+                    blockCode = ""
             )).either(::handleFailure, ::handleSuccess)
             screenNavigator.hideProgress()
         }
@@ -483,11 +490,6 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
         }
     }
 
-    private fun barcodeBlockCheck(data: String): Boolean {
-        val regex = REGEX_BARCODE_BLOCK.toRegex()
-        return regex.find(data) != null
-    }
-
 
     private fun boxCheck(data: String) {
 
@@ -500,7 +502,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
         if (boxMaterialNumber.isNotEmpty()) { //короб числится в обработанных
             //   screenNavigator.openBoxCard() -> isScan = true //переход на карточку коробу, проставляя по марке признак IS_SCAN (если его не было)
         } else {
-            val boxNumber = processMarkingBoxProductService.searchBoxDiscrepancies(data)?.materialNumber.orEmpty()
+            val boxNumber = processMarkingBoxPGEProductService.searchBoxDiscrepancies(data)?.materialNumber.orEmpty()
             if (boxNumber != boxMaterialNumber) {
                 //Нет в задании Отсканированная коробка принадлежит товару <SAP-код> <Название>
                 val materialName = ZfmpUtz48V001(hyperHive).getProductInfoByMaterial(boxNumber)?.name.orEmpty()
@@ -518,7 +520,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
     private fun addBox(boxInfo: TaskBoxInfo, typeDiscrepancies: String, data: String) {
         boxInfo.let {
             typeDiscrepancies.let { currentTypeDiscrepancies ->
-                processMarkingBoxProductService
+                processMarkingBoxPGEProductService
                         .addBoxDiscrepancy(
                                 boxNumber = data,
                                 typeDiscrepancies = currentTypeDiscrepancies,
@@ -531,18 +533,14 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
     }
 
 
-    private fun addStamp(blockInfo: TaskBlockInfo?, typeDiscrepancies: String?) {
-        blockInfo?.let { currentBlock ->
-            typeDiscrepancies?.let { currentTypeDiscrepancies ->
-                processMarkingBoxProductService
-                        .addBlockDiscrepancies(
-                                blockInfo = currentBlock,
-                                typeDiscrepancies = currentTypeDiscrepancies,
+    private fun addStamp(stampInfo: TaskExciseStampInfo, typeDiscrepancies: String?) {
+        stampInfo.let {
+            processMarkingBoxPGEProductService
+                        .addStampDiscrepancies(
                                 isScan = true,
-                                isGtinControlPassed = false
+                                stampInfo = stampInfo
                         )
                 countScannedStamps.value = countScannedStamps.value?.plus(1)
-            }
         }
     }
 
@@ -564,10 +562,10 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
     }
 
     fun onBackPressed() {
-        if (processMarkingBoxProductService.modifications() || count.value?.toString() != DEFAULT_COUNT) {
+        if (processMarkingBoxPGEProductService.modifications() || count.value?.toString() != DEFAULT_COUNT) {
             screenNavigator.openUnsavedDataDialog(
                     yesCallbackFunc = {
-                        processMarkingBoxProductService.clearModifications()
+                        processMarkingBoxPGEProductService.clearModifications()
                         screenNavigator.goBack()
                     }
             )
@@ -579,6 +577,6 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
     companion object {
         private const val DEFAULT_COUNT = "0"
         private const val MULTIPLY = "x"
-        const val REGEX_BARCODE_BLOCK = """^(?<barcode>01(?<gtin>\d{14})21(?<serial>\S{13})).?(?:240(?<tradeCode>\d{4}))?.?(?:91(?<verificationKey>\S{4}))?.?(?:92(?<verificationCode>\S{88}))?${'$'}"""
+        const val REGEX_BARCODE_STAMP = """^(?<barcode>01(?<gtin>\d{14})21(?<serial>\S{13})).?(?:240(?<tradeCode>\d{4}))?.?(?:91(?<verificationKey>\S{4}))?.?(?:92(?<verificationCode>\S{88}))?${'$'}"""
     }
 }
