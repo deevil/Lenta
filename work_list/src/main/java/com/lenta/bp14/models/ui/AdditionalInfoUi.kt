@@ -8,5 +8,6 @@ data class AdditionalInfoUi(
         val commonPrice: String,
         val discountPrice: String,
         val promoName: String,
-        val promoPeriod: String
+        val promoPeriod: String,
+        val hasZParts: Boolean
 )

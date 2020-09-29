@@ -68,6 +68,12 @@
 
             </LinearLayout>
 
+
+            <ImageView
+                style="@style/BottomIconStyle"
+                app:invisible="@{!vm.additional.hasZParts}"
+                android:src="@drawable/ic_z" />
+
             <ImageView
                 style="@style/BottomIconStyle"
                 app:goodTypeIcon="@{vm.options.goodType}"

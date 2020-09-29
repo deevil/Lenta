@@ -108,6 +108,7 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
             }
         }
 
+//        if (position == 3) {
         DataBindingUtil.inflate<LayoutWlGoodInfoStocksBinding>(LayoutInflater.from(container.context),
                 R.layout.layout_wl_good_info_stocks,
                 container,
@@ -122,6 +123,9 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
 
             return layoutBinding.root
         }
+//        }
+
+
     }
 
     override fun getTextTitle(position: Int): String {

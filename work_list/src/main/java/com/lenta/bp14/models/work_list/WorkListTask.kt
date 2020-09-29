@@ -471,7 +471,19 @@ data class AdditionalGoodInfo(
         val promoName: String,
         val promoPeriod: String,
         val providers: List<Provider>,
-        val stocks: List<Stock>
+        val stocks: List<Stock>,
+        val zParts: List<ZPart>
+) {
+    val hasZPart: Boolean
+        get() = zParts.isNotEmpty()
+}
+
+data class ZPart(
+        val batch: String,
+        val stock: String,
+        val producer: String,
+        val quantity: Double,
+        val meins: String
 )
 
 data class GoodOptions(
@@ -479,13 +491,14 @@ data class GoodOptions(
         val section: String,
         val goodType: GoodType,
         val healthFood: Boolean = false,
-        val novelty: Boolean = false,
-        val isZPart: Boolean = false
+        val novelty: Boolean = false
 )
 
 data class Stock(
         val storage: String,
-        val quantity: Double
+        val quantity: Double,
+        val zPartsQuantity: Double,
+        val hasZPart: Boolean
 )
 
 data class Provider(
