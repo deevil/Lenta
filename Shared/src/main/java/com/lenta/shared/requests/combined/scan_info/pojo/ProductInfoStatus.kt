@@ -34,27 +34,27 @@ data class ProductServerInfo(
 
 data class Material(
         @SerializedName("ABTNR")
-        val abtnr: String,
+        val abtnr: String?,
         @SerializedName("BUOM")
-        val buom: String,
+        val buom: String?,
         @SerializedName("EKGRP")
-        val ekgrp: String,
+        val ekgrp: String?,
         @SerializedName("IS_ALCO")
-        val isAlco: String,
+        val isAlco: String?,
         @SerializedName("IS_EXC")
-        val isExcise: String,
+        val isExcise: String?,
         @SerializedName("IS_RETURN")
-        val isReturn: String,
+        val isReturn: String?,
         @SerializedName("MATERIAL")
-        val material: String,
+        val material: String?,
         @SerializedName("MATKL")
-        val matkl: String,
+        val matkl: String?,
         @SerializedName("MATR_TYPE")
-        val matrixType: String,
+        val matrixType: String?,
         @SerializedName("MATYPE")
-        val materialType: String,
+        val materialType: String?,
         @SerializedName("NAME")
-        val name: String,
+        val name: String?,
         @SerializedName("IS_MARK")
         var isMark: String?,
         @SerializedName("ZMARKTYPE")
@@ -63,35 +63,35 @@ data class Material(
 
 data class Ean(
         @SerializedName("EAN")
-        val ean: String,
+        val ean: String?,
         @SerializedName("MATERIAL")
-        val materialNumber: String,
+        val materialNumber: String?,
         @SerializedName("UMREN")
-        val umren: Int,
+        val umren: Int?,
         @SerializedName("UMREZ")
-        val umrez: Int,
+        val umrez: Int?,
         @SerializedName("UOM")
-        val uom: String
+        val uom: String?
 )
 
 fun Ean.toEan(): EanInfo {
         return EanInfo(
-                ean = ean,
-                materialNumber = materialNumber,
-                umrez = umrez,
-                umren = umren,
-                uom = uom
+                ean = ean.orEmpty(),
+                materialNumber = materialNumber.orEmpty(),
+                umrez = umrez ?: 0,
+                umren = umren ?: 0,
+                uom = uom.orEmpty()
         )
 }
 
 
 data class Set(
         @SerializedName("MATNR")
-        val matNr: String,
+        val matNr: String?,
         @SerializedName("MATNR_OSN")
-        val matNrOsn: String,
+        val matNrOsn: String?,
         @SerializedName("MEINS")
-        val meins: String,
+        val meins: String?,
         @SerializedName("MENGE")
-        val menge: String
+        val menge: String?
 )

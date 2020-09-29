@@ -1,6 +1,7 @@
 package com.lenta.shared.requests.combined.scan_info
 
 import com.lenta.shared.requests.combined.scan_info.pojo.EanInfo
+import com.lenta.shared.utilities.extentions.unsafeLazy
 import java.lang.Long.parseLong
 import java.util.*
 
@@ -9,39 +10,41 @@ class ScanCodeInfo(
         private val fixedQuantity: Double? = null
 ) {
 
-    private val prefix by lazy {
+    private val prefix by unsafeLazy {
         originalNumber.take(2)
     }
 
-    private val withWeight by lazy {
+    private val withWeight by unsafeLazy {
         originalNumber.length == 13 && (prefix in arrayOf("23", "24", "27", "28"))
     }
 
-    private val withWeightInTens by lazy {
+    private val withWeightInTens by unsafeLazy {
         withWeight && prefix == "27"
     }
 
-    val weight: Double by lazy {
+    val weight: Double by unsafeLazy {
         if (withWeight) {
             originalNumber.takeLast(6).dropLast(1).toDoubleOrNull()?.let { weight ->
                 if (withWeightInTens) weight * 10 else weight
             } ?: 0.0
-        } else 0.0
+        } else {
+            1.0
+        }
     }
 
-    val eanWithoutWeight: String by lazy {
+    val eanWithoutWeight: String by unsafeLazy {
         if (withWeight) "${originalNumber.dropLast(6)}000000" else originalNumber
     }
 
-    private val isMaterialNumber: Boolean by lazy {
+    private val isMaterialNumber: Boolean by unsafeLazy {
         originalNumber.length.let { it == 6 || it == 18 }
     }
 
-    val eanNumberForSearch: String? by lazy {
+    val eanNumberForSearch: String? by unsafeLazy {
         if (!isMaterialNumber) eanWithoutWeight else null
     }
 
-    val materialNumberForSearch: String? by lazy {
+    val materialNumberForSearch: String? by unsafeLazy {
         if (isMaterialNumber) {
             String.format(Locale.US, "%018d", parseLong(originalNumber))
         } else {

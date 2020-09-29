@@ -121,14 +121,14 @@ class SearchProductDelegate @Inject constructor(
                 val isMarkedGood = material.isMark.orEmpty().isNotEmpty() || material.markType.orEmpty().isNotEmpty()
                 scanInfoResult = ScanInfoResult(
                         productInfo = ProductInfo(
-                                materialNumber = material.material,
-                                description = material.name,
-                                uom = database.getUnitsByCode(result.material.buom),
-                                type = getProductType(isAlco = material.isAlco.isNotEmpty(), isExcise = material.isExcise.isNotEmpty(), isMarkedGood = isMarkedGood),
+                                materialNumber = material.material.orEmpty(),
+                                description = material.name.orEmpty(),
+                                uom = database.getUnitsByCode(result.material.buom.orEmpty()),
+                                type = getProductType(isAlco = material.isAlco?.isNotEmpty() == true, isExcise = material.isExcise?.isNotEmpty() == true, isMarkedGood = isMarkedGood),
                                 isSet = !result.set.isNullOrEmpty(),
-                                sectionId = material.abtnr,
-                                matrixType = getMatrixType(material.matrixType),
-                                materialType = material.materialType,
+                                sectionId = material.abtnr.orEmpty(),
+                                matrixType = getMatrixType(material.matrixType.orEmpty()),
+                                materialType = material.materialType.orEmpty(),
                                 markedGoodType = material.markType.orEmpty()
                         ),
                         quantity = quantity)
@@ -168,9 +168,10 @@ class SearchProductDelegate @Inject constructor(
                 }
             }
 
+            val defaultQuantity = if (isMarkedProductType(infoResult)) 0.0 else infoResult.quantity
             openProductScreen(
                     productInfo = infoResult.productInfo,
-                    quantity = if (isMarkedProductType(infoResult)) 0.0 else infoResult.quantity
+                    quantity = defaultQuantity
             )
         }
     }
