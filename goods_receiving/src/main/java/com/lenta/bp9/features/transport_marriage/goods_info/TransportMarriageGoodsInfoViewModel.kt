@@ -217,7 +217,7 @@ class TransportMarriageGoodsInfoViewModel : CoreViewModel(), OnPositionClickList
             scanInfoRequest(
                     ScanInfoRequestParams(
                             number = data,
-                            tkNumber = sessionInfo.market ?: "",
+                            tkNumber = sessionInfo.market.orEmpty(),
                             fromScan = true,
                             isBarCode = true
                     )

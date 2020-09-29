@@ -81,7 +81,7 @@ class ProductInfoNetRequest
         return ProductInfo(
                 materialNumber = material.material,
                 description = material.name.orEmpty(),
-                uom = Uom(code = uomInfo.uom, name = uomInfo.name),
+                uom = Uom(code = uomInfo.uom.orEmpty(), name = uomInfo.name.orEmpty()),
                 type = getProductType(
                         isAlco = material.isAlco?.isNotEmpty() == true,
                         isExcise = material.isExcise?.isNotEmpty() == true,
