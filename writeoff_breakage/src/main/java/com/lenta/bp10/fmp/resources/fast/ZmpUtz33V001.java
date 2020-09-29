@@ -1,5 +1,7 @@
 package com.lenta.bp10.fmp.resources.fast;
 
+import androidx.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 import com.mobrun.plugin.api.HyperHive;
 import com.mobrun.plugin.api.helper.LocalTableResourceHelper;
@@ -38,14 +40,17 @@ public class ZmpUtz33V001 {
 
     public static class ItemLocal_ET_LGORT {
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("TASK_TYPE")
         public String taskType;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("WERKS")
         public String werks;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("LGORT")
         public String lgort;
 
