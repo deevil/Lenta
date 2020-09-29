@@ -35,12 +35,14 @@ fun List<ZmpUtz17V001.ItemLocal_ET_DICT>.toDescriptionsList(): List<String> {
 }
 
 fun List<ZmpUtz17V001.ItemLocal_ET_DICT>.toElementList(): List<DictElement> {
-    return this.map {
-        DictElement(
-                code = it.code.orEmpty(),
-                order = it.sorder.orEmpty(),
-                description = it.shtxt.orEmpty()
-        )
+    return this.mapNotNull {
+        it.takeIf { it.code != null && it.sorder != null && it.shtxt != null }?.run {
+            DictElement(
+                    code = it.code.orEmpty(),
+                    order = it.sorder.orEmpty(),
+                    description = it.shtxt.orEmpty()
+            )
+        }
     }
 }
 

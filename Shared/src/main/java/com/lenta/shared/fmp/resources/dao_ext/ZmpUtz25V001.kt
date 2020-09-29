@@ -48,8 +48,8 @@ fun ZmpUtz25V001.ItemLocal_ET_EANS.toEanInfo(): EanInfo {
     return EanInfo(
             ean = ean.orEmpty(),
             materialNumber = material.orEmpty(),
-            umren = umren?.toInt()?:1,
-            umrez = umrez?.toInt()?:1,
+            umren = umren?.toInt() ?: 1,
+            umrez = umrez?.toInt() ?: 1,
             uom = uom.orEmpty()
     )
 }

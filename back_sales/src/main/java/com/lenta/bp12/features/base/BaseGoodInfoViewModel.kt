@@ -63,13 +63,11 @@ abstract class BaseGoodInfoViewModel<R : Taskable, T : ITaskManager<R>> : CoreVi
      */
 
     val totalQuantity by unsafeLazy {
-        good.combineLatest(quantity).map {
-            it?.let {
-                val total = it.first.getTotalQuantity()
-                val current = it.second
+        good.combineLatest(quantity).mapSkipNulls {
+            val total = it.first.getTotalQuantity()
+            val current = it.second
 
-                total.sumWith(current)
-            }
+            total.sumWith(current)
         }
     }
 
@@ -161,7 +159,7 @@ abstract class BaseGoodInfoViewModel<R : Taskable, T : ITaskManager<R>> : CoreVi
         val isEnabled = it?.first ?: false
         val position = it?.second ?: FIRST_POSITION
 
-        isProviderEnabledAndPositionChanged(isEnabled, position)  or
+        isProviderEnabledAndPositionChanged(isEnabled, position) or
                 isProviderNotEnabledAndPositionDidntChanged(isEnabled, position)
     }
 
