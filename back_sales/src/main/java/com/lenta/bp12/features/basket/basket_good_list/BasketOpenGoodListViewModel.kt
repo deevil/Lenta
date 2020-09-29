@@ -113,7 +113,6 @@ class BasketOpenGoodListViewModel : BaseGoodListOpenViewModel(), OnOkInSoftKeybo
         goods.value?.let {
             it.getOrNull(position)?.let { item ->
                 manager.updateCurrentGood(item.good)
-                navigator.goBack()
                 if (item.good.markType == MarkType.UNKNOWN)
                     navigator.openGoodInfoOpenScreen()
                 else navigator.openMarkedGoodInfoOpenScreen()

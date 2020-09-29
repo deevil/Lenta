@@ -27,7 +27,7 @@ fun ZmpUtz25V001.getEanInfoByMaterialUnits(material: String, unitsCode: String):
 
 fun ZmpUtz25V001.getEanListByMaterialUnits(material: String, unitsCode: String): List<String> {
     @Suppress("INACCESSIBLE_TYPE")
-    return localHelper_ET_EANS.getWhere("MATERIAL = \"$material\" AND UOM = \"${unitsCode.toUpperCase()}\"").map {
+    return localHelper_ET_EANS.getWhere("MATERIAL = \"$material\" AND UOM = \"${unitsCode.toUpperCase()}\"").mapNotNull {
         it.ean
     }
 }
@@ -46,10 +46,10 @@ fun ZmpUtz25V001.isHaveEansForMaterial(material: String?): Boolean {
 
 fun ZmpUtz25V001.ItemLocal_ET_EANS.toEanInfo(): EanInfo {
     return EanInfo(
-            ean = ean,
-            materialNumber = material,
-            umren = umren.toInt(),
-            umrez = umrez.toInt(),
-            uom = uom
+            ean = ean.orEmpty(),
+            materialNumber = material.orEmpty(),
+            umren = umren?.toInt() ?: 1,
+            umrez = umrez?.toInt() ?: 1,
+            uom = uom.orEmpty()
     )
 }

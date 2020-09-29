@@ -41,6 +41,9 @@ enum class MarkRequestStatus(val code: String) {
     /** старый блок */
     @SerializedName("105")
     CARTON_OLD("105"),
+    /** МРЦ в системе другая */
+    @SerializedName("106")
+    CARTON_NOT_SAME_IN_SYSTEM("106"),
 
     /** Статус коробки: */
 
@@ -58,6 +61,8 @@ enum class MarkRequestStatus(val code: String) {
     BOX_INCOMPLETE("203"),
     /** Коробка не найдена в задании (если по товару есть заказ) */
     @SerializedName("204")
-    BOX_NOT_FOUND_IN_TASK("204")
-
+    BOX_NOT_FOUND_IN_TASK("204"),
+    /** ??? Коробка не та в системе */
+    @SerializedName("205")
+    BOX_NOT_SAME_IN_SYSTEM("205")
 }

@@ -170,7 +170,7 @@ abstract class BaseGoodListCreateViewModel : BaseGoodListViewModel<TaskCreate, I
 
                 val good = Good(
                         ean = goodEan,
-                        eans = database.getEanListByMaterialUnits(
+                        eans = database.getEanMapByMaterialUnits(
                                 material = materialInfo?.material.orEmpty(),
                                 unitsCode = materialInfo?.commonUnitsCode.orEmpty()
                         ),

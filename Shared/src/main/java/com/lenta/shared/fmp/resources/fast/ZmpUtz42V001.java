@@ -1,5 +1,7 @@
 package com.lenta.shared.fmp.resources.fast;
 
+import androidx.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 import com.mobrun.plugin.api.HyperHive;
 import com.mobrun.plugin.api.helper.LocalTableResourceHelper;
@@ -37,26 +39,32 @@ public class ZmpUtz42V001 {
 
     public static class ItemLocal_ET_EXCLUDE_MATNR {
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("TASK_TYPE")
         public String taskType;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("TASK_CNTRL")
         public String taskCntrl;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("MTART")
         public String mtart;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("EKGRP")
         public String ekgrp;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("MATKL")
         public String matkl;
 
         /** Флаг – акцизный алкоголь */
+        @Nullable
         @SerializedName("IS_EXC")
         public String isExciseAlco;
     }

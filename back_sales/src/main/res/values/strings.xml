@@ -76,6 +76,7 @@
     <string name="basket_not_found_error_msg">корзина не найдена</string>
     <string name="task_not_found_error_msg">задание не найдено</string>
     <string name="no_status_mark">Статус марки не найден</string>
+    <string name="wrong_date_error_msg">Внутренняя ошибка программы: неправильная дата</string>
 
     <string name="quantity_more_than_planned">Превышено плановое количество. Добавление невозможно.</string>
     <string name="mark_already_scanned_delete">Отсканированная марка уже была добавлена в задание. Удалить марку?</string>
@@ -84,6 +85,8 @@
     <string name="scanned_wrong_mrc">Отсканированный МРЦ товара, 1%s 2%s, не соответствует МРЦ заказа.</string>
     <string name="no_settings_for_that_markType">Не заведена настройка присвоения группы маркировки текущему типу маркировки</string>
     <string name="scanned_mark_with_different_mrc">Отсканирована марка с МРЦ, отличающаяся от МРЦ текущей корзинки. Сохранить подсчет текущей корзинки и открыть другую?</string>
+    <string name="enter_mrc_from_box">Введите МРЦ, указанный на блоке из отсканированной коробки</string>
+    <string name="enter_mrc">Введите МРЦ</string>
 
     // Описание иконок
     <string name="alcohol_good">Алкогольный товар</string>
