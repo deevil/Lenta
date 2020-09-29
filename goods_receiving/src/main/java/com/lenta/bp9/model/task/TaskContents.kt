@@ -1,11 +1,6 @@
 package com.lenta.bp9.model.task
 
 import android.annotation.SuppressLint
-import android.content.Context
-import androidx.lifecycle.MutableLiveData
-import com.lenta.bp9.model.processing.ProcessExciseAlcoBoxAccService
-import com.lenta.bp9.repos.IDataBaseRepo
-import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.requests.network.*
 import com.lenta.shared.fmp.resources.dao_ext.getEanInfoFromMaterial
 import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
@@ -16,13 +11,8 @@ import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.models.core.getProductType
-import com.lenta.shared.platform.constants.Constants
-import com.lenta.shared.platform.constants.Constants.DATE_FORMAT_dd_mm_yyyy
 import com.lenta.shared.platform.constants.Constants.DATE_FORMAT_yyyyMMdd
 import com.lenta.shared.platform.constants.Constants.DATE_FORMAT_yyyy_mm_dd
-import com.lenta.shared.utilities.Logg
-import com.lenta.shared.utilities.extentions.getFormattedDate
-import com.lenta.shared.utilities.getStringFromDate
 import com.mobrun.plugin.api.HyperHive
 import java.text.SimpleDateFormat
 import javax.inject.Inject

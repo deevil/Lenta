@@ -7,9 +7,7 @@ import com.lenta.bp9.features.delegates.SearchProductDelegate
 import com.lenta.bp9.features.goods_information.base.BaseGoodsInfo
 import com.lenta.bp9.model.processing.ProcessMarkingBoxPGEProductService
 import com.lenta.bp9.model.task.*
-import com.lenta.bp9.platform.TypeDiscrepanciesConstants
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
-import com.lenta.bp9.platform.requestCodeAddGoodsSurplus
 import com.lenta.bp9.requests.network.*
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
@@ -42,10 +40,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
         paramGrzAlternMeins.map {
             val uomName = paramGrzAlternMeins.value?.name?.toLowerCase().orEmpty()
 
-            var nestingInOneBlock = productInfo.value?.quantityInvest?.toDouble().toStringFormatted()
-            if (nestingInOneBlock == COUNT_PIECES_BOX_IS_ZERO) {
-                nestingInOneBlock = COUNT_PIECES_BOX
-            }
+            val nestingInOneBlock = productInfo.value?.quantityInvest?.toDouble().toStringFormatted()
             val productUomName = productInfo.value?.uom?.name.orEmpty()
             context.getString(R.string.accept, "$uomName=$nestingInOneBlock $productUomName")
         }
@@ -96,15 +91,16 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
     val acceptTotalCountWithUom: MutableLiveData<String> = acceptTotalCount.map {
         val acceptTotalCount = it ?: 0.0
         val purchaseOrderUnits = productInfo.value?.uom?.name.orEmpty()
+        val nestingInOneBlock = productInfo.value?.quantityInvest?.toDouble().toStringFormatted()
         val countAcceptOfProductValue = countAcceptOfProduct
         val totalCountAcceptOfProduct =
                 countAcceptOfProductValue
                         .takeIf { count -> count > 0.0 }
-                        ?.run { "+ ${this.toStringFormatted()}" }
+                        ?.run { "+ ${(this * nestingInOneBlock.toInt()).toStringFormatted()}" }
                         ?: countAcceptOfProductValue.toStringFormatted()
         acceptTotalCount
                 .takeIf { count1 -> count1 > 0.0 }
-                ?.run { "+ ${this.toStringFormatted()} $purchaseOrderUnits" }
+                ?.run { "+ ${(this * nestingInOneBlock.toInt()).toStringFormatted()} $purchaseOrderUnits" }
                 ?: "$totalCountAcceptOfProduct $purchaseOrderUnits"
     }
 
@@ -156,10 +152,9 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
                     if (countBoxScannedValue <= 0) { //фиксируем необработанное количество после первого сканирования марок, чтобы не учитывать их в текущей сессии, иначе это кол-во будет уменьшаться и появиться текст Не требуется
                         unprocessedQuantityOfBlocks.value = totalBlocksProduct - countProcessedBlocksCurrentDiscrepancies
                     }
-                    val unprocessedQuantityOfBlocksVal = unprocessedQuantityOfBlocks.value
-                            ?: 0.0
+                    val unprocessedQuantityOfBlocksVal = unprocessedQuantityOfBlocks.value ?: 0.0
                     if (currentTypeDiscrepanciesCode == TYPE_DISCREPANCIES_QUALITY_NORM) {
-                        checkBoxes(unprocessedQuantityOfBlocksVal, countBoxScannedValue)
+                        checkBoxes(unprocessedQuantityOfBlocksVal)
                     } else {
                         ""
                     }
@@ -173,14 +168,19 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
                 getTvStampControlVal()
             }
 
-    private fun checkBoxes(unprocessedQuantityOfBlocksVal: Double, countBoxesScannedValue: Int): String {
+    private fun checkBoxes(unprocessedQuantityOfBlocksVal: Double): String {
         return if (unprocessedQuantityOfBlocksVal == enteredCountInBlockUnits) {
             checkBoxStampListVisibility.value = false
             context.getString(R.string.not_required)
         } else {
-            checkBoxStampListVisibility.value = true
+                checkBoxStampListVisibility.value = true
+            val  numberStampsControl = if (productInfo.value?.numberStampsControl.orEmpty().toInt() > enteredCountInBlockUnits.toInt()){
+                enteredCountInBlockUnits.toStringFormatted()
+            } else {
+                productInfo.value?.numberStampsControl.orEmpty()
+            }
             buildString {
-                append(countBoxesScannedValue.toDouble().toStringFormatted())
+                append(numberStampsControl)
                 append(" ")
                 append(context.getString(R.string.of))
                 append(" ")
@@ -213,13 +213,13 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
             checkStampControlVisibility.value = true
             val countStampsControl = if (acceptTotalCountVal < numberStampsControl) acceptTotalCountVal else numberStampsControl
             buildString {
-                append(enteredCountInBlockUnits.toStringFormatted())
+                append(countStampsControl.toInt())
                 append(" ")
                 append(paramGrzAlternMeins.value?.name?.toLowerCase().orEmpty())
                 append(" ")
                 append(MULTIPLY)
                 append(" ")
-                append(countStampsControl.toInt())
+                append(productInfo.value?.numberStampsControl.orEmpty())
             }
         }
     }
@@ -397,7 +397,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
         if (stamp != null) {  //Марка есть в задании
             checkStampCurrentProduct(stamp, barcode)
         } else {  // марки нет в задании
-            getInfo(barcode, productMaterialNumber)
+            addInfo(barcode, productMaterialNumber)
         }
     }
 
@@ -447,7 +447,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
         }
     }
 
-    private fun getInfo(stamp: String, materialNumberStamp: String) {
+    private fun addInfo(stamp: String, materialNumberStamp: String) {
         launchUITryCatch {
             screenNavigator.showProgressLoadingData(::handleFailure)
             zmpUtzGrz44V001NetRequest(ZmpUtzGrz44V001Params(
@@ -577,8 +577,6 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
     }
 
     companion object {
-        private const val COUNT_PIECES_BOX = "1"
-        private const val COUNT_PIECES_BOX_IS_ZERO = "0"
         private const val DEFAULT_COUNT = "0"
         private const val MULTIPLY = "x"
         const val REGEX_BARCODE_BLOCK = """^(?<barcode>01(?<gtin>\d{14})21(?<serial>\S{13})).?(?:240(?<tradeCode>\d{4}))?.?(?:91(?<verificationKey>\S{4}))?.?(?:92(?<verificationCode>\S{88}))?${'$'}"""
