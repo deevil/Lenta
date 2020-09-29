@@ -232,7 +232,8 @@ class ScreenNavigator @Inject constructor(
                     message = context.getString(R.string.unsaved_data_will_be_lost),
                     iconRes = R.drawable.ic_question_yellow_80dp,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(proceedCallback),
-                    rightButtonDecorationInfo = ButtonDecorationInfo.proceed
+                    rightButtonDecorationInfo = ButtonDecorationInfo.proceed,
+                    leftButtonDecorationInfo = ButtonDecorationInfo.cancel
             ))
         }
     }
