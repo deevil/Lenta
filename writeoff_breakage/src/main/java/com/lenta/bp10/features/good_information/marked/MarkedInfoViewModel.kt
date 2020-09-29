@@ -70,7 +70,10 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
     init {
         launchUITryCatch {
             initMarkSearchDelegate()
-            initGoodProperties()
+
+            if (isSpecialMode.value == true) {
+                initGoodProperties()
+            }
         }
     }
 
