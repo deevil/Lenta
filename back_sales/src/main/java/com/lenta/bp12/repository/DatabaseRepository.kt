@@ -50,9 +50,10 @@ class DatabaseRepository @Inject constructor(
     override suspend fun getGoodInfoByMaterial(material: String): GoodInfo? {
         return withContext(Dispatchers.IO) {
             products.getProductInfoByMaterial(material)?.let { goodInfo ->
+
                 GoodInfo(
                         ean = getEanByMaterialUnits(material, goodInfo.buom.orEmpty()),
-                        eans = getEanListByMaterialUnits(material, goodInfo.buom.orEmpty()),
+                        eans = getEanMapByMaterialUnits(material, goodInfo.buom.orEmpty()),
                         material = material,
                         name = goodInfo.name.orEmpty(),
                         kind = goodInfo.getGoodKind(),
@@ -73,6 +74,12 @@ class DatabaseRepository @Inject constructor(
     override suspend fun getEanListByMaterialUnits(material: String, unitsCode: String): List<String> {
         return withContext(Dispatchers.IO) {
             eanInfo.getEanListByMaterialUnits(material, unitsCode)
+        }
+    }
+
+    override suspend fun getEanMapByMaterialUnits(material: String, unitsCode: String): MutableMap<String, Float> {
+        return withContext(Dispatchers.IO) {
+            eanInfo.getEanMapByMaterialUnits(material, unitsCode)
         }
     }
 
@@ -223,6 +230,7 @@ class DatabaseRepository @Inject constructor(
 interface IDatabaseRepository {
     suspend fun getGoodInfoByMaterial(material: String): GoodInfo?
     suspend fun getEanListByMaterialUnits(material: String, unitsCode: String): List<String>
+    suspend fun getEanMapByMaterialUnits(material: String, unitsCode: String): MutableMap<String, Float>
     suspend fun getEanInfo(ean: String): com.lenta.shared.requests.combined.scan_info.pojo.EanInfo?
     suspend fun getAllowedAppVersion(): String?
     suspend fun getUnitsByCode(code: String): Uom

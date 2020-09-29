@@ -80,7 +80,7 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
                 false)
 
         val onClickSelectionListener = View.OnClickListener {
-            (it.tag as? Int)?.let{ position ->
+            (it.tag as? Int)?.let { position ->
                 vm.processingSelectionsHelper.revert(position = position)
                 layoutBinding.rv.adapter?.notifyItemChanged(position)
             }
@@ -115,7 +115,7 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
                 false)
 
         val onClickSelectionListener = View.OnClickListener {
-            (it.tag as? Int)?.let{ position ->
+            (it.tag as? Int)?.let { position ->
                 vm.processedSelectionsHelper.revert(position = position)
                 layoutBinding.rv.adapter?.notifyItemChanged(position)
             }
@@ -149,7 +149,7 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
                 false)
 
         val onClickSelectionListener = View.OnClickListener {
-            (it.tag as? Int)?.let{ position ->
+            (it.tag as? Int)?.let { position ->
                 vm.basketSelectionsHelper.revert(position = position)
                 layoutBinding.rv.adapter?.notifyItemChanged(position)
             }
@@ -167,7 +167,6 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
                 recyclerView = layoutBinding.rv,
                 items = vm.wholesaleBaskets,
                 onClickHandler = vm::onClickItemPosition
-
         )
 
         layoutBinding.vm = vm
@@ -184,7 +183,7 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
                 false)
 
         val onClickSelectionListener = View.OnClickListener {
-            (it.tag as? Int)?.let{ position ->
+            (it.tag as? Int)?.let { position ->
                 vm.basketSelectionsHelper.revert(position = position)
                 layoutBinding.rv.adapter?.notifyItemChanged(position)
             }
@@ -193,7 +192,7 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
         layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                 layoutId = R.layout.item_task_content_common_basket,
                 itemId = BR.item,
-                onItemBind = { binding: ItemWholesaleBasketBinding, position: Int ->
+                onItemBind = { binding: ItemTaskContentCommonBasketBinding, position: Int ->
                     binding.tvItemNumber.tag = position
                     binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
                     binding.selectedForDelete = vm.basketSelectionsHelper.isSelected(position)

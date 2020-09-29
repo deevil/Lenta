@@ -65,5 +65,6 @@ object Constants {
 
     //Other
     const val DIV_TO_KG = 1000
+    const val DIV_TO_RUB = 100
 
 }

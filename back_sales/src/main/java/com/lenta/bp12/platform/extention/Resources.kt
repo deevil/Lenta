@@ -31,10 +31,10 @@ fun ZmpUtz09V001.getProviderInfo(code: String): ProviderInfo? {
 
 fun ZmpUtz39V001.getTaskTypeList(): List<TaskType> {
     @Suppress("INACCESSIBLE_TYPE")
-    return localHelper_ET_TASK_TPS.all.map {
+    return localHelper_ET_TASK_TPS.all.mapNotNull {
         TaskType(
-                code = it.taskType,
-                description = it.annotation,
+                code = it.taskType.orEmpty(),
+                description = it.annotation.orEmpty(),
                 isDivBySection = it.divAbtnr.isSapTrue(),
                 isDivByPurchaseGroup = it.divEkgrp.isSapTrue(),
                 isDivByMark = it.isDivByMarkType.isSapTrue(),
@@ -50,8 +50,8 @@ fun ZmpUtz39V001.getTaskType(code: String): TaskType? {
     @Suppress("INACCESSIBLE_TYPE")
     return localHelper_ET_TASK_TPS.getWhere("TASK_TYPE = \"$code\" LIMIT 1").firstOrNull()?.let {
         TaskType(
-                code = it.taskType,
-                description = it.annotation,
+                code = it.taskType.orEmpty(),
+                description = it.annotation.orEmpty(),
                 isDivBySection = it.divAbtnr.isSapTrue(),
                 isDivByPurchaseGroup = it.divEkgrp.isSapTrue(),
                 isDivByMark = it.isDivByMarkType.isSapTrue(),
@@ -67,8 +67,8 @@ fun ZmpUtz44V001.getReturnReason(taskType: String, reasonCode: String): ReturnRe
     @Suppress("INACCESSIBLE_TYPE")
     return localHelper_ET_TASK_REASONS.getWhere("TASK_TYPE = \"$taskType\" AND REASON = \"$reasonCode\" LIMIT 1").firstOrNull()?.let {
         ReturnReason(
-                code = it.reason,
-                description = it.grtxt
+                code = it.reason.orEmpty(),
+                description = it.grtxt.orEmpty()
         )
     }
 }
@@ -77,8 +77,8 @@ fun ZmpUtz44V001.getReturnReasonList(taskType: String): List<ReturnReason> {
     @Suppress("INACCESSIBLE_TYPE")
     return localHelper_ET_TASK_REASONS.getWhere("TASK_TYPE = \"$taskType\"").map {
         ReturnReason(
-                code = it.reason,
-                description = it.grtxt
+                code = it.reason.orEmpty(),
+                description = it.grtxt.orEmpty()
         )
     }
 }
@@ -87,8 +87,8 @@ fun ZmpUtz22V001.getAlcoCodeInfoList(alcoCode: String): List<AlcoCodeInfo> {
     @Suppress("INACCESSIBLE_TYPE")
     return localHelper_ET_ALCOD_LIST.getWhere("ZALCCOD = \"$alcoCode\"").map {
         AlcoCodeInfo(
-                material = it.matnr,
-                code = it.zalccod
+                material = it.matnr.orEmpty(),
+                code = it.zalccod.orEmpty()
         )
     }
 }

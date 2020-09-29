@@ -13,6 +13,7 @@ import com.lenta.bp12.features.create_task.marked_good_info.MarkedGoodInfoCreate
 import com.lenta.bp12.features.create_task.task_card.TaskCardCreateFragment
 import com.lenta.bp12.features.create_task.task_content.TaskContentFragment
 import com.lenta.bp12.features.enter_employee_number.EnterEmployeeNumberFragment
+import com.lenta.bp12.features.enter_mrc.EnterMrcFragment
 import com.lenta.bp12.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp12.features.main_menu.MainMenuFragment
 import com.lenta.bp12.features.open_task.discrepancy_list.DiscrepancyListFragment
@@ -25,6 +26,7 @@ import com.lenta.bp12.features.open_task.task_list.TaskListFragment
 import com.lenta.bp12.features.open_task.task_search.TaskSearchFragment
 import com.lenta.bp12.features.save_data.SaveDataFragment
 import com.lenta.bp12.features.select_market.SelectMarketFragment
+import com.lenta.bp12.model.WorkType
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.exception.Failure
@@ -194,6 +196,17 @@ class ScreenNavigator @Inject constructor(
     override fun openMarkedGoodInfoOpenScreen() {
         runOrPostpone {
             getFragmentStack()?.push(MarkedGoodInfoOpenFragment())
+        }
+    }
+
+    override fun openEnterMrcFromBoxScreen(workType: WorkType, onNextCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(
+                    EnterMrcFragment.newInstance(
+                            workType,
+                            backFragmentResultHelper.setFuncForResult(onNextCallback)
+                    )
+            )
         }
     }
 
@@ -688,6 +701,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openGoodInfoOpenScreen()
     fun openMarkedGoodInfoCreateScreen()
     fun openMarkedGoodInfoOpenScreen()
+    fun openEnterMrcFromBoxScreen(workType: WorkType, nextCallback: () -> Unit)
 
     fun showUnsentDataFoundOnDevice(deleteCallback: () -> Unit, goOverCallback: () -> Unit)
     fun showUnsavedDataWillBeLost(proceedCallback: () -> Unit)
