@@ -184,13 +184,8 @@ class MarkedGoodInfoCreateFragment : CoreFragment<FragmentMarkedGoodInfoCreateBi
 //                true
 //            }
 //            //Марка обуви 198794
-//            KeyCode.KEYCODE_7 -> {
-//                vm.onScanResult("010467003610609821fDiwLb=cO6vkb")
-//                true
-//            }
-//            //Марка обуви 198794
 //            KeyCode.KEYCODE_8 -> {
-//                vm.onScanResult("010290000004865221atgO4Cg*Z!KRp")
+//                vm.onScanResult("010467003610609821j3qd?s9G2pJZJ")
 //                true
 //            } //Коробка сигарет без мрц
 //            KeyCode.KEYCODE_9 -> {

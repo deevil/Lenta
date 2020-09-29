@@ -853,4 +853,5 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
     companion object {
         private const val ZERO_QUANTITY_STRING = "0"
     }
+
 }
