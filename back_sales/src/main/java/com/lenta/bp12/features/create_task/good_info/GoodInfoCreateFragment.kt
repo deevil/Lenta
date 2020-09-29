@@ -95,9 +95,9 @@ class GoodInfoCreateFragment : CoreFragment<FragmentGoodInfoCreateBinding, GoodI
 //                vm.onScanResult("4606068253837") // Марка
 //                true
 //            }
-//            //Блок Мрц 100
+//            //Коробка 335533
 //            KeyCode.KEYCODE_1 -> {
-//                vm.onScanResult("1734001784926710180016BZ3532QMZKOBPRTXTL7BZMZ3YNNMK53PXMB3ZU66TJ3SNVFR7YTCYVLOPKUNBQIG5XXLKNYYWMWGGUXJLVHB2NLSMF6ACBJDB73IUKGGSAEOWKBY7TW7FZ5BLIT3YT2Y") // SAP-код: 270202156641
+//                vm.onScanResult("14606471564053")
 //                true
 //            }
 //            //пачка

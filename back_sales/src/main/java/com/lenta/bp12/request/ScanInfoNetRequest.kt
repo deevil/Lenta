@@ -64,29 +64,29 @@ class ScanInfoStatus : ObjectRawStatus<ScanInfoResult>()
 data class ScanInfoResult(
         /** Дата производства */
         @SerializedName("EV_DATEOFPOUR")
-        val producedDate: String,
+        val producedDate: String?,
         /** Статус */
         @SerializedName("EV_STAT")
-        val status: String,
+        val status: String?,
         /** Текст статуса для отображения в МП */
         @SerializedName("EV_STAT_TEXT")
-        val statusDescription: String,
+        val statusDescription: String?,
         /** Таблица марок в коробке */
         @SerializedName("ET_MARKS")
-        val exciseMarks: List<ExciseMarkInfo>,
+        val exciseMarks: List<ExciseMarkInfo>?,
         /** Номер товара? */
         @SerializedName("EV_MATNR_COMP")
-        val materialComp: String,
+        val materialComp: String?,
         /** Таблица ЕГАИС производителей */
         @SerializedName("ET_PROD_TEXT")
-        val producers: List<ProducerInfo>,
-        /** Номер партии */
+        val producers: List<ProducerInfo>?,
+        /** Партии */
         @SerializedName("ET_ZCHARG")
-        val partNumber: List<PartNumberInfo>,
+        val parts: List<PartNumberInfo>?,
         /** Код возврата */
         @SerializedName("EV_RETCODE")
-        override val retCode: Int,
+        override val retCode: Int?,
         /** Текст ошибки */
         @SerializedName("EV_ERROR_TEXT")
-        override val errorText: String
+        override val errorText: String?
 ) : SapResponse

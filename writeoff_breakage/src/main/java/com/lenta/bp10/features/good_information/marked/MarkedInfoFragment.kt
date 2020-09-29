@@ -106,6 +106,7 @@ class MarkedInfoFragment : CoreFragment<FragmentMarkedInfoBinding, MarkedInfoVie
             //R.id.b_3 -> vm.onScanResult("010460026601165721000001C800508768593kKBf") // блок сигарет 436094
             //R.id.b_3 -> vm.onScanResult("010460026601165721000001G800512683393JEPq") // блок сигарет 436094
             //R.id.b_3 -> vm.onScanResult("010460026601165721000001H800543025793psSa") // блок сигарет 436094
+            //R.id.b_3 -> vm.onScanResult("010460026601165721000001G800512683393JEPq") // блок сигарет
         }
     }
 

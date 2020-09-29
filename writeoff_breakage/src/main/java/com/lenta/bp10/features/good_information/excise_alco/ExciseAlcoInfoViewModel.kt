@@ -82,7 +82,8 @@ class ExciseAlcoInfoViewModel : BaseProductInfoViewModel() {
                 alcoholStampCollector.processAll(getSelectedReason())
             }
 
-            count.value = ""
+            count.value = "0"
+            requestFocusToQuantity.value = true
 
             return true
         }

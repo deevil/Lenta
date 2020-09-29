@@ -1,5 +1,7 @@
 package com.lenta.shared.fmp.resources.slow;
 
+import androidx.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 import com.mobrun.plugin.api.HyperHive;
 import com.mobrun.plugin.api.helper.LocalTableResourceHelper;
@@ -37,22 +39,27 @@ public class ZmpUtz09V001 {
 
     public static class ItemLocal_ET_VENDORS {
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("VENDOR")
         public String vendor;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("VENDORNAME")
         public String vendorname;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("SPERR")
         public String sperr;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("SPERM")
         public String sperm;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("LOEVM")
         public String loevm;
 

@@ -103,7 +103,6 @@ class BasketCreateGoodListViewModel : BaseGoodListCreateViewModel(), OnOkInSoftK
             goods.getOrNull(position)?.let { item ->
                 val good = item.good
                 manager.updateCurrentGood(good)
-                navigator.goBack()
                 if (good.isMarked()) {
                     navigator.openMarkedGoodInfoCreateScreen()
                 } else {
