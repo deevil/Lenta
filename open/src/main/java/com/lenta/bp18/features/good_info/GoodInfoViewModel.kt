@@ -117,7 +117,8 @@ class GoodInfoViewModel : CoreViewModel() {
         /*ШК по индикатору (10) для GS1, для EAN13 не заполнять*/
         //partNumberField.value = /*значение*/
 
-        val groupList = database.getAllGoodGroup()
+        val marketNumber = sessionInfo.market.orEmpty()
+        val groupList = database.getGroupToSelectedMarket(marketNumber)
         val filteredGroupList = filterGroupList(groupList)
         selectedGroup.value = findSelectedIndexForGroup(filteredGroupList)
         selectedCondition.value = findSelectedIndexForCondition(conditionList)
@@ -229,7 +230,6 @@ class GoodInfoViewModel : CoreViewModel() {
                         quantity = quantityField.value,
                         buom = buom.value.orEmpty(),
                         partNumber = partNumberField.value,
-                        /**Уникальный идентификатор, потом заменить на генерацию GUID*/
                         guid = guid,
                         dateOpen = dateOpen,
                         timeOpen = timeMonitor.getUnixTime().toString(),

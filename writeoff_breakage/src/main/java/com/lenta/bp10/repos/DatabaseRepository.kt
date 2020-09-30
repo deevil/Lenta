@@ -1,7 +1,5 @@
 package com.lenta.bp10.repos
 
-import com.lenta.bp10.fmp.resources.dao_ext.isChkOwnpr
-import com.lenta.bp10.fmp.resources.tasks_settings.ZmpUtz29V001Rfc
 import com.lenta.shared.fmp.resources.dao_ext.*
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
 import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
@@ -18,7 +16,8 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class DatabaseRepository @Inject constructor(
-        private val hyperHive: HyperHive
+        private val hyperHive: HyperHive,
+        private val repoInMemoryHolder: IRepoInMemoryHolder
 ) : IDatabaseRepository {
 
     private val eanInfo: ZmpUtz25V001 by lazy { ZmpUtz25V001(hyperHive) } // Информация о штрих-коде
@@ -26,7 +25,6 @@ class DatabaseRepository @Inject constructor(
     private val settings: ZmpUtz14V001 by lazy { ZmpUtz14V001(hyperHive) } // Настройки
     private val units: ZmpUtz07V001 by lazy { ZmpUtz07V001(hyperHive) } // Единицы измерения
 
-    private val taskTypes: ZmpUtz29V001Rfc by lazy { ZmpUtz29V001Rfc(hyperHive) } // Типы заданий для списания
     private val setInfo: ZmpUtz46V001 by lazy { ZmpUtz46V001(hyperHive) } // Информация о наборах
 
 
@@ -36,9 +34,12 @@ class DatabaseRepository @Inject constructor(
         }
     }
 
+    // Типы заданий для списания
     override suspend fun isChkOwnpr(taskTypeCode: String): Boolean {
         return withContext(Dispatchers.IO) {
-            taskTypes.isChkOwnpr(taskTypeCode)
+            val allResults = repoInMemoryHolder.userResourceResult?.taskSettings.orEmpty()
+            val result = allResults.filter { it.taskType == taskTypeCode && it.chkOwnpr == "X" }
+            result.isNotEmpty()
         }
     }
 

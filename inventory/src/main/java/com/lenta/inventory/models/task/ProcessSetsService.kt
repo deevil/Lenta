@@ -101,14 +101,14 @@ class ProcessSetsService @Inject constructor() : IProcessProductService {
                 componentsInfo.add(SetComponentInfo(
                         setNumber = data.matnrOsn,
                         number = data.matnr,
-                        name = it.name,
-                        ean = zmpUtz25V001.getEansFromMaterial(data.matnr).map {eans ->
+                        name = it.name.orEmpty(),
+                        ean = zmpUtz25V001.getEansFromMaterial(data.matnr).map { eans ->
                             eans.ean
                         },
                         count = data.menge.toString(),
                         uom = Uom(code = uomInfo!!.uom, name = uomInfo.name),
-                        matrixType = getMatrixType(it.matrType),
-                        sectionId = it.abtnr,
+                        matrixType = getMatrixType(it.matrType.orEmpty()),
+                        sectionId = it.abtnr.orEmpty(),
                         typeProduct = getProductType(it.isAlco == "X", it.isExc == "X"),
                         placeCode = currentProductInfo!!.placeCode
                 ))

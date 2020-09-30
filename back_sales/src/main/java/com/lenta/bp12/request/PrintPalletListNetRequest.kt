@@ -64,7 +64,7 @@ class PrintPalletListNetRequest @Inject constructor(
                 PrintPalletListStatus::class.java
         )
 
-        return if (result is Either.Right && result.b.retCode != NON_FAILURE_RET_CODE) {
+        return if (result is Either.Right && result.b.retCode != null && result.b.retCode != NON_FAILURE_RET_CODE) {
             Either.Left(Failure.SapError(result.b.errorText.orEmpty()))
         } else {
             result

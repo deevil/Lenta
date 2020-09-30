@@ -38,7 +38,6 @@ abstract class CoreMainViewModel : CoreViewModel() {
     @Inject
     lateinit var defaultSettingsManager: DefaultSettingsManager
 
-
     abstract var statusBarUiModel: StatusBarUiModel
 
     val zmpUtz14V001: ZmpUtz14V001 by lazy { ZmpUtz14V001(hyperHive) }

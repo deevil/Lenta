@@ -51,7 +51,7 @@ class CoreFailureInterpreter
 
             is Failure.SapError -> FailureDescription(
                     message = failure.message,
-                    iconRes = R.drawable.ic_warning_yellow_80dp
+                    iconRes = R.drawable.ic_warning_red_80dp
             )
 
             is Failure.DbError -> FailureDescription(message = context.getString(R.string.db_error))
