@@ -402,6 +402,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                         && !productInfo.isBoxFl
                                         && !productInfo.isMarkFl) {
                                     //показываем партии без разбивки по расхождениям
+                                    @Suppress("IMPLICIT_CAST_TO_ANY")
                                     addBatchProduct
                                             .takeIf {
                                                 it != productInfo.materialNumber
@@ -422,6 +423,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                                         }
                                             }
                                 } else {
+                                    @Suppress("IMPLICIT_CAST_TO_ANY")
                                     productInfo?.let { product ->
                                         index += 1
                                         val itemProcessedProduct = getItemProcessedProduct(
