@@ -280,8 +280,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
                         return@launchUITryCatch
                     }
 
-            searchProductDelegate.init(viewModelScope = this@MarkingInfoBoxPGEViewModel::viewModelScope,
-                    scanResultHandler = this@MarkingInfoBoxPGEViewModel::handleProductSearchResult)
+            searchProductDelegate.init(scanResultHandler = this@MarkingInfoBoxPGEViewModel::handleProductSearchResult)
 
             val paramGrzAlternMeinsCode = dataBase.getGrzAlternMeins().orEmpty()
             val uomInfo = ZmpUtz07V001(hyperHive).getUomInfo(paramGrzAlternMeinsCode)

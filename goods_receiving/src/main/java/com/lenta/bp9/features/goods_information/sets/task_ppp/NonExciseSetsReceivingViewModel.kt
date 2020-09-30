@@ -203,8 +203,7 @@ class NonExciseSetsReceivingViewModel : CoreViewModel(),
                         return@launchUITryCatch
                     }
 
-            searchProductDelegate.init(viewModelScope = this@NonExciseSetsReceivingViewModel::viewModelScope,
-                    scanResultHandler = this@NonExciseSetsReceivingViewModel::handleProductSearchResult)
+            searchProductDelegate.init(scanResultHandler = this@NonExciseSetsReceivingViewModel::handleProductSearchResult)
 
             suffix.value = productInfo.value?.purchaseOrderUnits?.name
             if (isDiscrepancy.value == true) {

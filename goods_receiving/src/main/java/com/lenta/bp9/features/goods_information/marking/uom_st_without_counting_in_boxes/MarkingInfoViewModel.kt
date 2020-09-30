@@ -361,8 +361,7 @@ class MarkingInfoViewModel : CoreViewModel(),
                         return@launchUITryCatch
                     }
 
-            searchProductDelegate.init(viewModelScope = this@MarkingInfoViewModel::viewModelScope,
-                    scanResultHandler = this@MarkingInfoViewModel::handleProductSearchResult)
+            searchProductDelegate.init(scanResultHandler = this@MarkingInfoViewModel::handleProductSearchResult)
 
             val isBlockMode =
                     productInfo.value

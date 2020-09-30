@@ -96,25 +96,21 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
     private val countExciseStampsScanned: MutableLiveData<Int> = MutableLiveData(0)
 
     val tvStampControlVal: MutableLiveData<String> = countExciseStampsScanned.map {
-        "${processExciseAlcoBoxAccService.getCountExciseStampDiscrepanciesOfBox(boxInfo.value?.boxNumber ?: "", "1")} из ${productInfo.value?.numberStampsControl}"
+        "${processExciseAlcoBoxAccService.getCountExciseStampDiscrepanciesOfBox(boxInfo.value?.boxNumber.orEmpty(), "1")} из ${productInfo.value?.numberStampsControl}"
     }
 
     val checkStampControl: MutableLiveData<Boolean> = countExciseStampsScanned.map {
         //https://trello.com/c/Hve509E5
-        if (boxInfo.value != null) {
-            processExciseAlcoBoxAccService.stampControlOfBox(boxInfo.value!!)
-        } else {
-            false
-        }
+        boxInfo.value?.run {
+            processExciseAlcoBoxAccService.stampControlOfBox(this)
+        } ?: false
     }
 
     val checkBoxControl: MutableLiveData<Boolean> = countExciseStampsScanned.map {
         //https://trello.com/c/Hve509E5
-        if (boxInfo.value != null) {
-            processExciseAlcoBoxAccService.boxControl(boxInfo.value!!)
-        } else {
-            false
-        }
+        boxInfo.value?.run {
+            processExciseAlcoBoxAccService.boxControl(this)
+        } ?: false
     }
 
     val visibilityRollbackBtn: MutableLiveData<Boolean> = spinQualitySelectedPosition.map {
@@ -139,9 +135,8 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
             count.value = initialCount.value
             suffix.value = productInfo.value?.purchaseOrderUnits?.name
 
-            paramGrzCrGrundcatCode.value = dataBase.getParamGrzCrGrundcat() ?: ""
-            paramGrzCrGrundcatName.value = dataBase.getGrzCrGrundcatName(paramGrzCrGrundcatCode.value.orEmpty())
-                    ?: ""
+            paramGrzCrGrundcatCode.value = dataBase.getParamGrzCrGrundcat().orEmpty()
+            paramGrzCrGrundcatName.value = dataBase.getGrzCrGrundcatName(paramGrzCrGrundcatCode.value.orEmpty()).orEmpty()
 
             if (selectReasonRejectionCode.value != null) {
                 qualityInfo.value = dataBase.getQualityBoxesDefectInfo()
@@ -279,6 +274,8 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
                 processExciseAlcoBoxAccService.applyBoxCard()
             }
             screenNavigator.goBack()
+        }.orIfNull {
+            Logg.e { "onClickApply() boxInfo.value is null" }
         }
     }
 
@@ -302,8 +299,7 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
                 ?.takeIf { qualityInfoCode ->
                     qualityInfoCode == TYPE_DISCREPANCIES_QUALITY_NORM
                 }
-                ?: selectedReasonRejectionInfo
-                        ?.code.orEmpty()
+                ?: selectedReasonRejectionInfo?.code.orEmpty()
         val box = processExciseAlcoBoxAccService.searchBox(boxNumber = data)
         if (box == null) {
             screenNavigator.openAlertScannedBoxNotFoundInDeliveryScreen() //Коробка не найдена в поставке.
@@ -342,6 +338,8 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
                         typeDiscrepancies = typeDiscrepancies,
                         isScan = true
                 )
+            }.orIfNull {
+                Logg.e { "boxInfo.value is null" }
             }
             productInfo.value?.let {
                 screenNavigator.openExciseAlcoBoxCardScreen(
@@ -355,7 +353,7 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
                         isScan = true
                 )
             }.orIfNull {
-                Logg.e { "productInfo.value  is null" }
+                Logg.e { "productInfo.value is null" }
             }
         }
     }

@@ -32,9 +32,9 @@ import com.lenta.shared.requests.combined.scan_info.ScanInfoRequestParams
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.Logg
 import com.mobrun.plugin.api.HyperHive
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import javax.inject.Inject
+import kotlin.coroutines.CoroutineContext
 
 class SearchProductDelegate @Inject constructor(
         private val hyperHive: HyperHive,
@@ -45,7 +45,7 @@ class SearchProductDelegate @Inject constructor(
         private val context: Context,
         private val zmpUtzGrz31V001NetRequest: ZmpUtzGrz31V001NetRequest,
         private val repoInMemoryHolder: IRepoInMemoryHolder
-) {
+) : CoroutineScope {
 
     private var scanInfoResult: ScanInfoResult? = null
 
@@ -53,11 +53,14 @@ class SearchProductDelegate @Inject constructor(
 
     private var isDiscrepancy: Boolean = false
 
-    private lateinit var viewModelScope: () -> CoroutineScope
-
     private var scanResultHandler: ((ScanInfoResult?) -> Boolean)? = null
 
     private var codeWith12Digits: String? = null
+
+    private val job = SupervisorJob()
+
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Main + job
 
     fun copy(): SearchProductDelegate {
         val searchProductDelegate = SearchProductDelegate(
@@ -70,12 +73,11 @@ class SearchProductDelegate @Inject constructor(
                 zmpUtzGrz31V001NetRequest,
                 repoInMemoryHolder
         )
-        searchProductDelegate.init(viewModelScope, scanResultHandler)
+        searchProductDelegate.init(scanResultHandler)
         return searchProductDelegate
     }
 
-    fun init(viewModelScope: () -> CoroutineScope, scanResultHandler: ((ScanInfoResult?) -> Boolean)? = null) {
-        this.viewModelScope = viewModelScope
+    fun init(scanResultHandler: ((ScanInfoResult?) -> Boolean)? = null) {
         this.scanResultHandler = scanResultHandler
     }
 
@@ -88,7 +90,7 @@ class SearchProductDelegate @Inject constructor(
             return
         }
 
-        viewModelScope().launch {
+        launch {
             screenNavigator.showProgress(scanInfoRequest)
             scanInfoRequest(
                     ScanInfoRequestParams(
@@ -100,7 +102,6 @@ class SearchProductDelegate @Inject constructor(
             )
                     .either(::handleFailure, ::handleSearchSuccess)
             screenNavigator.hideProgress()
-
         }
     }
 
@@ -145,7 +146,7 @@ class SearchProductDelegate @Inject constructor(
     }
 
     private fun addGoodsSurplus() {
-        viewModelScope().launch {
+        launch {
             screenNavigator.showProgress(scanInfoRequest)
             taskManager.getReceivingTask()?.let { task ->
                 val params = ZmpUtzGrz31V001Params(
@@ -157,15 +158,14 @@ class SearchProductDelegate @Inject constructor(
                 zmpUtzGrz31V001NetRequest(params).either(::handleFailure, ::handleSuccessAddGoodsSurplus)
             }
             screenNavigator.hideProgress()
-
         }
     }
 
-    private fun handleSuccessAddGoodsSurplus(result: ZmpUtzGrz31V001Result) {
+    private fun handleSuccessAddGoodsSurplus(result: ZmpUtzGrz31V001Result) = launch {
         Logg.d { "AddGoodsSurplus ${result}" }
         repoInMemoryHolder.manufacturers.value = result.manufacturers
-        val materialInfo = ZfmpUtz48V001(hyperHive).getProductInfoByMaterial(result.productSurplusDataPGE.materialNumber)
-        val eanInfo = ZmpUtz25V001(hyperHive).getEanInfoFromMaterial(result.productSurplusDataPGE.materialNumber)
+        val materialInfo = withContext(Dispatchers.IO) { ZfmpUtz48V001(hyperHive).getProductInfoByMaterial(result.productSurplusDataPGE.materialNumber) }
+        val eanInfo = withContext(Dispatchers.IO) { ZmpUtz25V001(hyperHive).getEanInfoFromMaterial(result.productSurplusDataPGE.materialNumber) }
         val isAlcoProduct = getIsAlcoProduct(result)
         val isExcProduct = getIsExcProduct(result)
         val goodsSurplus = TaskProductInfo(
@@ -364,5 +364,4 @@ class SearchProductDelegate @Inject constructor(
         private const val DEFAULT_INT_VALUE = "0"
         const val UNIT_CODE_ST = "ST"
     }
-
 }
