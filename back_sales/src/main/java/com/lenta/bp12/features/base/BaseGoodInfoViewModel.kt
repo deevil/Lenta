@@ -110,7 +110,7 @@ abstract class BaseGoodInfoViewModel<R : Taskable, T : ITaskManager<R>> : CoreVi
                 isProviderSelected.switchMap { isProviderSelected ->
                     asyncTryCatchLiveData {
                         good.takeIf { isProviderSelected }?.run {
-                            getBasket()?.getQuantityOfGood(this)?.sumWith(enteredQuantity)
+                            getBasket()?.getQuantityOfGood(this).sumWith(enteredQuantity)
                                     .orIfNull { enteredQuantity }
                         }.orIfNull { ZERO_QUANTITY }
                     }
