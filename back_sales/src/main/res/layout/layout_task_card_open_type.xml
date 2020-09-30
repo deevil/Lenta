@@ -26,7 +26,10 @@
                     android:drawableEnd="@drawable/spinner_arrow_down_disabled"
                     android:enabled="false"
                     android:text="@{vm.ui.description}"
-                    tools:text="Возврат брака прямому поставщику" />
+                    tools:text="Возврат брака прямому поставщику"
+                    android:importantForAutofill="no"
+                    android:inputType="textNoSuggestions"
+                    tools:ignore="LabelFor" />
 
             </LinearLayout>
 
@@ -43,7 +46,11 @@
                     style="@style/CellEditTextStyle"
                     android:enabled="false"
                     android:text="@{vm.ui.name}"
-                    tools:text="Возврат от 05.08.2020 15:16" />
+                    tools:text="Возврат от 05.08.2020 15:16"
+                    android:importantForAutofill="no"
+                    android:inputType="textNoSuggestions"
+                    tools:ignore="LabelFor"
+                    />
 
             </LinearLayout>
 
@@ -90,7 +97,11 @@
                     android:drawableEnd="@drawable/spinner_arrow_down_disabled"
                     android:enabled="false"
                     android:text="@{vm.ui.storage}"
-                    tools:text="0010" />
+                    tools:text="0010"
+                    android:importantForAutofill="no"
+                    android:inputType="textNoSuggestions"
+                    tools:ignore="LabelFor"
+                    />
 
             </LinearLayout>
 
@@ -99,7 +110,9 @@
         <View style="@style/HorizontalDivider" />
 
         <!-- Поставщик -->
-        <LinearLayout style="@style/LinearRowStyle">
+        <LinearLayout style="@style/LinearRowStyle"
+            android:visibility="@{!vm.ui.reason.isEmpty}"
+            >
 
             <LinearLayout style="@style/LinearCellStyle">
 
@@ -108,13 +121,19 @@
                     android:drawableEnd="@drawable/spinner_arrow_down_disabled"
                     android:enabled="false"
                     android:text="@{vm.ui.reason}"
-                    tools:text="Нарушение товарного вида" />
+                    tools:text="Нарушение товарного вида"
+                    android:importantForAutofill="no"
+                    android:inputType="textNoSuggestions"
+                    tools:ignore="LabelFor"
+                    />
 
             </LinearLayout>
 
         </LinearLayout>
 
-        <View style="@style/HorizontalDivider" />
+        <View style="@style/HorizontalDivider"
+            android:visibility="@{!vm.ui.reason.isEmpty}"
+            />
 
     </LinearLayout>
 
