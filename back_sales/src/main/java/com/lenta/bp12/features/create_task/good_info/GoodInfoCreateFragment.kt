@@ -56,8 +56,6 @@ class GoodInfoCreateFragment : CoreFragment<FragmentGoodInfoCreateBinding, GoodI
             R.id.b_3 -> vm.onClickDetails()
             R.id.b_4 -> vm.onClickClose()
             R.id.b_5 -> vm.onClickApply()
-
-//            R.id.b_3 -> vm.onScanResult("2811189041504")
         }
     }
 
@@ -87,53 +85,4 @@ class GoodInfoCreateFragment : CoreFragment<FragmentGoodInfoCreateBinding, GoodI
         private const val SCREEN_NUMBER = "12"
         private const val QUANTITY_KEY = "QUANTITY_KEY"
     }
-
-//    //Для тестов
-//    //ШК товара 335533
-//    //vm.onScanResult("4606068253837") // Марка
-
-//    //Коробка 335533
-//    //vm.onScanResult("14606471564053")
-
-//    //011189 ШК
-//    //vm.onScanResult("2811189041504") // SAP-код: 444877
-
-//    //Коробка обуви
-//    vm.onScanResult("22N00000XOIJT87CH2W0123456789012345678901234567890123456789000000001") // Марка 156641
-//                true
-//            }
-//            //Марка из этой коробки
-//            KeyCode.KEYCODE_4 -> {
-//                vm.onScanResult("22N00001CRDKFRWFBZ90123456789012345678901234567890123456789000000001") // Марка 377456
-//                true
-//            }
-//            //Марка не из этой коробки
-//            KeyCode.KEYCODE_5 -> {
-//                vm.onScanResult("03000048752210319000100516") // Коробка
-//                true
-//            }
-//            //  Марка не из этой коробки
-//            KeyCode.KEYCODE_6 -> {
-//                vm.onScanResult("22N00002NWKKIF6RWF30123456789012345678901234567890123456789000000004") // Партия
-//                true
-//            }
-//            // Коробка
-//            KeyCode.KEYCODE_7 -> {
-//                vm.onScanResult("01000000637810119000001340")
-//                true
-//            }
-//            //  Акциза 351076
-//            KeyCode.KEYCODE_8 -> {
-//                vm.onScanResult("22N00002NWKKIF6RWF30123456789012345678901234567890123456789000000004")
-//                true
-//            }
-//            //  Акциза 351076
-//            KeyCode.KEYCODE_9 -> {
-//                vm.onScanResult("4607055090121") // ШК
-//                true
-//            }
-//            else -> false
-//        }
-//    }
-
 }
