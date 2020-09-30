@@ -1,7 +1,6 @@
 package com.lenta.bp15.model
 
 import androidx.lifecycle.MutableLiveData
-import com.lenta.bp15.model.pojo.Good
 import com.lenta.bp15.model.pojo.Task
 import com.lenta.bp15.platform.navigation.IScreenNavigator
 import com.lenta.bp15.repository.database.IDatabaseRepository
@@ -30,7 +29,7 @@ class TaskManager @Inject constructor(
 
     override val foundTasks = MutableLiveData<List<Task>>(emptyList())
 
-    //override val currentTask = MutableLiveData<Task>()
+    override val currentTask = MutableLiveData<Task>()
 
     //override val currentGood = MutableLiveData<Good>()
 
@@ -67,6 +66,10 @@ class TaskManager @Inject constructor(
         navigator.hideProgress()
     }
 
+    override fun setCurrentTask(task: Task) {
+        currentTask.value = task
+    }
+
     private fun handleFailure(failure: Failure) {
         Logg.e { "handleFailure: $failure" }
         this.failure.postValue(failure)
@@ -81,8 +84,10 @@ interface ITaskManager {
 
     val tasks: MutableLiveData<List<Task>>
     val foundTasks: MutableLiveData<List<Task>>
+    val currentTask: MutableLiveData<Task>
 
     suspend fun updateTaskList()
     suspend fun updateFoundTaskList(searchParams: TaskSearchParams)
+    fun setCurrentTask(task: Task)
 
 }

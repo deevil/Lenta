@@ -15,6 +15,7 @@ data class Task(
     fun convertToItemTaskUi(index: Int): ItemTaskUi {
         return ItemTaskUi(
                 position = "${index + 1}",
+                number = number,
                 name = name,
                 description = description,
                 isFinished = isFinished,

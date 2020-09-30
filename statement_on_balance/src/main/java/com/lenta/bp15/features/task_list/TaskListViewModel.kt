@@ -49,20 +49,14 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     val requestFocusToSearchField = MutableLiveData(false)
 
     val taskList by lazy {
-        manager.tasks.combineLatest(processingField).mapSkipNulls {
-            val (tasks, _) = it
-            tasks
-        }.map(taskListFilterFunc)
+        manager.tasks.combineLatest(processingField).mapSkipNulls { it.first }.map(listFilterFunc)
     }
 
     val searchList by lazy {
-        manager.foundTasks.combineLatest(searchField).mapSkipNulls {
-            val (tasks, _) = it
-            tasks
-        }.map(taskListFilterFunc)
+        manager.foundTasks.combineLatest(searchField).mapSkipNulls { it.first }.map(listFilterFunc)
     }
 
-    private val taskListFilterFunc = { tasks: List<Task> ->
+    private val listFilterFunc = { tasks: List<Task> ->
         when {
             isEnteredLogin() -> tasks
             else -> tasks.filter { task -> task.number.contains(getCurrentFieldValue().orEmpty()) }
@@ -118,11 +112,21 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
      */
 
     fun onClickItemTaskPosition(position: Int) {
-
+        taskList.value?.getOrNull(position)?.number?.let { taskNumber ->
+            manager.tasks.value?.find { it.number == taskNumber }?.let { task ->
+                manager.setCurrentTask(task)
+                navigator.openTaskCardScreen()
+            }
+        }
     }
 
     fun onClickItemSearchPosition(position: Int) {
-
+        searchList.value?.getOrNull(position)?.number?.let { taskNumber ->
+            manager.foundTasks.value?.find { it.number == taskNumber }?.let { task ->
+                manager.setCurrentTask(task)
+                navigator.openTaskCardScreen()
+            }
+        }
     }
 
     fun onClickUpdate() {
