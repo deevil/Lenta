@@ -13,14 +13,14 @@ abstract class BarcodeViewModel : CoreViewModel() {
 
     protected open suspend fun processBarcode(data: String): BarcodeData {
         var barcode = data
-        val barcodeLenght = barcode.length
+        val barcodeLength = barcode.length
         var isWeight = false
         var weight = DEFAULT_ZERO_VALUE
         var batch: Batch? = null
 
         when {
             // SAP-код (только ручной ввод)
-            barcodeLenght in 0..MAX_SAP_CODE_LENGTH -> {
+            barcodeLength in 0..MAX_SAP_CODE_LENGTH -> {
                 if (GTIN.convertibleToGTIN8(data)) {
                     barcode = GTIN.toGTIN8(data)
                 }
@@ -32,7 +32,7 @@ abstract class BarcodeViewModel : CoreViewModel() {
                 }
             }
             //EAN (ручной ввод и сканирование)
-            barcodeLenght in MAX_SAP_CODE_LENGTH..MAX_EAN_CODE_LENGTH -> {
+            barcodeLength in MAX_SAP_CODE_LENGTH..MAX_EAN_CODE_LENGTH -> {
                 isWeight = getIsWeightFromCode(barcode)
                 if (isWeight) {
                     val changedBarcode = getChangedBarcodeAndWeight(barcode)
@@ -41,7 +41,7 @@ abstract class BarcodeViewModel : CoreViewModel() {
                 }
             }
             // парсинг кодов GS1 с разделителями
-            barcodeLenght >= MINIMUM_GS1_CODE_LENGTH -> {
+            barcodeLength >= MINIMUM_GS1_CODE_LENGTH -> {
                 val parsedEntities = EAN128Parser.parse(barcode, false)
                 barcode = parsedEntities.getString(ApplicationIdentifier.GTIN)
                 weight = parsedEntities.getString(ApplicationIdentifier.ITEM_NET_WEIGHT_KG)

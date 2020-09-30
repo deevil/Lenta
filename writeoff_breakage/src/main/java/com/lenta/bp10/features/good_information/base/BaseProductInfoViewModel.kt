@@ -55,7 +55,12 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardLis
 
     private val writeOffReasons: LiveData<List<WriteOffReason>> = productInfo.switchMap {
         asyncLiveData<List<WriteOffReason>> {
-            emit(getWriteOffReasons())
+            val reasons = getWriteOffReasons()
+            val taskCode = getTaskDescription().taskType.code
+            val reasonCode = goodInformationRepo.getStartReasonPosition(taskCode, it.sectionId)
+            val positionIndex = reasons.indexOfFirst { it.code == reasonCode }
+            reasonPosition.postValue(positionIndex)
+            emit(reasons)
         }
     }
 
@@ -70,7 +75,7 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardLis
         }
     }
 
-    val count: MutableLiveData<String> by lazy {
+    val count: MutableLiveData<String> by unsafeLazy {
         initCountLiveData()
     }
 
@@ -82,43 +87,39 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardLis
 
     internal var limitsChecker: LimitsChecker? = null
 
-    protected val countValue: MutableLiveData<Double> by lazy {
+    protected val countValue by unsafeLazy {
         count.mapSkipNulls {
-            (it.toDoubleOrNull() ?: 0.0)
+            it.toDoubleOrNull() ?: 1.0
         }
     }
 
-    val totalCount: MutableLiveData<Double> by lazy {
+    val totalCount: MutableLiveData<Double> by unsafeLazy {
         countValue.mapSkipNulls {
-            it + getProcessTotalCount()
+            (it ?: DEFAULT_COUNT_VALUE) + getProcessTotalCount()
         }
     }
 
     val isSpecialMode = MutableLiveData(false)
 
-    open val totalCountWithUom: MutableLiveData<String> by lazy {
-        totalCount.map { getCountWithUom(count = it, productInfo = productInfo) }
+    open val totalCountWithUom: MutableLiveData<String> by unsafeLazy {
+        totalCount.mapSkipNulls {
+            getCountWithUom(count = it, productInfo = productInfo)
+        }
     }
 
     val reasonPosition = MutableLiveData(0)
-
-    val onSelectReason = object : OnPositionClickListener {
-        override fun onClickPosition(position: Int) {
-            reasonPosition.value = position
-        }
-    }
 
     /**
     Кнопки нижнего тулбара
      */
 
-    val enabledDetailsButton: MutableLiveData<Boolean> by lazy {
+    val enabledDetailsButton: MutableLiveData<Boolean> by unsafeLazy {
         totalCount.map {
             isEnabledDetailsButton(getProcessTotalCount())
         }
     }
 
-    open val enabledApplyButton: MutableLiveData<Boolean> by lazy {
+    open val enabledApplyButton: MutableLiveData<Boolean> by unsafeLazy {
         countValue.combineLatest(reasonPosition).map {
             isEnabledApplyButtons(
                     count = it?.first,
@@ -130,7 +131,7 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardLis
         }
     }
 
-    val damagedEnabled: LiveData<Boolean> by lazy {
+    val damagedEnabled: LiveData<Boolean> by unsafeLazy {
         enabledApplyButton.combineLatest(isSpecialMode).mapSkipNulls {
             val (enabledApplyButton, isSpecialMode) = it
             if (isSpecialMode) isSpecialMode else enabledApplyButton
@@ -150,9 +151,12 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardLis
             initSpecialMode()
 
             productInfo.value?.let {
+                val taskCode = getTaskDescription().taskType.code
+                val taskType = it.type
+
                 limitsChecker = LimitsChecker(
-                        limit = goodInformationRepo.getLimit(getTaskDescription().taskType.code, it.type),
-                        observer = { navigator.openLimitExceededScreen() },
+                        limit = goodInformationRepo.getLimit(taskCode, taskType),
+                        observer = navigator::openLimitExceededScreen,
                         countLiveData = totalCount,
                         viewModelScope = this@BaseProductInfoViewModel::viewModelScope
 
@@ -171,13 +175,10 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardLis
      */
 
     private fun getWriteOffReasons(): List<WriteOffReason> {
-        val reasons = getTaskDescription().moveTypes
-        return if (reasons.isEmpty()) {
-            listOf(WriteOffReason.emptyWithTitle(resourceManager.emptyCategory()))
-        } else {
-            reasons.filter { writeOffReason ->
-                filterReason(writeOffReason)
-            }
+        val reasons = getTaskDescription().moveTypes.toMutableList()
+        reasons.add(0, WriteOffReason.emptyWithTitle(resourceManager.emptyCategory()))
+        return reasons.filter { writeOffReason ->
+            filterReason(writeOffReason)
         }
     }
 
@@ -246,10 +247,15 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardLis
 
     fun initCount(it: Double) {
         launchUITryCatch {
-            delay(100)
+            delay(DEFAULT_DELAY)
             count.value = it.toStringFormatted()
             requestFocusToQuantity.value = true
         }
+    }
+
+    companion object {
+        const val DEFAULT_COUNT_VALUE = 0.0
+        private const val DEFAULT_DELAY = 100L
     }
 
 }
