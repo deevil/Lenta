@@ -305,8 +305,12 @@ class GoodListViewModel : BaseGoodListOpenViewModel(), PageSelectionListener, On
                 isTaskWholesaleAndAnyOfBasketsIsNotClosed(task) ->
                     navigator.showSomeBasketsNotClosedCantSaveScreen()
                 //Если есть не удаленные товары в задании и их плановое количество больше фактического
-                task.isQuantityOfNotDeletedGoodsNotActual() ->
+                task.isQuantityOfNotDeletedGoodsNotActual() -> {
+                    task.goods.forEach {
+                        it.isMissing = false
+                    }
                     navigator.openDiscrepancyListScreen()
+                }
                 else -> showMakeTaskCountedAndClose()
             }
         }.orIfNull {
