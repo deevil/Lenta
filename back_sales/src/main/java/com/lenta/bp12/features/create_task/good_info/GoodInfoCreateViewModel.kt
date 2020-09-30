@@ -781,12 +781,20 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
 
     override fun onBackPressed() {
         with(navigator) {
-            if (isExistUnsavedData) {
-                showUnsavedDataWillBeLost {
-                    goBack()
-                }
+            val isBasketEmpty = manager.currentBasket.value?.goods?.isEmpty() == true
+
+            fun action() = if (isBasketEmpty){
+                goBackTo(TaskContentFragment::class.simpleName)
             } else {
                 goBack()
+            }
+
+            if (isExistUnsavedData) {
+                showUnsavedDataWillBeLost {
+                    action()
+                }
+            } else {
+                action()
             }
         }
     }

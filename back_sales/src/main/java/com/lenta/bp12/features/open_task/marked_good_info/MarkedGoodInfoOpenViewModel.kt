@@ -6,6 +6,7 @@ import androidx.lifecycle.switchMap
 import com.lenta.bp12.features.create_task.marked_good_info.GoodProperty
 import com.lenta.bp12.features.create_task.marked_good_info.GoodPropertyItem
 import com.lenta.bp12.features.open_task.base.BaseGoodInfoOpenViewModel
+import com.lenta.bp12.features.open_task.good_list.GoodListFragment
 import com.lenta.bp12.managers.interfaces.IMarkManager
 import com.lenta.bp12.managers.interfaces.IOpenTaskManager
 import com.lenta.bp12.model.MarkScreenStatus
@@ -320,12 +321,20 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
 
     override fun onBackPressed() {
         with(navigator) {
-            if (isExistUnsavedData) {
-                showUnsavedDataWillBeLost {
-                    goBack()
-                }
+            val isBasketEmpty = manager.currentBasket.value?.goods?.isEmpty() == true
+
+            fun action() = if (isBasketEmpty){
+                goBackTo(GoodListFragment::class.simpleName)
             } else {
                 goBack()
+            }
+
+            if (isExistUnsavedData) {
+                showUnsavedDataWillBeLost {
+                    action()
+                }
+            } else {
+                action()
             }
             markManager.clearData()
         }

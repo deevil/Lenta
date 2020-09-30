@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
 import com.lenta.bp12.features.open_task.base.BaseGoodInfoOpenViewModel
+import com.lenta.bp12.features.open_task.good_list.GoodListFragment
 import com.lenta.bp12.managers.interfaces.IOpenTaskManager
 import com.lenta.bp12.model.*
 import com.lenta.bp12.model.pojo.Good
@@ -793,13 +794,23 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
     Обработка нажатий кнопок
      */
     override fun onBackPressed() {
-        val enteredQuantity = quantity.value ?: ZERO_QUANTITY
-        if (isExistUnsavedData || enteredQuantity != ZERO_QUANTITY) {
-            navigator.showUnsavedDataWillBeLost {
-                navigator.goBack()
+        with(navigator) {
+            val isBasketEmpty = manager.currentBasket.value?.goods?.isEmpty() == true
+            val enteredQuantity = quantity.value ?: ZERO_QUANTITY
+
+            fun action() = if (isBasketEmpty){
+                goBackTo(GoodListFragment::class.simpleName)
+            } else {
+                goBack()
             }
-        } else {
-            navigator.goBack()
+
+            if (isExistUnsavedData || enteredQuantity != ZERO_QUANTITY) {
+                showUnsavedDataWillBeLost {
+                    action()
+                }
+            } else {
+                action()
+            }
         }
     }
 

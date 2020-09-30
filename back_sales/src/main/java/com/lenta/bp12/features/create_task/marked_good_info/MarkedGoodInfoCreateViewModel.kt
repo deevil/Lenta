@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
 import com.lenta.bp12.features.create_task.base.BaseGoodInfoCreateViewModel
+import com.lenta.bp12.features.create_task.task_content.TaskContentFragment
 import com.lenta.bp12.managers.interfaces.ICreateTaskManager
 import com.lenta.bp12.managers.interfaces.IMarkManager
 import com.lenta.bp12.model.MarkScreenStatus
@@ -340,12 +341,20 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
 
     override fun onBackPressed() {
         with(navigator) {
-            if (isExistUnsavedData) {
-                showUnsavedDataWillBeLost {
-                    goBack()
-                }
+            val isBasketEmpty = manager.currentBasket.value?.goods?.isEmpty() == true
+
+            fun action() = if (isBasketEmpty){
+                goBackTo(TaskContentFragment::class.simpleName)
             } else {
                 goBack()
+            }
+
+            if (isExistUnsavedData) {
+                showUnsavedDataWillBeLost {
+                    action()
+                }
+            } else {
+                action()
             }
             markManager.clearData()
         }
