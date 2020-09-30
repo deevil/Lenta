@@ -1,6 +1,7 @@
 package com.lenta.bp10.features.good_information
 
 import com.lenta.bp10.fmp.resources.dao_ext.getDefaultReason
+import com.lenta.bp10.fmp.resources.dao_ext.getReasonPosition
 import com.lenta.bp10.fmp.resources.fast.ZmpUtz31V001
 import com.lenta.bp10.repos.IRepoInMemoryHolder
 import com.lenta.shared.di.AppScope
@@ -38,9 +39,16 @@ class GoodInformationRepo(
             allSettings.firstOrNull { it.taskType == taskTypeCode }?.limit ?: 0.0
         }
     }
+
+    override suspend fun getStartReasonPosition(taskType: String, sectionId: String): String {
+        return withContext(Dispatchers.IO) {
+            zmpUtz31V001.getReasonPosition(taskType, sectionId)
+        }
+    }
 }
 
 interface IGoodInformationRepo {
     suspend fun getDefaultReason(taskType: String, sectionId: String, materialNumber: String): String
     suspend fun getLimit(taskTypeCode: String, productType: ProductType): Double
+    suspend fun getStartReasonPosition(taskType: String, sectionId: String): String
 }

@@ -52,7 +52,10 @@
                         app:suffix="@{vm.good.commonUnits.name}"
                         tools:drawableEnd="@drawable/ic_bei_12dp"
                         android:afterTextChanged="@{vm}"
-                        tools:text="1 шт" />
+                        tools:text="1 шт"
+                        app:onOkInSoftKeyboard="@{vm}"
+                        app:requestFocus="@{vm.quantityFieldEnabled}"
+                        />
 
                 </LinearLayout>
 

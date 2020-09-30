@@ -1,5 +1,7 @@
 package com.lenta.shared.fmp.resources.fast;
 
+import androidx.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 import com.mobrun.plugin.api.HyperHive;
 import com.mobrun.plugin.api.helper.LocalTableResourceHelper;
@@ -38,41 +40,50 @@ public class ZmpUtz39V001 {
     public static class ItemLocal_ET_TASK_TPS {
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
         /** Тип задания */
+        @Nullable
         @SerializedName("TASK_TYPE")
         public String taskType;
 
         /** Аннотация к типу задания*/
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("ANNOTATION")
         public String annotation;
 
         /** Флаг – делить по ГИС-контролю */
+        @Nullable
         @SerializedName("DIV_CNTRL")
         public String isDivByGis;
 
         /** Флаг – Делить по поставщику */
+        @Nullable
         @SerializedName("DIV_LIFNR")
         public String isDivByProvider;
 
         /** Флаг – Делить по виду товара */
+        @Nullable
         @SerializedName("DIV_MTART")
         public String isDivByMaterialType;
 
         /** Флаг - Делить по секции */
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("DIV_ABTNR")
         public String divAbtnr;
 
         /** Флаг - Делить по группе закупок товаров */
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("DIV_EKGRP")
         public String divEkgrp;
 
         /** Флаг - Делить группе маркировки */
+        @Nullable
         @SerializedName("DIV_MARKTYPE")
         public String isDivByMarkType;
 
         /** Флаг – Делить по МРЦ */
+        @Nullable
         @SerializedName("DIV_MPR")
         public String isDivByMinimalPrice;
     }

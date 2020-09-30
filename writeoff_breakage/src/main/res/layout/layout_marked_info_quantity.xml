@@ -80,8 +80,7 @@
             <com.lenta.shared.view.ClickableSpinner
                 style="@style/CellSpinnerStyle"
                 app:items="@{vm.writeOffReasonTitles}"
-                app:onPositionClickListener="@{vm.onSelectReason}"
-                app:position="@{vm.reasonPosition}"
+                app:position="@={vm.reasonPosition}"
                 tools:entries="@array/test_list" />
 
         </LinearLayout>

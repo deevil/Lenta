@@ -24,7 +24,7 @@ import com.lenta.shared.utilities.getDateFromString
  * */
 class Good(
         var ean: String,
-        val eans: List<String> = emptyList(),
+        val eans: MutableMap<String, Float> = mutableMapOf(),
         val material: String,
         val name: String,
         val kind: GoodKind,
@@ -101,8 +101,12 @@ class Good(
 
     fun isTobacco() = this.markType == MarkType.TOBACCO
 
-    fun isTobaccoAndFoundGoodHasDifferentMrc(other: Good) =
-            this.isTobacco() && maxRetailPrice.isNotEmpty() && maxRetailPrice != other.maxRetailPrice
+    fun isTobaccoAndFoundGoodHasDifferentMrc(other: Good): Boolean {
+        val isMrcNotEmpty = maxRetailPrice.isNotEmpty() && maxRetailPrice != "0"
+        val isMrcDifferent = maxRetailPrice != other.maxRetailPrice
+        return this.isTobacco() && isMrcNotEmpty && isMrcDifferent
+    }
+
 
     private fun isQuantityActual(): Boolean {
         return if (this.planQuantity > 0.0) {
@@ -128,9 +132,9 @@ class Good(
         }
     }
 
-    fun copyWithDifferentMrc(mrc: String) = Good(
+    fun copy() = Good(
             ean,
-            eans.toList(),
+            eans.toMutableMap(),
             material,
             name,
             kind,
@@ -148,7 +152,7 @@ class Good(
             parts.toMutableList(),
             markType,
             markTypeGroup?.copy(),
-            mrc,
+            maxRetailPrice,
             mprGroup,
             type
     )

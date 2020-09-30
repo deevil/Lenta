@@ -37,6 +37,7 @@ object Constants {
     const val SAP_6 = 6
     const val SAP_18 = 18
     const val SAP_OR_BAR_12 = 12
+    const val SAP_OR_BAR_13 = 13
 
     // Mark code length
     const val EXCISE_MARK_150 = 150
@@ -65,5 +66,6 @@ object Constants {
 
     //Other
     const val DIV_TO_KG = 1000
+    const val DIV_TO_RUB = 100
 
 }

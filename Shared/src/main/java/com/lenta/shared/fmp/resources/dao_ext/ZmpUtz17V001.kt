@@ -13,9 +13,10 @@ fun List<ZmpUtz17V001.ItemLocal_ET_DICT>.toQualityInfoList(): List<QualityInfo> 
         it.sorder
     }.map {
         QualityInfo(
-                id = it.tid,
-                code = it.code,
-                name = it.shtxt)
+                id = it.tid.orEmpty(),
+                code = it.code.orEmpty(),
+                name = it.shtxt.orEmpty()
+        )
     }
 }
 
@@ -30,16 +31,18 @@ fun ZmpUtz17V001.getItemsByTidSorted(tid: String): MutableList<ZmpUtz17V001.Item
 }
 
 fun List<ZmpUtz17V001.ItemLocal_ET_DICT>.toDescriptionsList(): List<String> {
-    return this.map { it.shtxt }
+    return this.mapNotNull { it.shtxt }
 }
 
 fun List<ZmpUtz17V001.ItemLocal_ET_DICT>.toElementList(): List<DictElement> {
-    return this.map {
-        DictElement(
-                code = it.code,
-                order = it.sorder,
-                description = it.shtxt
-        )
+    return this.mapNotNull {
+        it.takeIf { it.code != null && it.sorder != null && it.shtxt != null }?.run {
+            DictElement(
+                    code = it.code.orEmpty(),
+                    order = it.sorder.orEmpty(),
+                    description = it.shtxt.orEmpty()
+            )
+        }
     }
 }
 

@@ -70,7 +70,10 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
     init {
         launchUITryCatch {
             initMarkSearchDelegate()
-            initGoodProperties()
+
+            if (isSpecialMode.value == true) {
+                initGoodProperties()
+            }
         }
     }
 
@@ -168,7 +171,8 @@ class MarkedInfoViewModel : BaseProductInfoViewModel(), PageSelectionListener {
                 markedGoodStampCollector.processAll(getSelectedReason())
             }
 
-            count.value = ""
+            count.value = "0"
+            requestFocusToQuantity.value = true
 
             return true
         }
