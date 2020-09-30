@@ -211,7 +211,7 @@ class BasketOpenGoodListViewModel : BaseGoodListOpenViewModel(), OnOkInSoftKeybo
                 updateCurrentBasket(basketValue)
                 updateCurrentTask(taskValue)
             }
-            navigator.goBack()
+            navigator.goBackTo(GoodListFragment::class.simpleName)
         }
     }
 
