@@ -50,12 +50,12 @@
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:text="@{item.name}"
+                        android:text="@{item.firstLine}"
                         tools:text="ПНБ(ТК)-303" />
 
                     <TextView
                         style="@style/CellTextStyle"
-                        android:text="@{item.description}"
+                        android:text="@{item.secondLine}"
                         tools:text="Постановка на баланс от 22.11.20 10:52" />
 
                 </LinearLayout>
@@ -99,7 +99,7 @@
                 <TextView
                     style="@style/CellTextStyle"
                     android:layout_width="wrap_content"
-                    android:text="@{item.quantity}"
+                    android:text="@{item.goodsQuantity}"
                     tools:text="4" />
 
             </LinearLayout>

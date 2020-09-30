@@ -20,15 +20,20 @@ data class TaskListResult(
         return tasks?.map { taskRawInfo ->
             Task(
                     number = taskRawInfo.number,
-                    name = taskRawInfo.firstLine,
-                    description = taskRawInfo.secondLine,
-                    quantity = taskRawInfo.quantity.toDoubleOrNull() ?: 0.0,
+                    type = taskRawInfo.type,
+                    firstLine = taskRawInfo.firstLine,
+                    secondLine = taskRawInfo.secondLine,
+                    title = taskRawInfo.title,
+                    description = taskRawInfo.description,
+                    goodsQuantity = taskRawInfo.goodsQuantity.toIntOrNull() ?: 0,
+                    marksQuantity = taskRawInfo.marksQuantity.toIntOrNull() ?: 0,
                     block = Block(
                             type = BlockType.from(taskRawInfo.lockType),
                             user = taskRawInfo.lockUser,
                             ip = taskRawInfo.lockIp
                     ),
-                    isFinished = !taskRawInfo.isNotFinish.isSapTrue()
+                    isFinished = !taskRawInfo.isNotFinish.isSapTrue(),
+                    comment = taskRawInfo.comment
             )
         }
     }

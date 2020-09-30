@@ -1,11 +1,13 @@
 package com.lenta.bp15.features.task_card
 
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.map
+import com.lenta.bp15.model.ITaskManager
 import com.lenta.bp15.platform.navigation.IScreenNavigator
 import com.lenta.bp15.platform.resource.IResourceManager
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.extentions.mapSkipNulls
 import javax.inject.Inject
 
 class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
@@ -19,23 +21,26 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     @Inject
     lateinit var resource: IResourceManager
 
+    @Inject
+    lateinit var manager: ITaskManager
+
+
+    private val task by lazy {
+        manager.currentTask
+    }
 
     val title by lazy {
-        "ПНБ(ТК)-303"
+        task.map { it.firstLine }
     }
 
     val isExistComment by lazy {
-        MutableLiveData(true)
+        task.map { it.comment.isNotEmpty() }
     }
 
     val taskCard by lazy {
-        TaskCardUi(
-                type = "Тестовый тип",
-                name = "Тестовое имя",
-                quantity = "1122",
-                description = "Описание задачи",
-                comment = "Комментарии к задаче"
-        )
+        task.mapSkipNulls { task ->
+            task.convertToTaskCardUi()
+        }
     }
 
     override fun onPageSelected(position: Int) {

@@ -35,10 +35,10 @@ data class TaskRawInfo(
         val isNotFinish: String,
         /** Количество позиций в задании */
         @SerializedName("QNT_POS")
-        val quantity: String,
+        val goodsQuantity: String,
         /** Количество необработанных марок в задании */
         @SerializedName("QNT_MARK")
-        val unprocessedMarks: String,
+        val marksQuantity: String,
         /** Текстовый комментарий */
         @SerializedName("COMMENT")
         val comment: String

@@ -5,9 +5,9 @@ import com.lenta.shared.utilities.BlockType
 data class ItemTaskUi(
         val position: String,
         val number: String,
-        val name: String,
-        val description: String,
+        val firstLine: String,
+        val secondLine: String,
         val isFinished: Boolean,
         val lockType: BlockType,
-        val quantity: String
+        val goodsQuantity: String
 )
