@@ -637,3 +637,4 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
         private const val PROCESSING_UNIT_NUMBER_LENGTH = 18
     }
 }
+
