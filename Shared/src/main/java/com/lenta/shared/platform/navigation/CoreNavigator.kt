@@ -33,6 +33,7 @@ import com.lenta.shared.fmp.resources.dao_ext.IconCode
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
+import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.navigation.pictogram.IIconDescriptionHelper
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.utilities.extentions.getApplicationName
@@ -587,6 +588,7 @@ interface ICoreNavigator {
     fun goBackWithResultCode(code: Int?)
     fun goBack()
     fun goBackTo(fragmentName: String?)
+
     fun finishApp(restart: Boolean = false)
     fun openAlertScreen(
             message: String,
@@ -647,6 +649,10 @@ interface ICoreNavigator {
     fun openExceptionsShelfLifeScreen()
     fun showTwelveCharactersEntered(sapCallback: () -> Unit, barCallback: () -> Unit)
     fun showIncorrectEanFormat()
+}
+
+inline fun <reified T : CoreFragment<*, *>> ICoreNavigator.backTo() {
+    this.goBackTo(T::class.java.simpleName)
 }
 
 class FunctionsCollector(private val needCollectLiveData: LiveData<Boolean>) {

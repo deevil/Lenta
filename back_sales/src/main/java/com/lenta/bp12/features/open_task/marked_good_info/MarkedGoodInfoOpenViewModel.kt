@@ -5,6 +5,7 @@ import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
 import com.lenta.bp12.features.create_task.marked_good_info.GoodProperty
 import com.lenta.bp12.features.create_task.marked_good_info.GoodPropertyItem
+import com.lenta.bp12.features.create_task.task_content.TaskContentFragment
 import com.lenta.bp12.features.open_task.base.BaseGoodInfoOpenViewModel
 import com.lenta.bp12.features.open_task.good_list.GoodListFragment
 import com.lenta.bp12.managers.interfaces.IMarkManager
@@ -17,6 +18,7 @@ import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.extentions.addMarks
 import com.lenta.bp12.platform.ZERO_QUANTITY
+import com.lenta.bp12.platform.navigation.goBackIfBasketIsEmpty
 import com.lenta.bp12.request.MarkCartonBoxGoodInfoNetRequest
 import com.lenta.bp12.request.ScanInfoResult
 import com.lenta.shared.exception.Failure
@@ -291,7 +293,7 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
     }
 
     override suspend fun saveChanges(result: ScanInfoResult?) {
-        with(navigator){
+        with(navigator) {
             showProgressLoadingData()
 
             good.value?.let { good ->
@@ -322,23 +324,17 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
     override fun onBackPressed() {
         with(navigator) {
             val isBasketEmpty = manager.currentBasket.value?.goods?.isEmpty() == true
-
-            fun action() = if (isBasketEmpty){
-                goBackTo(GoodListFragment::class.simpleName)
-            } else {
-                goBack()
-            }
-
             if (isExistUnsavedData) {
                 showUnsavedDataWillBeLost {
-                    action()
+                    goBackIfBasketIsEmpty<GoodListFragment>(isBasketEmpty)
                 }
             } else {
-                action()
+                goBackIfBasketIsEmpty<TaskContentFragment>(isBasketEmpty)
             }
             markManager.clearData()
         }
     }
+
 
     override fun onClickRollback() {
         thereWasRollback = true

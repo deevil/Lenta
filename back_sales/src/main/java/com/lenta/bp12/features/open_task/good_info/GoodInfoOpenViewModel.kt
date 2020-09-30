@@ -21,6 +21,7 @@ import com.lenta.bp12.platform.FIRST_POSITION
 import com.lenta.bp12.platform.ZERO_QUANTITY
 import com.lenta.bp12.platform.ZERO_VOLUME
 import com.lenta.bp12.platform.extention.*
+import com.lenta.bp12.platform.navigation.goBackIfBasketIsEmpty
 import com.lenta.bp12.request.ScanInfoParams
 import com.lenta.bp12.request.ScanInfoResult
 import com.lenta.bp12.request.pojo.ProducerInfo
@@ -798,18 +799,12 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
             val isBasketEmpty = manager.currentBasket.value?.goods?.isEmpty() == true
             val enteredQuantity = quantity.value ?: ZERO_QUANTITY
 
-            fun action() = if (isBasketEmpty){
-                goBackTo(GoodListFragment::class.simpleName)
-            } else {
-                goBack()
-            }
-
             if (isExistUnsavedData || enteredQuantity != ZERO_QUANTITY) {
                 showUnsavedDataWillBeLost {
-                    action()
+                    goBackIfBasketIsEmpty<GoodListFragment>(isBasketEmpty)
                 }
             } else {
-                action()
+                goBackIfBasketIsEmpty<GoodListFragment>(isBasketEmpty)
             }
         }
     }

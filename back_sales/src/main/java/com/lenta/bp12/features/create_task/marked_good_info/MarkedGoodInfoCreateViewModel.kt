@@ -15,6 +15,7 @@ import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.extentions.addMarks
 import com.lenta.bp12.platform.ZERO_QUANTITY
+import com.lenta.bp12.platform.navigation.goBackIfBasketIsEmpty
 import com.lenta.bp12.request.MarkCartonBoxGoodInfoNetRequest
 import com.lenta.bp12.request.ScanInfoResult
 import com.lenta.shared.exception.Failure
@@ -343,18 +344,12 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
         with(navigator) {
             val isBasketEmpty = manager.currentBasket.value?.goods?.isEmpty() == true
 
-            fun action() = if (isBasketEmpty){
-                goBackTo(TaskContentFragment::class.simpleName)
-            } else {
-                goBack()
-            }
-
             if (isExistUnsavedData) {
                 showUnsavedDataWillBeLost {
-                    action()
+                    goBackIfBasketIsEmpty<TaskContentFragment>(isBasketEmpty)
                 }
             } else {
-                action()
+                goBackIfBasketIsEmpty<TaskContentFragment>(isBasketEmpty)
             }
             markManager.clearData()
         }

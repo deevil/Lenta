@@ -32,6 +32,7 @@ import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
+import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.navigation.CustomAnimation
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.navigation.runOrPostpone
@@ -756,4 +757,12 @@ interface IScreenNavigator : ICoreNavigator {
     fun showMarkScanError(errorText: String)
 
     fun showAlertDialogWithRedTriangle(errorText: String, screenNumber: String = "97")
+}
+
+inline fun <reified T : CoreFragment<*, *>> IScreenNavigator.goBackIfBasketIsEmpty(isBasketEmpty: Boolean) {
+    if (isBasketEmpty) {
+        goBackTo(T::class.simpleName)
+    } else {
+        goBack()
+    }
 }

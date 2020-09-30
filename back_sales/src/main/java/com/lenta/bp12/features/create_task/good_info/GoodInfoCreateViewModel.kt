@@ -18,6 +18,7 @@ import com.lenta.bp12.model.pojo.extentions.addPosition
 import com.lenta.bp12.model.pojo.extentions.getScreenStatus
 import com.lenta.bp12.platform.*
 import com.lenta.bp12.platform.extention.*
+import com.lenta.bp12.platform.navigation.goBackIfBasketIsEmpty
 import com.lenta.bp12.request.ScanInfoParams
 import com.lenta.bp12.request.ScanInfoResult
 import com.lenta.bp12.request.pojo.ProducerInfo
@@ -783,18 +784,12 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
         with(navigator) {
             val isBasketEmpty = manager.currentBasket.value?.goods?.isEmpty() == true
 
-            fun action() = if (isBasketEmpty){
-                goBackTo(TaskContentFragment::class.simpleName)
-            } else {
-                goBack()
-            }
-
             if (isExistUnsavedData) {
                 showUnsavedDataWillBeLost {
-                    action()
+                    goBackIfBasketIsEmpty<TaskContentFragment>(isBasketEmpty)
                 }
             } else {
-                action()
+                goBackIfBasketIsEmpty<TaskContentFragment>(isBasketEmpty)
             }
         }
     }
