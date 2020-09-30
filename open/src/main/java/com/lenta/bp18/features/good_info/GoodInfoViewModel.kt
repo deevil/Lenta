@@ -55,9 +55,8 @@ class GoodInfoViewModel : CoreViewModel() {
 
     val selectedEan = MutableLiveData("")
     val weight = MutableLiveData(0.0)
-
-    val quantityField: MutableLiveData<String> = MutableLiveData(DEF_WEIGHT)
     val partNumberField: MutableLiveData<String> = MutableLiveData("")
+    val quantityField: MutableLiveData<String> = MutableLiveData(DEF_WEIGHT)
 
     val requestFocusToQuantityField: MutableLiveData<Boolean> = MutableLiveData(true)
     val requestFocusToPartNumberField: MutableLiveData<Boolean> = MutableLiveData(true)
@@ -66,15 +65,15 @@ class GoodInfoViewModel : CoreViewModel() {
 
     /**Выбор группы весового оборудования*/
     private val groups: MutableLiveData<List<GroupInfo>> = MutableLiveData()
-    val groupsNames: MutableLiveData<List<String?>> = groups.map { groups ->
-        groups?.map { it.name }.orEmpty()
+    val groupsNames: MutableLiveData<List<String>> = groups.map { groups ->
+        groups?.mapNotNull { it.name }.orEmpty()
     }
     val selectedGroup = MutableLiveData(0)
 
     /**Выбор условий хранения*/
     private val conditions: MutableLiveData<List<ConditionInfo>> = MutableLiveData()
-    val conditionNames: MutableLiveData<List<String?>> = conditions.map { conditions ->
-        conditions?.map { it.name }.orEmpty()
+    val conditionNames: MutableLiveData<List<String>> = conditions.map { conditions ->
+        conditions?.mapNotNull { it.name }.orEmpty()
     }
     val selectedCondition = MutableLiveData(0)
 
@@ -114,8 +113,6 @@ class GoodInfoViewModel : CoreViewModel() {
         conditions.value = conditionList
 
         getQuantityFieldFromGood(good)
-        /*ШК по индикатору (10) для GS1, для EAN13 не заполнять*/
-        //partNumberField.value = /*значение*/
 
         val marketNumber = sessionInfo.market.orEmpty()
         val groupList = database.getGroupToSelectedMarket(marketNumber)

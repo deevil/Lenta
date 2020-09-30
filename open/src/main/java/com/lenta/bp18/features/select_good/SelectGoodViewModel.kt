@@ -8,6 +8,7 @@ import com.lenta.bp18.platform.Constants
 import com.lenta.bp18.platform.navigation.IScreenNavigator
 import com.lenta.bp18.repository.IDatabaseRepo
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.models.core.Batch
 import com.lenta.shared.platform.viewmodel.BarcodeViewModel
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.extentions.launchUITryCatch
@@ -52,10 +53,10 @@ class SelectGoodViewModel : BarcodeViewModel() {
         navigator.showProgress(context.getString(R.string.load_barcode_data))
         val barcodeData = processBarcode(barcode)
         ean.value = barcodeData.barcodeInfo.barcode
-        searchEan(ean.value.orEmpty(), barcodeData.barcodeInfo.weight)
+        searchEan(ean.value.orEmpty(), barcodeData.barcodeInfo.weight, barcodeData.batch)
     }
 
-    private suspend fun searchEan(ean: String, weight: String) {
+    private suspend fun searchEan(ean: String, weight: String, batch: Batch? = null) {
         val goodWithEan = database.getGoodByEan(ean)
         goodWithEan?.let { good ->
             val goodMaterial = good.getFormattedMaterial()
@@ -63,7 +64,8 @@ class SelectGoodViewModel : BarcodeViewModel() {
                     ean = good.ean,
                     material = goodMaterial,
                     name = good.name,
-                    weight = weight
+                    weight = weight,
+                    batchNumber = batch?.batchNumber.orEmpty()
             )
 
             with(navigator) {
