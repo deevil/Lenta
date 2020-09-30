@@ -20,8 +20,9 @@ fun Double?.sumWith(other: Double?): Double {
 }
 
 fun Double.roundTo(numberOfZeroes: Int): Double {
-    val tenWithPow = 10.0.pow(numberOfZeroes)
-    return round((this) * tenWithPow) / tenWithPow
+    val divider = 10.0
+    val dividerWithPow = divider.pow(numberOfZeroes)
+    return round((this) * dividerWithPow) / dividerWithPow
 }
 
 fun Double?.subWith(other: Double?): Double {
