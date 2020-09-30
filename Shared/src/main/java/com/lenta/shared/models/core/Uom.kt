@@ -23,7 +23,7 @@ data class Uom(val code: String, val name: String) {
 }
 
 fun Uom.isOnlyInt(): Boolean {
-    return this.code != Uom.DATA_KG
+    return this.code != Uom.DATA_KG && this.code != Uom.DATA_G
 }
 
 fun String.toUom(): Uom {

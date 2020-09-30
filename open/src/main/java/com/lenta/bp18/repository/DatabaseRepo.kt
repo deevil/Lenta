@@ -88,6 +88,12 @@ class DatabaseRepo(
         }
     }
 
+    override suspend fun getGroupToSelectedMarket(marketNumber: String): List<GroupInfo> {
+        return withContext(Dispatchers.IO){
+            groupInfo.getGroupsToSelectedMarket(marketNumber).toGroupInfoList()
+        }
+    }
+
     override suspend fun getConditionByName(good: String?): List<ConditionInfo> {
         return withContext(Dispatchers.IO) {
             conditionInfo.getConditionByName(good).toConditionInfoList()
@@ -112,5 +118,6 @@ interface IDatabaseRepo {
     suspend fun getMarketByNumber(tkNumber: String): MarketInfo?
     suspend fun getConditionByName(good: String?): List<ConditionInfo>
     suspend fun getAllGoodGroup(): List<GroupInfo>
+    suspend fun getGroupToSelectedMarket(marketNumber: String): List<GroupInfo>
     suspend fun getAllCondition(): List<ConditionInfo>
 }

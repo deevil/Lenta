@@ -7,6 +7,7 @@ import com.google.android.material.tabs.TabLayout
 import com.lenta.shared.R
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -31,15 +32,17 @@ fun setIndicatorForTab(tabStrip: TabLayout?, tab: Int, color: TabIndicatorColor)
         }
     }
 }
-
+@Throws(ParseException::class)
 fun getDateFromString(date: String, pattern: String): Date {
     return SimpleDateFormat(pattern, Locale.getDefault()).parse(date)
 }
 
+@Throws(RuntimeException::class)
 fun getStringFromDate(date: Date, pattern: String): String {
     return SimpleDateFormat(pattern, Locale.getDefault()).format(date)
 }
 
+@Throws(RuntimeException::class)
 fun getFormattedDate(date: String, sourcePattern: String, targetPattern: String): String {
     return getStringFromDate(getDateFromString(date, sourcePattern), targetPattern)
 }
