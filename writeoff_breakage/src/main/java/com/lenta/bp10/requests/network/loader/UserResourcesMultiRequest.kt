@@ -11,6 +11,7 @@ import com.mobrun.plugin.api.request_assistant.RequestBuilder
 import com.mobrun.plugin.api.request_assistant.ScalarParameter
 import javax.inject.Inject
 
+@Deprecated("this class is unused and will be removed in future releases")
 class UserResourcesMultiRequest @Inject constructor(private val hyperHive: HyperHive, private val sessionInfo: ISessionInfo) : CoreResourcesMultiRequest() {
 
     override val isDeltaRequest = false

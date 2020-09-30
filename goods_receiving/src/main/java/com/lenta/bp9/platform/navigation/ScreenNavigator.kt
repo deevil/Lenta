@@ -3,6 +3,7 @@ package com.lenta.bp9.platform.navigation
 import android.content.Context
 import androidx.core.content.ContextCompat
 import com.lenta.bp9.R
+import com.lenta.bp9.data.BarcodeParser
 import com.lenta.bp9.features.auth.AuthFragment
 import com.lenta.bp9.features.cargo_unit_card.CargoUnitCardFragment
 import com.lenta.bp9.features.change_datetime.ChangeDateTimeFragment
@@ -67,6 +68,7 @@ import com.lenta.bp9.features.transport_marriage.TransportMarriageFragment
 import com.lenta.bp9.features.transport_marriage.cargo_unit.TransportMarriageCargoUnitFragment
 import com.lenta.bp9.features.goods_details.transport_marriage_goods_details.TransportMarriageGoodsDetailsFragment
 import com.lenta.bp9.features.goods_information.z_batches.task_pge.ZBatchesInfoPGEFragment
+import com.lenta.bp9.features.goods_information.marking.task_pge.marking_info_box_pge.MarkingInfoBoxPGEFragment
 import com.lenta.bp9.features.transport_marriage.goods_info.TransportMarriageGoodsInfoFragment
 import com.lenta.bp9.features.transportation_number.TransportationNumberFragment
 import com.lenta.bp9.model.task.*
@@ -81,6 +83,7 @@ import com.lenta.bp9.platform.navigation.ScreenNavigatorPageNumberConstant.PAGE_
 import com.lenta.bp9.requests.network.TaskListSearchParams
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
+import com.lenta.shared.models.core.BarcodeData
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
 import com.lenta.shared.platform.navigation.ICoreNavigator
 import com.lenta.shared.platform.navigation.runOrPostpone
@@ -551,9 +554,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openGoodsMercuryInfoScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean) {
+    override fun openGoodsMercuryInfoScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean, barcodeData: BarcodeData?) {
         runOrPostpone {
-            getFragmentStack()?.push(GoodsMercuryInfoFragment.create(productInfo, isDiscrepancy))
+            getFragmentStack()?.push(GoodsMercuryInfoFragment.newInstance(productInfo, isDiscrepancy, barcodeData))
         }
     }
 
@@ -1688,6 +1691,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openMarkingBoxInfoPGEScreen(productInfo: TaskProductInfo) {
+        runOrPostpone {
+            getFragmentStack()?.push(MarkingInfoBoxPGEFragment.newInstance(productInfo))
+        }
+    }
+
     override fun openMarkingBoxNotIncludedDeliveryScreen() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
@@ -1721,9 +1730,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openZBatchesInfoPPPScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean) {
+    override fun openZBatchesInfoPPPScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean, barcodeData: BarcodeData?) {
         runOrPostpone {
-            getFragmentStack()?.push(ZBatchesInfoPPPFragment.newInstance(productInfo, isDiscrepancy))
+            getFragmentStack()?.push(ZBatchesInfoPPPFragment.newInstance(productInfo, isDiscrepancy, barcodeData))
         }
     }
 
@@ -1845,7 +1854,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openMercuryListIrrelevantScreen(netRestNumber: Int)
     fun openMercuryExceptionIntegrationScreen()
     fun openReconciliationMercuryScreen(productVetDoc: ProductVetDocumentRevise)
-    fun openGoodsMercuryInfoScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean)
+    fun openGoodsMercuryInfoScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean, barcodeData: BarcodeData?)
     fun openAlertVADProductNotMatchedScreen(productName: String)
     fun openDiscrepanciesInconsistencyVetDocsDialog(markCallbackFunc: () -> Unit)
     fun openDiscrepanciesNoVerifiedVadDialog(excludeCallbackFunc: () -> Unit, markCallbackFunc: () -> Unit)
@@ -1968,10 +1977,11 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertScanProductGtinScreen()
     fun goBackAndShowAlertWrongProductType()
     fun openMarkingBoxInfoScreen(productInfo: TaskProductInfo)
+    fun openMarkingBoxInfoPGEScreen(productInfo: TaskProductInfo)
     fun openMarkingBoxNotIncludedDeliveryScreen()
     fun openMarkingPerformRateControlScreen()
     fun openMarkingBlockDeclaredDifferentCategoryScreen(typeDiscrepanciesName: String)
-    fun openZBatchesInfoPPPScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean)
+    fun openZBatchesInfoPPPScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean, barcodeData: BarcodeData?)
     fun openLabelPrintingScreen()
     fun openPrintLabelsCountCopiesScreen(labels: List<LabelPrintingItem>? = null)
     fun showAlertNoIpPrinter()

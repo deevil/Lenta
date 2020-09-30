@@ -2,6 +2,7 @@ package com.lenta.bp9.features.delegates
 
 import android.content.Context
 import com.lenta.bp9.R
+import com.lenta.bp9.data.BarcodeParser
 import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
 import com.lenta.bp9.model.task.MarkingGoodsRegime
 import com.lenta.bp9.model.task.getMarkingGoodsRegime
@@ -23,18 +24,15 @@ import com.lenta.shared.fmp.resources.dao_ext.getEanInfoFromMaterial
 import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
-import com.lenta.shared.models.core.MatrixType
-import com.lenta.shared.models.core.ProductType
-import com.lenta.shared.models.core.Uom
-import com.lenta.shared.models.core.getProductType
+import com.lenta.shared.models.core.*
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequest
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequestParams
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.Logg
 import com.mobrun.plugin.api.HyperHive
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import javax.inject.Inject
+import kotlin.coroutines.CoroutineContext
 
 class SearchProductDelegate @Inject constructor(
         private val hyperHive: HyperHive,
@@ -45,7 +43,7 @@ class SearchProductDelegate @Inject constructor(
         private val context: Context,
         private val zmpUtzGrz31V001NetRequest: ZmpUtzGrz31V001NetRequest,
         private val repoInMemoryHolder: IRepoInMemoryHolder
-) {
+) : CoroutineScope {
 
     private var scanInfoResult: ScanInfoResult? = null
 
@@ -53,11 +51,16 @@ class SearchProductDelegate @Inject constructor(
 
     private var isDiscrepancy: Boolean = false
 
-    private lateinit var viewModelScope: () -> CoroutineScope
-
     private var scanResultHandler: ((ScanInfoResult?) -> Boolean)? = null
 
     private var codeWith12Digits: String? = null
+
+    private val job = SupervisorJob()
+
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Main + job
+
+    private var barcodeData: BarcodeData? = null
 
     fun copy(): SearchProductDelegate {
         val searchProductDelegate = SearchProductDelegate(
@@ -70,37 +73,36 @@ class SearchProductDelegate @Inject constructor(
                 zmpUtzGrz31V001NetRequest,
                 repoInMemoryHolder
         )
-        searchProductDelegate.init(viewModelScope, scanResultHandler)
+        searchProductDelegate.init(scanResultHandler)
         return searchProductDelegate
     }
 
-    fun init(viewModelScope: () -> CoroutineScope, scanResultHandler: ((ScanInfoResult?) -> Boolean)? = null) {
-        this.viewModelScope = viewModelScope
+    fun init(scanResultHandler: ((ScanInfoResult?) -> Boolean)? = null) {
         this.scanResultHandler = scanResultHandler
     }
 
-    fun searchCode(code: String, fromScan: Boolean, isBarCode: Boolean? = null, isDiscrepancy:  Boolean? = false) {
+    fun searchCode(code: String, fromScan: Boolean, isBarCode: Boolean? = null, isDiscrepancy: Boolean? = false) {
         searchFromScan = fromScan
-        this.isDiscrepancy = isDiscrepancy!!
-        if (isBarCode == null && code.length == 12) {
+        this.isDiscrepancy = isDiscrepancy == true
+        if (isBarCode == null && code.length == SEARCH_CODE_LENGTH) {
             codeWith12Digits = code
             screenNavigator.openSelectTypeCodeScreen(requestCodeTypeSap, requestCodeTypeBarCode)
             return
         }
 
-        viewModelScope().launch {
+        launch {
             screenNavigator.showProgress(scanInfoRequest)
+            barcodeData = BarcodeParser().getBarcodeData(code)
             scanInfoRequest(
                     ScanInfoRequestParams(
                             number = code,
-                            tkNumber = sessionInfo.market ?: "",
+                            tkNumber = sessionInfo.market.orEmpty(),
                             fromScan = fromScan,
                             isBarCode = isBarCode
                     )
             )
                     .either(::handleFailure, ::handleSearchSuccess)
             screenNavigator.hideProgress()
-
         }
     }
 
@@ -116,12 +118,22 @@ class SearchProductDelegate @Inject constructor(
     fun handleResultCode(code: Int?, isDiscrepancy: Boolean? = false): Boolean {
         return when (code) {
             requestCodeTypeSap -> {
-                searchCode("000000000000${codeWith12Digits?.takeLast(6)}", fromScan = false, isBarCode = false, isDiscrepancy = isDiscrepancy!!)
+                searchCode(
+                        code = "$BARCODE_PREFIX${codeWith12Digits?.takeLast(LAST_BARCODE_COUNT)}",
+                        fromScan = false,
+                        isBarCode = false,
+                        isDiscrepancy = isDiscrepancy == true
+                )
                 codeWith12Digits = null
                 true
             }
             requestCodeTypeBarCode -> {
-                searchCode(code = codeWith12Digits ?: "", fromScan = false, isBarCode = true, isDiscrepancy = isDiscrepancy!!)
+                searchCode(
+                        code = codeWith12Digits.orEmpty(),
+                        fromScan = false,
+                        isBarCode = true,
+                        isDiscrepancy = isDiscrepancy == true
+                )
                 codeWith12Digits = null
                 true
             }
@@ -135,68 +147,69 @@ class SearchProductDelegate @Inject constructor(
     }
 
     private fun addGoodsSurplus() {
-        viewModelScope().launch {
+        launch {
             screenNavigator.showProgress(scanInfoRequest)
             taskManager.getReceivingTask()?.let { task ->
                 val params = ZmpUtzGrz31V001Params(
                         taskNumber = task.taskHeader.taskNumber,
-                        materialNumber = scanInfoResult?.productInfo?.materialNumber ?: "",
+                        materialNumber = scanInfoResult?.productInfo?.materialNumber.orEmpty(),
                         boxNumber = "",
                         stampCode = ""
                 )
                 zmpUtzGrz31V001NetRequest(params).either(::handleFailure, ::handleSuccessAddGoodsSurplus)
             }
             screenNavigator.hideProgress()
-
         }
     }
 
-    private fun handleSuccessAddGoodsSurplus(result: ZmpUtzGrz31V001Result) {
+    private fun handleSuccessAddGoodsSurplus(result: ZmpUtzGrz31V001Result) = launch {
         Logg.d { "AddGoodsSurplus ${result}" }
         repoInMemoryHolder.manufacturers.value = result.manufacturers
-        val materialInfo = ZfmpUtz48V001(hyperHive).getProductInfoByMaterial(result.productSurplusDataPGE.materialNumber)
-        val eanInfo = ZmpUtz25V001(hyperHive).getEanInfoFromMaterial(result.productSurplusDataPGE.materialNumber)
+        val materialInfo = withContext(Dispatchers.IO) { ZfmpUtz48V001(hyperHive).getProductInfoByMaterial(result.productSurplusDataPGE.materialNumber) }
+        val eanInfo = withContext(Dispatchers.IO) { ZmpUtz25V001(hyperHive).getEanInfoFromMaterial(result.productSurplusDataPGE.materialNumber) }
+        val isAlcoProduct = getIsAlcoProduct(result)
+        val isExcProduct = getIsExcProduct(result)
         val goodsSurplus = TaskProductInfo(
                 materialNumber = result.productSurplusDataPGE.materialNumber,
                 description = result.productSurplusDataPGE.materialName,
-                uom = scanInfoResult?.productInfo?.uom ?: Uom(code = "", name = ""),
-                type = getProductType(isAlco = result.productSurplusDataPGE.isAlco == "X", isExcise = result.productSurplusDataPGE.isExc == "X"),
+                uom = scanInfoResult?.productInfo?.uom ?: Uom.DEFAULT,
+                type = getProductType(isAlco = isAlcoProduct, isExcise = isExcProduct),
                 isSet = scanInfoResult?.productInfo?.isSet ?: false,
                 sectionId = scanInfoResult?.productInfo?.sectionId.orEmpty(),
                 matrixType = scanInfoResult?.productInfo?.matrixType ?: MatrixType.Unknown,
                 materialType = scanInfoResult?.productInfo?.materialType.orEmpty(),
-                origQuantity = "0.0",
-                orderQuantity = "0.0",
-                quantityCapitalized = "0.0",
-                purchaseOrderUnits = Uom(code = "", name = ""),
-                overdToleranceLimit = "0.0",
-                underdToleranceLimit = "0.0",
-                upLimitCondAmount = "0.0",
+                origQuantity = DEFAULT_DOUBLE_VALUE,
+                orderQuantity = DEFAULT_DOUBLE_VALUE,
+                quantityCapitalized = DEFAULT_DOUBLE_VALUE,
+                purchaseOrderUnits = Uom.DEFAULT,
+                overdToleranceLimit = DEFAULT_DOUBLE_VALUE,
+                underdToleranceLimit = DEFAULT_DOUBLE_VALUE,
+                upLimitCondAmount = DEFAULT_DOUBLE_VALUE,
                 quantityInvest = result.productSurplusDataPGE.quantityInvestments,
-                roundingSurplus = "0.0",
-                roundingShortages = "0.0",
+                roundingSurplus = DEFAULT_DOUBLE_VALUE,
+                roundingShortages = DEFAULT_DOUBLE_VALUE,
                 isNoEAN = false,
                 isWithoutRecount = false,
                 isUFF = false,
                 isNotEdit = false,
-                generalShelfLife = "0",
-                remainingShelfLife = "0",
-                isRus = result.productSurplusDataPGE.isRus == "X",
+                generalShelfLife = DEFAULT_INT_VALUE,
+                remainingShelfLife = DEFAULT_INT_VALUE,
+                isRus = result.productSurplusDataPGE.isRus == MARKER_OF_AVAILABLE,
                 isBoxFl = false,
-                isMarkFl = getProductType(isAlco = result.productSurplusDataPGE.isAlco == "X", isExcise = result.productSurplusDataPGE.isExc == "X") == ProductType.ExciseAlcohol, //елси это алкоголльный акциз, то ставим признак марочного товара, чтобы обрабатывать как марочный для этих товаров из тикета https://trello.com/c/WQg659Ww
-                isVet = result.productSurplusDataPGE.isVet == "X",
-                numberBoxesControl = "0",
-                numberStampsControl = "0",
+                isMarkFl = getProductType(isAlco = isAlcoProduct, isExcise = isExcProduct) == ProductType.ExciseAlcohol, //елси это алкоголльный акциз, то ставим признак марочного товара, чтобы обрабатывать как марочный для этих товаров из тикета https://trello.com/c/WQg659Ww
+                isVet = result.productSurplusDataPGE.isVet == MARKER_OF_AVAILABLE,
+                numberBoxesControl = DEFAULT_INT_VALUE,
+                numberStampsControl = DEFAULT_INT_VALUE,
                 processingUnit = "",
                 isGoodsAddedAsSurplus = true,
                 mhdhbDays = materialInfo?.mhdhbDays ?: 0,
                 mhdrzDays = materialInfo?.mhdrzDays ?: 0,
                 markType = MarkType.None,
                 isCountingBoxes = false,
-                nestingInOneBlock = "0.0",
+                nestingInOneBlock = DEFAULT_DOUBLE_VALUE,
                 isControlGTIN = false,
                 isGrayZone = false,
-                countPiecesBox = "0",
+                countPiecesBox = DEFAULT_INT_VALUE,
                 numeratorConvertBaseUnitMeasure = eanInfo?.umrez?.toDouble() ?: 0.0,
                 denominatorConvertBaseUnitMeasure = eanInfo?.umren?.toDouble() ?: 0.0,
                 isZBatches = false,
@@ -212,10 +225,18 @@ class SearchProductDelegate @Inject constructor(
         openProductScreen(taskProductInfo = goodsSurplus)
     }
 
+    private fun getIsExcProduct(result: ZmpUtzGrz31V001Result): Boolean {
+        return result.productSurplusDataPGE.isExc == MARKER_OF_AVAILABLE
+    }
+
+    private fun getIsAlcoProduct(result: ZmpUtzGrz31V001Result): Boolean {
+        return result.productSurplusDataPGE.isAlco == MARKER_OF_AVAILABLE
+    }
+
     private fun searchProduct() {
         Logg.d { "searchProduct ${scanInfoResult?.productInfo?.materialNumber}" }
         scanInfoResult?.let { infoResult ->
-            val taskProductInfo = taskManager.getReceivingTask()!!.taskRepository.getProducts().findProduct(infoResult.productInfo.materialNumber)
+            val taskProductInfo = taskManager.getReceivingTask()?.taskRepository?.getProducts()?.findProduct(infoResult.productInfo.materialNumber)
             if (taskProductInfo == null) {
                 if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
                     screenNavigator.openAddGoodsSurplusDialog(requestCodeAddGoodsSurplus) //эта проверка только для ПГЕ, карточки трелло https://trello.com/c/8P4mPlGN, https://trello.com/c/im9rJqrU, https://trello.com/c/WQg659Ww
@@ -254,7 +275,7 @@ class SearchProductDelegate @Inject constructor(
         если IS_VET=X + IS_ZPARTS=X товар считается как обычный меркурианский в дополнение просто отображается признак z-партионного учета*/
         if (taskProductInfo.isZBatches && !taskProductInfo.isVet) {
             if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.DirectSupplier) {
-                screenNavigator.openZBatchesInfoPPPScreen(taskProductInfo, isDiscrepancy)
+                screenNavigator.openZBatchesInfoPPPScreen(taskProductInfo, isDiscrepancy, barcodeData)
             } else {
                 screenNavigator.openZBatchesInfoPGEScreen(taskProductInfo, isDiscrepancy)
             }
@@ -273,6 +294,7 @@ class SearchProductDelegate @Inject constructor(
         when(getMarkingGoodsRegime(taskManager, taskProductInfo)) {
             MarkingGoodsRegime.UomStWithoutBoxes -> screenNavigator.openMarkingInfoScreen(taskProductInfo)
             MarkingGoodsRegime.UomStWithBoxes -> screenNavigator.openMarkingBoxInfoScreen(taskProductInfo)
+            MarkingGoodsRegime.UomSTWithBoxesPGE -> screenNavigator.openMarkingBoxInfoPGEScreen(taskProductInfo)
             else -> screenNavigator.openInfoScreen(context.getString(R.string.data_retrieval_error))
         }
     }
@@ -281,7 +303,7 @@ class SearchProductDelegate @Inject constructor(
         if (taskProductInfo.isVet &&
                 //todo это условие прописано временно, т.к. на продакшене для ПГЕ и ПРЦ не реализована таблица ET_VET_DIFF, она приходит пустой  в 28 и 30 рестах, поэтому обрабатываем данные товары не как вет, а как обычные. Не делал условия для типов задания, чтобы если для других типов задания эта таблица будет пустая, то товары обрабатывались как обычные, а не веттовары
                 !taskManager.getReceivingTask()?.taskRepository?.getMercuryDiscrepancies()?.getMercuryDiscrepancies().isNullOrEmpty()) {
-            screenNavigator.openGoodsMercuryInfoScreen(taskProductInfo, isDiscrepancy)
+            screenNavigator.openGoodsMercuryInfoScreen(taskProductInfo, isDiscrepancy, barcodeData)
         } else {
             if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentPP) {
                 screenNavigator.openGoodsInfoShipmentPPScreen(productInfo = taskProductInfo, isDiscrepancy = isDiscrepancy)
@@ -313,7 +335,6 @@ class SearchProductDelegate @Inject constructor(
                     TaskListLoadingMode.Shipment -> screenNavigator.openInfoScreen(context.getString(R.string.data_retrieval_error)) //openNotImplementedScreenAlert("Информация о марочном учете")
                     else -> screenNavigator.openAlertUnknownTaskTypeScreen() //сообщение о неизвестном типе задания
                 }
-
             }
             else -> screenNavigator.openAlertUnknownGoodsTypeScreen() //сообщение о неизвестном типе товара
         }
@@ -342,7 +363,12 @@ class SearchProductDelegate @Inject constructor(
     }
 
     companion object {
+        private const val SEARCH_CODE_LENGTH = 12
+        private const val LAST_BARCODE_COUNT = 6
+        private const val BARCODE_PREFIX = "000000000000"
+        private const val MARKER_OF_AVAILABLE = "X"
+        private const val DEFAULT_DOUBLE_VALUE = "0.0"
+        private const val DEFAULT_INT_VALUE = "0"
         const val UNIT_CODE_ST = "ST"
     }
-
 }

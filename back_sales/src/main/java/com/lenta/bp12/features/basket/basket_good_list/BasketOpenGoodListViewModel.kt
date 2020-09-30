@@ -113,7 +113,6 @@ class BasketOpenGoodListViewModel : BaseGoodListOpenViewModel(), OnOkInSoftKeybo
         goods.value?.let {
             it.getOrNull(position)?.let { item ->
                 manager.updateCurrentGood(item.good)
-                navigator.goBack()
                 if (item.good.markType == MarkType.UNKNOWN)
                     navigator.openGoodInfoOpenScreen()
                 else navigator.openMarkedGoodInfoOpenScreen()
@@ -212,7 +211,7 @@ class BasketOpenGoodListViewModel : BaseGoodListOpenViewModel(), OnOkInSoftKeybo
                 updateCurrentBasket(basketValue)
                 updateCurrentTask(taskValue)
             }
-            navigator.goBack()
+            navigator.goBackTo(GoodListFragment::class.simpleName)
         }
     }
 
@@ -226,7 +225,7 @@ class BasketOpenGoodListViewModel : BaseGoodListOpenViewModel(), OnOkInSoftKeybo
 
     private fun isDivByMrcAndItsNotZero(mrc: String, task: TaskOpen): Boolean {
         val isDivByMinimalPrice = task.type?.isDivByMinimalPrice == true
-        return isDivByMinimalPrice && (mrc.isEmpty().not() || mrc != ZERO_MRC_STRING)
+        return isDivByMinimalPrice && (mrc.isEmpty().not() && mrc != ZERO_MRC_STRING)
     }
 
     companion object {

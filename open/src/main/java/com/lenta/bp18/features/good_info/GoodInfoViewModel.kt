@@ -54,10 +54,9 @@ class GoodInfoViewModel : CoreViewModel() {
     lateinit var goodInfoNetRequest: GoodInfoNetRequest
 
     val selectedEan = MutableLiveData("")
-    val weight = MutableLiveData(0.0)
-
-    val quantityField: MutableLiveData<String> = MutableLiveData(DEF_WEIGHT)
+    val weight = MutableLiveData(DEFAULT_WEIGHT)
     val partNumberField: MutableLiveData<String> = MutableLiveData("")
+    val quantityField: MutableLiveData<String> = MutableLiveData(DEF_WEIGHT)
 
     val requestFocusToQuantityField: MutableLiveData<Boolean> = MutableLiveData(true)
     val requestFocusToPartNumberField: MutableLiveData<Boolean> = MutableLiveData(true)
@@ -66,15 +65,15 @@ class GoodInfoViewModel : CoreViewModel() {
 
     /**Выбор группы весового оборудования*/
     private val groups: MutableLiveData<List<GroupInfo>> = MutableLiveData()
-    val groupsNames: MutableLiveData<List<String?>> = groups.map { groups ->
-        groups?.map { it.name }.orEmpty()
+    val groupsNames: MutableLiveData<List<String>> = groups.map { groups ->
+        groups?.mapNotNull { it.name }.orEmpty()
     }
     val selectedGroup = MutableLiveData(0)
 
     /**Выбор условий хранения*/
     private val conditions: MutableLiveData<List<ConditionInfo>> = MutableLiveData()
-    val conditionNames: MutableLiveData<List<String?>> = conditions.map { conditions ->
-        conditions?.map { it.name }.orEmpty()
+    val conditionNames: MutableLiveData<List<String>> = conditions.map { conditions ->
+        conditions?.mapNotNull { it.name }.orEmpty()
     }
     val selectedCondition = MutableLiveData(0)
 
@@ -114,10 +113,9 @@ class GoodInfoViewModel : CoreViewModel() {
         conditions.value = conditionList
 
         getQuantityFieldFromGood(good)
-        /*ШК по индикатору (10) для GS1, для EAN13 не заполнять*/
-        //partNumberField.value = /*значение*/
 
-        val groupList = database.getAllGoodGroup()
+        val marketNumber = sessionInfo.market.orEmpty()
+        val groupList = database.getGroupToSelectedMarket(marketNumber)
         val filteredGroupList = filterGroupList(groupList)
         selectedGroup.value = findSelectedIndexForGroup(filteredGroupList)
         selectedCondition.value = findSelectedIndexForCondition(conditionList)
@@ -130,7 +128,7 @@ class GoodInfoViewModel : CoreViewModel() {
 
     private suspend fun getQuantityFieldFromGood(good: Good) {
         val weightValue = weight.value
-        val (quantity: Double?, uom: Uom) = if (weightValue != 0.0) {
+        val (quantity: Double?, uom: Uom) = if (weightValue != DEFAULT_WEIGHT) {
             weightValue?.div(Constants.CONVERT_TO_KG) to Uom.KG
         } else {
             when (good.uom) {
@@ -229,7 +227,6 @@ class GoodInfoViewModel : CoreViewModel() {
                         quantity = quantityField.value,
                         buom = buom.value.orEmpty(),
                         partNumber = partNumberField.value,
-                        /**Уникальный идентификатор, потом заменить на генерацию GUID*/
                         guid = guid,
                         dateOpen = dateOpen,
                         timeOpen = timeMonitor.getUnixTime().toString(),
@@ -245,5 +242,6 @@ class GoodInfoViewModel : CoreViewModel() {
 
     companion object {
         private const val DEF_WEIGHT = "0"
+        private const val DEFAULT_WEIGHT = 0.0
     }
 }

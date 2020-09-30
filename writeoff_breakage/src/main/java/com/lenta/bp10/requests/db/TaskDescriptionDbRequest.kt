@@ -18,10 +18,11 @@ import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.mobrun.plugin.api.HyperHive
 import javax.inject.Inject
 
-class TaskDescriptionDbRequest
-@Inject constructor(private val hyperHive: HyperHive,
-                    private val sessionInfo: ISessionInfo,
-                    private val context: Context) : UseCase<TaskDescription, TaskCreatingParams> {
+class TaskDescriptionDbRequest @Inject constructor(
+        private val hyperHive: HyperHive,
+        private val sessionInfo: ISessionInfo,
+        private val context: Context
+) : UseCase<TaskDescription, TaskCreatingParams> {
 
     override suspend fun run(params: TaskCreatingParams): Either<Failure, TaskDescription> {
         val gisControls = params.gisControlList.map { it.code }
@@ -34,7 +35,7 @@ class TaskDescriptionDbRequest
                 materialTypes = getMaterialTypes(params),
                 perNo = sessionInfo.personnelNumber.orEmpty(),
                 printer = sessionInfo.printer.orEmpty(),
-                tkNumber = sessionInfo.market!!,
+                tkNumber = sessionInfo.market.orEmpty(),
                 ipAddress = context.getDeviceIp())
 
         return Either.Right(taskDescription)
@@ -42,16 +43,24 @@ class TaskDescriptionDbRequest
     }
 
     private fun getMaterialTypes(params: TaskCreatingParams): List<String> {
-        return ZmpUtz34V001(hyperHive).getMaterialTypes(params.taskSetting.taskType).map { it.mtart }
+        return ZmpUtz34V001(hyperHive).getMaterialTypes(params.taskSetting.taskType).mapNotNull { it.mtart }
     }
 
 
     private fun getMoveTypes(params: TaskCreatingParams, gisControls: List<String>): List<WriteOffReason> {
         return ZmpUtz32V001(hyperHive).getMotionTypes(params.taskSetting.taskType, gisControls)
-                .map { WriteOffReason(code = it.reason, name = it.grtxt, gisControl = it.taskCntrl) }
+                .mapNotNull {
+                    it.takeIf {
+                        it.reason != null && it.grtxt != null && it.taskCntrl != null
+                    }?.run {
+                        WriteOffReason(
+                                code = it.reason.orEmpty(),
+                                name = it.grtxt.orEmpty(),
+                                gisControl = it.taskCntrl.orEmpty()
+                        )
+                    }
+                }
     }
-
-
 }
 
 data class TaskCreatingParams(

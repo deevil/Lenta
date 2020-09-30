@@ -2,7 +2,11 @@ package com.lenta.bp10.features.loading.tasks_settings
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp10.platform.navigation.IScreenNavigator
-import com.lenta.bp10.requests.network.loader.UserResourcesMultiRequest
+import com.lenta.bp10.repos.IRepoInMemoryHolder
+import com.lenta.bp10.requests.network.GetUserResourcesNetRequest
+import com.lenta.bp10.requests.network.UserResourceInfoParams
+import com.lenta.bp10.requests.network.UserResourcesResult
+import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.loading.CoreLoadingViewModel
@@ -12,10 +16,18 @@ import javax.inject.Inject
 class LoadingTaskSettingsViewModel : CoreLoadingViewModel() {
     @Inject
     lateinit var screenNavigator: IScreenNavigator
+
     @Inject
     lateinit var failureInterpreter: IFailureInterpreter
+
     @Inject
-    lateinit var userResourcesMultiRequest: UserResourcesMultiRequest
+    lateinit var userResourcesMultiRequest: GetUserResourcesNetRequest
+
+    @Inject
+    lateinit var repoInMemoryHolder: IRepoInMemoryHolder
+
+    @Inject
+    lateinit var sessionInfo: ISessionInfo
 
     override val title: MutableLiveData<String> = MutableLiveData()
     override val progress: MutableLiveData<Boolean> = MutableLiveData(true)
@@ -25,7 +37,7 @@ class LoadingTaskSettingsViewModel : CoreLoadingViewModel() {
     init {
         launchUITryCatch {
             progress.value = true
-            userResourcesMultiRequest(null).either(::handleFailure, ::handleSuccess)
+            userResourcesMultiRequest(UserResourceInfoParams(sessionInfo.userName)).either(::handleFailure, ::handleSuccess)
             progress.value = false
         }
     }
@@ -35,7 +47,8 @@ class LoadingTaskSettingsViewModel : CoreLoadingViewModel() {
         screenNavigator.openAlertScreen(failure)
     }
 
-    private fun handleSuccess(@Suppress("UNUSED_PARAMETER") b: Boolean) {
+    private fun handleSuccess(@Suppress("UNUSED_PARAMETER") userResourcesResult: UserResourcesResult) {
+        repoInMemoryHolder.userResourceResult = userResourcesResult
         screenNavigator.openMainMenuScreen()
         screenNavigator.openJobCardScreen()
     }

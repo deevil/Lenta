@@ -1,5 +1,7 @@
 package com.lenta.bp10.fmp.resources.fast;
 
+import androidx.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 import com.mobrun.plugin.api.HyperHive;
 import com.mobrun.plugin.api.helper.LocalTableResourceHelper;
@@ -38,10 +40,12 @@ public class ZmpUtz34V001 {
 
     public static class ItemLocal_ET_MTART {
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("TASK_TYPE")
         public String taskType;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("MTART")
         public String mtart;
 

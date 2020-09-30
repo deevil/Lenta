@@ -24,7 +24,7 @@ import com.lenta.shared.utilities.getDateFromString
  * */
 class Good(
         var ean: String,
-        val eans: List<String> = emptyList(),
+        val eans: MutableMap<String, Float> = mutableMapOf(),
         val material: String,
         val name: String,
         val kind: GoodKind,
@@ -56,6 +56,8 @@ class Good(
         var isDeleted: Boolean = false,
         val provider: ProviderInfo = ProviderInfo.getEmptyProvider()
 ) {
+    var isMissing: Boolean = false
+
     fun getNameWithMaterial(delimiter: String = " "): String {
         return "${material.takeLast(6)}$delimiter$name"
     }
@@ -96,13 +98,17 @@ class Good(
     }
 
     fun isEmpty(): Boolean {
-        return positions.isEmpty() && marks.isEmpty() && parts.isEmpty()
+        return (positions.isEmpty() || positions.all { it.quantity == ZERO_QUANTITY }) && marks.isEmpty() && parts.isEmpty()
     }
 
     fun isTobacco() = this.markType == MarkType.TOBACCO
 
-    fun isTobaccoAndFoundGoodHasDifferentMrc(other: Good) =
-            this.isTobacco() && maxRetailPrice.isNotEmpty() && maxRetailPrice != other.maxRetailPrice
+    fun isTobaccoAndFoundGoodHasDifferentMrc(other: Good): Boolean {
+        val isMrcNotEmpty = maxRetailPrice.isNotEmpty() && maxRetailPrice != "0"
+        val isMrcDifferent = maxRetailPrice != other.maxRetailPrice
+        return this.isTobacco() && isMrcNotEmpty && isMrcDifferent
+    }
+
 
     private fun isQuantityActual(): Boolean {
         return if (this.planQuantity > 0.0) {
@@ -112,9 +118,11 @@ class Good(
         }
     }
 
+    fun isAlco() = kind == GoodKind.ALCOHOL
     fun isExciseAlco() = kind == GoodKind.EXCISE
     fun isMarked() = markType != MarkType.UNKNOWN
     fun isCommon() = kind == GoodKind.COMMON
+    fun isGoodCommonOrMarkedOrAlco() = isCommon() || isMarked() || isAlco()
 
     fun isNotDeletedAndQuantityNotActual() = !this.isDeleted && !isQuantityActual()
 
@@ -126,9 +134,9 @@ class Good(
         }
     }
 
-    fun copyWithDifferentMrc(mrc: String) = Good(
+    fun copy() = Good(
             ean,
-            eans.toList(),
+            eans.toMutableMap(),
             material,
             name,
             kind,
@@ -146,7 +154,7 @@ class Good(
             parts.toMutableList(),
             markType,
             markTypeGroup?.copy(),
-            mrc,
+            maxRetailPrice,
             mprGroup,
             type
     )

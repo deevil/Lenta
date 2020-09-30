@@ -148,15 +148,14 @@ class MarkedGoodInfoCreateFragment : CoreFragment<FragmentMarkedGoodInfoCreateBi
 // FOR TESTING: press digit to scan barcode
 //    override fun onKeyDown(keyCode: KeyCode): Boolean {
 //        return when (keyCode) {
-//            //Сигареты 4600266012142
-//            //Блок Мрц 106
+//            //блок с пустым мрц 000000451248
 //            KeyCode.KEYCODE_0 -> {
-//                vm.onScanResult("01046002660121422100000Ph.8005021200.938000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
+//                vm.onScanResult("010460026601136721,\"D8rek800501234593800092NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
 //                true
 //            }
-//            //Блок Мрц 100
+//            //блок с мрц 198 000000451248
 //            KeyCode.KEYCODE_1 -> {
-//                vm.onScanResult("01046002660121422100000Pi.8005020000.938000.92NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
+//                vm.onScanResult("010460026601136721_lS3g;6800501980093800092NGkg+wRXz36kBFjpfwOub5DBIIpD2iS/DMYpZuuDLU0Y3pZt1z20/1ksr4004wfhDhRxu4dgUV4QN96Qtdih9g==")
 //                true
 //            }
 //            //4600266011367 Блок Мрц 100
@@ -185,13 +184,12 @@ class MarkedGoodInfoCreateFragment : CoreFragment<FragmentMarkedGoodInfoCreateBi
 //                true
 //            }
 //            //Марка обуви 198794
-//            KeyCode.KEYCODE_7 -> {
-//                vm.onScanResult("010467003610609821fDiwLb=cO6vkb")
-//                true
-//            }
-//            //Марка обуви 198794
 //            KeyCode.KEYCODE_8 -> {
-//                vm.onScanResult("010290000004865221atgO4Cg*Z!KRp")
+//                vm.onScanResult("010467003610609821j3qd?s9G2pJZJ")
+//                true
+//            } //Коробка сигарет без мрц
+//            KeyCode.KEYCODE_9 -> {
+//                vm.onScanResult("01046002660121421115081921498072")
 //                true
 //            }
 //            else -> false

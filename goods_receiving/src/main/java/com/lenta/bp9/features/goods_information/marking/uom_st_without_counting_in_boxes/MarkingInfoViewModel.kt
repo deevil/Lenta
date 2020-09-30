@@ -361,8 +361,7 @@ class MarkingInfoViewModel : CoreViewModel(),
                         return@launchUITryCatch
                     }
 
-            searchProductDelegate.init(viewModelScope = this@MarkingInfoViewModel::viewModelScope,
-                    scanResultHandler = this@MarkingInfoViewModel::handleProductSearchResult)
+            searchProductDelegate.init(scanResultHandler = this@MarkingInfoViewModel::handleProductSearchResult)
 
             val isBlockMode =
                     productInfo.value
@@ -759,7 +758,7 @@ class MarkingInfoViewModel : CoreViewModel(),
                         .getEansFromMaterial(material = productInfo.value?.materialNumber.orEmpty())
                         .asSequence()
                         .map { eans ->
-                            eans.ean.padStart(14, '0')
+                            eans.ean?.padStart(14, '0')
                         }
                         .findLast { ean ->
                             ean == gtinCode

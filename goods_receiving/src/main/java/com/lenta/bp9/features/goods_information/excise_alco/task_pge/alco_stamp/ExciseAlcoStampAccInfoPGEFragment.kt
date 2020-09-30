@@ -22,7 +22,6 @@ class ExciseAlcoStampAccInfoPGEFragment : CoreFragment<FragmentExciseAlcoStampAc
         OnScanResultListener,
         OnBackPresserListener {
 
-
     private var productInfo by state<TaskProductInfo?>(null)
 
     override fun getLayoutId(): Int = R.layout.fragment_excise_alco_stamp_acc_info_pge

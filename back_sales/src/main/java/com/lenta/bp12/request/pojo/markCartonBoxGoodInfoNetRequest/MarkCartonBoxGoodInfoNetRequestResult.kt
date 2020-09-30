@@ -24,6 +24,9 @@ data class MarkCartonBoxGoodInfoNetRequestResult(
         /** Справочные данные товара (заполнять, если IV_MATNR = « ») */
         @SerializedName("ET_MATERIALS")
         val materials: List<MaterialInfo>?,
+        /** МРЦ */
+        @SerializedName("EV_GM_MPR")
+        val maxRetailPrice: String?,
         /** Код возврата */
         @SerializedName("EV_RETCODE")
         override val retCode: Int?,

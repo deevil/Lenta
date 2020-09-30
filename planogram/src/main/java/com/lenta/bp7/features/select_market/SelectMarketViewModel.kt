@@ -1,5 +1,6 @@
 package com.lenta.bp7.features.select_market
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import app_update.AppUpdateInstaller
 import com.lenta.bp7.data.CheckType
@@ -20,8 +21,10 @@ import com.lenta.shared.requests.network.ServerTimeRequest
 import com.lenta.shared.requests.network.ServerTimeRequestParam
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
+import com.lenta.shared.utilities.extentions.asyncLiveData
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.mapSkipNulls
 import com.lenta.shared.view.OnPositionClickListener
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
@@ -46,81 +49,76 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     lateinit var timeMonitor: ITimeMonitor
     @Inject
     lateinit var checkData: CheckData
+
     @Inject
     lateinit var failureInterpreter: IFailureInterpreter
+
     @Inject
     lateinit var appUpdateInstaller: AppUpdateInstaller
+
     @Inject
     lateinit var resourceManager: ISharedStringResourceManager
+
     @Inject
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
 
 
-    private val markets: MutableLiveData<List<MarketInfo>> = MutableLiveData()
+    private val markets: LiveData<List<MarketInfo>> = asyncLiveData {
+        val allMarkets = database.getAllMarkets()
+        emit(allMarkets)
+    }
     val marketsNames: MutableLiveData<List<String>> = markets.map { markets ->
         markets?.map { it.number }
     }
-    val selectedPosition: MutableLiveData<Int> = MutableLiveData()
+    val selectedPosition: MutableLiveData<Int> = markets.mapSkipNulls { markets ->
+        val lastPosition = markets.indexOfFirst { it.number == appSettings.lastTK }
+        if (markets.size == 1) {
+            onClickNext()
+        }
+        lastPosition
+    }
+
     val selectedAddress: MutableLiveData<String> = selectedPosition.map {
         it?.let { position -> markets.value?.getOrNull(position)?.address }
     }
     val title: MutableLiveData<String> = MutableLiveData()
 
-    init {
-        launchUITryCatch {
-            database.getAllMarkets().let { list ->
-                markets.value = list
-                if (selectedPosition.value == null) {
-                    if (appSettings.lastTK != null) {
-                        list.forEachIndexed { index, market ->
-                            if (market.number == appSettings.lastTK) {
-                                onClickPosition(index)
-                            }
-                        }
-                    } else {
-                        onClickPosition(0)
-                    }
-                }
-
-                if (list.size == 1) {
-                    onClickNext()
-                }
-            }
-        }
-    }
-
     fun onClickNext() {
         launchUITryCatch {
             navigator.showProgressLoadingData(::handleFailure)
-            markets.value?.getOrNull(selectedPosition.value ?: -1)?.number?.let { tkNumber ->
-                if (appSettings.lastTK != tkNumber) {
-                    clearPrinters()
-                }
-                sessionInfo.market = tkNumber
-                appSettings.lastTK = tkNumber
-
-                withContext(Dispatchers.IO) {
-                    database.getAllMarkets().find { it.number == sessionInfo.market }.let { market ->
-                        val codeVersion = market?.version?.toIntOrNull()
-                        Logg.d { "codeVersion for update: $codeVersion" }
-                        if (codeVersion == null) {
-                            Either.Right("")
-                        } else {
-                            appUpdateInstaller.checkNeedAndHaveUpdate(codeVersion)
-                        }
+            markets.value?.let { allMarkets ->
+                allMarkets.getOrNull(selectedPosition.value ?: -1)?.number?.let { tkNumber ->
+                    if (appSettings.lastTK != tkNumber) {
+                        clearPrinters()
                     }
-                }.either({
-                    Logg.e { "checkNeedAndHaveUpdate failure: $it" }
-                    handleFailure(failure = it)
-                }) { updateFileName ->
-                    Logg.d { "update fileName: $updateFileName" }
-                    if (updateFileName.isBlank()) {
-                        getServerTime()
-                    } else {
-                        installUpdate(updateFileName)
+                    sessionInfo.market = tkNumber
+                    appSettings.lastTK = tkNumber
+
+                    withContext(Dispatchers.IO) {
+                        allMarkets.find { it.number == sessionInfo.market }.let { market ->
+                            val codeVersion = market?.version?.toIntOrNull()
+                            Logg.d { "codeVersion for update: $codeVersion" }
+                            if (codeVersion == null) {
+                                Either.Right("")
+                            } else {
+                                appUpdateInstaller.checkNeedAndHaveUpdate(codeVersion)
+                            }
+                        }
+                    }.either({
+                        Logg.e { "checkNeedAndHaveUpdate failure: $it" }
+                        handleFailure(failure = it)
+                    }) { updateFileName ->
+                        Logg.d { "update fileName: $updateFileName" }
+                        if (updateFileName.isBlank()) {
+                            getServerTime()
+                        } else {
+                            installUpdate(updateFileName)
+                        }
                     }
                 }
             }
+
+
         }
     }
 

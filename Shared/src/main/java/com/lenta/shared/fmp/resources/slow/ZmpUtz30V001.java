@@ -1,5 +1,7 @@
 package com.lenta.shared.fmp.resources.slow;
 
+import androidx.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 import com.mobrun.plugin.api.HyperHive;
 import com.mobrun.plugin.api.helper.LocalTableResourceHelper;
@@ -37,46 +39,57 @@ public class ZmpUtz30V001 {
 
     public static class ItemLocal_ET_MATERIALS {
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("MATERIAL")
         public String material;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("NAME")
         public String name;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("MATYPE")
         public String matype;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("BUOM")
         public String buom;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("MATR_TYPE")
         public String matrType;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("ABTNR")
         public String abtnr;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("IS_RETURN")
         public String isReturn;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("IS_EXC")
         public String isExc;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("IS_ALCO")
         public String isAlco;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("MATKL")
         public String matkl;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("EKGRP")
         public String ekgrp;
 

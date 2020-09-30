@@ -1,6 +1,7 @@
 package com.lenta.bp10.features.good_information.general
 
 import androidx.lifecycle.MutableLiveData
+import com.lenta.bp10.features.good_information.IGoodInformationRepo
 import com.lenta.bp10.features.good_information.base.BaseProductInfoViewModel
 import com.lenta.bp10.models.repositories.ITaskRepository
 import com.lenta.bp10.models.task.ProcessGeneralProductService
@@ -8,12 +9,14 @@ import com.lenta.bp10.models.task.TaskDescription
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.toStringFormatted
+import javax.inject.Inject
 
 class GoodInfoViewModel : BaseProductInfoViewModel() {
 
-
     private val processGeneralProductService: ProcessGeneralProductService by lazy {
-        processServiceManager.getWriteOffTask()!!.processGeneralProduct(productInfo.value!!)!!
+        productInfo.value?.let {
+            processServiceManager.getWriteOffTask()?.processGeneralProduct(it)
+        } ?: throw IllegalAccessException("productInfo.value is not set for $this")
     }
 
     override fun getProcessTotalCount(): Double {
@@ -61,16 +64,16 @@ class GoodInfoViewModel : BaseProductInfoViewModel() {
 
     private fun addGood(): Boolean {
         countValue.value?.let {
-            if (enabledApplyButton.value != true && it != 0.0) {
+            if (enabledApplyButton.value != true && it != DEFAULT_COUNT_VALUE) {
                 showNotPossibleSaveScreen()
                 return false
             }
 
-            if (it != 0.0) {
+            if (it != DEFAULT_COUNT_VALUE) {
                 processGeneralProductService.add(getSelectedReason(), it)
             }
 
-            count.value = "0"
+            count.value = DEFAULT_COUNT_TEXT
             requestFocusToQuantity.value = true
 
             return true
@@ -91,7 +94,11 @@ class GoodInfoViewModel : BaseProductInfoViewModel() {
     }
 
     override fun initCountLiveData(): MutableLiveData<String> {
-        return MutableLiveData("0")
+        return MutableLiveData(DEFAULT_COUNT_TEXT)
+    }
+
+    companion object {
+        private const val DEFAULT_COUNT_TEXT = "0"
     }
 
 }

@@ -142,8 +142,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/div_vert"
-            app:onPositionClickListener="@{vm.onSelectReason}"
-            app:position="@{vm.reasonPosition}"
+            app:position="@={vm.reasonPosition}"
             tools:entries="@array/test_list" />
 
         <View

@@ -1,5 +1,7 @@
 package com.lenta.shared.fmp.resources.slow;
 
+import androidx.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 import com.mobrun.plugin.api.HyperHive;
 import com.mobrun.plugin.api.helper.LocalTableResourceHelper;
@@ -38,26 +40,29 @@ public class ZmpUtz25V001 {
 
     public static class ItemLocal_ET_EANS {
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("EAN")
         public String ean;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("MATERIAL")
         public String material;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("UOM")
         public String uom;
 
         //  type: DOUBLE, source: {'name': 'SAP', 'type': 'P'}
+        @Nullable
         @SerializedName("UMREZ")
         public Double umrez;
 
         //  type: DOUBLE, source: {'name': 'SAP', 'type': 'P'}
+        @Nullable
         @SerializedName("UMREN")
         public Double umren;
-
-
     }
 
 
