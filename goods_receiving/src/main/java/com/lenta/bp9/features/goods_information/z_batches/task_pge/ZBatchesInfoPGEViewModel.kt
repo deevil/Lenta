@@ -203,8 +203,7 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
                         return@launchUITryCatch
                     }
 
-            searchProductDelegate.init(viewModelScope = this@ZBatchesInfoPGEViewModel::viewModelScope,
-                    scanResultHandler = this@ZBatchesInfoPGEViewModel::handleProductSearchResult)
+            searchProductDelegate.init(scanResultHandler = this@ZBatchesInfoPGEViewModel::handleProductSearchResult)
 
             processingUnitsOfProduct.value = getProcessingUnitsOfProduct(productMaterialNumber)
             val processingUnits = processingUnitsOfProduct.value?.map { it.processingUnit }.orEmpty()
