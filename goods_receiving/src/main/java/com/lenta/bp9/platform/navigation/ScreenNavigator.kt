@@ -1722,9 +1722,9 @@ class ScreenNavigator(
         }
     }
 
-    override fun openZBatchesInfoPPPScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean) {
+    override fun openZBatchesInfoPPPScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean, barcodeData: BarcodeData?) {
         runOrPostpone {
-            getFragmentStack()?.push(ZBatchesInfoPPPFragment.newInstance(productInfo, isDiscrepancy))
+            getFragmentStack()?.push(ZBatchesInfoPPPFragment.newInstance(productInfo, isDiscrepancy, barcodeData))
         }
     }
 
@@ -1966,7 +1966,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openMarkingBoxNotIncludedDeliveryScreen()
     fun openMarkingPerformRateControlScreen()
     fun openMarkingBlockDeclaredDifferentCategoryScreen(typeDiscrepanciesName: String)
-    fun openZBatchesInfoPPPScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean)
+    fun openZBatchesInfoPPPScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean, barcodeData: BarcodeData?)
     fun openLabelPrintingScreen()
     fun openPrintLabelsCountCopiesScreen(labels: List<LabelPrintingItem>? = null)
     fun showAlertNoIpPrinter()

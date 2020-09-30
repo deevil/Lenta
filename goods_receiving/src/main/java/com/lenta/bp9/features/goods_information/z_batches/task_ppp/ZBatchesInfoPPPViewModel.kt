@@ -12,6 +12,7 @@ import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_DELIVERY_ERRORS
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_REASON_REJECTION_NOT_ORDER
+import com.lenta.shared.models.core.BarcodeData
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
@@ -41,6 +42,7 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
     lateinit var processZBatchesPPPService: ProcessZBatchesPPPService
 
     val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData(false)
+    val barcodeData: MutableLiveData<BarcodeData> = MutableLiveData()
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
     private val termControlInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     val spinEnteredDate: MutableLiveData<List<String>> = MutableLiveData()
@@ -216,6 +218,13 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
                                 ?.indexOfLast { it.code == TYPE_DISCREPANCIES_QUALITY_DELIVERY_ERRORS }
                                 ?: -1
             } else {
+                //https://trello.com/c/mcEA3n84
+                barcodeData.value?.let {
+                    if (it.barcodeInfo.isWeight) {
+                        val weightInGrams = it.barcodeInfo.weight.toDoubleOrNull() ?: 0.0
+                        count.value = (weightInGrams / 1000).toStringFormatted()
+                    }
+                }
                 qualityInfo.value = dataBase.getQualityMercuryInfo().orEmpty()
             }
 
@@ -265,8 +274,12 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
         productInfo.value = initProductInfo
     }
 
-    fun initDiscrepancy(initDiscrepancy: Boolean) {
-        isDiscrepancy.value = initDiscrepancy
+    fun initDiscrepancy(_initDiscrepancy: Boolean) {
+        isDiscrepancy.value = _initDiscrepancy
+    }
+
+    fun initBarcodeData(_initBarcodeData: BarcodeData) {
+        barcodeData.value = _initBarcodeData
     }
 
     fun getTitle(): String {
