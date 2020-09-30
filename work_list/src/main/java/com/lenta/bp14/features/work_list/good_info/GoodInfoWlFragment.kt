@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.observe
+import androidx.lifecycle.LiveData
 import com.lenta.bp14.BR
 import com.lenta.bp14.R
 import com.lenta.bp14.databinding.*
@@ -19,13 +19,13 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListe
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
 import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
-import com.lenta.shared.utilities.databinding.ViewPagerSettings
+import com.lenta.shared.utilities.databinding.DynamicViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlViewModel>(),
-        ViewPagerSettings, ToolbarButtonsClickListener, OnScanResultListener {
+        DynamicViewPagerSettings, ToolbarButtonsClickListener, OnScanResultListener {
 
     override fun getLayoutId(): Int = R.layout.fragment_good_info_wl
 
@@ -144,37 +144,35 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
             }
         }
 
-        else -> throw IllegalArgumentException("Wrong pager position!")
+        else -> throw IllegalArgumentException(WRONG_PAGER_POSITION_MESSAGE)
     }
 
 
     override fun getTextTitle(position: Int): String {
         return when (position) {
-            0 -> getString(R.string.common_good_info_title)
-            1 -> getString(R.string.additional_good_info_title)
-            2 -> getString(R.string.good_providers_list_title)
-            3 -> getString(R.string.stocks_list_title)
-            4 -> getString(R.string.parts)
-            else -> throw IllegalArgumentException("Wrong pager position!")
+            FIRST_ITEM_POSITION -> getString(R.string.common_good_info_title)
+            SECOND_ITEM_POSITION -> getString(R.string.additional_good_info_title)
+            THIRD_ITEM_POSITION -> getString(R.string.good_providers_list_title)
+            FOURTH_ITEM_POSITION -> getString(R.string.stocks_list_title)
+            FIFTH_ITEM_POSITION -> getString(R.string.parts)
+            else -> throw IllegalArgumentException(WRONG_PAGER_POSITION_MESSAGE)
         }
     }
 
     override fun countTab(): Int {
         return if (vm.additional.value?.hasZParts == true) {
-            5
+            FIVE_ITEMS_SIZE
         } else {
-            4
+            FOUR_ITEMS_SIZE
         }
     }
 
+    override fun getLifecycleOwner(): LifecycleOwner = viewLifecycleOwner
+    override fun getDynamicData(): LiveData<*> = vm.additional
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding?.apply {
-            viewPagerSettings = this@GoodInfoWlFragment
-            vm?.additional?.observe(viewLifecycleOwner) {
-                viewPager.adapter?.notifyDataSetChanged()
-            }
-        }
+        binding?.viewPagerSettings = this@GoodInfoWlFragment
     }
 
     override fun onScanResult(data: String) {
@@ -182,7 +180,14 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
     }
 
     companion object {
-//        private const val
+        private const val FIRST_ITEM_POSITION = 0
+        private const val SECOND_ITEM_POSITION = 1
+        private const val THIRD_ITEM_POSITION = 2
+        private const val FOURTH_ITEM_POSITION = 3
+        private const val FIFTH_ITEM_POSITION = 4
+        private const val FOUR_ITEMS_SIZE = 4
+        private const val FIVE_ITEMS_SIZE = 5
+        private const val WRONG_PAGER_POSITION_MESSAGE = "Wrong pager position!"
     }
 
 }
