@@ -8,7 +8,7 @@ import com.lenta.shared.utilities.gs1.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-open class BarcodeViewModel() {
+open class BarcodeScannedParser() {
 
     protected open val weightValue by unsafeLazy { listOf(VALUE_23, VALUE_24, VALUE_27, VALUE_28) }
     protected open val weightZeroValue by unsafeLazy { listOf(VALUE_023, VALUE_024, VALUE_027, VALUE_028) }

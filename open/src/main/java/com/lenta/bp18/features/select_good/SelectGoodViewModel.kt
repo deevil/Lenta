@@ -9,7 +9,7 @@ import com.lenta.bp18.platform.navigation.IScreenNavigator
 import com.lenta.bp18.repository.IDatabaseRepo
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.models.core.Batch
-import com.lenta.shared.platform.viewmodel.BarcodeViewModel
+import com.lenta.shared.platform.viewmodel.BarcodeScannedParser
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.extentions.launchUITryCatch
@@ -52,7 +52,7 @@ class SelectGoodViewModel : CoreViewModel() {
 
     private fun preparationEanForSearch(barcode: String) = launchUITryCatch {
         navigator.showProgress(context.getString(R.string.load_barcode_data))
-        val barcodeData = BarcodeViewModel().processBarcode(barcode)
+        val barcodeData = BarcodeScannedParser().processBarcode(barcode)
         ean.value = barcodeData.barcodeInfo.barcode
         searchEan(ean.value.orEmpty(), barcodeData.barcodeInfo.weight, barcodeData.batch)
     }
