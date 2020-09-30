@@ -65,7 +65,7 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
     }
 
     override fun getPagerItemView(container: ViewGroup, position: Int): View = when (position) {
-        0 -> {
+        FIRST_ITEM_POSITION -> {
             DataBindingUtil.inflate<LayoutWlGoodInfoCommonBinding>(LayoutInflater.from(container.context),
                     R.layout.layout_wl_good_info_common,
                     container,
@@ -80,7 +80,7 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
             }
         }
 
-        1 -> {
+        SECOND_ITEM_POSITION -> {
             DataBindingUtil.inflate<LayoutWlGoodInfoAdditionalBinding>(LayoutInflater.from(container.context),
                     R.layout.layout_wl_good_info_additional,
                     container,
@@ -93,7 +93,7 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
             }
         }
 
-        2 -> {
+        THIRD_ITEM_POSITION -> {
             DataBindingUtil.inflate<LayoutWlGoodInfoProvidersBinding>(LayoutInflater.from(container.context),
                     R.layout.layout_wl_good_info_providers,
                     container,
@@ -110,15 +110,19 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
             }
         }
 
-        3 -> {
+        FOURTH_ITEM_POSITION -> {
             DataBindingUtil.inflate<LayoutWlGoodInfoStocksBinding>(LayoutInflater.from(container.context),
                     R.layout.layout_wl_good_info_stocks,
                     container,
                     false).let { layoutBinding ->
 
-                layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemStorageStockBinding>(
+                layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemStorageStockBinding>(
                         layoutId = R.layout.item_storage_stock,
-                        itemId = BR.stock)
+                        itemId = BR.stock,
+                        onItemBind = {binding, item -> binding.layoutStorage.setOnClickListener {
+                            vm.onStockItemClick(item)
+                        }}
+                )
 
                 layoutBinding.vm = vm
                 layoutBinding.lifecycleOwner = viewLifecycleOwner
@@ -127,7 +131,7 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
             }
         }
 
-        4 -> {
+        FIFTH_ITEM_POSITION -> {
             DataBindingUtil.inflate<LayoutWlGoodPartsStocksBinding>(LayoutInflater.from(container.context),
                     R.layout.layout_wl_good_parts_stocks,
                     container,

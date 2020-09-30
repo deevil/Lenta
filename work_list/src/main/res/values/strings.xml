@@ -131,4 +131,5 @@
         %s\n
         %s\n
         ДП:%s / СГ:%s</string>
+    <string name="storage_z_parts_pattern">Z-партии склада %s</string>
 </resources>

@@ -5,6 +5,7 @@ import com.lenta.bp14.features.work_list.good_details.GoodDetailsViewModel
 import com.lenta.bp14.features.work_list.good_info.GoodInfoWlViewModel
 import com.lenta.bp14.features.work_list.good_sales.GoodSalesViewModel
 import com.lenta.bp14.features.work_list.goods_list.GoodsListWlViewModel
+import com.lenta.bp14.features.work_list.storage_z_parts.StorageZPartsViewModel
 import com.lenta.bp14.models.filter.FilterFieldType.*
 import com.lenta.bp14.models.filter.FilterableDelegate
 import com.lenta.bp14.models.filter.IFilterable
@@ -37,7 +38,7 @@ interface WorkListComponent {
     fun inject(it: GoodDetailsViewModel)
     fun inject(it: ExpectedDeliveriesViewModel)
     fun inject(it: GoodSalesViewModel)
-
+    fun inject(it: StorageZPartsViewModel)
 }
 
 @Module(includes = [WorkListModule.Declarations::class])

@@ -27,6 +27,7 @@ import com.lenta.bp14.features.work_list.good_details.GoodDetailsFragment
 import com.lenta.bp14.features.work_list.good_info.GoodInfoWlFragment
 import com.lenta.bp14.features.work_list.good_sales.GoodSalesFragment
 import com.lenta.bp14.features.work_list.goods_list.GoodsListWlFragment
+import com.lenta.bp14.features.work_list.storage_z_parts.StorageZPartsFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -486,6 +487,12 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun openStorageZPartsScreen(storage: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(StorageZPartsFragment.newInstance(storage))
+        }
+    }
+
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -544,5 +551,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openPictogrammInfoZPart()
     fun openPictogrammInfoHealthyFood()
     fun openConfirmationNotSaveChanges(yesCallback: () -> Unit)
-
+    fun openStorageZPartsScreen(storage: String)
 }

@@ -14,4 +14,8 @@ class ResourceFormatter @Inject constructor(
             zPart.dateExpir.convertToApplicationTime()
     )
 
+    override fun getStorageZPartInfo(storage: String): String {
+        return resourceManager.storageZPartsPattern.format(storage)
+    }
+
 }

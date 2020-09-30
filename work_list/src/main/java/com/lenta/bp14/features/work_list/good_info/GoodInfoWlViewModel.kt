@@ -1,5 +1,6 @@
 package com.lenta.bp14.features.work_list.good_info
 
+import android.util.Log
 import android.widget.EditText
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -28,6 +29,8 @@ import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.view.OnPositionClickListener
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -264,29 +267,30 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
         launchUITryCatch {
             title.value = good.value?.getFormattedMaterialWithName()
             quantity.value = good.value?.defaultValue.dropZeros()
-
+            navigator.showProgressLoadingData()
             loadAdditionalInfo()
+            navigator.hideProgress()
         }
     }
 
     // -----------------------------
 
-    private fun loadAdditionalInfo() {
-        launchUITryCatch {
-            additionalGoodInfoNetRequest(AdditionalGoodInfoParams(
-                    tkNumber = sessionInfo.market.orEmpty(),
-                    ean = good.value?.ean,
-                    matNr = good.value?.material
-            )).also {
-                loadingIndicatorVisibility.value = false
-            }.either(::handleAdditionalInfoFailure, ::updateAdditionalGoodInfo)
-        }
+    private suspend fun loadAdditionalInfo() = withContext(Dispatchers.IO) {
+        additionalGoodInfoNetRequest(AdditionalGoodInfoParams(
+                tkNumber = sessionInfo.market.orEmpty(),
+                ean = good.value?.ean,
+                matNr = good.value?.material
+        )).also {
+            loadingIndicatorVisibility.postValue(false)
+        }.either(::handleAdditionalInfoFailure, ::updateAdditionalGoodInfo)
+
     }
 
     private fun handleAdditionalInfoFailure(failure: Failure) {
         super.handleFailure(failure)
-        dataLoadingError.value = if (failure is Failure.SapError) failure.message else resourceManager.serverConnectionError
-        dataLoadingErrorVisibility.value = true
+        val error = if (failure is Failure.SapError) failure.message else resourceManager.serverConnectionError
+        dataLoadingError.postValue(error)
+        dataLoadingErrorVisibility.postValue(true)
     }
 
     private fun updateAdditionalGoodInfo(result: AdditionalGoodInfo) {
@@ -361,6 +365,12 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
                 funcForCigaretteBox = ::actionForMarkedGood,
                 funcForNotValidFormat = navigator::showGoodNotFound
         )
+    }
+
+    fun onStockItemClick(itemIndex: Int) {
+        stocks.value?.get(itemIndex)?.let { stock ->
+            navigator.openStorageZPartsScreen(stock.storage)
+        }
     }
 
     private fun searchCode(ean: String? = null, material: String? = null) {
