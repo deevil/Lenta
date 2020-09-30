@@ -1,6 +1,6 @@
 package com.lenta.bp15.model.pojo
 
-import com.lenta.bp15.features.task_card.TaskCardUi
+import com.lenta.bp15.features.task_card.TaskInfoUi
 import com.lenta.bp15.features.task_list.ItemTaskUi
 
 data class Task(
@@ -14,8 +14,15 @@ data class Task(
         val marksQuantity: Int,
         val block: Block,
         val isFinished: Boolean,
-        val comment: String
+        val comment: String,
+        var goods: List<Good>
 ) {
+
+    private var startHashState = NO_HASH
+
+    fun isEmptyGoodList(): Boolean {
+        return goods.isEmpty()
+    }
 
     fun convertToItemTaskUi(index: Int): ItemTaskUi {
         return ItemTaskUi(
@@ -29,14 +36,38 @@ data class Task(
         )
     }
 
-    fun convertToTaskCardUi(): TaskCardUi {
-        return TaskCardUi(
+    fun convertToTaskInfoUi(): TaskInfoUi {
+        return TaskInfoUi(
                 type = type,
                 name = secondLine,
                 quantity = "$marksQuantity",
                 description = description,
                 comment = comment
         )
+    }
+
+    fun saveStartState() {
+        if (isNotSavedStartState()) {
+            startHashState = this.hashCode()
+        }
+    }
+
+    fun isChanged(): Boolean {
+        return if (!isNotSavedStartState()) {
+            this.hashCode() != startHashState
+        } else false
+    }
+
+    fun clearStartState() {
+        startHashState = NO_HASH
+    }
+
+    private fun isNotSavedStartState(): Boolean {
+        return startHashState == NO_HASH
+    }
+
+    companion object {
+        private const val NO_HASH = -1
     }
 
 }

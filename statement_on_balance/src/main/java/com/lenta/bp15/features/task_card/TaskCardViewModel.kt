@@ -7,6 +7,7 @@ import com.lenta.bp15.platform.resource.IResourceManager
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.databinding.PageSelectionListener
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.mapSkipNulls
 import javax.inject.Inject
 
@@ -25,6 +26,10 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     lateinit var manager: ITaskManager
 
 
+    /**
+    Переменные
+     */
+
     private val task by lazy {
         manager.currentTask
     }
@@ -37,23 +42,42 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         task.map { it.comment.isNotEmpty() }
     }
 
-    val taskCard by lazy {
+    val taskInfo by lazy {
         task.mapSkipNulls { task ->
-            task.convertToTaskCardUi()
+            task.convertToTaskInfoUi()
         }
     }
+
+    /**
+    Методы
+     */
 
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
     }
 
     fun onClickNext() {
-
+        task.value?.let { task ->
+            if (task.isEmptyGoodList()) {
+                launchUITryCatch {
+                    manager.loadGoodListToCurrentTask()
+                    navigator.openGoodListScreen()
+                }
+            } else {
+                navigator.openGoodListScreen()
+            }
+        }
     }
 
     fun onBackPressed() {
-
+        task.value?.let { task ->
+            navigator.goBack()
+            if (!task.isChanged()) {
+                launchUITryCatch {
+                    manager.unlockTask(task)
+                }
+            }
+        }
     }
-
 
 }

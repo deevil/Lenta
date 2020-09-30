@@ -24,7 +24,7 @@
                 <EditText
                     style="@style/CellEditTextStyle"
                     android:enabled="false"
-                    android:text="@{vm.taskCard.type}"
+                    android:text="@{vm.taskInfo.type}"
                     tools:text="Постановка на баланс ТК" />
 
             </LinearLayout>
@@ -41,7 +41,7 @@
                 <EditText
                     style="@style/CellEditTextStyle"
                     android:enabled="false"
-                    android:text="@{vm.taskCard.name}"
+                    android:text="@{vm.taskInfo.name}"
                     tools:text="Постановка на баланс от 05.08.2020 15:16" />
 
             </LinearLayout>
@@ -70,7 +70,7 @@
                 <TextView
                     style="@style/CellTextStyle"
                     android:maxLines="2"
-                    android:text="@{vm.taskCard.quantity}"
+                    android:text="@{vm.taskInfo.quantity}"
                     tools:text="2500" />
 
             </LinearLayout>

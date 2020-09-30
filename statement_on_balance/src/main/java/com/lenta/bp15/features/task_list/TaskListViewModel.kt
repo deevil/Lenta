@@ -8,6 +8,7 @@ import com.lenta.bp15.platform.navigation.IScreenNavigator
 import com.lenta.bp15.platform.resource.IResourceManager
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.BlockType
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.combineLatest
@@ -49,11 +50,11 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     val requestFocusToSearchField = MutableLiveData(false)
 
     val taskList by lazy {
-        manager.tasks.combineLatest(processingField).mapSkipNulls { it.first }.map(listFilterFunc)
+        manager.processingTasks.combineLatest(processingField).mapSkipNulls { it.first }.map(listFilterFunc)
     }
 
     val searchList by lazy {
-        manager.foundTasks.combineLatest(searchField).mapSkipNulls { it.first }.map(listFilterFunc)
+        manager.searchTasks.combineLatest(searchField).mapSkipNulls { it.first }.map(listFilterFunc)
     }
 
     private val listFilterFunc = { tasks: List<Task> ->
@@ -81,7 +82,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     private fun updateTaskList() {
         launchUITryCatch {
-            manager.updateTaskList()
+            manager.loadProcessingTaskList()
         }
     }
 
@@ -107,26 +108,35 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         }
     }
 
-    /**
-    Обработка нажатий
-     */
-
     fun onClickItemTaskPosition(position: Int) {
         taskList.value?.getOrNull(position)?.number?.let { taskNumber ->
-            manager.tasks.value?.find { it.number == taskNumber }?.let { task ->
-                manager.setCurrentTask(task)
-                navigator.openTaskCardScreen()
+            manager.processingTasks.value?.find { it.number == taskNumber }?.let { task ->
+                prepareToOpenTask(task)
             }
         }
     }
 
     fun onClickItemSearchPosition(position: Int) {
         searchList.value?.getOrNull(position)?.number?.let { taskNumber ->
-            manager.foundTasks.value?.find { it.number == taskNumber }?.let { task ->
-                manager.setCurrentTask(task)
-                navigator.openTaskCardScreen()
+            manager.searchTasks.value?.find { it.number == taskNumber }?.let { task ->
+                prepareToOpenTask(task)
             }
         }
+    }
+
+    private fun prepareToOpenTask(task: Task) {
+        with(task) {
+            when (block.type) {
+                BlockType.LOCK -> navigator.showAlertBlockedTaskAnotherUser(block.user, block.ip)
+                BlockType.SELF_LOCK -> navigator.showAlertBlockedTaskByMe(block.user) { openTaskCard(task) }
+                else -> openTaskCard(task)
+            }
+        }
+    }
+
+    private fun openTaskCard(task: Task) {
+        manager.setCurrentTask(task)
+        navigator.openTaskCardScreen()
     }
 
     fun onClickUpdate() {
