@@ -66,7 +66,7 @@ class DiscrepancyListViewModel : CoreViewModel() {
                 ++localIndex
                 DiscrepancyListItemGoodUi(
                         position = "$localIndex",
-                        name = good.name,
+                        name = good.getNameWithMaterial(),
                         material = good.material,
                         providerCode = good.provider.code.orEmpty(),
                         quantity = chooseQuantity(good)
@@ -94,7 +94,8 @@ class DiscrepancyListViewModel : CoreViewModel() {
     fun onClickItemPosition(position: Int) {
         task.value?.let { task ->
             goods.value?.get(position)?.material?.let { material ->
-                task.goods.find { it.material == material }?.let {
+                task.goods.find { it.material == material }?.let { good ->
+                    manager.updateCurrentGood(good)
                     navigator.openGoodInfoOpenScreen()
                 }
             }

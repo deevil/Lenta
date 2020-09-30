@@ -225,7 +225,7 @@ class BasketOpenGoodListViewModel : BaseGoodListOpenViewModel(), OnOkInSoftKeybo
 
     private fun isDivByMrcAndItsNotZero(mrc: String, task: TaskOpen): Boolean {
         val isDivByMinimalPrice = task.type?.isDivByMinimalPrice == true
-        return isDivByMinimalPrice && (mrc.isEmpty().not() || mrc != ZERO_MRC_STRING)
+        return isDivByMinimalPrice && (mrc.isEmpty().not() && mrc != ZERO_MRC_STRING)
     }
 
     companion object {
