@@ -6,8 +6,7 @@ import com.lenta.shared.models.core.ProductType
 import javax.inject.Inject
 
 @AppScope
-class ProcessExciseAlcoStampAccPGEService
-@Inject constructor() {
+class ProcessExciseAlcoStampAccPGEService @Inject constructor() {
 
     @Inject
     lateinit var taskManager: IReceivingTaskManager
@@ -16,8 +15,8 @@ class ProcessExciseAlcoStampAccPGEService
     private val exciseStamps: ArrayList<TaskExciseStampInfo> = ArrayList()
     private val currentExciseStampsDiscrepancies: ArrayList<TaskExciseStampDiscrepancies> = ArrayList()
 
-    fun newProcessExciseAlcoStampPGEService(productInfo: TaskProductInfo) : ProcessExciseAlcoStampAccPGEService? {
-        return if (productInfo.type == ProductType.ExciseAlcohol && productInfo.isMarkFl){ //алкоголь, марочный учет ПГЕ https://trello.com/c/Bx03dgxE
+    fun newProcessExciseAlcoStampPGEService(productInfo: TaskProductInfo): ProcessExciseAlcoStampAccPGEService? {
+        return if (productInfo.type == ProductType.ExciseAlcohol && productInfo.isMarkFl) { //алкоголь, марочный учет ПГЕ https://trello.com/c/Bx03dgxE
             this.productInfo = productInfo.copy()
             exciseStamps.clear()
             taskManager.getReceivingTask()?.taskRepository?.getExciseStamps()?.getExciseStamps()?.map {
@@ -28,8 +27,7 @@ class ProcessExciseAlcoStampAccPGEService
                 currentExciseStampsDiscrepancies.add(it.copy())
             }
             this
-        }
-        else null
+        } else null
     }
 
     fun setProcessingUnitNumber(processingUnitNumber: String) {
@@ -40,15 +38,12 @@ class ProcessExciseAlcoStampAccPGEService
     fun filterAndUpdateBlockDiscrepansies() {
         if (currentExciseStampsDiscrepancies.isNotEmpty()) {
             currentExciseStampsDiscrepancies.map {
-                taskManager.getReceivingTask()?.
-                taskRepository?.
-                getExciseStampsDiscrepancies()?.
-                changeExciseStampDiscrepancy(it)
+                taskManager.getReceivingTask()?.taskRepository?.getExciseStampsDiscrepancies()?.changeExciseStampDiscrepancy(it)
             }
         }
     }
 
-    fun addProduct(count: String, typeDiscrepancies: String){
+    fun addProduct(count: String, typeDiscrepancies: String) {
         val countAdd = getCountOfDiscrepanciesOfProduct(typeDiscrepancies) + count.toDouble()
 
         //добавляем кол-во по расхождению для продукта
@@ -68,10 +63,7 @@ class ProcessExciseAlcoStampAccPGEService
                         notEditNumberDiscrepancies = ""
                 )
 
-        taskManager.getReceivingTask()?.
-                taskRepository?.
-                getProductsDiscrepancies()?.
-                changeProductDiscrepancy(foundDiscrepancy)
+        taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.changeProductDiscrepancy(foundDiscrepancy)
     }
 
     fun addExciseStampDiscrepancy(exciseStamp: TaskExciseStampInfo?, typeDiscrepancies: String, isScan: Boolean) {
@@ -94,7 +86,7 @@ class ProcessExciseAlcoStampAccPGEService
                         isUnknown = false
                 )
 
-        currentExciseStampsDiscrepancies.map { it }.filter {unitInfo ->
+        currentExciseStampsDiscrepancies.map { it }.filter { unitInfo ->
             if (unitInfo.code == exciseStamp?.code) {
                 currentExciseStampsDiscrepancies.remove(unitInfo)
                 return@filter true
@@ -105,23 +97,23 @@ class ProcessExciseAlcoStampAccPGEService
         currentExciseStampsDiscrepancies.add(foundExciseStampDiscrepancy)
     }
 
-    fun overLimit(count: Double) : Boolean {
+    fun overLimit(count: Double): Boolean {
         return productInfo.orderQuantity.toDouble() < (getCountAcceptOfProduct() + getCountRefusalOfProduct() + count)
     }
 
-    fun searchExciseStamp(code: String) : TaskExciseStampInfo? {
+    fun searchExciseStamp(code: String): TaskExciseStampInfo? {
         return exciseStamps.findLast {
             it.code == code
         }
     }
 
-    fun exciseStampIsAlreadyProcessed(code: String) : Boolean {
+    fun exciseStampIsAlreadyProcessed(code: String): Boolean {
         return currentExciseStampsDiscrepancies.any {
             it.code == code && it.isScan
         }
     }
 
-    fun getLastAddExciseStamp() : TaskExciseStampInfo? {
+    fun getLastAddExciseStamp(): TaskExciseStampInfo? {
         return if (currentExciseStampsDiscrepancies.isNotEmpty()) {
             exciseStamps.findLast { stampInfo ->
                 stampInfo.code == currentExciseStampsDiscrepancies.last {
@@ -131,24 +123,24 @@ class ProcessExciseAlcoStampAccPGEService
         } else null
     }
 
-    private fun getCountOfDiscrepanciesOfProduct(typeDiscrepancies: String) : Double {
-        return taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().findProductDiscrepanciesOfProduct(productInfo).filter {productDiscrepancies ->
+    private fun getCountOfDiscrepanciesOfProduct(typeDiscrepancies: String): Double {
+        return taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().findProductDiscrepanciesOfProduct(productInfo).filter { productDiscrepancies ->
             productDiscrepancies.typeDiscrepancies == typeDiscrepancies
         }.sumByDouble {
             it.numberDiscrepancies.toDouble()
         }
     }
 
-    fun getCountAcceptOfProduct() : Double {
-        return taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().findProductDiscrepanciesOfProduct(productInfo).filter {productDiscrepancies ->
+    fun getCountAcceptOfProduct(): Double {
+        return taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().findProductDiscrepanciesOfProduct(productInfo).filter { productDiscrepancies ->
             productDiscrepancies.typeDiscrepancies == "1" || productDiscrepancies.typeDiscrepancies == "2"
         }.sumByDouble {
             it.numberDiscrepancies.toDouble()
         }
     }
 
-    fun getCountRefusalOfProduct() : Double {
-        return taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().findProductDiscrepanciesOfProduct(productInfo).filter {productDiscrepancies ->
+    fun getCountRefusalOfProduct(): Double {
+        return taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().findProductDiscrepanciesOfProduct(productInfo).filter { productDiscrepancies ->
             productDiscrepancies.typeDiscrepancies == "3" || productDiscrepancies.typeDiscrepancies == "4" || productDiscrepancies.typeDiscrepancies == "5"
         }.sumByDouble {
             it.numberDiscrepancies.toDouble()
@@ -162,11 +154,11 @@ class ProcessExciseAlcoStampAccPGEService
         currentExciseStampsDiscrepancies.remove(stamp)
     }
 
-    fun modifications() : Boolean {
+    fun modifications(): Boolean {
         return currentExciseStampsDiscrepancies != taskManager.getReceivingTask()?.taskRepository?.getExciseStampsDiscrepancies()?.getExciseStampDiscrepancies()
     }
 
-    fun getCountExciseStampsSurplusScanned() : Int {
+    fun getCountExciseStampsSurplusScanned(): Int {
         return currentExciseStampsDiscrepancies.filter {
             it.isScan && it.typeDiscrepancies == "2"
         }.size

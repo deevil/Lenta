@@ -26,6 +26,8 @@ import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.utilities.orIfNull
 import com.mobrun.plugin.api.HyperHive
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
@@ -111,61 +113,101 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
     }
 
     private fun updateData() {
+        actionWithNotProcessedBoxes()
+        actionWithProcessedBoxes()
+    }
+
+    private fun actionWithNotProcessedBoxes() = launchUITryCatch {
         productInfo.value?.let { productInfoValue ->
-            val boxNotProcessed = taskManager.getReceivingTask()?.taskRepository?.getBoxesRepository()?.findBoxesOfProduct(productInfoValue)?.filter { box ->
-                taskManager.getReceivingTask()?.taskRepository?.getBoxesDiscrepancies()?.findBoxesDiscrepanciesOfProduct(productInfoValue)?.findLast { it.boxNumber == box.boxNumber }?.boxNumber.isNullOrEmpty()
-            }
-            val boxProcessed = taskManager.getReceivingTask()?.taskRepository?.getBoxesRepository()?.findBoxesOfProduct(productInfoValue)?.filter { box ->
-                !taskManager.getReceivingTask()?.taskRepository?.getBoxesDiscrepancies()?.findBoxesDiscrepanciesOfProduct(productInfoValue)?.findLast { it.boxNumber == box.boxNumber }?.boxNumber.isNullOrEmpty()
+            taskManager.getReceivingTask()?.taskRepository?.let { taskRepository ->
+                val boxNotProcessed = withContext(Dispatchers.IO) {
+                    taskRepository.getBoxesRepository().findBoxesOfProduct(productInfoValue)?.filter { box ->
+                        taskRepository.getBoxesDiscrepancies()
+                                .findBoxesDiscrepanciesOfProduct(productInfoValue)
+                                .findLast { it.boxNumber == box.boxNumber }?.boxNumber.isNullOrEmpty()
+                    }.orEmpty()
+                }
+
+                val mappedBoxNotProcessedInfo = withContext(Dispatchers.IO) {
+                    boxNotProcessed
+                            .mapIndexed { index, boxInfo ->
+                                BoxListItem(
+                                        number = index + 1,
+                                        name = boxInfo.boxNumber.getNameFromBoxNumber(),
+                                        productInfo = productInfoValue,
+                                        productDiscrepancies = null,
+                                        boxInfo = boxInfo,
+                                        typeDiscrepancies = null,
+                                        checkBoxControl = false,
+                                        checkStampControl = false,
+                                        isDefectiveBox = false,
+                                        even = index % 2 == 0)
+                            }
+                            .reversed()
+                }
+                countNotProcessed.value = mappedBoxNotProcessedInfo
+                notProcessedSelectionsHelper.clearPositions()
+            }.orIfNull {
+                Logg.e { "taskManager.getReceivingTask()?.taskRepository is null" }
             }
 
-            boxNotProcessed?.let { boxInfoList ->
-                countNotProcessed.postValue(
-                        boxInfoList
-                                .mapIndexed { index, boxInfo ->
-                                    BoxListItem(
-                                            number = index + 1,
-                                            name = boxInfo.boxNumber.takeIf { it.length >= BOX_NUMBER_LENGTH }
-                                                    ?.run { "${substring(BOX_NUMBER_START, BOX_NUMBER_POSITION_10)} ${substring(BOX_NUMBER_POSITION_10, BOX_NUMBER_POSITION_20)} ${substring(BOX_NUMBER_POSITION_20, BOX_NUMBER_LENGTH)}" }.orEmpty(),
-                                            productInfo = productInfoValue,
-                                            productDiscrepancies = null,
-                                            boxInfo = boxInfo,
-                                            typeDiscrepancies = null,
-                                            checkBoxControl = false,
-                                            checkStampControl = false,
-                                            isDefectiveBox = false,
-                                            even = index % 2 == 0)
-                                }
-                                .reversed())
-            }
-            notProcessedSelectionsHelper.clearPositions()
-
-            boxProcessed?.let { boxInfoList ->
-                countProcessed.postValue(
-                        boxInfoList
-                                .mapIndexed { index, boxInfo ->
-                                    val isDefectiveBox = processExciseAlcoBoxAccPGEService.defectiveBox(boxInfo.boxNumber)
-                                    val typeDiscrepancies = taskManager.getReceivingTask()?.taskRepository?.getBoxesDiscrepancies()?.findBoxesDiscrepanciesOfProduct(productInfo.value!!)?.findLast { it.boxNumber == boxInfo.boxNumber }?.typeDiscrepancies
-                                            ?: ""
-                                    BoxListItem(
-                                            number = index + 1,
-                                            name = boxInfo.boxNumber.takeIf { it.length >= BOX_NUMBER_LENGTH }
-                                                    ?.run { "${substring(BOX_NUMBER_START, BOX_NUMBER_POSITION_10)} ${substring(BOX_NUMBER_POSITION_10, BOX_NUMBER_POSITION_20)} ${substring(BOX_NUMBER_POSITION_20, BOX_NUMBER_LENGTH)}" }.orEmpty(),
-                                            productInfo = productInfoValue,
-                                            productDiscrepancies = null,
-                                            boxInfo = boxInfo,
-                                            typeDiscrepancies = typeDiscrepancies,
-                                            checkBoxControl = processExciseAlcoBoxAccPGEService.boxControl(boxInfo),
-                                            checkStampControl = processExciseAlcoBoxAccPGEService.stampControlOfBox(boxInfo),
-                                            isDefectiveBox = isDefectiveBox,
-                                            even = index % 2 == 0)
-                                }
-                                .reversed())
-            }
-            processedSelectionsHelper.clearPositions()
         }.orIfNull {
             Logg.e { "productInfo.value or countNotProcessedValue is null" }
         }
+    }
+
+    private fun actionWithProcessedBoxes() = launchUITryCatch {
+        productInfo.value?.let { productInfoValue ->
+            taskManager.getReceivingTask()?.taskRepository?.let { taskRepository ->
+                val boxProcessed = withContext(Dispatchers.IO) {
+                    taskRepository.getBoxesRepository().findBoxesOfProduct(productInfoValue)?.filter { box ->
+                        !taskRepository.getBoxesDiscrepancies()
+                                .findBoxesDiscrepanciesOfProduct(productInfoValue)
+                                .findLast { it.boxNumber == box.boxNumber }
+                                ?.boxNumber.isNullOrEmpty()
+                    }.orEmpty()
+                }
+
+                val mappedProcessedBoxInfo = withContext(Dispatchers.IO) {
+                    boxProcessed.mapIndexed { index, boxInfo ->
+                        val isDefectiveBox = processExciseAlcoBoxAccPGEService.defectiveBox(boxInfo.boxNumber)
+                        val typeDiscrepancies = getTypeDiscrepanciesFromTaskManager(boxInfo.boxNumber)
+                        BoxListItem(
+                                number = index + 1,
+                                name = boxInfo.boxNumber.getNameFromBoxNumber(),
+                                productInfo = productInfoValue,
+                                productDiscrepancies = null,
+                                boxInfo = boxInfo,
+                                typeDiscrepancies = typeDiscrepancies,
+                                checkBoxControl = processExciseAlcoBoxAccPGEService.boxControl(boxInfo),
+                                checkStampControl = processExciseAlcoBoxAccPGEService.stampControlOfBox(boxInfo),
+                                isDefectiveBox = isDefectiveBox,
+                                even = index % 2 == 0)
+                    }.reversed()
+                }
+                countProcessed.value = mappedProcessedBoxInfo
+                processedSelectionsHelper.clearPositions()
+            }.orIfNull {
+                Logg.e { "taskManager.getReceivingTask()?.taskRepository is null" }
+            }
+        }.orIfNull {
+            Logg.e { "productInfo.value or countProcessedValue is null" }
+        }
+    }
+
+    private fun String.getNameFromBoxNumber(): String {
+        return takeIf { it.length >= BOX_NUMBER_LENGTH }
+                ?.run { "${substring(BOX_NUMBER_START, BOX_NUMBER_POSITION_10)} ${substring(BOX_NUMBER_POSITION_10, BOX_NUMBER_POSITION_20)} ${substring(BOX_NUMBER_POSITION_20, BOX_NUMBER_LENGTH)}" }.orEmpty()
+    }
+
+    private fun getTypeDiscrepanciesFromTaskManager(boxNumber: String): String {
+        return productInfo.value?.let { productInfoValue ->
+            taskManager.getReceivingTask()
+                    ?.taskRepository?.getBoxesDiscrepancies()
+                    ?.findBoxesDiscrepanciesOfProduct(productInfoValue)
+                    ?.findLast { it.boxNumber == boxNumber }
+                    ?.typeDiscrepancies.orEmpty()
+        }.orEmpty()
     }
 
 
@@ -191,27 +233,38 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
         -Если X<Y, то выводить экран с сообщением <Выбрано больше элементов, чем введено>.
         -Если X>=Y, то переходить на экран карточки короба*/
         val countSelectedBoxes = notProcessedSelectionsHelper.selectedPositions.value?.size ?: 0
-        if (processExciseAlcoBoxAccPGEService.getInitialCount() < countSelectedBoxes) {
+        val initialCount = processExciseAlcoBoxAccPGEService.getInitialCount()
+        if (initialCount < countSelectedBoxes) {
             screenNavigator.openAlertMoreBoxesSelectedThanSnteredScreen()
         } else {
-            productInfo.value?.let { productInfoValue ->
-                countNotProcessed.value?.let { countNotProcessedValue ->
-                    screenNavigator.openExciseAlcoBoxCardPGEScreen(
-                            productInfo = productInfoValue,
-                            boxInfo = if (countSelectedBoxes > 1) null else countNotProcessed.value?.get(notProcessedSelectionsHelper.selectedPositions.value?.last()
-                                    ?: 0)?.boxInfo,
-                            massProcessingBoxesNumber = if (countSelectedBoxes > 1) notProcessedSelectionsHelper.selectedPositions.value?.map {
-                                countNotProcessedValue[it].boxInfo.boxNumber
-                            } else null,
-                            exciseStampInfo = null,
-                            selectQualityCode = selectQualityCode.value.orEmpty(),
-                            isScan = false,
-                            isBoxNotIncludedInNetworkLenta = false
-                    )
-                }.orIfNull {
-                    Logg.e { "productInfo.value or countNotProcessedValue is null" }
+            actionWithExciseAlcoBoxCardPGE(countSelectedBoxes)
+        }
+    }
+
+    private fun actionWithExciseAlcoBoxCardPGE(countSelectedBoxes: Int) {
+        productInfo.value?.let { productInfoValue ->
+            countNotProcessed.value?.let { countNotProcessedValue ->
+                val notProcessedLastSelectedPosition = notProcessedSelectionsHelper.selectedPositions.value?.last()
+                        ?: 0
+                val boxInfoValue = countNotProcessedValue.takeIf { countSelectedBoxes <= MIN_COUNT_OF_BOXES }?.get(notProcessedLastSelectedPosition)?.boxInfo
+                val massProcessingBoxesNumbers = notProcessedSelectionsHelper.selectedPositions.value?.takeIf { countSelectedBoxes > MIN_COUNT_OF_BOXES }?.mapNotNull {
+                    countNotProcessedValue.getOrNull(it)?.boxInfo?.boxNumber
                 }
+
+                screenNavigator.openExciseAlcoBoxCardPGEScreen(
+                        productInfo = productInfoValue,
+                        boxInfo = boxInfoValue,
+                        massProcessingBoxesNumber = massProcessingBoxesNumbers,
+                        exciseStampInfo = null,
+                        selectQualityCode = selectQualityCode.value.orEmpty(),
+                        isScan = false,
+                        isBoxNotIncludedInNetworkLenta = false
+                )
+            }.orIfNull {
+                Logg.e { "productInfo.value or countNotProcessedValue is null" }
             }
+        }.orIfNull {
+            Logg.e { "productInfo.value  is null" }
         }
     }
 
@@ -222,46 +275,49 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
 
     fun onClickItemPosition(position: Int) {
         if (selectedPage.value == 0) {
-            procesingBoxes(position)
+            processingBoxes(position)
         } else {
-            productInfo.value?.let {
+            productInfo.value?.let { productInfoValue ->
                 screenNavigator.goBack()
-                if (productInfo.value != null && selectQualityCode.value != null) {
+                selectQualityCode.value?.let { selectQualityCodeValue ->
                     screenNavigator.openExciseAlcoBoxCardPGEScreen(
-                            productInfo = it,
-                            boxInfo = countProcessed.value?.get(position)?.boxInfo,
+                            productInfo = productInfoValue,
+                            boxInfo = countProcessed.value?.getOrNull(position)?.boxInfo,
                             massProcessingBoxesNumber = null,
                             exciseStampInfo = null,
-                            selectQualityCode = selectQualityCode.value.orEmpty(),
+                            selectQualityCode = selectQualityCodeValue,
                             isScan = false,
                             isBoxNotIncludedInNetworkLenta = false
                     )
+                }.orIfNull {
+                    Logg.e { "selectQualityCode.value  is null" }
                 }
+            }.orIfNull {
+                Logg.e { "productInfo.value  is null" }
             }
-        }.orIfNull {
-            Logg.e { "productInfo.value  is null" }
         }
     }
 
-    private fun procesingBoxes(position: Int) {
+    private fun processingBoxes(position: Int) {
         productInfo.value?.let {
-            if (processExciseAlcoBoxAccPGEService.getCountBoxOfProductOfDiscrepancies(countNotProcessed.value?.get(position)?.boxInfo?.boxNumber
-                            ?: "") >= processExciseAlcoBoxAccPGEService.getCountAcceptRefusal()) {
-                screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
+            val boxNumber = countNotProcessed.value?.getOrNull(position)?.boxInfo?.boxNumber.orEmpty()
+
+            if (isCountOfBoxMoreOrEqualCountOfAccepted(boxNumber)) {
+                screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() // Необходимое количество коробок уже обработано
             } else {
                 screenNavigator.goBack()
                 screenNavigator.openExciseAlcoBoxCardPGEScreen(
                         productInfo = it,
-                        boxInfo = countNotProcessed.value?.get(position)?.boxInfo,
+                        boxInfo = countNotProcessed.value?.getOrNull(position)?.boxInfo,
                         massProcessingBoxesNumber = null,
                         exciseStampInfo = null,
                         selectQualityCode = selectQualityCode.value.orEmpty(),
                         isScan = false,
                         isBoxNotIncludedInNetworkLenta = false
                 )
-            }.orIfNull {
-                Logg.e { "productInfo.value  is null" }
             }
+        }.orIfNull {
+            Logg.e { "productInfo.value  is null" }
         }
     }
 
@@ -275,29 +331,35 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
     }
 
     fun onScanResult(data: String) {
-        productInfo.value?.let {
-            when (data.length) {
-                DATA_LENGTH_68, DATA_LENGTH_150 -> {
-                    if (processExciseAlcoBoxAccPGEService.getCountBoxOfProductOfDiscrepancies(data) >= processExciseAlcoBoxAccPGEService.getCountAcceptRefusal()) { //это условие добавлено здесь, т.к. на WM оно тоже есть
-                        screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
-                    } else {
-                        val exciseStampInfo = processExciseAlcoBoxAccPGEService.searchExciseStamp(data)
-                        checksStampInTask(exciseStampInfo)
-                    }
-                }
-                DATA_LENGTH_26 -> {
-                    if (processExciseAlcoBoxAccPGEService.getCountBoxOfProductOfDiscrepancies(data) >= processExciseAlcoBoxAccPGEService.getCountAcceptRefusal()) {
-                        screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
-                    } else {
-                        val boxInfo = processExciseAlcoBoxAccPGEService.searchBox(boxNumber = data)
-                        checkBoxInTask(boxInfo, data)
-                    }
-                }
-                else -> screenNavigator.openAlertInvalidBarcodeFormatScannedScreen()
-            }
-        }.orIfNull {
-            Logg.e { "productInfo.value  is null" }
+        when (data.length) {
+            DATA_LENGTH_68, DATA_LENGTH_150 -> processDataLengthFor68And150(data)
+            DATA_LENGTH_26 -> processDataLengthFor26(data)
+            else -> screenNavigator.openAlertInvalidBarcodeFormatScannedScreen()
         }
+    }
+
+    private fun processDataLengthFor68And150(data: String) {
+        if (isCountOfBoxMoreOrEqualCountOfAccepted(data)) { //это условие добавлено здесь, т.к. на WM оно тоже есть
+            screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
+        } else {
+            val exciseStampInfo = processExciseAlcoBoxAccPGEService.searchExciseStamp(data)
+            checksStampInTask(exciseStampInfo)
+        }
+    }
+
+    private fun processDataLengthFor26(data: String) {
+        if (isCountOfBoxMoreOrEqualCountOfAccepted(data)) {
+            screenNavigator.openAlertRequiredQuantityBoxesAlreadyProcessedScreen() //Необходимое количество коробок уже обработано
+        } else {
+            val boxInfo = processExciseAlcoBoxAccPGEService.searchBox(boxNumber = data)
+            checkBoxInTask(boxInfo, data)
+        }
+    }
+
+    private fun isCountOfBoxMoreOrEqualCountOfAccepted(boxNumber: String): Boolean {
+        val countOfBoxProduct = processExciseAlcoBoxAccPGEService.getCountBoxOfProductOfDiscrepancies(boxNumber)
+        val countOfAcceptedRefusal = processExciseAlcoBoxAccPGEService.getCountAcceptRefusal()
+        return countOfBoxProduct >= countOfAcceptedRefusal
     }
 
     private fun checksStampInTask(exciseStampInfo: TaskExciseStampInfo?) {
@@ -335,18 +397,21 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
                         isScan = true,
                         isBoxNotIncludedInNetworkLenta = false
                 )
-            }.orIfNull {
-                Logg.e { "productInfo.value  is null" }
             }
+        }.orIfNull {
+            Logg.e { "productInfo.value  is null" }
         }
     }
 
     private fun checkBoxSap(boxInfo: TaskBoxInfo) {
         productInfo.value?.let {
             if (boxInfo.materialNumber != it.materialNumber) {
+                val materialNumber = zfmpUtz48V001.getProductInfoByMaterial(boxInfo.materialNumber)?.name.orEmpty()
                 //Отсканированная коробка принадлежит товару <SAP-код> <Название>
-                screenNavigator.openAlertScannedBoxBelongsAnotherProductScreen(materialNumber = boxInfo.materialNumber, materialName = zfmpUtz48V001.getProductInfoByMaterial(boxInfo.materialNumber)?.name
-                        ?: "")
+                screenNavigator.openAlertScannedBoxBelongsAnotherProductScreen(
+                        materialNumber = boxInfo.materialNumber,
+                        materialName = materialNumber
+                )
             } else {
                 screenNavigator.openExciseAlcoBoxCardPGEScreen(
                         productInfo = it,
@@ -357,80 +422,101 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
                         isScan = true,
                         isBoxNotIncludedInNetworkLenta = false
                 )
+            }
+        }.orIfNull {
+            Logg.e { "productInfo.value  is null" }
+        }
+    }
+
+    private fun scannedBoxNotFound(boxNumber: String) {
+        launchUITryCatch {
+            productInfo.value?.let { productInfoValue ->
+                screenNavigator.showProgressLoadingData(::handleFailure)
+                taskManager.getReceivingTask()?.let { task ->
+                    val params = ZmpUtzGrz31V001Params(
+                            taskNumber = task.taskHeader.taskNumber,
+                            materialNumber = productInfoValue.materialNumber,
+                            boxNumber = boxNumber,
+                            stampCode = ""
+                    )
+
+                    zmpUtzGrz31V001NetRequest(params).also {
+                        screenNavigator.hideProgress()
+                    }.either(::handleFailure, ::handleSuccessZmpUtzGrz31)
+
+                }.orIfNull {
+                    Logg.e { "taskManager.getReceivingTask() is null" }
+                }
             }.orIfNull {
                 Logg.e { "productInfo.value  is null" }
             }
         }
     }
 
-    private fun scannedBoxNotFound(boxNumber: String) {
-        launchUITryCatch {
-            productInfo.value?.let {
-                screenNavigator.showProgressLoadingData(::handleFailure)
-                taskManager.getReceivingTask()?.let { task ->
-                    val params = ZmpUtzGrz31V001Params(
-                            taskNumber = task.taskHeader.taskNumber,
-                            materialNumber = it.materialNumber,
-                            boxNumber = boxNumber,
-                            stampCode = ""
-                    )
-                    zmpUtzGrz31V001NetRequest(params).either(::handleFailure, ::handleSuccessZmpUtzGrz31)
-                }
-                screenNavigator.hideProgress()
+    private fun handleSuccessZmpUtzGrz31(result: ZmpUtzGrz31V001Result) {
+        productInfo.value?.let { productInfoValue ->
+            when (result.indicatorOnePosition) {
+                INDICATOR_POSITION_1 -> onOpenScannedBoxListedInCargoUnit(result.cargoUnitNumber, productInfoValue)
+                INDICATOR_POSITION_2 -> onOpenScannedBoxNotIncludedInDelivery(productInfoValue)
+                INDICATOR_POSITION_3 -> onOpenScannedBoxNotIncludedInNetwork(productInfoValue)
             }
         }.orIfNull {
             Logg.e { "productInfo.value  is null" }
         }
     }
 
-    private fun handleSuccessZmpUtzGrz31(result: ZmpUtzGrz31V001Result) {
-        productInfo.value?.let {
-            when (result.indicatorOnePosition) {
-                INDICATOR_POSITION_1 -> {
-                    screenNavigator.openScannedBoxListedInCargoUnitDialog(
-                            cargoUnitNumber = result.cargoUnitNumber,
-                            nextCallbackFunc = {
-                                processExciseAlcoBoxAccPGEService.addAllAsSurplusForBox(count = convertEizToBei().toString(), boxNumber = scannedBoxNumber.value.orEmpty()
-                                        , typeDiscrepancies = TYPE_DISCREPANCIES, isScan = true)
-                                screenNavigator.openExciseAlcoBoxListPGEScreen(
-                                        productInfo = it,
-                                        selectQualityCode = selectQualityCode.value.orEmpty()
-                                )
-                            }
+    private fun onOpenScannedBoxListedInCargoUnit(cargoUnitNumber: String, productInfoValue: TaskProductInfo) {
+        screenNavigator.openScannedBoxListedInCargoUnitDialog(
+                cargoUnitNumber = cargoUnitNumber,
+                nextCallbackFunc = {
+                    processExciseAlcoBoxAccPGEService.addAllAsSurplusForBox(
+                            count = convertEizToBei().toString(),
+                            boxNumber = scannedBoxNumber.value.orEmpty(),
+                            typeDiscrepancies = TYPE_DISCREPANCIES,
+                            isScan = true
+                    )
+                    screenNavigator.openExciseAlcoBoxListPGEScreen(
+                            productInfo = productInfoValue,
+                            selectQualityCode = selectQualityCode.value.orEmpty()
                     )
                 }
-                INDICATOR_POSITION_2 -> {
-                    screenNavigator.openScannedBoxNotIncludedInDeliveryDialog(
-                            nextCallbackFunc = {
-                                processExciseAlcoBoxAccPGEService.addAllAsSurplusForBox(count = convertEizToBei().toString(), boxNumber = scannedBoxNumber.value.orEmpty()
-                                        , typeDiscrepancies = TYPE_DISCREPANCIES, isScan = true)
-                                screenNavigator.openExciseAlcoBoxListPGEScreen(
-                                        productInfo = it,
-                                        selectQualityCode = selectQualityCode.value.orEmpty()
-                                )
-                            }
+        )
+    }
+
+    private fun onOpenScannedBoxNotIncludedInDelivery(productInfoValue: TaskProductInfo) {
+        screenNavigator.openScannedBoxNotIncludedInDeliveryDialog(
+                nextCallbackFunc = {
+                    processExciseAlcoBoxAccPGEService.addAllAsSurplusForBox(
+                            count = convertEizToBei().toString(),
+                            boxNumber = scannedBoxNumber.value.orEmpty(),
+                            typeDiscrepancies = TYPE_DISCREPANCIES,
+                            isScan = true
+                    )
+                    screenNavigator.openExciseAlcoBoxListPGEScreen(
+                            productInfo = productInfoValue,
+                            selectQualityCode = selectQualityCode.value.orEmpty()
                     )
                 }
-                INDICATOR_POSITION_3 -> {
-                    screenNavigator.openScannedBoxNotIncludedInNetworkLentaDialog(
-                            nextCallbackFunc = { //https://trello.com/c/6NyHp2jB 11. ПГЕ. Излишки. Карточка короба-излишка (не числится в ленте)
-                                val boxInfo = processExciseAlcoBoxAccPGEService.searchBox(boxNumber = scannedBoxNumber.value.orEmpty())
-                                screenNavigator.openExciseAlcoBoxCardPGEScreen(
-                                        productInfo = it,
-                                        boxInfo = boxInfo,
-                                        massProcessingBoxesNumber = null,
-                                        exciseStampInfo = null,
-                                        selectQualityCode = selectQualityCode.value.orEmpty(),
-                                        isScan = true,
-                                        isBoxNotIncludedInNetworkLenta = true
-                                )
-                            }
+        )
+    }
+
+    private fun onOpenScannedBoxNotIncludedInNetwork(productInfoValue: TaskProductInfo) {
+        screenNavigator.openScannedBoxNotIncludedInNetworkLentaDialog(
+                nextCallbackFunc = { //https://trello.com/c/6NyHp2jB 11. ПГЕ. Излишки. Карточка короба-излишка (не числится в ленте)
+                    val boxInfo = processExciseAlcoBoxAccPGEService.searchBox(
+                            boxNumber = scannedBoxNumber.value.orEmpty()
+                    )
+                    screenNavigator.openExciseAlcoBoxCardPGEScreen(
+                            productInfo = productInfoValue,
+                            boxInfo = boxInfo,
+                            massProcessingBoxesNumber = null,
+                            exciseStampInfo = null,
+                            selectQualityCode = selectQualityCode.value.orEmpty(),
+                            isScan = true,
+                            isBoxNotIncludedInNetworkLenta = true
                     )
                 }
-            }
-        }.orIfNull {
-            Logg.e { "productInfo.value  is null" }
-        }
+        )
     }
 
     override fun handleFailure(failure: Failure) {
@@ -440,7 +526,7 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
     private fun convertEizToBei(): Double {
         var addNewCount = processExciseAlcoBoxAccPGEService.getInitialCount()
         if (productInfo.value?.purchaseOrderUnits?.code != productInfo.value?.uom?.code) { //так как у нас может с карточки товара прийти и в ЕИЗ и в БЕИ, то здесь делаем эту проверку (см. isEizUnit на карточке товара ExciseAlcoBoxAccInfoPGEViewModel, на карточке товара мы не можем изменить единицу измерения, она там формируется по условию, которое здесь и прописали)
-            addNewCount *= productInfo.value?.quantityInvest?.toDouble() ?: 1.0
+            addNewCount *= productInfo.value?.quantityInvest?.toDouble() ?: DEFAULT_ADDED_COUNT
         }
         return addNewCount
     }
@@ -455,6 +541,8 @@ class ExciseAlcoBoxListPGEViewModel : CoreViewModel(), PageSelectionListener, On
     }
 
     companion object {
+        private const val MIN_COUNT_OF_BOXES = 1
+        private const val DEFAULT_ADDED_COUNT = 1.0
         private const val SELECT_QUALITY_CODE = "1"
         private const val TYPE_DISCREPANCIES = "2"
         private const val PAGE_NUMBER_97 = "97"

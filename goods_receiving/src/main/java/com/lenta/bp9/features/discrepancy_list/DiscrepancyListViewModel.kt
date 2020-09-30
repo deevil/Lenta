@@ -121,9 +121,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
 
     init {
         launchUITryCatch {
-            searchProductDelegate.init(viewModelScope = this@DiscrepancyListViewModel::viewModelScope,
-                    scanResultHandler = this@DiscrepancyListViewModel::handleProductSearchResult)
-
+            searchProductDelegate.init(scanResultHandler = this@DiscrepancyListViewModel::handleProductSearchResult)
             paramGrzGrundMarkCode.value = dataBase.getGrzGrundMark().orEmpty()
         }
     }

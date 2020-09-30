@@ -2,6 +2,7 @@ package com.lenta.bp9.features.delegates
 
 import android.content.Context
 import com.lenta.bp9.R
+import com.lenta.bp9.data.BarcodeParser
 import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
 import com.lenta.bp9.model.task.MarkingGoodsRegime
 import com.lenta.bp9.model.task.getMarkingGoodsRegime
@@ -23,18 +24,15 @@ import com.lenta.shared.fmp.resources.dao_ext.getEanInfoFromMaterial
 import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
-import com.lenta.shared.models.core.MatrixType
-import com.lenta.shared.models.core.ProductType
-import com.lenta.shared.models.core.Uom
-import com.lenta.shared.models.core.getProductType
+import com.lenta.shared.models.core.*
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequest
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequestParams
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.utilities.Logg
 import com.mobrun.plugin.api.HyperHive
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import javax.inject.Inject
+import kotlin.coroutines.CoroutineContext
 
 class SearchProductDelegate @Inject constructor(
         private val hyperHive: HyperHive,
@@ -45,7 +43,7 @@ class SearchProductDelegate @Inject constructor(
         private val context: Context,
         private val zmpUtzGrz31V001NetRequest: ZmpUtzGrz31V001NetRequest,
         private val repoInMemoryHolder: IRepoInMemoryHolder
-) {
+) : CoroutineScope {
 
     private var scanInfoResult: ScanInfoResult? = null
 
@@ -53,11 +51,16 @@ class SearchProductDelegate @Inject constructor(
 
     private var isDiscrepancy: Boolean = false
 
-    private lateinit var viewModelScope: () -> CoroutineScope
-
     private var scanResultHandler: ((ScanInfoResult?) -> Boolean)? = null
 
     private var codeWith12Digits: String? = null
+
+    private val job = SupervisorJob()
+
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Main + job
+
+    private var barcodeData: BarcodeData? = null
 
     fun copy(): SearchProductDelegate {
         val searchProductDelegate = SearchProductDelegate(
@@ -70,12 +73,11 @@ class SearchProductDelegate @Inject constructor(
                 zmpUtzGrz31V001NetRequest,
                 repoInMemoryHolder
         )
-        searchProductDelegate.init(viewModelScope, scanResultHandler)
+        searchProductDelegate.init(scanResultHandler)
         return searchProductDelegate
     }
 
-    fun init(viewModelScope: () -> CoroutineScope, scanResultHandler: ((ScanInfoResult?) -> Boolean)? = null) {
-        this.viewModelScope = viewModelScope
+    fun init(scanResultHandler: ((ScanInfoResult?) -> Boolean)? = null) {
         this.scanResultHandler = scanResultHandler
     }
 
@@ -88,8 +90,9 @@ class SearchProductDelegate @Inject constructor(
             return
         }
 
-        viewModelScope().launch {
+        launch {
             screenNavigator.showProgress(scanInfoRequest)
+            barcodeData = BarcodeParser().getBarcodeData(code)
             scanInfoRequest(
                     ScanInfoRequestParams(
                             number = code,
@@ -100,7 +103,6 @@ class SearchProductDelegate @Inject constructor(
             )
                     .either(::handleFailure, ::handleSearchSuccess)
             screenNavigator.hideProgress()
-
         }
     }
 
@@ -145,7 +147,7 @@ class SearchProductDelegate @Inject constructor(
     }
 
     private fun addGoodsSurplus() {
-        viewModelScope().launch {
+        launch {
             screenNavigator.showProgress(scanInfoRequest)
             taskManager.getReceivingTask()?.let { task ->
                 val params = ZmpUtzGrz31V001Params(
@@ -157,15 +159,14 @@ class SearchProductDelegate @Inject constructor(
                 zmpUtzGrz31V001NetRequest(params).either(::handleFailure, ::handleSuccessAddGoodsSurplus)
             }
             screenNavigator.hideProgress()
-
         }
     }
 
-    private fun handleSuccessAddGoodsSurplus(result: ZmpUtzGrz31V001Result) {
+    private fun handleSuccessAddGoodsSurplus(result: ZmpUtzGrz31V001Result) = launch {
         Logg.d { "AddGoodsSurplus ${result}" }
         repoInMemoryHolder.manufacturers.value = result.manufacturers
-        val materialInfo = ZfmpUtz48V001(hyperHive).getProductInfoByMaterial(result.productSurplusDataPGE.materialNumber)
-        val eanInfo = ZmpUtz25V001(hyperHive).getEanInfoFromMaterial(result.productSurplusDataPGE.materialNumber)
+        val materialInfo = withContext(Dispatchers.IO) { ZfmpUtz48V001(hyperHive).getProductInfoByMaterial(result.productSurplusDataPGE.materialNumber) }
+        val eanInfo = withContext(Dispatchers.IO) { ZmpUtz25V001(hyperHive).getEanInfoFromMaterial(result.productSurplusDataPGE.materialNumber) }
         val isAlcoProduct = getIsAlcoProduct(result)
         val isExcProduct = getIsExcProduct(result)
         val goodsSurplus = TaskProductInfo(
@@ -271,7 +272,7 @@ class SearchProductDelegate @Inject constructor(
         Z-партии ППП -> это IS_VET= пусто, IS_ZPARTS=X
         если IS_VET=X + IS_ZPARTS=X товар считается как обычный меркурианский в дополнение просто отображается признак z-партионного учета*/
         if (taskProductInfo.isZBatches && !taskProductInfo.isVet) {
-            screenNavigator.openZBatchesInfoPPPScreen(taskProductInfo, isDiscrepancy)
+            screenNavigator.openZBatchesInfoPPPScreen(taskProductInfo, isDiscrepancy, barcodeData)
             return
         }
 
@@ -296,7 +297,7 @@ class SearchProductDelegate @Inject constructor(
         if (taskProductInfo.isVet &&
                 //todo это условие прописано временно, т.к. на продакшене для ПГЕ и ПРЦ не реализована таблица ET_VET_DIFF, она приходит пустой  в 28 и 30 рестах, поэтому обрабатываем данные товары не как вет, а как обычные. Не делал условия для типов задания, чтобы если для других типов задания эта таблица будет пустая, то товары обрабатывались как обычные, а не веттовары
                 !taskManager.getReceivingTask()?.taskRepository?.getMercuryDiscrepancies()?.getMercuryDiscrepancies().isNullOrEmpty()) {
-            screenNavigator.openGoodsMercuryInfoScreen(taskProductInfo, isDiscrepancy)
+            screenNavigator.openGoodsMercuryInfoScreen(taskProductInfo, isDiscrepancy, barcodeData)
         } else {
             if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentPP) {
                 screenNavigator.openGoodsInfoShipmentPPScreen(productInfo = taskProductInfo, isDiscrepancy = isDiscrepancy)
@@ -364,5 +365,4 @@ class SearchProductDelegate @Inject constructor(
         private const val DEFAULT_INT_VALUE = "0"
         const val UNIT_CODE_ST = "ST"
     }
-
 }
