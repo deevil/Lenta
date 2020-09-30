@@ -56,6 +56,8 @@ class Good(
         var isDeleted: Boolean = false,
         val provider: ProviderInfo = ProviderInfo.getEmptyProvider()
 ) {
+    var isMissing: Boolean = false
+
     fun getNameWithMaterial(delimiter: String = " "): String {
         return "${material.takeLast(6)}$delimiter$name"
     }

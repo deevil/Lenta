@@ -62,7 +62,7 @@ class MemoryTaskRepository : ITaskRepository {
         return taskExciseStampBadRepository
     }
 
-    override fun getBoxes(): ITaskBoxesRepository {
+    override fun getBoxesRepository(): ITaskBoxesRepository {
         return taskBoxesRepository
     }
 
