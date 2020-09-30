@@ -2,6 +2,7 @@ package com.lenta.bp12.features.open_task.task_card
 
 import com.lenta.bp12.managers.interfaces.IOpenTaskManager
 import com.lenta.bp12.model.ControlType
+import com.lenta.bp12.model.pojo.open_task.TaskOpen
 import com.lenta.bp12.platform.extention.isWholesaleType
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
@@ -58,15 +59,9 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
 
     val ui by lazy {
         task.mapSkipNulls { task ->
-            val provider = task.getProviderCodeWithName().takeIf { codeWithName ->
-                codeWithName.isNotEmpty()
-            }.orIfNull {
-                task.wholesaleBuyer ?: resource.wholesaleBuyer
-            }
-
             TaskCardOpenUi(
                     name = task.name,
-                    provider = provider,
+                    provider = task.getProvider(),
                     storage = task.storage,
                     reason = task.reason?.description.orEmpty(),
                     description = task.type?.description.orEmpty(),
@@ -99,6 +94,35 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
 
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
+    }
+
+    /**
+    Обработка нажатий кнопок
+     */
+
+    fun onClickNext() {
+        val goodList = task.value?.goods.orEmpty()
+        if (goodList.isEmpty()) {
+            loadGoodList()
+        } else {
+            openGoodListScreen()
+        }
+    }
+
+    fun onBackPressed() {
+        task.value?.let { task ->
+            if (manager.isTaskWasChanged()) {
+                navigator.showTaskUnsentDataWillBeDeleted(task.name) {
+                    manager.clearCurrentTask()
+                    unblockTaskAndExit(task.number)
+                }
+            } else {
+                unblockTaskAndExit(task.number)
+            }
+        }.orIfNull {
+            Logg.e { "task null" }
+            navigator.showInternalError(resource.taskNotFoundErrorMsg)
+        }
     }
 
     private fun loadGoodList() {
@@ -136,32 +160,13 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
         navigator.openGoodListScreen()
     }
 
-    /**
-    Обработка нажатий кнопок
-     */
-
-    fun onClickNext() {
-        val goodList = task.value?.goods.orEmpty()
-        if (goodList.isEmpty()) {
-            loadGoodList()
-        } else {
-            openGoodListScreen()
-        }
-    }
-
-    fun onBackPressed() {
-        task.value?.let { task ->
-            if (manager.isTaskWasChanged()) {
-                navigator.showTaskUnsentDataWillBeDeleted(task.name) {
-                    manager.clearCurrentTask()
-                    unblockTaskAndExit(task.number)
-                }
-            } else {
-                unblockTaskAndExit(task.number)
-            }
+    private fun TaskOpen.getProvider(): String {
+        return getProviderCodeWithName().takeIf { codeWithName ->
+            codeWithName.isNotEmpty()
         }.orIfNull {
-            Logg.e { "task null" }
-            navigator.showInternalError(resource.taskNotFoundErrorMsg)
+            wholesaleBuyer
+        }.orIfNull {
+            resource.wholesaleBuyer
         }
     }
 
