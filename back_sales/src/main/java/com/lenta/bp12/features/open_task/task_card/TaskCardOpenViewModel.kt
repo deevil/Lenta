@@ -80,6 +80,10 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
+    val isReasonIsEmpty = ui.map {
+        it?.reason?.isEmpty() == true
+    }
+
     val isExistComment by lazy {
         task.map {
             it?.comment?.isNotEmpty() ?: false

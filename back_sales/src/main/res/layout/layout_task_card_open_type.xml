@@ -111,7 +111,7 @@
 
         <!-- Поставщик -->
         <LinearLayout style="@style/LinearRowStyle"
-            android:visibility="@{!vm.ui.reason.isEmpty}"
+            android:visibility="@{!vm.isReasonIsEmpty}"
             >
 
             <LinearLayout style="@style/LinearCellStyle">
@@ -131,8 +131,9 @@
 
         </LinearLayout>
 
-        <View style="@style/HorizontalDivider"
-            android:visibility="@{!vm.ui.reason.isEmpty}"
+        <View
+            style="@style/HorizontalDivider"
+            android:visibility="@{!vm.isReasonIsEmpty}"
             />
 
     </LinearLayout>
