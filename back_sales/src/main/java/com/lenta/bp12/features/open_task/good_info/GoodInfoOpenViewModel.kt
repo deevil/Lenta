@@ -79,8 +79,6 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
 
     private val scanInfoResult = MutableLiveData<ScanInfoResult>()
 
-    private var isExistUnsavedData = false
-
     private var isEanLastScanned = false
 
     private var thereWasRollback = false
@@ -446,7 +444,6 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
                     isWholesaleTask && isGoodVet -> showCantAddVetToWholeSale()
                     isWholesaleTask && isGoodExcise -> showCantAddExciseGoodForWholesale()
                     isGoodCorrespondToTask && isGoodCanBeAdded -> {
-                        isExistUnsavedData = true
                         result.materialInfo?.material?.let { material ->
                             findGoodByMaterial(material)?.let { good ->
                                 good.eans[number] = result.eanInfo.getQuantityForBox()
@@ -560,7 +557,6 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
 
     private fun addExciseMarkInfo(result: ScanInfoResult) {
         lastSuccessSearchNumber = originalSearchNumber
-        isExistUnsavedData = true
         scanInfoResult.value = result
         quantityField.value = DEFAULT_QUANTITY_STRING_FOR_EAN
 
@@ -579,7 +575,6 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
     private fun addPartInfo(result: ScanInfoResult) {
         screenStatus.value = ScreenStatus.PART
         lastSuccessSearchNumber = originalSearchNumber
-        isExistUnsavedData = true
         scanInfoResult.value = result
         quantityField.value = DEFAULT_QUANTITY_STRING_FOR_EAN
     }
@@ -614,7 +609,6 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
     private fun addBoxInfo(result: ScanInfoResult) {
         screenStatus.value = ScreenStatus.BOX
         lastSuccessSearchNumber = originalSearchNumber
-        isExistUnsavedData = true
         scanInfoResult.value = result
         quantityField.value = result.exciseMarks?.size?.toString().orIfNull { ZERO_QUANTITY_STRING }
         try {
@@ -681,7 +675,6 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
         screenStatus.value?.let { status ->
             good.value?.let { good ->
                 manager.saveGoodInTask(good)
-                isExistUnsavedData = false
             }.orIfNull {
                 Logg.e { "good null" }
                 navigator.showInternalError(resource.goodNotFoundErrorMsg)
@@ -793,8 +786,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
     Обработка нажатий кнопок
      */
     override fun onBackPressed() {
-        val enteredQuantity = quantity.value ?: ZERO_QUANTITY
-        if (isExistUnsavedData || enteredQuantity != ZERO_QUANTITY) {
+        if (isExistUnsavedData()) {
             navigator.showUnsavedDataWillBeLost {
                 navigator.goBack()
             }
@@ -872,6 +864,21 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
                 navigator.showInternalError(resource.goodNotFoundErrorMsg)
             }
         }
+    }
+
+    private fun isExistUnsavedData(): Boolean {
+        return good.value?.let { goodValue ->
+            val isQuantityFieldChanged = quantityField.value != ZERO_QUANTITY_STRING
+            val isProviderChanged = providerEnabled.value == true && providerPosition.value != FIRST_POSITION
+            val isProducerChanged = producerEnabled.value == true && producerPosition.value != FIRST_POSITION
+            val isQuantityOrProviderChanged = isQuantityFieldChanged || isProviderChanged
+            val isDateEntered = date.value?.isEmpty() != true
+            return if (goodValue.isAlco() || goodValue.isExciseAlco()) {
+                isQuantityOrProviderChanged || isProducerChanged || isDateEntered
+            } else {
+                isQuantityOrProviderChanged
+            }
+        }.orIfNull { false }
     }
 
     override fun afterTextChanged(s: Editable?) {

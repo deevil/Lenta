@@ -121,6 +121,30 @@
 
         </LinearLayout>
 
+        <!-- Клиент -->
+        <LinearLayout style="@style/LinearRowStyle">
+
+            <LinearLayout style="@style/LinearCellStyle">
+
+                <TextView
+                    style="@style/CellTextStyle"
+                    android:text="@string/client" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/LinearCellStyle"
+                android:layout_weight="2">
+
+                <EditText
+                    style="@style/CellEditTextStyle"
+                    android:text="@={vm.client}"
+                    app:onOkInSoftKeyboard="@{vm}" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">

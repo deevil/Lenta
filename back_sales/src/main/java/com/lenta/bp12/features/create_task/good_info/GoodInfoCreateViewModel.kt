@@ -75,8 +75,6 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
 
     private val scanInfoResult = MutableLiveData<ScanInfoResult>()
 
-    private var isExistUnsavedData = false
-
     private var isEanLastScanned = false
 
     private var thereWasRollback = false
@@ -420,7 +418,6 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
     }
 
     private suspend fun findByMaterialOrSetGood(result: GoodInfoResult, number: String) {
-        isExistUnsavedData = true
         result.materialInfo?.material?.let { material ->
             findGoodByMaterial(material)?.let { good ->
                 good.eans[number] = result.eanInfo.getQuantityForBox()
@@ -526,7 +523,6 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
 
     private fun addMarkExciseInfo(result: ScanInfoResult) {
         lastSuccessSearchNumber = originalSearchNumber
-        isExistUnsavedData = true
         scanInfoResult.value = result
         quantityField.value = "1"
 
@@ -549,7 +545,6 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
     private fun addPartInfo(result: ScanInfoResult) {
         screenStatus.value = ScreenStatus.PART
         lastSuccessSearchNumber = originalSearchNumber
-        isExistUnsavedData = true
         scanInfoResult.value = result
         quantityField.value = "1"
     }
@@ -584,7 +579,6 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
     private fun addBoxInfo(result: ScanInfoResult) {
         screenStatus.value = ScreenStatus.BOX
         lastSuccessSearchNumber = originalSearchNumber
-        isExistUnsavedData = true
         scanInfoResult.value = result
         quantityField.value = result.exciseMarks?.size?.toString().orIfNull { ZERO_QUANTITY_STRING }
         try {
@@ -668,7 +662,6 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
         screenStatus.value?.let { status ->
             good.value?.let { good ->
                 manager.saveGoodInTask(good)
-                isExistUnsavedData = false
             }.orIfNull {
                 Logg.e { "good null" }
                 navigator.showInternalError(resource.goodNotFoundErrorMsg)
@@ -781,7 +774,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
 
     override fun onBackPressed() {
         with(navigator) {
-            if (isExistUnsavedData) {
+            if (isExistUnsavedData()) {
                 showUnsavedDataWillBeLost {
                     goBack()
                 }
@@ -810,7 +803,8 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
                             if (status == PartStatus.FOUND.code) {
                                 saveChangesAndExit(result)
                             } else {
-                                navigator.showAlertDialogWithRedTriangle(result.statusDescription ?: resource.error)
+                                navigator.showAlertDialogWithRedTriangle(result.statusDescription
+                                        ?: resource.error)
                             }
                         }
                     }
@@ -846,6 +840,22 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
         }
     }
 
+    private fun isExistUnsavedData(): Boolean {
+        return good.value?.let { goodValue ->
+            val isQuantityFieldChanged = quantityField.value != ZERO_QUANTITY_STRING
+            val isProviderSelected = providerEnabled.value == true && providerPosition.value != FIRST_POSITION
+            val isProducerSelected = producerEnabled.value == true && producerPosition.value != FIRST_POSITION
+
+            val isEnteredMoreThanZeroAndProviderSelected = isQuantityFieldChanged || isProviderSelected
+            val isDateEntered = date.value?.isEmpty() != true
+            return if (goodValue.isAlco() || goodValue.isExciseAlco()) {
+                isEnteredMoreThanZeroAndProviderSelected || isProducerSelected || isDateEntered
+            } else {
+                isEnteredMoreThanZeroAndProviderSelected
+            }
+        }.orIfNull { false }
+    }
+
     override fun afterTextChanged(s: Editable?) {
         quantityField.value = s.returnWithNoSecondMinus()
     }
@@ -853,5 +863,4 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
     companion object {
         private const val ZERO_QUANTITY_STRING = "0"
     }
-
 }
