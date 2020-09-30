@@ -11,7 +11,8 @@ data class TaskExciseStampInfo(
         val boxNumber: String? = "",
         val setMaterialNumber: String? = "",
         val organizationCodeEGAIS: String? = "",
-        val bottlingDate: String? = "") {
+        val bottlingDate: String? = "",
+        val packNum: String? = "") {
 
     companion object {
         fun from(restData: TaskExciseStampInfoRestData): TaskExciseStampInfo {
@@ -23,7 +24,8 @@ data class TaskExciseStampInfo(
                     boxNumber = restData.boxNumber,
                     setMaterialNumber = restData.setMaterialNumber,
                     organizationCodeEGAIS = restData.organizationCodeEGAIS,
-                    bottlingDate = restData.bottlingDate
+                    bottlingDate = restData.bottlingDate,
+                    packNum = restData.packNum
             )
         }
     }
@@ -45,7 +47,9 @@ data class TaskExciseStampInfoRestData(
         @SerializedName("ZPROD") //ЕГАИС Код организации
         val organizationCodeEGAIS: String,
         @SerializedName("BOTT_MARK") //УТЗ ТСД: Дата розлива
-        val bottlingDate: String
+        val bottlingDate: String,
+        @SerializedName("PACK_NUM") //Номер дополнительной упаковки
+        val packNum: String
 ) {
 
     companion object {
@@ -58,7 +62,8 @@ data class TaskExciseStampInfoRestData(
                     boxNumber = data.boxNumber.orEmpty(),
                     setMaterialNumber = data.setMaterialNumber.orEmpty(),
                     organizationCodeEGAIS = data.organizationCodeEGAIS.orEmpty(),
-                    bottlingDate = data.bottlingDate.orEmpty()
+                    bottlingDate = data.bottlingDate.orEmpty(),
+                    packNum = data.packNum.orEmpty ()
             )
         }
     }

@@ -292,8 +292,7 @@ class MarkingBoxInfoViewModel : BaseGoodsInfo(),  OnPositionClickListener {
                         return@launchUITryCatch
                     }
 
-            searchProductDelegate.init(viewModelScope = this@MarkingBoxInfoViewModel::viewModelScope,
-                    scanResultHandler = this@MarkingBoxInfoViewModel::handleProductSearchResult)
+            searchProductDelegate.init(scanResultHandler = this@MarkingBoxInfoViewModel::handleProductSearchResult)
 
             val paramGrzAlternMeinsCode = dataBase.getGrzAlternMeins().orEmpty()
             val uomInfo = ZmpUtz07V001(hyperHive).getUomInfo(paramGrzAlternMeinsCode)
@@ -805,7 +804,7 @@ class MarkingBoxInfoViewModel : BaseGoodsInfo(),  OnPositionClickListener {
     private fun boxCheck(boxNumber: String) {
         val boxMaterialNumber =
                 taskRepository
-                        ?.getBoxes()
+                        ?.getBoxesRepository()
                         ?.findBox(boxNumber)
                         ?.materialNumber
                         .orEmpty()

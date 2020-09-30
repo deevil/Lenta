@@ -188,8 +188,7 @@ class NonExciseAlcoInfoPGEViewModel : CoreViewModel(), OnPositionClickListener {
                         return@launchUITryCatch
                     }
 
-            searchProductDelegate.init(viewModelScope = this@NonExciseAlcoInfoPGEViewModel::viewModelScope,
-                    scanResultHandler = this@NonExciseAlcoInfoPGEViewModel::handleProductSearchResult)
+            searchProductDelegate.init(scanResultHandler = this@NonExciseAlcoInfoPGEViewModel::handleProductSearchResult)
 
             batchInfo.value = taskManager.getReceivingTask()!!.taskRepository.getBatches().findBatchOfProduct(productInfo.value!!)
             suffix.value = productInfo.value?.uom?.name

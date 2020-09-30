@@ -9,11 +9,14 @@ fun ZmpUtz20V001.getAllReasonRejection(): List<ZmpUtz20V001.ItemLocal_ET_GRUNDS>
 }
 
 fun List<ZmpUtz20V001.ItemLocal_ET_GRUNDS>.toReasonRejectionInfoList(): List<ReasonRejectionInfo> {
-    return this.map {
-        ReasonRejectionInfo(
-                id = it.tid,
-                qualityCode = it.grundcat,
-                code = if (it.grundcat == "1") "1" else it.grund,
-                name = if (it.grundcat == "1") "Норма" else it.gtext)
+    return this.mapNotNull {
+        it.takeIf { it.tid != null }?.run {
+            ReasonRejectionInfo(
+                    id = tid.orEmpty(),
+                    qualityCode = grundcat.orEmpty(),
+                    code = if (grundcat == "1") "1" else grund.orEmpty(),
+                    name = if (grundcat == "1") "Норма" else gtext.orEmpty()
+            )
+        }
     }
 }
