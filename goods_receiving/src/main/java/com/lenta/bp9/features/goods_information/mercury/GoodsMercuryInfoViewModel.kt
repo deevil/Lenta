@@ -7,6 +7,7 @@ import com.lenta.bp9.R
 import com.lenta.bp9.features.goods_information.base.BaseGoodsInfo
 import com.lenta.bp9.features.delegates.SearchProductDelegate
 import com.lenta.bp9.data.BarcodeParser
+import com.lenta.bp9.features.goods_information.z_batches.task_ppp.ZBatchesInfoPPPViewModel
 import com.lenta.bp9.model.processing.*
 import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants
@@ -341,7 +342,11 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
                     barcodeData.value?.let {
                         if (it.barcodeInfo.isWeight) {
                             val weightInGrams = it.barcodeInfo.weight.toDoubleOrNull() ?: 0.0
-                            count.value = (weightInGrams / 1000).toStringFormatted()
+                            if (uom.value?.code?.toUpperCase(Locale.getDefault()) == UNIT_KG) {
+                                count.value = (weightInGrams / 1000).toStringFormatted()
+                            } else {
+                                count.value = weightInGrams.toStringFormatted()
+                            }
                         }
                     }
                     qualityInfo.value = dataBase.getQualityMercuryInfo().orEmpty()
@@ -820,6 +825,10 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
             addNewCount *= productInfo.value?.quantityInvest?.toDouble() ?: 1.0
         }
         return addNewCount
+    }
+
+    companion object {
+        private const val UNIT_KG = "KG"
     }
 }
 

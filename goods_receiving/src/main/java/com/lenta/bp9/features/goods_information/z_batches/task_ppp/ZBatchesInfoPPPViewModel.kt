@@ -222,7 +222,11 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
                 barcodeData.value?.let {
                     if (it.barcodeInfo.isWeight) {
                         val weightInGrams = it.barcodeInfo.weight.toDoubleOrNull() ?: 0.0
-                        count.value = (weightInGrams / 1000).toStringFormatted()
+                        if (productInfo.value?.purchaseOrderUnits?.code?.toUpperCase(Locale.getDefault()) == UNIT_KG) {
+                            count.value = (weightInGrams / 1000).toStringFormatted()
+                        } else {
+                            count.value = weightInGrams.toStringFormatted()
+                        }
                     }
                 }
                 qualityInfo.value = dataBase.getQualityMercuryInfo().orEmpty()
@@ -709,5 +713,6 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
     companion object {
         private const val TERM_CONTROL_CODE_SHELF_LIFE = "001"
         private const val TERM_CONTROL_CODE_PRODUCTION_DATE = "002"
+        private const val UNIT_KG = "KG"
     }
 }
