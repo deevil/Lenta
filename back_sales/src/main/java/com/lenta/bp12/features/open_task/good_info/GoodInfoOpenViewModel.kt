@@ -64,9 +64,9 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
     val accountingType by lazy {
         screenStatus.map { status ->
             when (status) {
-                ScreenStatus.MARK_150, ScreenStatus.MARK_68 -> resource.typeMark()
-                ScreenStatus.ALCOHOL, ScreenStatus.PART -> resource.typePart()
-                else -> resource.typeQuantity()
+                ScreenStatus.MARK_150, ScreenStatus.MARK_68 -> resource.typeMark
+                ScreenStatus.ALCOHOL, ScreenStatus.PART -> resource.typePart
+                else -> resource.typeQuantity
             }
         }
     }
@@ -115,7 +115,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
         it?.let { producers ->
             val list = producers.toMutableList()
             if (list.size > 1) {
-                list.add(0, ProducerInfo(name = resource.chooseProducer()))
+                list.add(0, ProducerInfo(name = resource.chooseProducer))
             }
 
             list.toList()
@@ -545,14 +545,14 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
                 val alcoCodeInfoList = database.getAlcoCodeInfoList(number.extractAlcoCode())
 
                 if (alcoCodeInfoList.isEmpty()) {
-                    navigator.openAlertScreen(resource.unknownAlcocode())
+                    navigator.openAlertScreen(resource.unknownAlcocode)
                     return
                 }
 
                 if (alcoCodeInfoList.find { it.material == good.value?.material } != null) {
                     addPartInfo(result)
                 } else {
-                    navigator.openAlertScreen(resource.alcocodeDoesNotApplyToThisGood())
+                    navigator.openAlertScreen(resource.alcocodeDoesNotApplyToThisGood)
                 }
             }
         }

@@ -108,7 +108,8 @@ data class TaskInfo(
                         goodGroup = goodType.orEmpty(),
                         numberOfGoods = quantity?.toIntOrNull() ?: 0,
                         isStrict = isStrict.isSapTrue(),
-                        isFinished = !isNotFinish.isSapTrue()
+                        isFinished = !isNotFinish.isSapTrue(),
+                        wholesaleBuyer = kunnrName
                 )
         }
 }

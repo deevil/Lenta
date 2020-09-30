@@ -44,7 +44,11 @@ class GoodListViewModel : BaseGoodListOpenViewModel(), PageSelectionListener, On
     }
 
     val description by lazy {
-        if (manager.isWholesaleTaskType) resource.taskContent() else resource.goodList()
+        if (manager.isWholesaleTaskType) {
+            resource.taskContent
+        } else {
+            resource.goodList
+        }
     }
 
     //TODO REFACTOR TO ASYNCLIVEDATA, COMBINE TWO CYCLES IN ONE, GET RID OF LET

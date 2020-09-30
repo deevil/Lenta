@@ -7,14 +7,13 @@ import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.request.*
 import com.lenta.shared.account.ISessionInfo
-import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.launchUITryCatch
-import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.mapSkipNulls
 import com.lenta.shared.utilities.orIfNull
 import javax.inject.Inject
 
@@ -58,31 +57,31 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     val ui by lazy {
-        task.map {
-            it?.let { task ->
-                val provider = task.getProviderCodeWithName().takeIf { codeWithName ->
-                    codeWithName.isNotEmpty()
-                } ?: resource.wholesaleBuyer()
-
-                TaskCardOpenUi(
-                        name = task.name,
-                        provider = provider,
-                        storage = task.storage,
-                        reason = task.reason?.description.orEmpty(),
-                        description = task.type?.description.orEmpty(),
-                        comment = task.comment,
-                        isStrict = task.isStrict,
-                        isAlcohol = task.controlTypes.contains(ControlType.ALCOHOL),
-                        isCommon = task.controlTypes.contains(ControlType.COMMON),
-                        isMark = task.controlTypes.contains(ControlType.MARK)
-                )
+        task.mapSkipNulls { task ->
+            val provider = task.getProviderCodeWithName().takeIf { codeWithName ->
+                codeWithName.isNotEmpty()
+            }.orIfNull {
+                task.wholesaleBuyer ?: resource.wholesaleBuyer
             }
+
+            TaskCardOpenUi(
+                    name = task.name,
+                    provider = provider,
+                    storage = task.storage,
+                    reason = task.reason?.description.orEmpty(),
+                    description = task.type?.description.orEmpty(),
+                    comment = task.comment,
+                    isStrict = task.isStrict,
+                    isAlcohol = task.controlTypes.contains(ControlType.ALCOHOL),
+                    isCommon = task.controlTypes.contains(ControlType.COMMON),
+                    isMark = task.controlTypes.contains(ControlType.MARK)
+            )
         }
     }
 
     val isExistComment by lazy {
-        task.map {
-            it?.comment?.isNotEmpty() ?: false
+        task.mapSkipNulls {
+            it.comment.isNotEmpty()
         }
     }
 
@@ -91,9 +90,7 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
      */
 
     init {
-        launchUITryCatch {
-            manager.isWholesaleTaskType = task.value?.type?.isWholesaleType() == true
-        }
+        setTaskTypeToManager()
     }
 
     /**
@@ -129,11 +126,6 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
 
             openGoodListScreen()
         }
-    }
-
-    override fun handleFailure(failure: Failure) {
-        super.handleFailure(failure)
-        navigator.openAlertScreen(failure)
     }
 
     private fun openGoodListScreen() {
@@ -175,20 +167,28 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
 
     private fun unblockTaskAndExit(taskNumber: String) {
         launchUITryCatch {
-            navigator.showProgressLoadingData(::handleFailure)
+            with(navigator){
+                showProgressLoadingData(::handleFailure)
 
-            unblockTaskNetRequest(
-                    UnblockTaskParams(
-                            taskNumber = taskNumber,
-                            userNumber = sessionInfo.personnelNumber.orEmpty(),
-                            deviceIp = deviceInfo.getDeviceIp()
-                    )
-            ).also {
-                navigator.hideProgress()
+                unblockTaskNetRequest(
+                        UnblockTaskParams(
+                                taskNumber = taskNumber,
+                                userNumber = sessionInfo.personnelNumber.orEmpty(),
+                                deviceIp = deviceInfo.getDeviceIp()
+                        )
+                ).also {
+                    hideProgress()
+                }
+
+                manager.clearStartTaskInfo()
+                goBack()
             }
+        }
+    }
 
-            manager.clearStartTaskInfo()
-            navigator.goBack()
+    private fun setTaskTypeToManager() {
+        launchUITryCatch {
+            manager.isWholesaleTaskType = task.value?.type?.isWholesaleType() == true
         }
     }
 
