@@ -304,13 +304,13 @@ class ProcessMarkingBoxPGEProductService
 
         currentBoxDiscrepancies.add(foundBoxDiscrepancy)
 
-        //сохраняем все необработанные блоки для коробки без isScan, но с isGtinControlPassed
+        //сохраняем все необработанные блоки для коробки без isScan
         var countAddStamps = 0
         val stampsFromBox = stamps.filter { it.boxNumber == boxNumber }
         stampsFromBox
                 .filter { stamp ->
                     val lastStamp = currentStampDiscrepancies.findLast { it.materialNumber == stamp.materialNumber }
-                    lastStamp == null || isDenialOfFullProductAcceptance
+                    lastStamp == null
                 }
                 .forEach { stampInfo ->
                     addStampDiscrepancies(
@@ -366,6 +366,12 @@ class ProcessMarkingBoxPGEProductService
     fun stampIsAlreadyProcessed(code: String): Boolean {
         return currentStampDiscrepancies.any {
             it.materialNumber == code && it.isScan
+        }
+    }
+
+    fun boxIsAlreadyProcessed(code: String): Boolean {
+        return currentBoxDiscrepancies.any {
+            it.boxNumber == code && it.isScan
         }
     }
 

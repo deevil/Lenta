@@ -40,7 +40,6 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
     val tvAccept: MutableLiveData<String> by lazy {
         paramGrzAlternMeins.map {
             val uomName = paramGrzAlternMeins.value?.name?.toLowerCase().orEmpty()
-
             val nestingInOneStamp = productInfo.value?.quantityInvest?.toDouble().toStringFormatted()
             val productUomName = productInfo.value?.uom?.name.orEmpty()
             context.getString(R.string.accept, "$uomName=$nestingInOneStamp $productUomName")
@@ -343,16 +342,6 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
     private fun addInfo(): Boolean {
         return if (currentTypeDiscrepanciesCode.isNotEmpty()) {
 
-            with(processMarkingBoxPGEProductService) {
-                if (currentTypeDiscrepanciesCode != TYPE_DISCREPANCIES_QUALITY_NORM
-                        && checkBoxListVisibility.value == false) {//выбрана категория брака и в поле Список марок отображается Не требуется
-                    //сохраняем все необработанные блоки с текущей категорией брака
-                    addAllUntreatedStampsAsDefect()
-                }
-                addProduct(enteredCountInStampUnits.toStringFormatted(), currentTypeDiscrepanciesCode)
-                filterAndUpdateStampDiscrepancies()
-            }
-
             if (currentTypeDiscrepanciesCode != TYPE_DISCREPANCIES_QUALITY_NORM) {
                 processMarkingBoxPGEProductService.clearModifications()
                 //обнуляем кол-во отсканированных марок (блок/gtin)
@@ -380,36 +369,62 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
         checkScanResult(data)
     }
 
-    private fun barcodeStampCheck(data: String): Boolean {
-        val regex = REGEX_BARCODE_STAMP.toRegex()
-        return regex.find(data) != null
-    }
-
     private fun checkScanResult(data: String) {
         if (barcodeStampCheck(data)) {
             val barcode = barcodeStamp(data)
-            stampInTask(barcode)
+            checkStampInTask(barcode)
         } else {
             when (data.length) {
-                in 18..20 -> boxCheck(data)
-                in 0..18 -> stampInTask(data)
+                in 18..20 -> checkBoxInTask(data)
+                in 0..18 -> checkStampInTask(data)
                 else -> screenNavigator.openAlertInvalidBarcodeFormatScreen()
             }
         }
     }
 
-    private fun stampInTask(barcode: String) {
-        val stamp = taskRepository?.getExciseStamps()?.findExciseStampsOfProduct(productMaterialNumber)?.findLast { it.code == barcode }
-        if (stamp != null) {  //Марка есть в задании
-            checkStampCurrentProduct(stamp, barcode)
-        } else {  // марки нет в задании
-            addInfo(barcode, productMaterialNumber)
+    private fun barcodeStampCheck(data: String): Boolean {
+        val regex = REGEX_BARCODE_STAMP.toRegex()
+        return regex.find(data) != null
+    }
+
+    private fun checkStampInTask(barcode: String) {
+        if (processMarkingBoxPGEProductService.stampIsAlreadyProcessed(barcode)) {
+            //   screenNavigator.openBoxCard() ->  передаем № короба, в котором карточка
+        } else {
+            val stamp = taskRepository?.getExciseStamps()?.findExciseStampsOfProduct(productMaterialNumber)?.findLast { it.code == barcode }
+            stamp?.let {  //Марка есть в задании
+                checkStampCurrentProduct(stamp, barcode)
+            }.orIfNull {  // марки нет в задании
+                addInfo(barcode, productMaterialNumber)
+            }
+        }
+    }
+
+    private fun checkBoxInTask(barcode: String) {
+        if (processMarkingBoxPGEProductService.boxIsAlreadyProcessed(barcode)) {
+            screenNavigator.openAlertScannedStampIsAlreadyProcessedAlternativeScreen()
+        } else {
+            productInfo.value?.let { productInfoValue ->
+                val box = taskRepository?.getBoxesRepository()?.findBoxesOfProduct(productInfoValue)?.findLast { it.boxNumber == barcode }
+                box?.let {  // Короб в задании
+                    boxCheck(barcode, it)
+                }.orIfNull {  // Короба нет в задании
+                    addInfo(barcode, productMaterialNumber)
+                }
+            }
         }
     }
 
     private fun checkStampCurrentProduct(stamp: TaskExciseStampInfo, barcode: String) {
         if (stamp.materialNumber == productMaterialNumber) { //  марка соответствует текущему товару
-            boxCheck(barcode)
+            addStamp(
+                    stampInfo = stamp,
+                    typeDiscrepancies = currentTypeDiscrepanciesCode
+            )
+            stamp.boxNumber?.let {
+                checkBoxInTask(it)
+            }
+
         } else {
             screenNavigator.openAlertScannedStampBelongsAnotherProductScreen(
                     materialNumber = stamp.materialNumber.orEmpty(),
@@ -417,7 +432,6 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
             )
         }
     }
-
 
     private fun checkCountProcessed(barcode: String) {
         val countProcessed = taskRepository?.getBoxesDiscrepancies()?.getBoxesDiscrepancies()?.size
@@ -460,7 +474,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
                     taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber.orEmpty(),
                     stampCode = stamp,
                     materialNumber = materialNumberStamp,
-                    boxCode = "",
+                    boxCode = stamp,
                     blockCode = ""
             )).either(::handleFailure, ::handleSuccess)
             screenNavigator.hideProgress()
@@ -472,7 +486,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
             val indicatorOnePosition = result.indicatorOnePosition.toInt()
             val retCode = result.retCode
             val errorText = result.errorText
-            if (indicatorOnePosition in 1..3) {  //Излишек
+           if (indicatorOnePosition in 1..3) {  //Излишек
 //                screenNavigator. https://trello.com/c/8esE7TKN
             } else if (retCode == 1) {
                 Failure.SapError(errorText)
@@ -490,30 +504,29 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
     }
 
 
-    private fun boxCheck(data: String) {
+    private fun boxCheck(data: String, taskBoxInfo: TaskBoxInfo) {
 
         val barcode = if (data.length == 20) {
             data.substring(2, 20)
         } else {
             data
         }
-        val boxMaterialNumber = taskRepository?.getBoxesRepository()?.findBox(barcode)?.materialNumber.orEmpty()
-        if (boxMaterialNumber.isNotEmpty()) { //короб числится в обработанных
-            //   screenNavigator.openBoxCard() -> isScan = true //переход на карточку коробу, проставляя по марке признак IS_SCAN (если его не было)
-        } else {
-            val boxNumber = processMarkingBoxPGEProductService.searchBoxDiscrepancies(data)?.materialNumber.orEmpty()
-            if (boxNumber != boxMaterialNumber) {
-                //Нет в задании Отсканированная коробка принадлежит товару <SAP-код> <Название>
-                val materialName = ZfmpUtz48V001(hyperHive).getProductInfoByMaterial(boxNumber)?.name.orEmpty()
+
+        productInfo.value?.let { productInfoValue ->
+            val boxInTask = taskRepository?.getBoxesRepository()?.findBoxesOfProduct(productInfoValue)?.findLast { it.boxNumber == barcode }?.boxNumber.orEmpty()
+            if (boxInTask.isEmpty()) {                  //Нет в задании Отсканированная коробка принадлежит товару <SAP-код> <Название>
+                val materialName = ZfmpUtz48V001(hyperHive).getProductInfoByMaterial(boxInTask)?.name.orEmpty()
+                val materialNumber = ZfmpUtz48V001(hyperHive).getProductInfoByMaterial(boxInTask)?.matcode.orEmpty()
                 screenNavigator.openAlertScannedBoxBelongsAnotherProductScreen(
-                        materialNumber = boxNumber,
+                        materialNumber = materialNumber,
                         materialName = materialName
                 )
-                return
+            } else {
+                checkCountProcessed(barcode)
             }
-            checkCountProcessed(data)
         }
     }
+
 
 
     private fun addBox(boxInfo: TaskBoxInfo, typeDiscrepancies: String, data: String) {
@@ -526,7 +539,6 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
                                 isScan = true,
                                 isDenialOfFullProductAcceptance = false
                         )
-                countScannedBoxes.value = countScannedBoxes.value?.plus(1)
             }
         }
     }
@@ -535,11 +547,11 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
     private fun addStamp(stampInfo: TaskExciseStampInfo, typeDiscrepancies: String?) {
         stampInfo.let {
             processMarkingBoxPGEProductService
-                        .addStampDiscrepancies(
-                                isScan = true,
-                                stampInfo = stampInfo
-                        )
-                countScannedStamps.value = countScannedStamps.value?.plus(1)
+                    .addStampDiscrepancies(
+                            isScan = true,
+                            stampInfo = stampInfo
+                    )
+            countScannedStamps.value = countScannedStamps.value?.plus(1)
         }
     }
 
