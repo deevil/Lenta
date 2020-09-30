@@ -5,13 +5,15 @@ import com.lenta.shared.models.core.BarcodeInfo
 import com.lenta.shared.models.core.Batch
 import com.lenta.shared.utilities.extentions.unsafeLazy
 import com.lenta.shared.utilities.gs1.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-abstract class BarcodeViewModel : CoreViewModel() {
+open class BarcodeViewModel() {
 
     protected open val weightValue by unsafeLazy { listOf(VALUE_23, VALUE_24, VALUE_27, VALUE_28) }
     protected open val weightZeroValue by unsafeLazy { listOf(VALUE_023, VALUE_024, VALUE_027, VALUE_028) }
 
-    protected open suspend fun processBarcode(data: String): BarcodeData {
+    open suspend fun processBarcode(data: String): BarcodeData = withContext(Dispatchers.IO) {
         var barcode = data
         val barcodeLength = barcode.length
         var isWeight = false
@@ -83,7 +85,7 @@ abstract class BarcodeViewModel : CoreViewModel() {
             }
         }
 
-        return BarcodeData(
+        BarcodeData(
                 barcodeInfo = BarcodeInfo(
                         barcode = barcode,
                         isWeight = isWeight,
