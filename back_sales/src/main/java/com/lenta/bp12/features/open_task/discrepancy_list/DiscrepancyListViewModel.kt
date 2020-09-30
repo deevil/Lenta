@@ -62,14 +62,15 @@ class DiscrepancyListViewModel : CoreViewModel() {
     private fun mapToUI(goodList: List<Good>): List<DiscrepancyListItemGoodUi> {
         var localIndex = 0
         return goodList.mapNotNull { good ->
-            good.takeIf { it.isNotDeletedAndQuantityNotActual() }?.run {
+            good.takeIf { it.isNotDeletedAndQuantityNotActual() && !it.isMissing }?.run {
                 ++localIndex
                 DiscrepancyListItemGoodUi(
                         position = "$localIndex",
                         name = good.getNameWithMaterial(),
                         material = good.material,
                         providerCode = good.provider.code.orEmpty(),
-                        quantity = chooseQuantity(good)
+                        quantity = chooseQuantity(good),
+                        good = good
                 )
             }
         }.reversed()
@@ -121,11 +122,7 @@ class DiscrepancyListViewModel : CoreViewModel() {
     fun onClickDelete() {
         task.value?.let { task ->
             selectionsHelper.selectedPositions.value?.forEach { position ->
-                goods.value?.get(position)?.material?.let { material ->
-                    task.goods.find { it.material == material }?.let { good ->
-                        good.isDeleted = true
-                    }
-                }
+                goods.value?.get(position)?.good?.isDeleted = true
             }
 
             selectionsHelper.clearPositions()
@@ -138,16 +135,19 @@ class DiscrepancyListViewModel : CoreViewModel() {
 
     fun onClickMissing() {
         task.value?.let { task ->
-            selectionsHelper.selectedPositions.value?.forEach { position ->
-                goods.value?.get(position)?.material?.let { material ->
-                    task.goods.find { it.material == material }?.let { good ->
-                        good.isCounted = true
+            selectionsHelper.selectedPositions.value?.let { positions ->
+                val count = positions.count()
+                navigator.showDoYouReallyWantSetZeroQuantity(count) {
+                    positions.forEach { position ->
+                        goods.value?.getOrNull(position)?.good?.apply {
+                            isCounted = true
+                            isMissing = true
+                        }
                     }
+                    selectionsHelper.clearPositions()
+                    manager.updateCurrentTask(task)
                 }
             }
-
-            selectionsHelper.clearPositions()
-            manager.updateCurrentTask(task)
         }.orIfNull {
             Logg.e { "task null" }
             navigator.showInternalError(resource.taskNotFoundErrorMsg)
