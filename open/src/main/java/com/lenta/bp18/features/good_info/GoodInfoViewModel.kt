@@ -54,7 +54,7 @@ class GoodInfoViewModel : CoreViewModel() {
     lateinit var goodInfoNetRequest: GoodInfoNetRequest
 
     val selectedEan = MutableLiveData("")
-    val weight = MutableLiveData(0.0)
+    val weight = MutableLiveData(DEFAULT_WEIGHT)
     val partNumberField: MutableLiveData<String> = MutableLiveData("")
     val quantityField: MutableLiveData<String> = MutableLiveData(DEF_WEIGHT)
 
@@ -128,7 +128,7 @@ class GoodInfoViewModel : CoreViewModel() {
 
     private suspend fun getQuantityFieldFromGood(good: Good) {
         val weightValue = weight.value
-        val (quantity: Double?, uom: Uom) = if (weightValue != 0.0) {
+        val (quantity: Double?, uom: Uom) = if (weightValue != DEFAULT_WEIGHT) {
             weightValue?.div(Constants.CONVERT_TO_KG) to Uom.KG
         } else {
             when (good.uom) {
@@ -242,5 +242,6 @@ class GoodInfoViewModel : CoreViewModel() {
 
     companion object {
         private const val DEF_WEIGHT = "0"
+        private const val DEFAULT_WEIGHT = 0.0
     }
 }
