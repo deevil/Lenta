@@ -73,7 +73,7 @@ fun setupViewPager(viewPager: ViewPager,
  * адаптера или обычного
  */
 private fun getViewPagerAdapter(viewPagerSettings: ViewPagerSettings): ViewPagerAdapter {
-    return if (viewPagerSettings is DynamicViewPagerSettings<*>) {
+    return if (viewPagerSettings is DynamicViewPagerSettings) {
         DynamicViewPagerAdapter(viewPagerSettings)
     } else {
         ViewPagerAdapter(viewPagerSettings)
@@ -92,7 +92,7 @@ interface ViewPagerSettings {
  * происходит notifyDataSetChanged у адаптера) и lifecycleOwner (для избежания утечек памяти
  * при обсерве liveDat'ы)
  */
-interface DynamicViewPagerSettings<T : Any> : ViewPagerSettings {
+interface DynamicViewPagerSettings : ViewPagerSettings {
     /**
      * Получение LifecycleOwner для обсерва лайвдаты
      *
@@ -104,7 +104,7 @@ interface DynamicViewPagerSettings<T : Any> : ViewPagerSettings {
      * LiveData, которую слушает adapter, при изменении данных в которой происходит
      * notifyDataSetChanged
      */
-    fun getDynamicData(): LiveData<T>
+    fun getDynamicData(): LiveData<*>
 }
 
 interface PageSelectionListener {
@@ -142,8 +142,8 @@ internal open class ViewPagerAdapter(private val viewPagerSettings: ViewPagerSet
  * @param viewPagerSettings - настройки динамического viewPager'а
  * @see DynamicViewPagerAdapter
  */
-internal class DynamicViewPagerAdapter<out T : Any>(
-        viewPagerSettings: DynamicViewPagerSettings<T>
+internal class DynamicViewPagerAdapter(
+        viewPagerSettings: DynamicViewPagerSettings
 ) : ViewPagerAdapter(viewPagerSettings) {
     init {
         viewPagerSettings.getDynamicData().observe(viewPagerSettings.getLifecycleOwner()) {
