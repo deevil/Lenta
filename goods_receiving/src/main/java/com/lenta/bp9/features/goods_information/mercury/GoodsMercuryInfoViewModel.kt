@@ -340,11 +340,8 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
                     //https://trello.com/c/3AnfqLKo про barcodeData
                     barcodeData.value?.let {
                         if (it.barcodeInfo.isWeight) {
-                            //quantity = quantity * it.umrez / it.umren
-                            val quantity = it.barcodeInfo.weight.toDoubleOrNull() ?: 0.0
-                            val numeratorConvertBaseUnitMeasure = productInfo.value?.numeratorConvertBaseUnitMeasure ?: 0.0
-                            val denominatorConvertBaseUnitMeasure = productInfo.value?.denominatorConvertBaseUnitMeasure ?: 1.0
-                            count.value = (quantity * numeratorConvertBaseUnitMeasure / denominatorConvertBaseUnitMeasure).toStringFormatted()
+                            val weightInGrams = it.barcodeInfo.weight.toDoubleOrNull() ?: 0.0
+                            count.value = (weightInGrams / 1000).toStringFormatted()
                         }
                     }
                     qualityInfo.value = dataBase.getQualityMercuryInfo().orEmpty()
@@ -448,9 +445,7 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
     }
 
     fun onClickDetails() {
-        //todo
-        onScanResult("22924803")
-        //screenNavigator.openGoodsDetailsScreen(productInfo.value!!)
+        productInfo.value?.let { screenNavigator.openGoodsDetailsScreen(it) }
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -786,12 +781,11 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
     }
 
     fun onScanResult(data: String) {
-        //todo
-        //addGoods.value = false
-        //onClickAdd()
-        //if (addGoods.value == true) {
+        addGoods.value = false
+        onClickAdd()
+        if (addGoods.value == true) {
             searchProductDelegate.searchCode(code = data, fromScan = true, isBarCode = true)
-        //}
+        }
     }
 
     fun onBackPressed() {
