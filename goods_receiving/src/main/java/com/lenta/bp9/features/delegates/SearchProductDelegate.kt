@@ -2,6 +2,7 @@ package com.lenta.bp9.features.delegates
 
 import android.content.Context
 import com.lenta.bp9.R
+import com.lenta.bp9.data.BarcodeParser
 import com.lenta.bp9.features.loading.tasks.TaskListLoadingMode
 import com.lenta.bp9.model.task.MarkingGoodsRegime
 import com.lenta.bp9.model.task.getMarkingGoodsRegime
@@ -23,10 +24,7 @@ import com.lenta.shared.fmp.resources.dao_ext.getEanInfoFromMaterial
 import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
-import com.lenta.shared.models.core.MatrixType
-import com.lenta.shared.models.core.ProductType
-import com.lenta.shared.models.core.Uom
-import com.lenta.shared.models.core.getProductType
+import com.lenta.shared.models.core.*
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequest
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequestParams
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
@@ -59,6 +57,8 @@ class SearchProductDelegate @Inject constructor(
 
     private var codeWith12Digits: String? = null
 
+    private var barcodeData: BarcodeData? = null
+
     fun copy(): SearchProductDelegate {
         val searchProductDelegate = SearchProductDelegate(
                 hyperHive,
@@ -90,6 +90,7 @@ class SearchProductDelegate @Inject constructor(
 
         viewModelScope().launch {
             screenNavigator.showProgress(scanInfoRequest)
+            barcodeData = BarcodeParser().getBarcodeData(code)
             scanInfoRequest(
                     ScanInfoRequestParams(
                             number = code,
@@ -251,7 +252,7 @@ class SearchProductDelegate @Inject constructor(
         Z-партии ППП -> это IS_VET= пусто, IS_ZPARTS=X
         если IS_VET=X + IS_ZPARTS=X товар считается как обычный меркурианский в дополнение просто отображается признак z-партионного учета*/
         if (taskProductInfo.isZBatches && !taskProductInfo.isVet) {
-            screenNavigator.openZBatchesInfoPPPScreen(taskProductInfo, isDiscrepancy)
+            screenNavigator.openZBatchesInfoPPPScreen(taskProductInfo, isDiscrepancy, barcodeData)
             return
         }
 
@@ -275,7 +276,7 @@ class SearchProductDelegate @Inject constructor(
         if (taskProductInfo.isVet &&
                 //todo это условие прописано временно, т.к. на продакшене для ПГЕ и ПРЦ не реализована таблица ET_VET_DIFF, она приходит пустой  в 28 и 30 рестах, поэтому обрабатываем данные товары не как вет, а как обычные. Не делал условия для типов задания, чтобы если для других типов задания эта таблица будет пустая, то товары обрабатывались как обычные, а не веттовары
                 !taskManager.getReceivingTask()?.taskRepository?.getMercuryDiscrepancies()?.getMercuryDiscrepancies().isNullOrEmpty()) {
-            screenNavigator.openGoodsMercuryInfoScreen(taskProductInfo, isDiscrepancy)
+            screenNavigator.openGoodsMercuryInfoScreen(taskProductInfo, isDiscrepancy, barcodeData)
         } else {
             if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.ShipmentPP) {
                 screenNavigator.openGoodsInfoShipmentPPScreen(productInfo = taskProductInfo, isDiscrepancy = isDiscrepancy)

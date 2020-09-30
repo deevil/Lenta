@@ -712,7 +712,7 @@ class MarkingBoxInfoViewModel : BaseGoodsInfo(),  OnPositionClickListener {
                         .getEansFromMaterial(material = productInfo.value?.materialNumber.orEmpty())
                         .asSequence()
                         .map { eans ->
-                            eans.ean.padStart(14, '0')
+                            eans.ean?.padStart(14, '0')
                         }
                         .findLast { ean ->
                             ean == gtinCode

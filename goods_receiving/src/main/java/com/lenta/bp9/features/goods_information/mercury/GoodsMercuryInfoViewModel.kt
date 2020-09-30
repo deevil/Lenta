@@ -6,12 +6,16 @@ import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
 import com.lenta.bp9.features.goods_information.base.BaseGoodsInfo
 import com.lenta.bp9.features.delegates.SearchProductDelegate
+import com.lenta.bp9.data.BarcodeParser
+import com.lenta.bp9.features.goods_information.z_batches.task_ppp.ZBatchesInfoPPPViewModel
 import com.lenta.bp9.model.processing.*
 import com.lenta.bp9.model.task.TaskType
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants
+import com.lenta.shared.models.core.BarcodeData
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
@@ -35,6 +39,7 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
     lateinit var timeMonitor: ITimeMonitor
 
     val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData(false)
+    val barcodeData: MutableLiveData<BarcodeData> = MutableLiveData()
     val uom: MutableLiveData<Uom?> by lazy {
         if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.DirectSupplier) {
             MutableLiveData(productInfo.value?.purchaseOrderUnits)
@@ -333,6 +338,17 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
                                     ?.indexOfLast { it.code == TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_DELIVERY_ERRORS }
                                     ?: -1
                 } else {
+                    //https://trello.com/c/3AnfqLKo про barcodeData
+                    barcodeData.value?.let {
+                        if (it.barcodeInfo.isWeight) {
+                            val weightInGrams = it.barcodeInfo.weight.toDoubleOrNull() ?: 0.0
+                            if (uom.value?.code?.toUpperCase(Locale.getDefault()) == UNIT_KG) {
+                                count.value = (weightInGrams / 1000).toStringFormatted()
+                            } else {
+                                count.value = weightInGrams.toStringFormatted()
+                            }
+                        }
+                    }
                     qualityInfo.value = dataBase.getQualityMercuryInfo().orEmpty()
                 }
             }
@@ -433,8 +449,8 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
         }
     }
 
-    fun onClickDetails(){
-        screenNavigator.openGoodsDetailsScreen(productInfo.value!!)
+    fun onClickDetails() {
+        productInfo.value?.let { screenNavigator.openGoodsDetailsScreen(it) }
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -810,4 +826,9 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
         }
         return addNewCount
     }
+
+    companion object {
+        private const val UNIT_KG = "KG"
+    }
 }
+
