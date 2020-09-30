@@ -191,25 +191,29 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                                     .getBatches()
                                                     .findBatchOfProduct(productInfo)
 
+                                    @Suppress("IMPLICIT_CAST_TO_ANY")
                                     batchesInfoOfProduct
                                             ?.map { batch ->
                                                 index += 1
-                                                val itemNotProcessedBatch = getItemNotProcessedBatch(
-                                                        task = task,
-                                                        batch = batch,
-                                                        product = productInfo,
-                                                        index = index
+                                                arrayNotCounted.add(
+                                                        getItemNotProcessedBatch(
+                                                                task = task,
+                                                                batch = batch,
+                                                                product = productInfo,
+                                                                index = index
+                                                        )
                                                 )
-                                                arrayNotCounted.add(itemNotProcessedBatch)
                                             }
                                 } else {
                                     index += 1
-                                    val itemNotProcessedProduct = getItemNotProcessedProduct(
-                                            task = task,
-                                            product = productInfo,
-                                            index = index
+                                    @Suppress("IMPLICIT_CAST_TO_ANY")
+                                    arrayNotCounted.add(
+                                            getItemNotProcessedProduct(
+                                                    task = task,
+                                                    product = productInfo,
+                                                    index = index
+                                            )
                                     )
-                                    arrayNotCounted.add(itemNotProcessedProduct)
                                 }
                             }
                             .toList()

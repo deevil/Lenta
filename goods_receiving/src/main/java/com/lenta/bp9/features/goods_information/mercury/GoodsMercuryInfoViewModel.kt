@@ -1,8 +1,7 @@
 package com.lenta.bp9.features.goods_information.mercury
 
 import android.annotation.SuppressLint
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.lenta.bp9.R
 import com.lenta.bp9.features.goods_information.base.BaseGoodsInfo
 import com.lenta.bp9.features.delegates.SearchProductDelegate
@@ -173,7 +172,7 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
     private val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
     private val addGoods: MutableLiveData<Boolean> = MutableLiveData(false)
 
-    val acceptTotalCount: MutableLiveData<Double> by lazy {
+    val acceptTotalCount: MutableLiveData<Double> =
         countValue.combineLatest(spinQualitySelectedPosition).map {
             val countAccept =
                     isTaskPGE.value
@@ -196,7 +195,7 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
                 }
             }
         }
-    }
+
 
     val acceptTotalCountWithUom: MutableLiveData<String> = acceptTotalCount.map {
         val countAccept =
@@ -212,7 +211,7 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
         }
     }
 
-    val refusalTotalCount: MutableLiveData<Double> by lazy {
+    val refusalTotalCount: MutableLiveData<Double> =
         countValue.combineLatest(spinQualitySelectedPosition).map {
             val countRefusal =
                     isTaskPGE.value
@@ -237,7 +236,7 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
                 }
             }
         }
-    }
+
 
     val refusalTotalCountWithUom: MutableLiveData<String> = refusalTotalCount.map {
         val countRefusal =
@@ -257,13 +256,20 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
         MutableLiveData(isTaskPGE.value == true && productInfo.value!!.isWithoutRecount)
     }
 
-    val enabledApplyButton: MutableLiveData<Boolean> = countValue.map {
-        if (isGoodsAddedAsSurplus.value == true) { //карточка трелло https://trello.com/c/eo1nRdKC) (ТП (меркурий по ПГЕ) -> 3.2.2.16 Обработка расхождений при пересчете ГЕ (Меркурий) -> 2.1.Излишек по товару
-            (it ?: 0.0) > 0.0 && currentManufactureName.isNotEmpty()
-        } else {
-            (it ?: 0.0) > 0.0 && currentManufactureName.isNotEmpty() && currentProductionDate.isNotEmpty()
-        }
-    }
+    val enabledApplyButton: MutableLiveData<Boolean> = countValue
+            .combineLatest(spinManufacturersSelectedPosition)
+            .combineLatest(spinProductionDateSelectedPosition)
+            .map {
+                val enteredCount = it?.first?.first ?: 0.0
+                if (isGoodsAddedAsSurplus.value == true) { //карточка трелло https://trello.com/c/eo1nRdKC) (ТП (меркурий по ПГЕ) -> 3.2.2.16 Обработка расхождений при пересчете ГЕ (Меркурий) -> 2.1.Излишек по товару
+                    enteredCount > 0.0
+                            && currentManufactureName.isNotEmpty()
+                } else {
+                    enteredCount > 0.0
+                            && currentManufactureName.isNotEmpty()
+                            && currentProductionDate.isNotEmpty()
+                }
+            }
 
     init {
         launchUITryCatch {
@@ -291,13 +297,13 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
                     }
                     isDiscrepancy.value == true -> {
                         suffix.value = uom.value?.name
-                        count.value =
-                                taskManager
-                                        .getReceivingTask()
-                                        ?.taskRepository
-                                        ?.getProductsDiscrepancies()
-                                        ?.getCountProductNotProcessedOfProductPGE(productInfo.value!!)
-                                        .toStringFormatted()
+                        count.postValue(taskManager
+                                .getReceivingTask()
+                                ?.taskRepository
+                                ?.getProductsDiscrepancies()
+                                ?.getCountProductNotProcessedOfProductPGE(productInfo.value!!)
+                                .toStringFormatted()
+                        )
 
                         if (isNotRecountCargoUnit.value == true) {
                             qualityInfo.value = dataBase.getQualityInfoPGENotRecountBreaking().orEmpty()
@@ -317,15 +323,13 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
             } else {
                 suffix.value = uom.value?.name.orEmpty()
                 if (isDiscrepancy.value == true) {
-                    count.value =
-                            taskManager
-                                    .getReceivingTask()
-                                    ?.run {
-                                        taskRepository
-                                                .getProductsDiscrepancies()
-                                                .getCountProductNotProcessedOfProduct(productInfo.value!!)
-                                                .toStringFormatted()
-                                    }
+                    count.postValue(taskManager
+                            .getReceivingTask()
+                            ?.taskRepository
+                            ?.getProductsDiscrepancies()
+                            ?.getCountProductNotProcessedOfProduct(productInfo.value!!)
+                            ?.toStringFormatted()
+                    )
 
                     qualityInfo.value = dataBase.getQualityInfoForDiscrepancy().orEmpty()
                     spinQualitySelectedPosition.value =
