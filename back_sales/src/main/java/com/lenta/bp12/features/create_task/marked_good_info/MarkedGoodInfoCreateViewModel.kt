@@ -19,10 +19,7 @@ import com.lenta.bp12.request.ScanInfoResult
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.launchAsyncTryCatch
-import com.lenta.shared.utilities.extentions.launchUITryCatch
-import com.lenta.shared.utilities.extentions.map
-import com.lenta.shared.utilities.extentions.unsafeLazy
+import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.orIfNull
 import javax.inject.Inject
 
@@ -112,12 +109,9 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
     /**
     Ввод количества
      */
-    val quantityField by unsafeLazy {
-        tempMarks.switchMap {
-            liveData {
-                val size = "${it.size}"
-                emit(size)
-            }
+    override val quantityField by unsafeLazy {
+        tempMarks.mapSkipNulls {
+            "${it.size}"
         }
     }
 

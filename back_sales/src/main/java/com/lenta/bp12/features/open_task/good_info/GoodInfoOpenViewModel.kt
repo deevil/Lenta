@@ -1,7 +1,5 @@
 package com.lenta.bp12.features.open_task.good_info
 
-import android.text.Editable
-import androidx.databinding.adapters.TextViewBindingAdapter
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
@@ -39,7 +37,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapter.AfterTextChanged {
+class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
 
     @Inject
     override lateinit var manager: IOpenTaskManager
@@ -89,7 +87,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
     Ввод количества
      */
 
-    val quantityField = MutableLiveData("0")
+    override val quantityField = MutableLiveData(ZERO_QUANTITY_STRING)
 
     override val quantity = quantityField.map {
         it?.toDoubleOrNull() ?: ZERO_QUANTITY
@@ -874,9 +872,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
         }
     }
 
-    override fun afterTextChanged(s: Editable?) {
-        quantityField.value = s.resolveMinuses(good.value?.isCommon() == true)
-    }
+
 
     companion object {
         private const val DEFAULT_QUANTITY_STRING_FOR_EAN = "1"

@@ -1,5 +1,7 @@
 package com.lenta.bp12.features.base
 
+import android.text.Editable
+import androidx.databinding.adapters.TextViewBindingAdapter
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.switchMap
@@ -12,6 +14,7 @@ import com.lenta.bp12.platform.FIRST_BASKET
 import com.lenta.bp12.platform.FIRST_POSITION
 import com.lenta.bp12.platform.ZERO_QUANTITY
 import com.lenta.bp12.platform.extention.isWholesaleType
+import com.lenta.bp12.platform.extention.resolveMinuses
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -40,7 +43,7 @@ import javax.inject.Inject
  * @see com.lenta.bp12.features.create_task.marked_good_info.MarkedGoodInfoCreateViewModel
  * */
 abstract class BaseGoodInfoViewModel<R : Taskable, T : ITaskManager<R>> : CoreViewModel(),
-        OnOkInSoftKeyboardListener {
+        OnOkInSoftKeyboardListener, TextViewBindingAdapter.AfterTextChanged {
 
     /** "ZMP_UTZ_BKS_05_V001"
      * Получение данных товара по ШК / SAP-коду
@@ -211,6 +214,7 @@ abstract class BaseGoodInfoViewModel<R : Taskable, T : ITaskManager<R>> : CoreVi
 
     abstract var manager: T
     abstract val quantity: MutableLiveData<Double>
+    abstract val quantityField: MutableLiveData<String>
     abstract val applyEnabled: LiveData<Boolean>
     abstract val totalWithUnits: MutableLiveData<String>
     abstract val closeEnabled: MutableLiveData<Boolean>
@@ -284,6 +288,10 @@ abstract class BaseGoodInfoViewModel<R : Taskable, T : ITaskManager<R>> : CoreVi
         return good?.let {
             manager.getBasket(it.provider.code.orEmpty(), it, false)
         }
+    }
+
+    override fun afterTextChanged(s: Editable?) {
+        quantityField.value = s.resolveMinuses(good.value?.isCommon() == true)
     }
 
     abstract fun checkSearchNumber(number: String)

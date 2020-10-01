@@ -1,7 +1,5 @@
 package com.lenta.bp12.features.create_task.good_info
 
-import android.text.Editable
-import androidx.databinding.adapters.TextViewBindingAdapter
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
@@ -36,7 +34,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAdapter.AfterTextChanged {
+class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
 
     @Inject
     override lateinit var manager: ICreateTaskManager
@@ -85,7 +83,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
     Ввод количества
      */
 
-    val quantityField = MutableLiveData(ZERO_QUANTITY_STRING)
+    override val quantityField = MutableLiveData(ZERO_QUANTITY_STRING)
 
     override val quantity = quantityField.map {
         it?.toDoubleOrNull() ?: ZERO_QUANTITY
@@ -844,10 +842,6 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
                 navigator.showInternalError(resource.goodNotFoundErrorMsg)
             }
         }
-    }
-
-    override fun afterTextChanged(s: Editable?) {
-        quantityField.value = s.resolveMinuses(good.value?.isCommon() == true)
     }
 
     companion object {
