@@ -164,8 +164,7 @@ class NonExciseAlcoInfoViewModel : CoreViewModel(), OnPositionClickListener {
                         return@launchUITryCatch
                     }
 
-            searchProductDelegate.init(viewModelScope = this@NonExciseAlcoInfoViewModel::viewModelScope,
-                    scanResultHandler = this@NonExciseAlcoInfoViewModel::handleProductSearchResult)
+            searchProductDelegate.init(scanResultHandler = this@NonExciseAlcoInfoViewModel::handleProductSearchResult)
 
             batchInfo.value = taskManager.getReceivingTask()!!.taskRepository.getBatches().findBatchOfProduct(productInfo.value!!)
             suffix.value = productInfo.value?.purchaseOrderUnits?.name

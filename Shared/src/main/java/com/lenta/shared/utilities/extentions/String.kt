@@ -49,3 +49,7 @@ fun String.getSapDate(pattern: String): Date? {
         }
     } else null
 }
+
+fun String.toDoubleWeight(): Double {
+    return takeIf { it.isNotEmpty() }?.toDouble() ?: 0.0
+}

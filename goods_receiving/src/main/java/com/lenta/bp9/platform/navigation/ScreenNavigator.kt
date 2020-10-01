@@ -67,6 +67,7 @@ import com.lenta.bp9.features.transfer_goods_section.TransferGoodsSectionFragmen
 import com.lenta.bp9.features.transport_marriage.TransportMarriageFragment
 import com.lenta.bp9.features.transport_marriage.cargo_unit.TransportMarriageCargoUnitFragment
 import com.lenta.bp9.features.goods_details.transport_marriage_goods_details.TransportMarriageGoodsDetailsFragment
+import com.lenta.bp9.features.goods_information.marking.task_pge.marking_info_box_pge.MarkingInfoBoxPGEFragment
 import com.lenta.bp9.features.transport_marriage.goods_info.TransportMarriageGoodsInfoFragment
 import com.lenta.bp9.features.transportation_number.TransportationNumberFragment
 import com.lenta.bp9.model.task.*
@@ -1689,6 +1690,12 @@ class ScreenNavigator(
         }
     }
 
+    override fun openMarkingBoxInfoPGEScreen(productInfo: TaskProductInfo) {
+        runOrPostpone {
+            getFragmentStack()?.push(MarkingInfoBoxPGEFragment.newInstance(productInfo))
+        }
+    }
+
     override fun openMarkingBoxNotIncludedDeliveryScreen() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
@@ -1963,6 +1970,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openAlertScanProductGtinScreen()
     fun goBackAndShowAlertWrongProductType()
     fun openMarkingBoxInfoScreen(productInfo: TaskProductInfo)
+    fun openMarkingBoxInfoPGEScreen(productInfo: TaskProductInfo)
     fun openMarkingBoxNotIncludedDeliveryScreen()
     fun openMarkingPerformRateControlScreen()
     fun openMarkingBlockDeclaredDifferentCategoryScreen(typeDiscrepanciesName: String)

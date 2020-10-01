@@ -194,8 +194,7 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
                         return@launchUITryCatch
                     }
 
-            searchProductDelegate.init(viewModelScope = this@ZBatchesInfoPPPViewModel::viewModelScope,
-                    scanResultHandler = this@ZBatchesInfoPPPViewModel::handleProductSearchResult)
+            searchProductDelegate.init(scanResultHandler = this@ZBatchesInfoPPPViewModel::handleProductSearchResult)
 
             currentDate.value = timeMonitor.getServerDate()
             expirationDate.value = Calendar.getInstance()

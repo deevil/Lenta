@@ -317,8 +317,7 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
                         screenNavigator.goBackAndShowAlertWrongProductType()
                         return@launchUITryCatch
                     }
-            searchProductDelegate.init(viewModelScope = this@ExciseAlcoStampAccInfoPGEViewModel::viewModelScope,
-                    scanResultHandler = this@ExciseAlcoStampAccInfoPGEViewModel::handleProductSearchResult)
+            searchProductDelegate.init(scanResultHandler = this@ExciseAlcoStampAccInfoPGEViewModel::handleProductSearchResult)
 
             if (isGoodsAddedAsSurplus.value == true) {
                 suffix.value = productInfo.value?.uom?.name
@@ -413,7 +412,6 @@ class ExciseAlcoStampAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListe
                 processExciseAlcoStampAccPGEService.setProcessingUnitNumber(enteredProcessingUnitNumber.value.orEmpty())
             }
             processExciseAlcoStampAccPGEService.addProduct(convertEizToBei().toString(), currentQualityInfoCode)
-            processExciseAlcoStampAccPGEService.apply()
             count.value = "0"
             spinQualitySelectedPosition.value =
                     qualityInfo.value

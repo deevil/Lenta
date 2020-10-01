@@ -283,8 +283,7 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
                         return@launchUITryCatch
                     }
 
-            searchProductDelegate.init(viewModelScope = this@GoodsMercuryInfoViewModel::viewModelScope,
-                    scanResultHandler = this@GoodsMercuryInfoViewModel::handleProductSearchResult)
+            searchProductDelegate.init(scanResultHandler = this@GoodsMercuryInfoViewModel::handleProductSearchResult)
 
             currentDate.value = timeMonitor.getServerDate()
             expirationDate.value = Calendar.getInstance()

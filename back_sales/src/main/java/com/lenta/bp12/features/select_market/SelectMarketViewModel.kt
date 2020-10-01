@@ -12,25 +12,35 @@ import com.lenta.shared.requests.network.ServerTime
 import com.lenta.shared.requests.network.ServerTimeRequest
 import com.lenta.shared.requests.network.ServerTimeRequestParam
 import com.lenta.shared.settings.IAppSettings
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
 
     @Inject
     lateinit var navigator: IScreenNavigator
+
     @Inject
     lateinit var sessionInfo: ISessionInfo
+
     @Inject
     lateinit var appSettings: IAppSettings
+
     @Inject
     lateinit var repoInMemoryHolder: IRepoInMemoryHolder
+
     @Inject
     lateinit var timeMonitor: ITimeMonitor
+
     @Inject
     lateinit var serverTimeRequest: ServerTimeRequest
+
     @Inject
     lateinit var printerManager: PrinterManager
 
@@ -60,8 +70,12 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
     private fun takeSelectedPositionForAction() {
         launchUITryCatch {
             repoInMemoryHolder.storesRequestResult?.marketInfos?.let { list ->
-                markets.value = list.map {
-                    MarketUi(number = it.tkNumber, address = it.address)
+                markets.value = withContext(Dispatchers.IO) {
+                    list.mapNotNull {
+                        it.takeIf { it.tkNumber != null && it.address != null }?.run {
+                            MarketUi(number = tkNumber.orEmpty(), address = address.orEmpty())
+                        }
+                    }
                 }
 
                 if (selectedPosition.value == null) {
@@ -79,6 +93,8 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
                 if (list.size == 1) {
                     onClickNext()
                 }
+            }.orIfNull {
+                Logg.e { "repoInMemoryHolder.storesRequestResult?.marketInfos is null" }
             }
         }
     }
@@ -93,7 +109,9 @@ class SelectMarketViewModel : CoreViewModel(), OnPositionClickListener {
                 appSettings.lastTK = tkNumber
                 navigator.showProgress(serverTimeRequest)
                 serverTimeRequest(ServerTimeRequestParam(sessionInfo.market
-                       .orEmpty())).either(::handleFailure, ::handleSuccessServerTime)
+                        .orEmpty())).either(::handleFailure, ::handleSuccessServerTime)
+            }.orIfNull {
+                Logg.e { "markets.value?.getOrNull(selectedPosition.value ?: -1) is Null" }
             }
         }
     }

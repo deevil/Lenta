@@ -517,10 +517,10 @@ class CoreNavigator @Inject constructor(
         }
     }
 
-    override fun showAlertBlockedTaskByMe(userName: String, yesCallback: () -> Unit) {
+    override fun showAlertBlockedTaskByMe(yesCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
-                    message = context.getString(R.string.user_self_block_task, userName),
+                    message = context.getString(R.string.user_self_block_task),
                     iconRes = R.drawable.ic_question_yellow_80dp,
                     pageNumber = "94",
                     leftButtonDecorationInfo = ButtonDecorationInfo.back,
@@ -638,7 +638,7 @@ interface ICoreNavigator {
     fun showProgressConnection()
     fun showAlertBlockedTaskAnotherUser(userName: String)
     fun showAlertBlockedTaskAnotherUser(userName: String, deviceIp: String)
-    fun showAlertBlockedTaskByMe(userName: String, yesCallback: () -> Unit)
+    fun showAlertBlockedTaskByMe(yesCallback: () -> Unit)
     fun openCode128InfoScreen()
     fun openGS1InfoScreen()
     fun openPlanInfoScreen()

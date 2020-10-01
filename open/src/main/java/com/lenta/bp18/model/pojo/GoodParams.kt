@@ -8,5 +8,6 @@ data class GoodParams(
         val ean: String,
         val weight: String,
         val material: String,
-        val name: String
+        val name: String,
+        val batchNumber: String
 ): Parcelable

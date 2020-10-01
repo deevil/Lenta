@@ -115,8 +115,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
 
     init {
         launchUITryCatch {
-            searchProductDelegate.init(viewModelScope = this@GoodsListViewModel::viewModelScope,
-                    scanResultHandler = this@GoodsListViewModel::handleProductSearchResult)
+            searchProductDelegate.init(scanResultHandler = this@GoodsListViewModel::handleProductSearchResult)
         }
     }
 
