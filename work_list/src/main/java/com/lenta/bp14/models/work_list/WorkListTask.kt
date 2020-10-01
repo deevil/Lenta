@@ -118,7 +118,7 @@ class WorkListTask @Inject constructor(
     override fun updateAdditionalGoodInfo(additionalGoodInfo: AdditionalGoodInfo) {
         val good = currentGood.value!!
         good.additional = additionalGoodInfo
-        currentGood.value = good
+        currentGood.postValue(good)
     }
 
     override fun addScanResult(scanResult: ScanResult) {
@@ -471,7 +471,21 @@ data class AdditionalGoodInfo(
         val promoName: String,
         val promoPeriod: String,
         val providers: List<Provider>,
-        val stocks: List<Stock>
+        val stocks: List<Stock>,
+        val zParts: List<ZPart>
+) {
+    val hasZPart: Boolean
+        get() = zParts.isNotEmpty()
+}
+
+data class ZPart(
+        val batch: String,
+        val stock: String,
+        val producer: String,
+        val quantity: Double,
+        val meins: String,
+        val dateExpir: String,
+        val dateProd: String
 )
 
 data class GoodOptions(
@@ -484,7 +498,9 @@ data class GoodOptions(
 
 data class Stock(
         val storage: String,
-        val quantity: Double
+        val quantity: Double,
+        val zPartsQuantity: Double,
+        val hasZPart: Boolean
 )
 
 data class Provider(

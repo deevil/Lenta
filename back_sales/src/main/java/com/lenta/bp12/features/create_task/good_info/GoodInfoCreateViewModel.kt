@@ -60,9 +60,9 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
     val accountingType by unsafeLazy {
         screenStatus.map { status ->
             when (status) {
-                ScreenStatus.MARK_150, ScreenStatus.MARK_68 -> resource.typeMark()
-                ScreenStatus.ALCOHOL, ScreenStatus.PART -> resource.typePart()
-                else -> resource.typeQuantity()
+                ScreenStatus.MARK_150, ScreenStatus.MARK_68 -> resource.typeMark
+                ScreenStatus.ALCOHOL, ScreenStatus.PART -> resource.typePart
+                else -> resource.typeQuantity
             }
         }
     }
@@ -473,14 +473,14 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
                 val alcoCodeInfoList = database.getAlcoCodeInfoList(number.extractAlcoCode())
 
                 if (alcoCodeInfoList.isEmpty()) {
-                    navigator.openAlertScreen(resource.unknownAlcocode())
+                    navigator.openAlertScreen(resource.unknownAlcocode)
                     return
                 }
 
                 if (alcoCodeInfoList.find { it.material == good.value?.material } != null) {
                     addPartInfo(result)
                 } else {
-                    navigator.openAlertScreen(resource.alcocodeDoesNotApplyToThisGood())
+                    navigator.openAlertScreen(resource.alcocodeDoesNotApplyToThisGood)
                 }
             }
         }
@@ -806,9 +806,5 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
 
     override fun afterTextChanged(s: Editable?) {
         quantityField.value = s.returnWithNoSecondMinus()
-    }
-
-    companion object {
-
     }
 }

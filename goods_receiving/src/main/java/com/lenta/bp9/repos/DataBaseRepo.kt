@@ -241,6 +241,30 @@ class DataBaseRepo(
     override suspend fun getParamGrzPerishableHH(): String? = withContext(Dispatchers.IO) {
         zmpUtz14V001.getParamGrzPerishableHH()
     }
+
+    override suspend fun getSurplusInfoForZBatchesTaskPGE(): List<QualityInfo>? = withContext(Dispatchers.IO) {
+        zmpUtz17V001.getAllQuality()?.toQualityInfoList()?.filter {
+            it.id == "028" && it.code == "2"
+        }
+    }
+
+    override suspend fun getQualityInfoZBatchesTaskPGENotRecountBreaking(): List<QualityInfo>? = withContext(Dispatchers.IO) {
+        zmpUtz17V001.getAllQuality()?.toQualityInfoList()?.filter {
+            it.id == "028" && (it.code == "4" || it.code == "5")
+        }
+    }
+
+    override suspend fun getQualityInfoZBatchesTaskPGEForDiscrepancy(): List<QualityInfo>? = withContext(Dispatchers.IO) {
+        zmpUtz17V001.getAllQuality()?.toQualityInfoList()?.filter {
+            it.id == "028" && (it.code == "3" || it.code == "4" || it.code == "5")
+        }
+    }
+
+    override suspend fun getQualityInfoZBatchesTaskPGE(): List<QualityInfo>? = withContext(Dispatchers.IO) {
+        zmpUtz17V001.getAllQuality()?.toQualityInfoList()?.filter {
+            it.id == "028" && it.code != "3"
+        }
+    }
 }
 
 interface IDataBaseRepo {
@@ -287,4 +311,8 @@ interface IDataBaseRepo {
     suspend fun getReasonRejectionMercuryInfoOfQuality(quality: String): List<ReasonRejectionInfo>?
     suspend fun getGrzAlternMeins(): String?
     suspend fun getParamGrzPerishableHH(): String?
+    suspend fun getSurplusInfoForZBatchesTaskPGE(): List<QualityInfo>?
+    suspend fun getQualityInfoZBatchesTaskPGENotRecountBreaking(): List<QualityInfo>?
+    suspend fun getQualityInfoZBatchesTaskPGEForDiscrepancy(): List<QualityInfo>?
+    suspend fun getQualityInfoZBatchesTaskPGE(): List<QualityInfo>?
 }

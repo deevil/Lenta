@@ -27,12 +27,12 @@ class ProcessExciseAlcoStampAccService
         else null
     }
 
-    private fun getCountOfDiscrepancies(typeDiscrepancies: String) : Double {
-        return taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountOfDiscrepanciesOfProduct(productInfo, typeDiscrepancies)
+    private fun getCountOfDiscrepancies(typeDiscrepancies: String, processingUnitNumber: String) : Double {
+        return taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountOfDiscrepanciesOfProductOfProcessingUnit(productInfo, typeDiscrepancies, processingUnitNumber)
     }
 
     fun add(count: String, typeDiscrepancies: String){
-        val countAdd = if (typeDiscrepancies == "1") count.toDouble() else getCountOfDiscrepancies(typeDiscrepancies) + count.toDouble()
+        val countAdd = if (typeDiscrepancies == "1") count.toDouble() else getCountOfDiscrepancies(typeDiscrepancies, productInfo.processingUnit) + count.toDouble()
         val foundDiscrepancy = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo)?.findLast {
             it.materialNumber == productInfo.materialNumber && it.typeDiscrepancies == typeDiscrepancies
         }
@@ -41,9 +41,9 @@ class ProcessExciseAlcoStampAccService
             taskManager.getReceivingTask()?.
                     taskRepository?.
                     getProductsDiscrepancies()?.
-                    changeProductDiscrepancy(TaskProductDiscrepancies(
+                    changeProductDiscrepancyOfProcessingUnit(TaskProductDiscrepancies(
                             materialNumber = productInfo.materialNumber,
-                            processingUnitNumber = "",
+                            processingUnitNumber = productInfo.processingUnit,
                             numberDiscrepancies = countAdd.toString(),
                             uom = productInfo.uom,
                             typeDiscrepancies = typeDiscrepancies,
@@ -55,7 +55,7 @@ class ProcessExciseAlcoStampAccService
             taskManager.getReceivingTask()?.
                     taskRepository?.
                     getProductsDiscrepancies()?.
-                    changeProductDiscrepancy(foundDiscrepancy.copy(numberDiscrepancies = countAdd.toString()))
+                    changeProductDiscrepancyOfProcessingUnit(foundDiscrepancy.copy(numberDiscrepancies = countAdd.toString()))
         }
 
         taskManager.getReceivingTask()?.
@@ -74,7 +74,7 @@ class ProcessExciseAlcoStampAccService
             taskManager.getReceivingTask()?.
                     taskRepository?.
                     getProductsDiscrepancies()?.
-                    changeProductDiscrepancy(TaskProductDiscrepancies(
+                    changeProductDiscrepancyOfProcessingUnit(TaskProductDiscrepancies(
                             materialNumber = productInfo.materialNumber,
                             processingUnitNumber = productInfo.processingUnit,
                             numberDiscrepancies = count,
@@ -88,7 +88,7 @@ class ProcessExciseAlcoStampAccService
             taskManager.getReceivingTask()?.
                     taskRepository?.
                     getProductsDiscrepancies()?.
-                    changeProductDiscrepancy(foundDiscrepancy.copy(numberDiscrepancies = count, processingUnitNumber = productInfo.processingUnit))
+                    changeProductDiscrepancyOfProcessingUnit(foundDiscrepancy.copy(numberDiscrepancies = count, processingUnitNumber = productInfo.processingUnit))
         }
 
         taskManager.getReceivingTask()?.

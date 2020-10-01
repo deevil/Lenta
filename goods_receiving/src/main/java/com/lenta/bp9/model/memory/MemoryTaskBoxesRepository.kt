@@ -40,7 +40,7 @@ class MemoryTaskBoxesRepository : ITaskBoxesRepository {
     }
 
     override fun updateBoxes(newBoxes: List<TaskBoxInfo>) {
-        boxes.clear()
+        clear()
         newBoxes.map {
             addBox(it)
         }

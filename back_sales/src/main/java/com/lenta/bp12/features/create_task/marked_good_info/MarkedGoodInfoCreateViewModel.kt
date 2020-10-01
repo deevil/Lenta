@@ -59,7 +59,7 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
     private var originalSearchNumber = ""
 
     val accountingType by unsafeLazy {
-        resource.typeMark()
+        resource.typeMark
     }
 
     private var thereWasRollback = false

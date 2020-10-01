@@ -20,41 +20,25 @@ class ResourceManager @Inject constructor(
     override val wrongDate: String by lazy { context.getString(R.string.wrong_date_error_msg) }
     override val error: String by lazy { context.getString(R.string.error) }
     override val noStatusMark: String by lazy { context.getString(R.string.no_status_mark) }
+    override val allSuppliers: String by lazy { context.getString(R.string.all_suppliers)  }
+    override val wholesaleBuyer: String by lazy { context.getString(R.string.wholesale_buyer) }
+    override val alcocodeDoesNotApplyToThisGood: String by lazy { context.getString(R.string.alcocode_does_not_apply_to_this_good) }
+    override val unknownAlcocode: String by lazy { context.getString(R.string.unknown_alcocode) }
+    override val typeQuantity: String by lazy { context.getString(R.string.type_quantity) }
+    override val typeMark: String by lazy { context.getString(R.string.type_mark) }
+    override val typePart: String by lazy { context.getString(R.string.type_part) }
+    override val chooseProvider: String by lazy { context.getString(R.string.choose_provider) }
+    override val chooseProducer: String by lazy { context.getString(R.string.choose_producer) }
+    override val byBasket: String by lazy { context.getString(R.string.by_basket) }
+    override val goodList: String by lazy { context.getString(R.string.good_list) }
+    override val taskContent: String by lazy { context.getString(R.string.task_content) }
+
 
     override fun tk(number: String): String = context.getString(R.string.tk_number, number)
-
     override fun backSalesFromDate(date: String): String = context.getString(R.string.back_sales_from_date, date)
-
-    override fun allSuppliers(): String = context.getString(R.string.all_suppliers)
-
-    override fun wholesaleBuyer(): String = context.getString(R.string.wholesale_buyer)
-
-    override fun alcocodeDoesNotApplyToThisGood(): String = context.getString(R.string.alcocode_does_not_apply_to_this_good)
-
-    override fun unknownAlcocode(): String = context.getString(R.string.unknown_alcocode)
-
-    override fun typeQuantity(): String = context.getString(R.string.type_quantity)
-
-    override fun typeMark(): String = context.getString(R.string.type_mark)
-
-    override fun typePart(): String = context.getString(R.string.type_part)
-
-    override fun chooseProvider(): String = context.getString(R.string.choose_provider)
-
-    override fun chooseProducer(): String = context.getString(R.string.choose_producer)
-
     override fun totalWithConvertingInfo(info: String): String = context.getString(R.string.total_with_converting_info, info)
-
-    override fun byBasket(): String = context.getString(R.string.by_basket)
-
     override fun basket(description: String): String = context.getString(R.string.basket_title, description)
-
-    override fun goodList(): String = context.getString(R.string.good_list)
-
-    override fun taskContent(): String = context.getString(R.string.task_content)
-
     override fun mrcDashCostRub(mrc: String): String = context.getString(R.string.mrc_dash_cost_rub, mrc)
-
     override fun mrcSpaceRub(mrc: String): String = context.getString(R.string.mrc_space_rub, mrc)
 }
 
@@ -70,23 +54,23 @@ interface IResourceManager {
     val rub: String
     val wrongDate: String
     val error: String
+    val allSuppliers: String
+    val wholesaleBuyer: String
+    val alcocodeDoesNotApplyToThisGood: String
+    val unknownAlcocode: String
+    val typeQuantity: String
+    val typeMark: String
+    val typePart: String
+    val chooseProvider: String
+    val chooseProducer: String
+    val goodList: String
+    val taskContent: String
+    val byBasket: String
 
     fun tk(number: String): String
     fun backSalesFromDate(date: String): String
-    fun allSuppliers(): String
-    fun wholesaleBuyer(): String
-    fun alcocodeDoesNotApplyToThisGood(): String
-    fun unknownAlcocode(): String
-    fun typeQuantity(): String
-    fun typeMark(): String
-    fun typePart(): String
-    fun chooseProvider(): String
-    fun chooseProducer(): String
     fun totalWithConvertingInfo(info: String): String
-    fun byBasket(): String
     fun basket(description: String): String
-    fun goodList(): String
-    fun taskContent(): String
     fun mrcDashCostRub(mrc: String): String
     fun mrcSpaceRub(mrc: String): String
 
