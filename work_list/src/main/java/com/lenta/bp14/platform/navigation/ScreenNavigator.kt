@@ -13,6 +13,7 @@ import com.lenta.bp14.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp14.features.main_menu.MainMenuFragment
 import com.lenta.bp14.features.not_exposed.good_info.GoodInfoNeFragment
 import com.lenta.bp14.features.not_exposed.goods_list.GoodsListNeFragment
+import com.lenta.bp14.features.not_exposed.storage_z_parts.StorageZPartsNotExposedFragment
 import com.lenta.bp14.features.price_check.good_info.GoodInfoPcFragment
 import com.lenta.bp14.features.price_check.goods_list.GoodsListPcFragment
 import com.lenta.bp14.features.price_check.price_scanner.PriceScannerFragment
@@ -505,6 +506,11 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun openStorageZPartsNeScreen(storage: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(StorageZPartsNotExposedFragment.newInstance(storage))
+        }
+    }
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -565,4 +571,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun openPictogrammInfoHealthyFood()
     fun openConfirmationNotSaveChanges(yesCallback: () -> Unit)
     fun openStorageZPartsScreen(storage: String)
+    fun openStorageZPartsNeScreen(storage: String)
 }

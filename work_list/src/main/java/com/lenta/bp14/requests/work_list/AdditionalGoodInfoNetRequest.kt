@@ -3,10 +3,8 @@ package com.lenta.bp14.requests.work_list
 import com.lenta.bp14.models.general.AppTaskTypes
 import com.lenta.bp14.models.work_list.AdditionalGoodInfo
 import com.lenta.bp14.models.work_list.Provider
-import com.lenta.bp14.models.work_list.Stock
-import com.lenta.bp14.models.work_list.ZPart
 import com.lenta.bp14.requests.*
-import com.lenta.bp14.requests.pojo.ZPartDTO
+import com.lenta.bp14.requests.base.BaseGoodInfoNetRequest
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.functional.Either
 import com.lenta.shared.functional.map
@@ -14,7 +12,9 @@ import com.lenta.shared.interactor.UseCase
 import javax.inject.Inject
 
 class AdditionalGoodInfoNetRequest
-@Inject constructor(private val productInfoNetRequest: ProductInfoNetRequest) : IAdditionalGoodInfoNetRequest {
+@Inject constructor(
+        private val productInfoNetRequest: ProductInfoNetRequest
+) : BaseGoodInfoNetRequest(), IAdditionalGoodInfoNetRequest {
 
     override suspend fun run(params: AdditionalGoodInfoParams): Either<Failure, AdditionalGoodInfo> {
         return productInfoNetRequest(params = params.toCommonParams()).map {
@@ -27,8 +27,8 @@ class AdditionalGoodInfoNetRequest
                 storagePlaces += place.placeCode
                 if (place != lastPlace) storagePlaces += ", "
             }
-            val zParts = it.extractZParts()
 
+            val zParts = it.zParts.mapToZPartList()
             AdditionalGoodInfo(
                     storagePlaces = storagePlaces,
                     minStock = additional.minStock,
@@ -51,38 +51,7 @@ class AdditionalGoodInfoNetRequest
         }
     }
 
-    private fun ProductInfoResult.extractStocks(zParts: List<ZPart>) = stocks.map { stock ->
-        val zPartQuantity = zParts.filter { it.stock == stock.lgort }.quantitySum()
-        Stock(
-                storage = stock.lgort,
-                quantity = stock.stock,
-                zPartsQuantity = zPartQuantity,
-                hasZPart = zParts.isNotEmpty()
-        )
-    }
 
-    private fun ProductInfoResult.extractZParts() = zParts.map { it.toZPart() }
-
-
-    private fun ZPartDTO.toZPart() = ZPart(
-            batch = batch.orEmpty(),
-            stock = stock.orEmpty(),
-            producer = producer.orEmpty(),
-            quantity = quantity.toDoubleOrZero(),
-            meins = meins.orEmpty(),
-            dateExpir = dateExpir.orEmpty(),
-            dateProd = dateProd.orEmpty()
-    )
-
-    private fun String?.toDoubleOrZero(): Double = this?.toDoubleOrNull() ?: 0.0
-
-    private fun List<ZPart>.quantitySum(): Double {
-        var sum = 0.0
-        for(zPart in this) {
-            sum += zPart.quantity
-        }
-        return sum
-    }
 }
 
 interface IAdditionalGoodInfoNetRequest : UseCase<AdditionalGoodInfo, AdditionalGoodInfoParams>

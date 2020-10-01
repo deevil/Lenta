@@ -1,12 +1,11 @@
 package com.lenta.bp14.features.work_list.good_info
 
-import android.util.Log
 import android.widget.EditText
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
-import com.lenta.bp14.features.work_list.base.BaseGoodViewModel
+import com.lenta.bp14.features.base.BaseGoodInfoViewModel
 import com.lenta.bp14.models.check_price.IPriceInfoParser
 import com.lenta.bp14.models.data.GoodType
 import com.lenta.bp14.models.data.ScanInfoMode
@@ -16,7 +15,6 @@ import com.lenta.bp14.models.work_list.AdditionalGoodInfo
 import com.lenta.bp14.models.work_list.ScanResult
 import com.lenta.bp14.models.work_list.WorkListTask
 import com.lenta.bp14.platform.navigation.IScreenNavigator
-import com.lenta.bp14.platform.resource.IResourceFormatter
 import com.lenta.bp14.platform.resource.IResourceManager
 import com.lenta.bp14.requests.pojo.MarkStatus
 import com.lenta.bp14.requests.work_list.AdditionalGoodInfoParams
@@ -25,7 +23,6 @@ import com.lenta.bp14.requests.work_list.IAdditionalGoodInfoNetRequest
 import com.lenta.bp14.requests.work_list.ICheckMarkNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
-import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.actionByNumber
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
@@ -33,13 +30,11 @@ import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.*
 import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 
-class GoodInfoWlViewModel : BaseGoodViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
+class GoodInfoWlViewModel : BaseGoodInfoViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
 
     @Inject
     lateinit var navigator: IScreenNavigator
@@ -58,6 +53,11 @@ class GoodInfoWlViewModel : BaseGoodViewModel(), PageSelectionListener, OnOkInSo
 
     @Inject
     lateinit var resourceManager: IResourceManager
+
+    @Inject
+    lateinit var task: WorkListTask
+
+    val good by lazy { task.currentGood }
 
     val loadingIndicatorVisibility = MutableLiveData<Boolean>(true)
 
@@ -171,16 +171,12 @@ class GoodInfoWlViewModel : BaseGoodViewModel(), PageSelectionListener, OnOkInSo
     val stocks: MutableLiveData<List<ItemStockUi>> by lazy {
         good.map { good ->
             good?.additional?.stocks?.mapIndexed { index, stock ->
-                val zPartQuantity = if (stock.hasZPart) {
-                    "${stock.zPartsQuantity.dropZeros()} ${good.units.name}"
-                } else {
-                    ""
-                }
+                val goodUnitsName = good.units.name
                 ItemStockUi(
                         number = (index + 1).toString(),
                         storage = stock.storage,
-                        quantity = "${stock.quantity.dropZeros()} ${good.units.name}",
-                        zPartsQuantity = zPartQuantity
+                        quantity = "${stock.quantity.dropZeros()} $goodUnitsName",
+                        zPartsQuantity = stock.getZPartQuantity(goodUnitsName)
                 )
             }
         }

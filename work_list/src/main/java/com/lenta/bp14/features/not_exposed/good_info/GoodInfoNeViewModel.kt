@@ -1,12 +1,16 @@
 package com.lenta.bp14.features.not_exposed.good_info
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.lenta.bp14.features.base.BaseGoodInfoViewModel
 import com.lenta.bp14.models.check_price.IPriceInfoParser
 import com.lenta.bp14.models.data.GoodType
 import com.lenta.bp14.models.data.getGoodType
 import com.lenta.bp14.models.not_exposed.INotExposedTask
 import com.lenta.bp14.models.ui.ItemStockUi
+import com.lenta.bp14.models.ui.ZPartUi
 import com.lenta.bp14.platform.navigation.IScreenNavigator
+import com.lenta.bp14.platform.resource.IResourceFormatter
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.resources.dao_ext.getMaxPositionsProdWkl
 import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
@@ -16,13 +20,15 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequest
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequestParams
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.actionByNumber
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.orIfNull
 import com.mobrun.plugin.api.HyperHive
 import javax.inject.Inject
 
-class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
+class GoodInfoNeViewModel : BaseGoodInfoViewModel(), PageSelectionListener {
 
     @Inject
     lateinit var navigator: IScreenNavigator
@@ -38,7 +44,6 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
 
     @Inject
     lateinit var hyperHive: HyperHive
-
 
     private val maxQuantity: Double? by lazy {
         ZmpUtz14V001(hyperHive).getMaxPositionsProdWkl()
@@ -66,25 +71,36 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
         MutableLiveData<List<ItemStockUi>>(
                 goodInfo.let { goodInfo ->
                     goodInfo.stocks.mapIndexed { index, stock ->
+                        val goodInfoUnits = goodInfo.units?.name.orEmpty()
+                        val quantity = "${stock.quantity.toStringFormatted()} $goodInfoUnits"
                         ItemStockUi(
                                 number = "${index + 1}",
-                                storage = stock.lgort,
-                                quantity = "${stock.stock.toStringFormatted()} ${goodInfo.units?.name
-                                       .orEmpty()}"
+                                storage = stock.storage,
+                                quantity = quantity,
+                                zPartsQuantity = stock.getZPartQuantity(goodInfoUnits)
                         )
-
                     }
                 }
         )
     }
+
+    val zParts: LiveData<List<ZPartUi>> by unsafeLazy {
+        asyncLiveData<List<ZPartUi>> {
+            val result = goodInfo.zParts.mapToZPartUiList(goodInfo.units?.name.orEmpty())
+            emit(result)
+        }
+    }
+
 
     val originalProcessedProductInfo by lazy {
         task.getProcessedCheckInfo()
     }
 
     val marketStorage by lazy {
-        "${(goodInfo.stocks.sumByDouble { it.stock }).toStringFormatted()} ${goodInfo.units?.name
-               .orEmpty()}"
+        "${(goodInfo.stocks.sumByDouble { it.quantity }).toStringFormatted()} ${
+            goodInfo.units?.name
+                    .orEmpty()
+        }"
     }
 
     val quantityField by lazy {
@@ -261,11 +277,19 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
+    fun onStockItemClick(itemIndex: Int) {
+        stocks.value?.getOrNull(itemIndex)?.let { stock ->
+            navigator.openStorageZPartsNeScreen(stock.storage)
+        }.orIfNull {
+            Logg.w { "Stock value is null!" }
+            navigator.showAlertWithStockItemNotFound()
+        }
+    }
+
     override fun handleFailure(failure: Failure) {
         super.handleFailure(failure)
         navigator.openAlertScreen(failure)
     }
-
 }
 
 data class ProductParamsUi(
