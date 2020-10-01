@@ -54,7 +54,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/size_16dp"
-                app:isStrictList="@{vm.ui.strict}"
+                app:isStrictList="@{vm.isStrict}"
                 tools:src="@drawable/ic_strict_list_white_32dp" />
 
             <ImageView
@@ -63,7 +63,7 @@
                 android:layout_marginStart="@dimen/size_8dp"
                 android:onClick="@{(v) -> vm.navigator.showAlcoholGoodInfoScreen()}"
                 android:src="@drawable/ic_alcohol_white_32dp"
-                android:visibility="@{vm.ui.alcohol}" />
+                android:visibility="@{vm.isAlcohol}" />
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -71,7 +71,7 @@
                 android:layout_marginStart="@dimen/size_8dp"
                 android:onClick="@{(v) -> vm.navigator.showCommonGoodInfoScreen()}"
                 android:src="@drawable/ic_kandy_white_32dp"
-                android:visibility="@{vm.ui.common}" />
+                android:visibility="@{vm.isCommon}" />
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -79,7 +79,7 @@
                 android:layout_marginStart="@dimen/size_8dp"
                 android:onClick="@{(v) -> vm.navigator.showMarkedGoodInfoScreen()}"
                 android:src="@drawable/ic_marked_white_32dp"
-                android:visibility="@{vm.ui.mark}" />
+                android:visibility="@{vm.isMark}" />
 
         </LinearLayout>
 

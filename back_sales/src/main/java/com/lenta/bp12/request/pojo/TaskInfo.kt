@@ -109,7 +109,7 @@ data class TaskInfo(
                         numberOfGoods = quantity?.toIntOrNull() ?: 0,
                         isStrict = isStrict.isSapTrue(),
                         isFinished = !isNotFinish.isSapTrue(),
-                        wholesaleBuyer = kunnrName
+                        wholesaleBuyer = kunnrName.takeIf { it?.isNotEmpty() == true }
                 )
         }
 }

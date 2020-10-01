@@ -112,12 +112,41 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
+    val comment by unsafeLazy {
+        ui.mapSkipNulls {
+            it.comment
+        }
+    }
+
+    val isStrict by unsafeLazy {
+        ui.mapSkipNulls {
+            it.isStrict
+        }
+    }
+
+    val isAlcohol by unsafeLazy {
+        ui.mapSkipNulls {
+            it.isAlcohol
+        }
+    }
+
+    val isCommon by unsafeLazy {
+        ui.mapSkipNulls {
+            it.isCommon
+        }
+    }
+
+    val isMark by unsafeLazy {
+        ui.mapSkipNulls {
+            it.isMark
+        }
+    }
+
     val isExistComment by lazy {
         task.map {
             it?.comment?.isNotEmpty() ?: false
         }
     }
-
     /**
     Блок инициализации
      */
