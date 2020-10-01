@@ -153,6 +153,7 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
     private val addGoods: MutableLiveData<Boolean> = MutableLiveData(false)
 
     val acceptTotalCountVet: MutableLiveData<Double> by lazy {
+    val acceptTotalCount: MutableLiveData<Double> =
         countValue.combineLatest(spinQualitySelectedPosition).map {
             val countAccept =
                     isTaskPGE.value
@@ -175,7 +176,7 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
                 }
             }
         }
-    }
+
 
     override val acceptTotalCountWithUom: MutableLiveData<String> = acceptTotalCountVet.map {
         val countAccept =
@@ -191,7 +192,7 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
         }
     }
 
-    val refusalTotalCountVet: MutableLiveData<Double> by lazy {
+    val refusalTotalCount: MutableLiveData<Double> =
         countValue.combineLatest(spinQualitySelectedPosition).map {
             val countRefusal =
                     isTaskPGE.value
@@ -216,7 +217,6 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
                 }
             }
         }
-    }
 
     override val refusalTotalCountWithUom: MutableLiveData<String> = refusalTotalCountVet.map {
         val countRefusal =
@@ -239,6 +239,21 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
             (it ?: 0.0) > 0.0 && currentManufactureName.isNotEmpty() && currentProductionDate.isNotEmpty()
         }
     }
+
+    val enabledApplyButton: MutableLiveData<Boolean> = countValue
+            .combineLatest(spinManufacturersSelectedPosition)
+            .combineLatest(spinProductionDateSelectedPosition)
+            .map {
+                val enteredCount = it?.first?.first ?: 0.0
+                if (isGoodsAddedAsSurplus.value == true) { //карточка трелло https://trello.com/c/eo1nRdKC) (ТП (меркурий по ПГЕ) -> 3.2.2.16 Обработка расхождений при пересчете ГЕ (Меркурий) -> 2.1.Излишек по товару
+                    enteredCount > 0.0
+                            && currentManufactureName.isNotEmpty()
+                } else {
+                    enteredCount > 0.0
+                            && currentManufactureName.isNotEmpty()
+                            && currentProductionDate.isNotEmpty()
+                }
+            }
 
     init {
         launchUITryCatch {
@@ -265,13 +280,13 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
                     }
                     isDiscrepancy.value == true -> {
                         suffix.value = uom.value?.name
-                        count.value =
-                                taskManager
-                                        .getReceivingTask()
-                                        ?.taskRepository
-                                        ?.getProductsDiscrepancies()
-                                        ?.getCountProductNotProcessedOfProductPGE(productInfo.value!!)
-                                        .toStringFormatted()
+                        count.postValue(taskManager
+                                .getReceivingTask()
+                                ?.taskRepository
+                                ?.getProductsDiscrepancies()
+                                ?.getCountProductNotProcessedOfProductPGE(productInfo.value!!)
+                                .toStringFormatted()
+                        )
 
                         if (isNotRecountCargoUnit.value == true) {
                             qualityInfo.value = dataBase.getQualityInfoPGENotRecountBreaking().orEmpty()
@@ -291,15 +306,13 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
             } else {
                 suffix.value = uom.value?.name.orEmpty()
                 if (isDiscrepancy.value == true) {
-                    count.value =
-                            taskManager
-                                    .getReceivingTask()
-                                    ?.run {
-                                        taskRepository
-                                                .getProductsDiscrepancies()
-                                                .getCountProductNotProcessedOfProduct(productInfo.value!!)
-                                                .toStringFormatted()
-                                    }
+                    count.postValue(taskManager
+                            .getReceivingTask()
+                            ?.taskRepository
+                            ?.getProductsDiscrepancies()
+                            ?.getCountProductNotProcessedOfProduct(productInfo.value!!)
+                            ?.toStringFormatted()
+                    )
 
                     qualityInfo.value = dataBase.getQualityInfoForDiscrepancy().orEmpty()
                     spinQualitySelectedPosition.value =

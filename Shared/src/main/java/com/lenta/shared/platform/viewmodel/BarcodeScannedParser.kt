@@ -79,7 +79,7 @@ open class BarcodeScannedParser {
                         batch = Batch(batchNumber, count, dateProduction, dateTimeExpiration)
                     }
                 }
-                if (barcode.first() == DEFAULT_LEADING_ZERO) {
+                if (barcode.isNotEmpty() && barcode.first() == DEFAULT_LEADING_ZERO) {
                     barcode = barcode.substring(1 until barcode.length)
                 }
             }
