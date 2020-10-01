@@ -42,12 +42,11 @@ abstract class CoreApplication : Application(), CoreComponentProvider {
                                     "Thread:${thread.name}")
                     sendLogs()
                 }
-                Thread(Runnable {
+                Thread {
                     onHandleException()
                     Thread.sleep(200)
-                    coreComponent.getRoomAppDatabase().close()
                     exitProcess(1)
-                }).run()
+                }.run()
 
             }
         }
