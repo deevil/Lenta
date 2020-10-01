@@ -57,13 +57,13 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
     private val allTypeDiscrepancies: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     private val paramGrzAlternMeins: MutableLiveData<Uom> = MutableLiveData()
 
-    private val unprocessedQuantityOfStamps: MutableLiveData<Double> = MutableLiveData(0.0)
+    private val unprocessedQuantityOfBox: MutableLiveData<Double> = MutableLiveData(0.0)
 
     val count: MutableLiveData<String> = MutableLiveData("0")
     private val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
     val isUnitBox: MutableLiveData<Boolean> = MutableLiveData(true)
     val enabled: MutableLiveData<Boolean> = MutableLiveData(false)
-
+    val numberBoxesControl: MutableLiveData<Double> = MutableLiveData()
 
     private val enteredCountInStampUnits: Double
         get() {
@@ -147,12 +147,12 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
         return productInfo.value
                 ?.let { product ->
                     val countBoxScannedValue = countScannedBoxes.value ?: 0
-                    val totalStampProduct = product.origQuantity.toDouble()
+                    val totalBoxProduct = product.orderQuantity.toDouble()/product.quantityInvest.toDouble()
                     val countProcessedBoxesCurrentDiscrepancies = processMarkingBoxPGEProductService.getTotalScannedBoxes()
                     if (countBoxScannedValue <= 0) { //фиксируем необработанное количество после первого сканирования марок, чтобы не учитывать их в текущей сессии, иначе это кол-во будет уменьшаться и появиться текст Не требуется
-                        unprocessedQuantityOfStamps.value = totalStampProduct - countProcessedBoxesCurrentDiscrepancies
+                        unprocessedQuantityOfBox.value = totalBoxProduct - countProcessedBoxesCurrentDiscrepancies
                     }
-                    val unprocessedQuantityOfBoxesVal = unprocessedQuantityOfStamps.value ?: 0.0
+                    val unprocessedQuantityOfBoxesVal = countProcessedBoxesCurrentDiscrepancies.toDouble()
                     if (currentTypeDiscrepanciesCode == TYPE_DISCREPANCIES_QUALITY_NORM) {
                         checkBoxes(unprocessedQuantityOfBoxesVal)
                     } else {
@@ -174,13 +174,13 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
             context.getString(R.string.not_required)
         } else {
             checkBoxListVisibility.value = true
-            val  numberStampsControl = if (productInfo.value?.numberStampsControl.orEmpty().toInt() > enteredCountInStampUnits.toInt()){
-                enteredCountInStampUnits.toStringFormatted()
-            } else {
-                productInfo.value?.numberStampsControl.orEmpty()
-            }
+//            val  numberBoxesControl = if (productInfo.value?.numberBoxesControl.orEmpty().toInt() > enteredCountInStampUnits.toInt()){
+//                enteredCountInStampUnits.toStringFormatted()
+//            } else {
+//                productInfo.value?.numberBoxesControl.orEmpty()
+//            }
             buildString {
-                append(numberStampsControl)
+                append(numberBoxesControl.value.toStringFormatted())
                 append(" ")
                 append(context.getString(R.string.of))
                 append(" ")
@@ -330,13 +330,15 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
 
 
     fun onClickApply() {
-        val isAll = if (processMarkingBoxPGEProductService.isOverLimit(enteredCountInStampUnits)) {
-                    screenNavigator.openAlertOverLimitPlannedScreen()
-                    false
-                } else {
-                    addInfo()
-                }
-        if (isAll) screenNavigator.goBack()
+        productInfo.value?.let {
+            val isAll = if (processMarkingBoxPGEProductService.isOverLimit(it.orderQuantity.toDouble() / it.quantityInvest.toDouble())) {
+                screenNavigator.openAlertOverLimitPlannedScreen()
+                false
+            } else {
+                addInfo()
+            }
+            if (isAll) screenNavigator.goBack()
+        }
     }
 
     private fun addInfo(): Boolean {
@@ -486,7 +488,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
             val indicatorOnePosition = result.indicatorOnePosition.toInt()
             val retCode = result.retCode
             val errorText = result.errorText
-           if (indicatorOnePosition in 1..3) {  //Излишек
+            if (indicatorOnePosition in 1..3) {  //Излишек
 //                screenNavigator. https://trello.com/c/8esE7TKN
             } else if (retCode == 1) {
                 Failure.SapError(errorText)
@@ -528,7 +530,6 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
     }
 
 
-
     private fun addBox(boxInfo: TaskBoxInfo, typeDiscrepancies: String, data: String) {
         boxInfo.let {
             typeDiscrepancies.let { currentTypeDiscrepancies ->
@@ -541,6 +542,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
                         )
             }
         }
+        numberBoxesControl.value = numberBoxesControl.value?.plus(1.0)
     }
 
 

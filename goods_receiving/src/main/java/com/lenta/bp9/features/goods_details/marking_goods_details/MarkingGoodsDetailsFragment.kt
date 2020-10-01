@@ -8,6 +8,7 @@ import androidx.databinding.DataBindingUtil
 import com.lenta.bp9.BR
 import com.lenta.bp9.R
 import com.lenta.bp9.databinding.*
+import com.lenta.bp9.model.task.MarkType
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.extentions.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
@@ -40,7 +41,11 @@ class MarkingGoodsDetailsFragment : CoreFragment<FragmentMarkingGoodsDetailsBind
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {
         topToolbarUiModel.title.value = vm.getTitle()
-        topToolbarUiModel.description.value = getString(R.string.details_quantities_entered)
+        if (vm.productInfo.value?.markType == MarkType.Shoes){
+            topToolbarUiModel.description.value = getString(R.string.goods_details)
+        } else {
+            topToolbarUiModel.description.value = getString(R.string.details_quantities_entered)
+        }
     }
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {

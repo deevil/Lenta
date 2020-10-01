@@ -355,4 +355,5 @@
     <string name="alert_not_correct_time">Некорректное время</string>
     <string name="stamps_control_in_box">Контроль марок в кор.</string>
     <string name="control_boxes">Контроль коробов</string>
+    <string name="goods_details">Детали по товару</string>
 </resources>
