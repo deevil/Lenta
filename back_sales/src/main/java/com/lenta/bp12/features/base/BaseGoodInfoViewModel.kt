@@ -9,10 +9,7 @@ import com.lenta.bp12.model.Taskable
 import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.extentions.getQuantityOfGood
-import com.lenta.bp12.platform.FIRST_BASKET
-import com.lenta.bp12.platform.FIRST_POSITION
-import com.lenta.bp12.platform.ZERO_QUANTITY
-import com.lenta.bp12.platform.ZERO_QUANTITY_STRING
+import com.lenta.bp12.platform.*
 import com.lenta.bp12.platform.extention.isWholesaleType
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
@@ -250,33 +247,25 @@ abstract class BaseGoodInfoViewModel<R : Taskable, T : ITaskManager<R>> : CoreVi
                 (!isEnabled && position == FIRST_POSITION)
     }
 
-    fun isQuantityFieldChanged(): Boolean? {
-        return quantityField.value?.let {
-            it != ZERO_QUANTITY_STRING
-        }
+    fun isQuantityFieldChanged(): Boolean {
+        val quantityFieldValue = quantityField.value ?: ZERO_QUANTITY_STRING
+        return quantityFieldValue != ZERO_QUANTITY_STRING
     }
 
-    fun isProviderEnabledAndChanged(): Boolean? {
-        return providerEnabled.value?.let { providerEnabledValue ->
-            providerPosition.value?.let { providerPositionValue ->
-                providerEnabledValue && providerPositionValue > FIRST_POSITION
-            }
-        }
+    fun isProviderEnabledAndChanged(): Boolean {
+        val providerPositionValue = providerPosition.value ?: DEFAULT_POSITION
+        return providerEnabled.value == true && providerPositionValue > FIRST_POSITION
     }
 
-
-    fun isProducerEnabledAndChanged(): Boolean? {
-        return producerEnabled.value?.let { producerEnabledValue ->
-            producerPosition.value?.let { producerPositionValue ->
-                producerEnabledValue && producerPositionValue > FIRST_POSITION
-            }
-        }
+    fun isProducerEnabledAndChanged(): Boolean {
+        val producerPositionValue = producerPosition.value ?: DEFAULT_POSITION
+        return producerEnabled.value == true && producerPositionValue > FIRST_POSITION
     }
 
-    fun isGoodAlcoOrExciseAlco(): Boolean? {
+    fun isGoodOrExciseAlco(): Boolean {
         return good.value?.let {
             it.isAlco() or it.isExciseAlco()
-        }
+        } ?: false
     }
 
     abstract var manager: T

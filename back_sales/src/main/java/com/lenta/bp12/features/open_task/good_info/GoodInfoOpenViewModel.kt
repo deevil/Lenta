@@ -827,7 +827,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
         val isProducerChanged = isProducerEnabledAndChanged() == true
         val isEnteredMoreThanZeroAndProviderSelected = isQuantityFieldChanged() == true || isProviderEnabledAndChanged() == true
         val isDateEntered = date.value?.isEmpty() != true
-        return if (isGoodAlcoOrExciseAlco() == true) {
+        return if (isGoodOrExciseAlco() == true) {
             isEnteredMoreThanZeroAndProviderSelected || isProducerChanged || isDateEntered
         } else {
             isEnteredMoreThanZeroAndProviderSelected

@@ -600,6 +600,8 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
                 providerPosition.value?.let { position ->
                     providerCode = providers.getOrNull(position)?.code.orEmpty()
                 }
+            }.orIfNull {
+                Logg.e { "getProviderCode() providers is null" }
             }
         }
 
@@ -613,6 +615,8 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
                 producerPosition.value?.let { position ->
                     producerCode = producers.getOrNull(position)?.code.orEmpty()
                 }
+            }.orIfNull {
+                Logg.e { "getProducerCode() producers is null" }
             }
         }
 
@@ -689,8 +693,9 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
                     date = date.value.orEmpty(),
                     providerCode = getProviderCode(),
                     producerCode = getProducerCode()
-            )
-            parts?.forEach { part ->
+            ).orEmpty()
+
+            parts.forEach { part ->
                 manager.addOrDeleteGoodToBasket(
                         good = changedGood,
                         part = part,
@@ -716,6 +721,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
                     )
                 }
                 changedGood.addMarks(mappedMarks)
+
                 mappedMarks.forEach { markFromBox ->
                     Logg.d { "--> add mark from box = $markFromBox" }
                     manager.addGoodToBasketWithMark(
@@ -724,6 +730,8 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
                             provider = getProvider()
                     )
                 }
+            }.orIfNull {
+                Logg.e { "scanInfoResult.value?.exciseMarks is null" }
             }
             manager.updateCurrentGood(changedGood)
         }.orIfNull {
@@ -794,10 +802,10 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
     }
 
     override fun isExistUnsavedData(): Boolean {
-        val isProducerChanged = isProducerEnabledAndChanged() == true
-        val isEnteredMoreThanZeroAndProviderSelected = isQuantityFieldChanged() == true || isProviderEnabledAndChanged() == true
+        val isProducerChanged = isProducerEnabledAndChanged()
+        val isEnteredMoreThanZeroAndProviderSelected = isQuantityFieldChanged() || isProviderEnabledAndChanged()
         val isDateEntered = date.value?.isEmpty() != true
-        return if (isGoodAlcoOrExciseAlco() == true) {
+        return if (isGoodOrExciseAlco()) {
             isEnteredMoreThanZeroAndProviderSelected || isProducerChanged || isDateEntered
         } else {
             isEnteredMoreThanZeroAndProviderSelected
