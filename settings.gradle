@@ -1,3 +1,5 @@
-include ':statement_on_balance'
-include ':open'
-include ':writeoff_breakage', ':Shared', ':planogram',':goods_receiving',':work_list', ':hhive', ':inventory', ':HoneywellDataCollection', ':production',  ':back_sales',':movement'
+//include ':statement_on_balance'
+//include ':open'
+//include ':writeoff_breakage', ':Shared', ':planogram',':goods_receiving',':work_list', ':hhive', ':inventory', ':HoneywellDataCollection', ':production',  ':back_sales',':movement'
+
+include ':Shared', ':hhive', ':HoneywellDataCollection', ':work_list'//':writeoff_breakage'

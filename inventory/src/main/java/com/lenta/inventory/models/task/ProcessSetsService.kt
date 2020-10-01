@@ -98,11 +98,11 @@ class ProcessSetsService @Inject constructor() : IProcessProductService {
         zmpUtz46V001.getComponentsForSet(currentProductInfo!!.materialNumber).map { data ->
             zfmpUtz48V001.getProductInfo(data.matnr).map {
                 val uomInfo = zmpUtz07V001.getUomInfo(data.meins)
-                componentsInfo.add(SetComponentInfo(
+                        componentsInfo.add(SetComponentInfo(
                         setNumber = data.matnrOsn,
                         number = data.matnr,
                         name = it.name.orEmpty(),
-                        ean = zmpUtz25V001.getEansFromMaterial(data.matnr).map { eans ->
+                        ean = zmpUtz25V001.getEansFromMaterial(data.matnr).map {eans ->
                             eans.ean
                         },
                         count = data.menge.toString(),
