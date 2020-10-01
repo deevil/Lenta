@@ -6,7 +6,7 @@
 
         <variable
             name="stock"
-            type="com.lenta.bp14.models.ui.ItemStockUi" />
+            type="com.lenta.bp14.models.ui.ZPartUi" />
 
     </data>
 
@@ -24,12 +24,12 @@
 
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/four_three_1">
+                android:layout_weight="@integer/three_three_1">
 
                 <TextView
                     android:id="@+id/tv_item_number"
                     style="@style/CellNumberStyle"
-                    android:text="@{stock.number}"
+                    android:text="@{stock.index}"
                     tools:text="1" />
 
             </LinearLayout>
@@ -37,51 +37,29 @@
             <View style="@style/VerticalDivider" />
 
             <LinearLayout
-                android:id="@+id/layoutStorage"
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/four_three_2"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/tv_storage_number"
-                    style="@style/CellTextStyle"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:text="@{stock.storage}"
-                    tools:text="0001"
-                    tools:ignore="NestedWeights" />
-
-                <ImageView
-                    android:id="@+id/iv_open"
-                    style="@style/OpenItemButton" />
-            </LinearLayout>
-
-            <View style="@style/VerticalDivider" />
-
-            <LinearLayout
-                style="@style/LinearCellStyle"
-                android:layout_weight="@integer/four_three_3">
+                android:layout_weight="@integer/three_three_2">
 
                 <TextView
                     android:id="@+id/tv_good_quantity"
                     style="@style/CellTextStyle"
-                    android:text="@{stock.quantity}"
-                    tools:text="25 шт." />
+                    android:maxLines="3"
+                    android:singleLine="false"
+                    android:text="@{stock.info}"
+                    tools:text="информация о товаре" />
 
             </LinearLayout>
 
             <View style="@style/VerticalDivider" />
 
-            <!-- Dynamic field, if stock doesn't has z-parts, it doesn't need to how-->
             <LinearLayout
                 style="@style/LinearCellStyle"
-                android:layout_weight="@integer/four_three_4"
-                android:visibility="@{!stock.zPartsQuantity.isEmpty()}">
+                android:layout_weight="@integer/three_three_3">
 
                 <TextView
                     android:id="@+id/tv_good_zparts"
                     style="@style/CellTextStyle"
-                    android:text="@{stock.zPartsQuantity}"
+                    android:text="@{stock.quantity}"
                     tools:text="45 шт." />
 
             </LinearLayout>

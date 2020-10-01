@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -36,7 +36,7 @@
 
                     <LinearLayout
                         style="@style/LinearCellStyle"
-                        android:layout_weight="@integer/four_three_1">
+                        android:layout_weight="@integer/four_four_1">
 
                         <TextView
                             style="@style/FirstRowTextStyle"
@@ -46,7 +46,7 @@
 
                     <LinearLayout
                         style="@style/LinearCellStyle"
-                        android:layout_weight="@integer/four_three_2">
+                        android:layout_weight="@integer/four_four_2">
 
                         <TextView
                             style="@style/FirstRowTextStyle"
@@ -56,23 +56,23 @@
 
                     <LinearLayout
                         style="@style/LinearCellStyle"
-                        android:layout_weight="@integer/four_three_3">
-
-                        <TextView
-                            style="@style/FirstRowTextStyle"
-                            android:text="@string/quantity" />
-
-                    </LinearLayout>
-                    <LinearLayout
-                        style="@style/LinearCellStyle"
-                        android:visibility="@{vm.additional.hasZParts}"
-                        android:layout_weight="@integer/four_three_4">
+                        android:layout_weight="@integer/four_four_3">
 
                         <TextView
                             style="@style/FirstRowTextStyle"
                             android:text="@string/z_parts" />
 
                     </LinearLayout>
+                    <LinearLayout
+                        style="@style/LinearCellStyle"
+                        android:layout_weight="@integer/four_four_4">
+
+                        <TextView
+                            style="@style/FirstRowTextStyle"
+                            android:text="@string/quantity" />
+
+                    </LinearLayout>
+
                 </LinearLayout>
 
                 <View
@@ -81,15 +81,15 @@
             </LinearLayout>
 
 
-            <!-- Список остатков -->
+            <!-- Список поставщиков -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                app:items="@{vm.stocks}"
+                app:items="@{vm.zParts}"
                 app:rv_config="@{rvConfig}"
-                tools:listitem="@layout/item_storage_stock" />
+                tools:listitem="@layout/item_good_z_part" />
 
         </LinearLayout>
 
@@ -109,7 +109,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="@dimen/size_10dp"
                 android:text="@string/data_loading" />
 
         </LinearLayout>
@@ -118,12 +118,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_margin="20dp"
+            android:layout_margin="@dimen/size_20dp"
             android:gravity="center"
             android:text="@{vm.dataLoadingError}"
             android:visibility="@{vm.dataLoadingErrorVisibility}"
             tools:text="Описание ошибки произошедшей при загрузке данных" />
 
     </FrameLayout>
-
 </layout>

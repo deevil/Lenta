@@ -51,6 +51,9 @@ data class ProductInfo(
         /** Признак – товар здоровое питание */
         @SerializedName("IS_HF")
         val isHealthyFood: String,
+        /** Признак - является ли товар z-партией */
+        @SerializedName("IS_ZPARTS")
+        val isZPart: String?,
         /** Признак – товар новинка */
         @SerializedName("IS_NEW")
         val isNew: String,
