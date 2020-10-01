@@ -3,6 +3,8 @@ package com.lenta.bp15.model.pojo
 import com.lenta.bp15.features.task_card.TaskCardUi
 import com.lenta.bp15.features.task_list.ItemTaskUi
 import com.lenta.bp15.repository.database.pojo.TaskType
+import com.lenta.bp15.repository.net_requests.pojo.MarkRawInfo
+import com.lenta.shared.utilities.extentions.toSapBooleanString
 
 data class Task(
         val number: String,
@@ -23,6 +25,10 @@ data class Task(
 
     fun isEmptyGoodList(): Boolean {
         return goods.isEmpty()
+    }
+
+    fun isExistUnprocessedGoods(): Boolean {
+        return goods.any { it.isExistUnprocessedMarks() }
     }
 
     fun convertToItemTaskUi(index: Int): ItemTaskUi {
@@ -65,6 +71,22 @@ data class Task(
 
     private fun isNotSavedStartState(): Boolean {
         return startHashState == NO_HASH
+    }
+
+    fun getTitleForGoodList(): String {
+        return "$firstLine / $secondLine"
+    }
+
+    fun getProcessedMarkListForSave(): List<MarkRawInfo> {
+        return goods.map { good ->
+            good.marks.filter { it.isScan }.map { mark ->
+                MarkRawInfo(
+                        material = good.material,
+                        markNumber = mark.number,
+                        isScan = mark.isScan.toSapBooleanString()
+                )
+            }
+        }.flatten()
     }
 
     companion object {

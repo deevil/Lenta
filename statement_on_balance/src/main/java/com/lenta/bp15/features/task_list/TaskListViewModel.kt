@@ -131,7 +131,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     private fun openTaskCard(task: Task) {
-        manager.setCurrentTask(task)
+        manager.updateCurrentTask(task)
         navigator.openTaskCardScreen()
     }
 

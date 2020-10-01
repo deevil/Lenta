@@ -11,7 +11,7 @@ data class PositionRawInfo(
         val planQuantity: String,
         /** Тип марки */
         @SerializedName("MARK_TYPE")
-        val markType: String,
+        val markTypeCode: String,
         /** Признак «Товар отечественный» */
         @SerializedName("IS_RUS")
         val isRus: String

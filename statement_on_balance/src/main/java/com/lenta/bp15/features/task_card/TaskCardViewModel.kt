@@ -17,12 +17,6 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     lateinit var navigator: IScreenNavigator
 
     @Inject
-    lateinit var sessionInfo: ISessionInfo
-
-    @Inject
-    lateinit var resource: IResourceManager
-
-    @Inject
     lateinit var manager: ITaskManager
 
 
@@ -59,10 +53,8 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     fun onClickNext() {
         task.value?.let { task ->
             if (task.isEmptyGoodList()) {
-                launchUITryCatch {
-                    manager.loadGoodListToCurrentTask()
-                    navigator.openGoodListScreen()
-                }
+                manager.loadGoodListToCurrentTask()
+                navigator.openGoodListScreen()
             } else {
                 navigator.openGoodListScreen()
             }
@@ -78,6 +70,8 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
                         manager.unlockTask(task)
                     }
                 }
+            } else {
+                navigator.goBack()
             }
         }
     }

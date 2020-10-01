@@ -1,8 +1,9 @@
 package com.lenta.bp15.model
 
 import androidx.lifecycle.MutableLiveData
+import com.lenta.bp15.model.enum.LoadTaskContent
+import com.lenta.bp15.model.enum.LoadTaskList
 import com.lenta.bp15.model.pojo.Good
-import com.lenta.bp15.model.pojo.Mark
 import com.lenta.bp15.model.pojo.Task
 import com.lenta.bp15.platform.navigation.IScreenNavigator
 import com.lenta.bp15.repository.database.IDatabaseRepository
@@ -13,7 +14,7 @@ import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.livedata.SingleLiveEvent
 import com.lenta.shared.utilities.Logg
-import com.lenta.shared.utilities.extentions.isSapTrue
+import com.lenta.shared.utilities.extentions.toSapBooleanString
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -56,6 +57,10 @@ class TaskManager @Inject constructor(
         currentTask.value = task
     }
 
+    override fun updateCurrentGood(good: Good) {
+        currentGood.value = good
+    }
+
     override fun loadProcessingTaskList() {
         launch {
             navigator.showProgressLoadingData()
@@ -65,7 +70,7 @@ class TaskManager @Inject constructor(
                     userName = sessionInfo.userName.orEmpty(),
                     userNumber = sessionInfo.personnelNumber.orEmpty(),
                     deviceIp = deviceInfo.getDeviceIp(),
-                    mode = TaskSearchMode.COMMON.mode
+                    mode = LoadTaskList.COMMON.mode
             )).either(::handleFailure) { result ->
                 launch {
                     processingTasks.value = getTaskListFromResult(result)
@@ -85,7 +90,7 @@ class TaskManager @Inject constructor(
                     userName = sessionInfo.userName.orEmpty(),
                     userNumber = sessionInfo.personnelNumber.orEmpty(),
                     deviceIp = deviceInfo.getDeviceIp(),
-                    mode = TaskSearchMode.WITH_PARAMS.mode,
+                    mode = LoadTaskList.WITH_PARAMS.mode,
                     searchParams = searchParams
             )).either(::handleFailure) { result ->
                 launch {
@@ -104,39 +109,32 @@ class TaskManager @Inject constructor(
         } ?: emptyList()
     }
 
-    override fun setCurrentTask(task: Task) {
-        currentTask.value = task
-    }
+    override fun loadGoodListToCurrentTask() {
+        launch {
+            currentTask.value?.let { currentTask ->
+                navigator.showProgressLoadingData()
 
-    override suspend fun loadGoodListToCurrentTask() {
-        currentTask.value?.let { currentTask ->
-            navigator.showProgressLoadingData()
+                netRequests.getTaskContent(TaskContentParams(
+                        taskNumber = currentTask.number,
+                        deviceIp = deviceInfo.getDeviceIp(),
+                        userNumber = sessionInfo.personnelNumber.orEmpty(),
+                        mode = LoadTaskContent.COMMON.mode
+                )).either(::handleFailure) { result ->
+                    launch {
+                        currentTask.goods = result.convertToGoods().map { good ->
+                            database.getGoodAdditionalInfo(good.material)?.let { additionalInfo ->
+                                good.putAdditionalInfo(additionalInfo)
+                            }
+                            good
+                        }
 
-            netRequests.getTaskContent(TaskContentParams(
-                    taskNumber = currentTask.number,
-                    deviceIp = deviceInfo.getDeviceIp(),
-                    userNumber = sessionInfo.personnelNumber.orEmpty(),
-                    mode = 1
-            )).either(::handleFailure) { result ->
-                currentTask.goods = result.positions?.map { positionRawInfo ->
-                    Good(
-                            material = positionRawInfo.material,
-                            planQuantity = positionRawInfo.planQuantity.toIntOrNull() ?: 0,
-                            markType = positionRawInfo.markType,
-                            marks = result.marks?.filter { it.material == positionRawInfo.material }?.map { markRawInfo ->
-                                Mark(
-                                        number = markRawInfo.markNumber,
-                                        isScan = markRawInfo.isScan.isSapTrue()
-                                )
-                            } ?: emptyList()
-                    )
-                } ?: emptyList()
+                        currentTask.saveStartState()
+                        updateCurrentTask(currentTask)
+                    }
+                }
 
-                currentTask.saveStartState()
-                updateCurrentTask(currentTask)
+                navigator.hideProgress()
             }
-
-            navigator.hideProgress()
         }
     }
 
@@ -150,6 +148,26 @@ class TaskManager @Inject constructor(
         )).either(::handleFailure)
 
         navigator.hideProgress()
+    }
+
+    override suspend fun saveTaskDataToServer(handleSaveDataSuccess: () -> Unit) {
+        currentTask.value?.let { task ->
+            navigator.showProgressLoadingData()
+
+            netRequests.saveData(SaveDataParams(
+                    taskNumber = task.number,
+                    userNumber = sessionInfo.personnelNumber.orEmpty(),
+                    deviceIp = deviceInfo.getDeviceIp(),
+                    isFinish = (!task.isExistUnprocessedGoods()).toSapBooleanString(),
+                    marks = task.getProcessedMarkListForSave()
+            )).either(::handleFailure) {
+                handleSaveDataSuccess.invoke()
+            }
+        }
+    }
+
+    override suspend fun getMaterialByEan(ean: String): String? {
+        return database.getMaterialByEan(ean)
     }
 
     private fun handleFailure(failure: Failure) {
@@ -172,12 +190,14 @@ interface ITaskManager {
     fun updateProcessingTasks(tasks: List<Task>)
     fun updateSearchTasks(tasks: List<Task>)
     fun updateCurrentTask(task: Task)
+    fun updateCurrentGood(good: Good)
 
     fun loadProcessingTaskList()
     fun loadSearchTaskList(searchParams: TaskSearchParams)
-    fun setCurrentTask(task: Task)
-    suspend fun loadGoodListToCurrentTask()
+    fun loadGoodListToCurrentTask()
     suspend fun unlockTask(task: Task)
+    suspend fun getMaterialByEan(ean: String): String?
+    suspend fun saveTaskDataToServer(handleSaveDataSuccess: () -> Unit)
 
 
 }

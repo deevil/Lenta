@@ -1,13 +1,19 @@
 package com.lenta.bp15.repository.database
 
-
+import com.lenta.bp15.model.pojo.GoodAdditionalInfo
+import com.lenta.bp15.platform.extention.getGoodAdditionalInfo
 import com.lenta.bp15.platform.extention.getTaskTypeByCode
 import com.lenta.bp15.platform.extention.getTaskTypeList
 import com.lenta.bp15.platform.extention.getUnknownTaskType
 import com.lenta.bp15.repository.database.pojo.TaskType
-import com.lenta.shared.fmp.resources.dao_ext.*
-import com.lenta.shared.fmp.resources.fast.*
-import com.lenta.shared.fmp.resources.slow.*
+import com.lenta.shared.fmp.resources.dao_ext.getAllowedSobAppVersion
+import com.lenta.shared.fmp.resources.dao_ext.getMaterialByEan
+import com.lenta.shared.fmp.resources.fast.ZfmpUtz52V001
+import com.lenta.shared.fmp.resources.fast.ZfmpUtz53V001
+import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
+import com.lenta.shared.fmp.resources.fast.ZmpUtz38V001
+import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
+import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
 import com.mobrun.plugin.api.HyperHive
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -21,8 +27,7 @@ class DatabaseRepository @Inject constructor(
     private val icons: ZmpUtz38V001 by lazy { ZmpUtz38V001(hyperHive) } // Описание иконок
     private val taskTypes: ZfmpUtz52V001 by lazy { ZfmpUtz52V001(hyperHive) } // Типы заданий
     private val markTypes: ZfmpUtz53V001 by lazy { ZfmpUtz53V001(hyperHive) } // Типы марок
-
-    //private val eanInfo: ZmpUtz25V001 by lazy { ZmpUtz25V001(hyperHive) } // Информация о штрих-коде
+    private val eanInfo: ZmpUtz25V001 by lazy { ZmpUtz25V001(hyperHive) } // Информация о штрих-коде
     private val products: ZfmpUtz48V001 by lazy { ZfmpUtz48V001(hyperHive) } // Информация о товаре
 
     /*private val dictionary: ZmpUtz17V001 by lazy { ZmpUtz17V001(hyperHive) } // Справочник с наборами данных
@@ -40,21 +45,11 @@ class DatabaseRepository @Inject constructor(
     private val markGroup: ZmpUtz109V001 by lazy { ZmpUtz109V001(hyperHive) } //группы маркировки*/
 
 
-    /*private suspend fun getEanByMaterialUnits(material: String, unitsCode: String): String {
+    override suspend fun getGoodAdditionalInfo(material: String): GoodAdditionalInfo? {
         return withContext(Dispatchers.IO) {
-            eanInfo.getEanInfoByMaterialUnits(material, unitsCode)?.toEanInfo()?.ean.orEmpty()
+            products.getGoodAdditionalInfo(material)
         }
     }
-
-    override suspend fun getEanListByMaterialUnits(material: String, unitsCode: String): List<String> {
-        return withContext(Dispatchers.IO) {
-            eanInfo.getEanListByMaterialUnits(material, unitsCode)
-        }
-    }
-
-    override suspend fun getEanInfo(ean: String): com.lenta.shared.requests.combined.scan_info.pojo.EanInfo? {
-        return eanInfo.getEanInfo(ean)?.toEanInfo()
-    }*/
 
     override suspend fun getAllowedAppVersion(): String? {
         return withContext(Dispatchers.IO) {
@@ -73,14 +68,21 @@ class DatabaseRepository @Inject constructor(
             taskTypes.getTaskTypeByCode(taskTypeCode) ?: getUnknownTaskType()
         }
     }
+
+    override suspend fun getMaterialByEan(ean: String): String? {
+        return withContext(Dispatchers.IO) {
+            eanInfo.getMaterialByEan(ean)
+        }
+    }
+
 }
 
 interface IDatabaseRepository {
 
-    //suspend fun getEanListByMaterialUnits(material: String, unitsCode: String): List<String>
-    //suspend fun getEanInfo(ean: String): com.lenta.shared.requests.combined.scan_info.pojo.EanInfo?
     suspend fun getAllowedAppVersion(): String?
     suspend fun getTaskTypeList(): List<TaskType>
     suspend fun getTaskTypeByCode(taskTypeCode: String): TaskType
+    suspend fun getGoodAdditionalInfo(material: String): GoodAdditionalInfo?
+    suspend fun getMaterialByEan(ean: String): String?
 
 }

@@ -146,14 +146,13 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun showSuccessSaveData(callbackFunc: () -> Unit) {
+    override fun showSuccessSaveData() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.success_save_report),
                     iconRes = R.drawable.ic_done_green_80dp,
                     timeAutoExitInMillis = 3000,
-                    leftButtonDecorationInfo = ButtonDecorationInfo.empty,
-                    codeConfirmForExit = backFragmentResultHelper.setFuncForResult(callbackFunc)
+                    isVisibleLeftButton = false
             ))
         }
     }
@@ -250,7 +249,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun showMarkedGoodInfoScreen()
     fun showUnsavedDataFoundOnDevice(deleteCallback: () -> Unit, goOverCallback: () -> Unit)
     fun showMakeTaskProcessedAndClose(yesCallback: () -> Unit)
-    fun showSuccessSaveData(callbackFunc: () -> Unit)
+    fun showSuccessSaveData()
     fun showUnprocessedGoodsInTask(publishedCallback: () -> Unit, processedCallback: () -> Unit)
     fun showRequiredToDestroyNonGluedStamps(nextCallback: () -> Unit)
     fun showGoodIsMissingFromTask(material: String)
