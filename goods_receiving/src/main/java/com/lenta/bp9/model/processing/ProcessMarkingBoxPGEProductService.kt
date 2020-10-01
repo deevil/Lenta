@@ -347,7 +347,7 @@ class ProcessMarkingBoxPGEProductService
 
 
     fun isOverLimit(count: Double): Boolean {
-        return productInfo.origQuantity.toDouble() < (getCountAcceptOfProduct() + getCountRefusalOfProduct() + count)
+        return productInfo.orderQuantity.toDouble()/productInfo.quantityInvest.toDouble() < (getCountAcceptOfProduct() + getCountRefusalOfProduct() + count)
     }
 
     fun searchStamp(stampNumber: String): TaskExciseStampInfo? {
