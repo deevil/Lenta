@@ -125,7 +125,7 @@ class ExciseAlcoBoxCardViewModel : CoreViewModel(), OnPositionClickListener {
     private val formatterRU = SimpleDateFormat(Constants.DATE_FORMAT_dd_mm_yyyy)
 
     @SuppressLint("SimpleDateFormat")
-    private val formatterERP = SimpleDateFormat(Constants.DATE_FORMAT_yyyyMMdd)
+    private val formatterERP = SimpleDateFormat(Constants.DATE_FORMAT_yyyy_mm_dd)
 
     private val paramGrzCrGrundcatCode: MutableLiveData<String> = MutableLiveData("")
     private val paramGrzCrGrundcatName: MutableLiveData<String> = MutableLiveData("")

@@ -101,9 +101,9 @@ class ZBatchesInfoPPPFragment : CoreFragment<FragmentZBatchesInfoPppBinding, ZBa
             }
         }
 
-        binding?.spinnerEnteredDate?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        binding?.spinnerTermControl?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(adapterView: AdapterView<*>, view: View?, position: Int, l: Long) {
-                vm.onClickPositionSpinsEnteredDate(position)
+                vm.onClickPositionSpinTermControl(position)
             }
 
             override fun onNothingSelected(adapterView: AdapterView<*>) {

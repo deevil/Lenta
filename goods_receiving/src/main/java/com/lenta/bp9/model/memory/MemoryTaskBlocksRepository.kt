@@ -37,7 +37,7 @@ class MemoryTaskBlocksRepository : ITaskBlocksRepository {
     }
 
     override fun updateBlocks(newBlocks: List<TaskBlockInfo>) {
-        blocks.clear()
+        clear()
         newBlocks.map {
             addBlock(it)
         }

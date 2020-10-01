@@ -60,9 +60,9 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
     val accountingType by unsafeLazy {
         screenStatus.map { status ->
             when (status) {
-                ScreenStatus.MARK_150, ScreenStatus.MARK_68 -> resource.typeMark()
-                ScreenStatus.ALCOHOL, ScreenStatus.PART -> resource.typePart()
-                else -> resource.typeQuantity()
+                ScreenStatus.MARK_150, ScreenStatus.MARK_68 -> resource.typeMark
+                ScreenStatus.ALCOHOL, ScreenStatus.PART -> resource.typePart
+                else -> resource.typeQuantity
             }
         }
     }
@@ -109,7 +109,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
     private val producers = sourceProducers.mapSkipNulls { producers ->
         producers.toMutableList().apply {
             if (size > 1) {
-                add(0, ProducerInfo(name = resource.chooseProducer()))
+                add(0, ProducerInfo(name = resource.chooseProducer))
             }
         }
     }
@@ -511,14 +511,14 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
                 val alcoCodeInfoList = database.getAlcoCodeInfoList(number.extractAlcoCode())
 
                 if (alcoCodeInfoList.isEmpty()) {
-                    navigator.openAlertScreen(resource.unknownAlcocode())
+                    navigator.openAlertScreen(resource.unknownAlcocode)
                     return
                 }
 
                 if (alcoCodeInfoList.find { it.material == good.value?.material } != null) {
                     addPartInfo(result)
                 } else {
-                    navigator.openAlertScreen(resource.alcocodeDoesNotApplyToThisGood())
+                    navigator.openAlertScreen(resource.alcocodeDoesNotApplyToThisGood)
                 }
             }
         }
