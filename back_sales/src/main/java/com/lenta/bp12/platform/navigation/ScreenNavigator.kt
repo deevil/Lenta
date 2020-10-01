@@ -332,11 +332,11 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun showDoYouReallyWantSetZeroQuantity(yesCallback: () -> Unit, counted: Int) {
+    override fun showDoYouReallyWantSetZeroQuantity(count: Int, yesCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "65",
-                    message = context.getString(R.string.do_you_really_want_set_zero_quantity, counted),
+                    message = context.getString(R.string.do_you_really_want_set_zero_quantity, count),
                     iconRes = R.drawable.ic_question_yellow_80dp,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes
@@ -713,7 +713,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun showForGoodNeedScanFirstMark(goodTitle: String)
     fun showRawGoodsRemainedInTask(yesCallback: () -> Unit)
     fun showBoxWasLastScanned(afterShowCallback: () -> Unit)
-    fun showDoYouReallyWantSetZeroQuantity(yesCallback: () -> Unit, counted: Int)
+    fun showDoYouReallyWantSetZeroQuantity(count: Int, yesCallback: () -> Unit)
     fun showNotMatchTaskSettingsAddingNotPossible()
     fun showGoodCannotBeAdded()
     fun openScannedMarkIsNotOnBalanceInCurrentStore(proceedCallback: () -> Unit)

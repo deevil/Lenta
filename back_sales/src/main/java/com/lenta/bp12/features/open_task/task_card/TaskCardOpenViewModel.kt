@@ -15,6 +15,9 @@ import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.mapSkipNulls
+import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.mapSkipNulls
+import com.lenta.shared.utilities.extentions.unsafeLazy
 import com.lenta.shared.utilities.orIfNull
 import javax.inject.Inject
 
@@ -57,7 +60,7 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
         manager.currentTask
     }
 
-    val ui by lazy {
+    private val ui by lazy {
         task.mapSkipNulls { task ->
             TaskCardOpenUi(
                     name = task.name,
@@ -74,9 +77,45 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
+    val reason by unsafeLazy {
+        ui.mapSkipNulls {
+            it.reason
+        }
+    }
+
+    val isReasonIsNotEmpty by unsafeLazy {
+        ui.mapSkipNulls {
+            it.reason.isNotEmpty()
+        }
+    }
+
+    val storage by unsafeLazy {
+        ui.mapSkipNulls {
+            it.storage
+        }
+    }
+
+    val provider by unsafeLazy {
+        ui.mapSkipNulls {
+            it.provider
+        }
+    }
+
+    val name by unsafeLazy {
+        ui.mapSkipNulls {
+            it.name
+        }
+    }
+
+    val description by unsafeLazy {
+        ui.mapSkipNulls {
+            it.description
+        }
+    }
+
     val isExistComment by lazy {
-        task.mapSkipNulls {
-            it.comment.isNotEmpty()
+        task.map {
+            it?.comment?.isNotEmpty() ?: false
         }
     }
 
@@ -201,5 +240,4 @@ class TaskCardOpenViewModel : CoreViewModel(), PageSelectionListener {
         /** Режим работы: 1 - получение состава задания, 2 - получение состава задания с переблокировкой */
         private const val GET_GOOD_LIST_MODE = 1
     }
-
 }

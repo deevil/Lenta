@@ -5,11 +5,11 @@ import com.google.gson.annotations.SerializedName
 data class MarketInfo(
         /** Номер магазина */
         @SerializedName("WERKS")
-        val tkNumber: String,
+        val tkNumber: String?,
         /** Адрес магазина */
         @SerializedName("ADDRES")
-        val address: String,
+        val address: String?,
         /** Тип магазина */
         @SerializedName("RETAIL_TYPE")
-        val retailType: String
+        val retailType: String?
 )

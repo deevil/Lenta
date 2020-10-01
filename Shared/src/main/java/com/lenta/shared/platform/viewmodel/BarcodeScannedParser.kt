@@ -5,13 +5,15 @@ import com.lenta.shared.models.core.BarcodeInfo
 import com.lenta.shared.models.core.Batch
 import com.lenta.shared.utilities.extentions.unsafeLazy
 import com.lenta.shared.utilities.gs1.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-abstract class BarcodeViewModel : CoreViewModel() {
+open class BarcodeScannedParser {
 
     protected open val weightValue by unsafeLazy { listOf(VALUE_23, VALUE_24, VALUE_27, VALUE_28) }
     protected open val weightZeroValue by unsafeLazy { listOf(VALUE_023, VALUE_024, VALUE_027, VALUE_028) }
 
-    protected open suspend fun processBarcode(data: String): BarcodeData {
+    open suspend fun processBarcode(data: String): BarcodeData = withContext(Dispatchers.IO) {
         var barcode = data
         val barcodeLength = barcode.length
         var isWeight = false
@@ -43,19 +45,47 @@ abstract class BarcodeViewModel : CoreViewModel() {
             // парсинг кодов GS1 с разделителями
             barcodeLength >= MINIMUM_GS1_CODE_LENGTH -> {
                 val parsedEntities = EAN128Parser.parse(barcode, false)
-                barcode = parsedEntities.getString(ApplicationIdentifier.GTIN)
-                weight = parsedEntities.getString(ApplicationIdentifier.ITEM_NET_WEIGHT_KG)
-                isWeight = GTIN.isVariableMeasureItem(barcode)
-                val batchNumber = parsedEntities.getString(ApplicationIdentifier.BATCH_OR_LOT_NUMBER)
-                val count = parsedEntities.getString(ApplicationIdentifier.COUNT_OF_TRADE_ITEMS)
-                val dateProduction = parsedEntities.getDate(ApplicationIdentifier.PRODUCTION_DATE_AND_TIME)
-                val dateExpiration = parsedEntities.getDate(ApplicationIdentifier.EXPIRATION_DATE_AND_TIME)
+                if (parsedEntities.isNotEmpty()) {
+                    barcode = parsedEntities.getString(ApplicationIdentifier.GTIN)
+                    isWeight = GTIN.isVariableMeasureItem(barcode)
+                    if (isWeight) {
+                        val changedBarcode = getChangedBarcodeAndWeight(barcode)
+                        barcode = changedBarcode.first
+                        weight = changedBarcode.second
+                    } else {
+                        weight = parsedEntities.getString(ApplicationIdentifier.ITEM_NET_WEIGHT_KG).takeIf { it.isNotEmpty() }
+                                ?: DEFAULT_ZERO_VALUE
+                    }
 
-                batch = Batch(batchNumber, count, dateProduction, dateExpiration)
+                    val batchNumber = parsedEntities.getString(ApplicationIdentifier.BATCH_OR_LOT_NUMBER)
+                    val count = parsedEntities.getString(ApplicationIdentifier.COUNT_OF_TRADE_ITEMS)
+                    val dateProduction = parsedEntities.getDate(ApplicationIdentifier.PRODUCTION_DATE_AND_TIME)
+                    val dateExpiration = parsedEntities.getDate(ApplicationIdentifier.EXPIRATION_DATE_AND_TIME)
+
+                    batch = Batch(batchNumber, count, dateProduction, dateExpiration)
+                } else {
+                    val result = ElementStrings.parse(barcode)
+                    if (!result.isEmpty) {
+                        barcode = result.getString(ApplicationIdentifier.GTIN)
+                        weight = result.getString(ApplicationIdentifier.ITEM_NET_WEIGHT_KG).takeIf { it.isNotEmpty() }
+                                ?: DEFAULT_ZERO_VALUE
+                        isWeight = GTIN.isVariableMeasureItem(barcode)
+
+                        val batchNumber = result.getString(ApplicationIdentifier.BATCH_OR_LOT_NUMBER)
+                        val count = result.getString(ApplicationIdentifier.VARIABLE_COUNT)
+                        val dateProduction = result.getDate(ApplicationIdentifier.PRODUCTION_DATE)
+                        val dateTimeExpiration = result.getDate(ApplicationIdentifier.EXPIRATION_DATE_AND_TIME)
+
+                        batch = Batch(batchNumber, count, dateProduction, dateTimeExpiration)
+                    }
+                }
+                if (barcode.first() == DEFAULT_LEADING_ZERO) {
+                    barcode = barcode.substring(1 until barcode.length)
+                }
             }
         }
 
-        return BarcodeData(
+        BarcodeData(
                 barcodeInfo = BarcodeInfo(
                         barcode = barcode,
                         isWeight = isWeight,
@@ -97,5 +127,6 @@ abstract class BarcodeViewModel : CoreViewModel() {
         private const val MINIMUM_GS1_CODE_LENGTH = 16
         private const val TAKEN_ZEROS = "000000"
         private const val DEFAULT_ZERO_VALUE = "0"
+        private const val DEFAULT_LEADING_ZERO = '0'
     }
 }

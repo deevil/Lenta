@@ -44,11 +44,7 @@ class GoodListViewModel : BaseGoodListOpenViewModel(), PageSelectionListener, On
     }
 
     val description by lazy {
-        if (manager.isWholesaleTaskType) {
-            resource.taskContent
-        } else {
-            resource.goodList
-        }
+        resource.goodList()
     }
 
     //TODO REFACTOR TO ASYNCLIVEDATA, COMBINE TWO CYCLES IN ONE, GET RID OF LET
@@ -309,8 +305,12 @@ class GoodListViewModel : BaseGoodListOpenViewModel(), PageSelectionListener, On
                 isTaskWholesaleAndAnyOfBasketsIsNotClosed(task) ->
                     navigator.showSomeBasketsNotClosedCantSaveScreen()
                 //Если есть не удаленные товары в задании и их плановое количество больше фактического
-                task.isQuantityOfNotDeletedGoodsNotActual() ->
+                task.isQuantityOfNotDeletedGoodsNotActual() -> {
+                    task.goods.forEach {
+                        it.isMissing = false
+                    }
                     navigator.openDiscrepancyListScreen()
+                }
                 else -> showMakeTaskCountedAndClose()
             }
         }.orIfNull {
