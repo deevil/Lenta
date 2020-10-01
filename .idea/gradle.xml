@@ -12,8 +12,17 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/HoneywellDataCollection" />
             <option value="$PROJECT_DIR$/Shared" />
+            <option value="$PROJECT_DIR$/back_sales" />
+            <option value="$PROJECT_DIR$/goods_receiving" />
             <option value="$PROJECT_DIR$/hhive" />
+            <option value="$PROJECT_DIR$/inventory" />
+            <option value="$PROJECT_DIR$/movement" />
+            <option value="$PROJECT_DIR$/open" />
+            <option value="$PROJECT_DIR$/planogram" />
+            <option value="$PROJECT_DIR$/production" />
+            <option value="$PROJECT_DIR$/statement_on_balance" />
             <option value="$PROJECT_DIR$/work_list" />
+            <option value="$PROJECT_DIR$/writeoff_breakage" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
