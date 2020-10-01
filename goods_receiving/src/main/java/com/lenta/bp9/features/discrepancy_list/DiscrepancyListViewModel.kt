@@ -603,7 +603,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickItemPosition(position: Int) {
-        val selectedNotProcessedProduct = countNotProcessed.value?.get(position)?.productInfo
+        val selectedNotProcessedProduct = countNotProcessed.value?.getOrNull(position)?.productInfo
         val selectedMaterialNumber =
                 if (selectedPage.value == SELECTED_PAGE_NOT_PROCESSED) {
                     selectedNotProcessedProduct?.materialNumber.orEmpty()
@@ -611,7 +611,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                     getMaterialNumberFromPrediction(position)
                 }
 
-        val mode = repoInMemoryHolder.taskList.value?.taskListLoadingMode
+        val mode = repoInMemoryHolder.taskList.value?.taskListLoadingMode ?: TaskListLoadingMode.None
 
         //коробочный учет для ПРИЕМКИ https://trello.com/c/WeGFSdAW
         if (mode == TaskListLoadingMode.Receiving
