@@ -152,8 +152,7 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
     val isPerishable: MutableLiveData<Boolean> = MutableLiveData()
     private val addGoods: MutableLiveData<Boolean> = MutableLiveData(false)
 
-    val acceptTotalCountVet: MutableLiveData<Double> by lazy {
-    val acceptTotalCount: MutableLiveData<Double> =
+    val acceptTotalCountVet: MutableLiveData<Double> =
         countValue.combineLatest(spinQualitySelectedPosition).map {
             val countAccept =
                     isTaskPGE.value
@@ -192,7 +191,7 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
         }
     }
 
-    val refusalTotalCount: MutableLiveData<Double> =
+    val refusalTotalCountVet: MutableLiveData<Double> =
         countValue.combineLatest(spinQualitySelectedPosition).map {
             val countRefusal =
                     isTaskPGE.value
@@ -229,14 +228,6 @@ class GoodsMercuryInfoViewModel : BaseGoodsInfo(), OnPositionClickListener {
             "- ${it.toStringFormatted()} ${uom.value?.name.orEmpty()}"
         } else {
             "${if (countRefusal > 0.0) "- " + countRefusal.toStringFormatted() else countRefusal.toStringFormatted()} ${uom.value?.name}"
-        }
-    }
-
-    val enabledApplyButton: MutableLiveData<Boolean> = countValue.map {
-        if (isGoodsAddedAsSurplus.value == true) { //карточка трелло https://trello.com/c/eo1nRdKC) (ТП (меркурий по ПГЕ) -> 3.2.2.16 Обработка расхождений при пересчете ГЕ (Меркурий) -> 2.1.Излишек по товару
-            (it ?: 0.0) > 0.0 && currentManufactureName.isNotEmpty()
-        } else {
-            (it ?: 0.0) > 0.0 && currentManufactureName.isNotEmpty() && currentProductionDate.isNotEmpty()
         }
     }
 
