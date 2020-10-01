@@ -69,7 +69,7 @@ class GoodsInfoShipmentPPFragment : CoreFragment<FragmentGoodsInfoShipmentPpBind
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding?.etQuantity?.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
+        binding?.etQuantity?.setOnKeyListener(View.OnKeyListener { _, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
                 if (vm.enabledApplyButton.value == true) {
                     vm.onClickApply()

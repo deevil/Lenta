@@ -266,15 +266,19 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     val shipmentNumberTN by lazy {
         taskManager.getReceivingTask()?.taskDescription?.tnNumber.orEmpty()
     }
+
     val shipmentNumberTTN by lazy {
         taskManager.getReceivingTask()?.taskDescription?.ttnNumber.orEmpty()
     }
+
     val shipmentPlanDate by lazy {
         taskManager.getReceivingTask()?.taskDescription?.plannedDeliveryDate.orEmpty()
     }
+
     val shipmentFactDate by lazy {
         taskManager.getReceivingTask()?.taskDescription?.actualArrivalDate.orEmpty()
     }
+
     val shipmentOrder by lazy {
         if (taskType == TaskType.ShipmentRC) {
             taskManager.getReceivingTask()?.taskDescription?.shipmentOrder.orEmpty()
@@ -283,6 +287,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         }
 
     }
+
     val shipmentDelivery by lazy {
         if (taskType == TaskType.ShipmentRC) {
             taskManager.getReceivingTask()?.taskDescription?.shipmentDelivery.orEmpty()
@@ -301,7 +306,6 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     val shipmentTransportation by lazy {
         taskManager.getReceivingTask()?.taskDescription?.transportationNumber.orEmpty()
     }
-
 
     val stringsGoods by lazy {
         taskManager.getReceivingTask()?.taskDescription?.quantityPositions.toString()
@@ -364,6 +368,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
                 when (taskType) {
                     TaskType.RecalculationCargoUnit -> screenNavigator.openSkipRecountScreen()
                     TaskType.ReceptionDistributionCenter, TaskType.ShoppingMall -> screenNavigator.openTransportMarriageScreen()
+                    else -> Unit
                 }
             }
             TaskStatus.Checked -> {
@@ -372,10 +377,13 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
             TaskStatus.Recounted -> screenNavigator.openRecountStartLoadingScreen()
             TaskStatus.ReadyToShipment -> {
                 if (taskType == TaskType.ShipmentRC) {
-                    screenNavigator.openShipmentPurposeTransportLoadingScreen("2", taskManager.getReceivingTask()?.taskDescription?.transportationNumber
-                            ?: "")
+                    screenNavigator.openShipmentPurposeTransportLoadingScreen(
+                            mode = "2",
+                            transportationNumber = taskManager.getReceivingTask()?.taskDescription?.transportationNumber.orEmpty()
+                    )
                 }
             }
+            else -> Unit
         }
     }
 
@@ -435,6 +443,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
             TaskStatus.Recounted -> clickNextByTaskShipmentRCByStatusRecounted()
             TaskStatus.ShipmentAllowedByGis -> shipmentAllowedByGis() // https://trello.com/c/FnABffRE
             TaskStatus.Loaded -> screenNavigator.openInputOutgoingFillingsScreen()
+            else -> Unit
         }
     }
 
@@ -476,11 +485,12 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
             TaskStatus.Checked -> screenNavigator.openRecountStartLoadingScreen()
             TaskStatus.Recounted -> {
                 if (isBksDiff) {
-                    screenNavigator.openShipmentConfirmDiscrepanciesDialog (screenNavigator::openTransmittedLoadingScreen)
+                    screenNavigator.openShipmentConfirmDiscrepanciesDialog(screenNavigator::openTransmittedLoadingScreen)
                 } else {
                     screenNavigator.openTransmittedLoadingScreen()
                 }
             }
+            else -> Unit
         }
     }
 
@@ -494,49 +504,70 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
             TaskStatus.Departure -> screenNavigator.openStartReviseLoadingScreen()
             TaskStatus.Booked -> screenNavigator.openTransferGoodsSectionScreen()
             TaskStatus.Completed -> screenNavigator.openFormedDocsScreen()
+            else -> Unit
         }
     }
 
     private fun clickNextByStatusOrderedTravelingTemporaryRejected() {
-        val taskType = taskManager.getTaskType()
         val currentStatus = taskManager.getReceivingTask()?.taskDescription?.currentStatus
                 ?: TaskStatus.Other
-        if (isEdo
-                && taskType == TaskType.DirectSupplier
-                && (currentStatus == TaskStatus.Ordered || currentStatus == TaskStatus.TemporaryRejected)) { //trello https://trello.com/c/XKpOCvZo
-            screenNavigator.openEdoDialog(
-                    missing = {
-                        screenNavigator.openRegisterArrivalLoadingScreen(
-                                isInStockPaperTTN = false,
-                                isEdo = true,
-                                status = currentStatus
-                        )
-                    },
-                    inStock = {
-                        screenNavigator.openRegisterArrivalLoadingScreen(
-                                isInStockPaperTTN = true,
-                                isEdo = true,
-                                status = currentStatus
-                        )
-                    }
-            )
+        if (isEdoForTaskType(currentStatus)) { //trello https://trello.com/c/XKpOCvZo
+            onOpenEdoDialog(currentStatus)
         } else {
             screenNavigator.openRegisterArrivalLoadingScreen()
         }
     }
 
-    private fun clickNextByStatusArrived() {
-        if (isEdo
+    private fun onOpenEdoDialog(currentStatus: TaskStatus) {
+        screenNavigator.openEdoDialog(
+                missing = {
+                    screenNavigator.openRegisterArrivalLoadingScreen(
+                            isInStockPaperTTN = false,
+                            isEdo = true,
+                            status = currentStatus
+                    )
+                },
+                inStock = {
+                    screenNavigator.openRegisterArrivalLoadingScreen(
+                            isInStockPaperTTN = true,
+                            isEdo = true,
+                            status = currentStatus
+                    )
+                }
+        )
+    }
+
+    private fun isEdoForTaskType(currentStatus: TaskStatus): Boolean {
+        val taskType = taskManager.getTaskType()
+        return isEdo
                 && taskType == TaskType.DirectSupplier
-                && incomingDelivery.isEmpty()) {
-            screenNavigator.openCreateInboundDeliveryDialog { screenNavigator.openStartReviseLoadingScreen() }
-        } else if (taskType == TaskType.ReceptionDistributionCenter
-                || taskType == TaskType.OwnProduction
-                || taskType == TaskType.ShoppingMall) {
-            screenNavigator.openUnloadingStartRDSLoadingScreen()
-        } else {
-            screenNavigator.openStartReviseLoadingScreen()
+                && (currentStatus == TaskStatus.Ordered || currentStatus == TaskStatus.TemporaryRejected)
+    }
+
+    private fun clickNextByStatusArrived() {
+        when {
+            isEdoValidForInboundDelivery() -> {
+                screenNavigator.openCreateInboundDeliveryDialog { screenNavigator.openStartReviseLoadingScreen() }
+            }
+            isTaskTypeValidForStartRDSLoading() -> {
+                screenNavigator.openUnloadingStartRDSLoadingScreen()
+            }
+            else -> {
+                screenNavigator.openStartReviseLoadingScreen()
+            }
         }
+    }
+
+    private fun isEdoValidForInboundDelivery(): Boolean {
+        return isEdo
+                && taskType == TaskType.DirectSupplier
+                && incomingDelivery.isEmpty()
+    }
+
+    private fun isTaskTypeValidForStartRDSLoading(): Boolean {
+        return taskType == TaskType.ReceptionDistributionCenter
+                || taskType == TaskType.OwnProduction
+                || taskType == TaskType.ShoppingMall
     }
 
     private fun clickNextByStatusUnloaded() {
@@ -664,7 +695,6 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         } else {
             screenNavigator.goBack()
         }
-
     }
 
     data class NotificationVM(

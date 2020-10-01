@@ -61,10 +61,10 @@ class PrintLabelsCountCopiesFragment : CoreFragment<FragmentPrintLabelsCountCopi
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding?.etCountCopies?.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
+        binding?.etCountCopies?.setOnKeyListener(View.OnKeyListener { _, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
                 val countCopiesLength = vm.countCopies.value?.length ?: 0
-                if (countCopiesLength ?: 0 > 0) {
+                if (countCopiesLength > 0) {
                     vm.onClickConfirm()
                 }
                 return@OnKeyListener true

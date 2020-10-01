@@ -39,13 +39,13 @@ class LoadingShipmentEndRecountViewModel : CoreLoadingViewModel() {
     init {
         launchUITryCatch {
             progress.value = true
-            taskManager.getReceivingTask()?.let { task ->
+            taskManager.getReceivingTask()?.let { _ ->
                 val params = ZmpUtzGrz40V001Params(
                         deviceIP = context.getDeviceIp(),
-                        taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
-                        taskType = taskManager.getReceivingTask()?.taskHeader?.taskType?.taskTypeString ?: "",
-                        personalNumber = sessionInfo.personnelNumber ?: "",
-                        cargoUnits = taskManager.getReceivingTask()?.getCargoUnits()?.map { TaskCargoUnitInfoRestData.from(it) } ?: emptyList()
+                        taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber.orEmpty(),
+                        taskType = taskManager.getReceivingTask()?.taskHeader?.taskType?.taskTypeString.orEmpty(),
+                        personalNumber = sessionInfo.personnelNumber.orEmpty(),
+                        cargoUnits = taskManager.getReceivingTask()?.getCargoUnits()?.map { TaskCargoUnitInfoRestData.from(it) }.orEmpty()
                 )
                 zmpUtzGrz40V001NetRequest(params).either(::handleFailure, ::handleSuccess)
             }
