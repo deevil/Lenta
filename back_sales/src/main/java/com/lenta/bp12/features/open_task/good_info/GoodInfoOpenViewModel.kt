@@ -824,10 +824,10 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
     }
 
     override fun isExistUnsavedData(): Boolean {
-        val isProducerChanged = isProducerEnabledAndChanged() == true
-        val isEnteredMoreThanZeroAndProviderSelected = isQuantityFieldChanged() == true || isProviderEnabledAndChanged() == true
+        val isProducerChanged = isProducerEnabledAndChanged()
+        val isEnteredMoreThanZeroAndProviderSelected = isQuantityFieldChanged() || isProviderEnabledAndChanged()
         val isDateEntered = date.value?.isEmpty() != true
-        return if (isGoodOrExciseAlco() == true) {
+        return if (isGoodOrExciseAlco()) {
             isEnteredMoreThanZeroAndProviderSelected || isProducerChanged || isDateEntered
         } else {
             isEnteredMoreThanZeroAndProviderSelected
