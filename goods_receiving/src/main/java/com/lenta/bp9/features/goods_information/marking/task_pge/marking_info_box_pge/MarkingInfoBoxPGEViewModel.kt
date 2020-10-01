@@ -2,7 +2,6 @@ package com.lenta.bp9.features.goods_information.marking.task_pge.marking_info_b
 
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp9.R
-import com.lenta.bp9.features.delegates.SearchProductDelegate
 import com.lenta.bp9.features.goods_information.base.BaseGoodsInfo
 import com.lenta.bp9.model.processing.ProcessMarkingBoxPGEProductService
 import com.lenta.bp9.model.task.TaskBoxInfo
@@ -34,9 +33,6 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
     lateinit var processMarkingBoxPGEProductService: ProcessMarkingBoxPGEProductService
 
     @Inject
-    lateinit var searchProductDelegate: SearchProductDelegate
-
-    @Inject
     lateinit var zmpUtzGrz44V001NetRequest: ZmpUtzGrz44V001NetRequest
 
     @Inject
@@ -63,12 +59,9 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
     private val paramGrzAlternMeins: MutableLiveData<Uom> = MutableLiveData()
 
     private val unprocessedQuantityOfStamps: MutableLiveData<Double> = MutableLiveData(0.0)
-
-    val count: MutableLiveData<String> = MutableLiveData("0")
-    private val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
     val isUnitBox: MutableLiveData<Boolean> = MutableLiveData(true)
     val enabled: MutableLiveData<Boolean> = MutableLiveData(false)
-
+    private val currentTypeDiscrepanciesCode = acceptTotalCount.toString()
 
     private val enteredCountInStampUnits: Double
         get() {
@@ -82,59 +75,6 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
             return addNewCount
         }
 
-    val acceptTotalCount: MutableLiveData<Double> =
-            isUnitBox
-                    .combineLatest(countValue)
-                    .combineLatest(spinQualitySelectedPosition)
-                    .map {
-                        currentQualityInfoCode
-                                .takeIf { code -> code == TYPE_DISCREPANCIES_QUALITY_NORM }
-                                ?.run { enteredCountInStampUnits + countAcceptOfProduct }
-                                ?: countAcceptOfProduct
-                    }
-
-    val acceptTotalCountWithUom: MutableLiveData<String> = acceptTotalCount.map {
-        val acceptTotalCount = it ?: 0.0
-        val purchaseOrderUnits = productInfo.value?.uom?.name.orEmpty()
-        val nestingInOneStamp = productInfo.value?.quantityInvest?.toDouble().toStringFormatted()
-        val countAcceptOfProductValue = countAcceptOfProduct
-        val totalCountAcceptOfProduct =
-                countAcceptOfProductValue
-                        .takeIf { count -> count > 0.0 }
-                        ?.run { "+ ${(this * nestingInOneStamp.toInt()).toStringFormatted()}" }
-                        ?: countAcceptOfProductValue.toStringFormatted()
-        acceptTotalCount
-                .takeIf { count1 -> count1 > 0.0 }
-                ?.run { "+ ${(this * nestingInOneStamp.toInt()).toStringFormatted()} $purchaseOrderUnits" }
-                ?: "$totalCountAcceptOfProduct $purchaseOrderUnits"
-    }
-
-    val refusalTotalCount: MutableLiveData<Double> =
-            isUnitBox
-                    .combineLatest(countValue)
-                    .combineLatest(spinQualitySelectedPosition)
-                    .map {
-                        currentQualityInfoCode
-                                .takeIf { code -> code != TYPE_DISCREPANCIES_QUALITY_NORM }
-                                ?.run { enteredCountInStampUnits + countRefusalOfProduct }
-                                ?: countRefusalOfProduct
-                    }
-
-    val refusalTotalCountWithUom: MutableLiveData<String> = refusalTotalCount.mapSkipNulls {
-        productInfo.value.let { productInfoValue ->
-            val refusalTotalCount = it
-            val purchaseOrderUnits = productInfoValue?.uom?.name
-            val totalCountRefusalOfProduct =
-                    countRefusalOfProduct
-                            .takeIf { count -> count > 0.0 }
-                            ?.run { "- ${this.toStringFormatted()}" }
-                            ?: countRefusalOfProduct.toStringFormatted()
-            refusalTotalCount
-                    .takeIf { count -> count > 0.0 }
-                    ?.run { "- ${this.toStringFormatted()} $purchaseOrderUnits" }
-                    ?: "$totalCountRefusalOfProduct $purchaseOrderUnits"
-        }
-    }
 
     val checkStampControlVisibility: MutableLiveData<Boolean> = MutableLiveData()
 
