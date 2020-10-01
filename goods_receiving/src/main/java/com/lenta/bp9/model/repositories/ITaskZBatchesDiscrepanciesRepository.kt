@@ -18,8 +18,9 @@ interface ITaskZBatchesDiscrepanciesRepository {
     fun deleteZBatchesDiscrepanciesForProductAndDiscrepancies(materialNumber: String, typeDiscrepancies: String): Boolean
     fun getCountAcceptOfZBatch(discrepancies: TaskZBatchesDiscrepancies): Double
     fun getCountAcceptOfZBatchPGE(discrepancies: TaskZBatchesDiscrepancies): Double
+    fun getCountRefusalOfZBatchPGE(discrepancies: TaskZBatchesDiscrepancies): Double
     fun findPartySignOfZBatch(zBatchesDiscrepancies: TaskZBatchesDiscrepancies): PartySignsOfZBatches?
-    fun findPartySignsOfProduct(materialNumber: String): List<PartySignsOfZBatches>
+    fun findPartySignsOfProduct(materialNumber: String, processingUnit: String): List<PartySignsOfZBatches>
     fun addPartySignOfZBatches(partySign: PartySignsOfZBatches): Boolean
     fun changePartySign(partySign: PartySignsOfZBatches): Boolean
     fun deletePartySignOfZBatches(partySign: PartySignsOfZBatches): Boolean

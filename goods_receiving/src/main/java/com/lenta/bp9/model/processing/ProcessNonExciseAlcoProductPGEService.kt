@@ -21,8 +21,8 @@ class ProcessNonExciseAlcoProductPGEService
         else null
     }
 
-    private fun getCountOfDiscrepancies(typeDiscrepancies: String) : Double {
-        return taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountOfDiscrepanciesOfProduct(productInfo, typeDiscrepancies)
+    private fun getCountOfDiscrepancies(typeDiscrepancies: String, processingUnitNumber: String) : Double {
+        return taskManager.getReceivingTask()!!.taskRepository.getProductsDiscrepancies().getCountOfDiscrepanciesOfProductOfProcessingUnit(productInfo, typeDiscrepancies, processingUnitNumber)
     }
 
     private fun getCountOfDiscrepanciesOfBatch(batchInfo: TaskBatchInfo, typeDiscrepancies: String) : Double {
@@ -30,7 +30,7 @@ class ProcessNonExciseAlcoProductPGEService
     }
 
     fun add(count: String, typeDiscrepancies: String, processingUnit: String, batchInfo: TaskBatchInfo){
-        val countAdd = getCountOfDiscrepancies(typeDiscrepancies) + count.toDouble()
+        val countAdd = getCountOfDiscrepancies(typeDiscrepancies, processingUnit) + count.toDouble()
         val foundDiscrepancy = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo)?.findLast {
             it.materialNumber == productInfo.materialNumber && it.typeDiscrepancies == typeDiscrepancies
         }
@@ -39,9 +39,9 @@ class ProcessNonExciseAlcoProductPGEService
             taskManager.getReceivingTask()?.
             taskRepository?.
             getProductsDiscrepancies()?.
-            changeProductDiscrepancy(TaskProductDiscrepancies(
+            changeProductDiscrepancyOfProcessingUnit(TaskProductDiscrepancies(
                     materialNumber = productInfo.materialNumber,
-                    processingUnitNumber = "",
+                    processingUnitNumber = processingUnit,
                     numberDiscrepancies = countAdd.toString(),
                     uom = productInfo.uom,
                     typeDiscrepancies = typeDiscrepancies,
@@ -53,7 +53,7 @@ class ProcessNonExciseAlcoProductPGEService
             taskManager.getReceivingTask()?.
             taskRepository?.
             getProductsDiscrepancies()?.
-            changeProductDiscrepancy(foundDiscrepancy.copy(numberDiscrepancies = countAdd.toString()))
+            changeProductDiscrepancyOfProcessingUnit(foundDiscrepancy.copy(numberDiscrepancies = countAdd.toString()))
         }
 
         taskManager.getReceivingTask()?.
@@ -104,7 +104,7 @@ class ProcessNonExciseAlcoProductPGEService
     }
 
     fun addGoodsAddedAsSurplus(count: String, typeDiscrepancies: String, processingUnit: String){
-        val countAdd = getCountOfDiscrepancies(typeDiscrepancies) + count.toDouble()
+        val countAdd = getCountOfDiscrepancies(typeDiscrepancies, processingUnit) + count.toDouble()
         val foundDiscrepancy = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo)?.findLast {
             it.materialNumber == productInfo.materialNumber && it.typeDiscrepancies == typeDiscrepancies
         }
@@ -113,7 +113,7 @@ class ProcessNonExciseAlcoProductPGEService
             taskManager.getReceivingTask()?.
             taskRepository?.
             getProductsDiscrepancies()?.
-            changeProductDiscrepancy(TaskProductDiscrepancies(
+            changeProductDiscrepancyOfProcessingUnit(TaskProductDiscrepancies(
                     materialNumber = productInfo.materialNumber,
                     processingUnitNumber = processingUnit,
                     numberDiscrepancies = countAdd.toString(),
@@ -127,7 +127,7 @@ class ProcessNonExciseAlcoProductPGEService
             taskManager.getReceivingTask()?.
             taskRepository?.
             getProductsDiscrepancies()?.
-            changeProductDiscrepancy(foundDiscrepancy.copy(numberDiscrepancies = countAdd.toString()))
+            changeProductDiscrepancyOfProcessingUnit(foundDiscrepancy.copy(numberDiscrepancies = countAdd.toString()))
         }
 
         taskManager.getReceivingTask()?.

@@ -46,7 +46,9 @@ class TaskProductInfo(materialNumber: String,
                       val numeratorConvertBaseUnitMeasure: Double, //числитель для преобразования в базовую единицу измерения
                       val denominatorConvertBaseUnitMeasure: Double,  //знаменатель для преобразования в базовую единицу измерения
                       val isZBatches: Boolean, //Z-партии
-                      val isNeedPrint: Boolean
+                      val isNeedPrint: Boolean,
+                      val alternativeUnitMeasure: String, // альтернативная единица измерения
+                      val quantityAlternativeUnitMeasure: Double // количество в альтернативной единице измерения
                         ) : ProductInfo(materialNumber, description, uom, type, isSet, sectionId, matrixType, materialType) {
 
     fun copy(materialNumber: String = this.materialNumber,
@@ -92,7 +94,9 @@ class TaskProductInfo(materialNumber: String,
              numeratorConvertBaseUnitMeasure: Double = this.numeratorConvertBaseUnitMeasure,
              denominatorConvertBaseUnitMeasure: Double = this.denominatorConvertBaseUnitMeasure,
              isZBatches: Boolean = this.isZBatches,
-             isNeedPrint: Boolean = this.isNeedPrint) : TaskProductInfo {
+             isNeedPrint: Boolean = this.isNeedPrint,
+             alternativeUnitMeasure: String = this.alternativeUnitMeasure,
+             quantityAlternativeUnitMeasure: Double = this.quantityAlternativeUnitMeasure) : TaskProductInfo {
         return TaskProductInfo(
                 materialNumber = materialNumber,
                 description = description,
@@ -137,7 +141,9 @@ class TaskProductInfo(materialNumber: String,
                 numeratorConvertBaseUnitMeasure = numeratorConvertBaseUnitMeasure,
                 denominatorConvertBaseUnitMeasure = denominatorConvertBaseUnitMeasure,
                 isZBatches = isZBatches,
-                isNeedPrint = isNeedPrint
+                isNeedPrint = isNeedPrint,
+                alternativeUnitMeasure = alternativeUnitMeasure,
+                quantityAlternativeUnitMeasure = quantityAlternativeUnitMeasure
         )
     }
 }

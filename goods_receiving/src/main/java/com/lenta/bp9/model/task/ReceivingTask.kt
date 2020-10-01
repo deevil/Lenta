@@ -82,6 +82,10 @@ class ReceivingTask(val taskHeader: TaskInfo,
         return taskRepository.getSections().getSections()
     }
 
+    fun getProcessedTransportMarriage(): List<TaskTransportMarriageInfo> {
+        return taskRepository.getTransportMarriage().getTransportMarriage()
+    }
+
     fun getCargoUnits(): List<TaskCargoUnitInfo> {
         return taskRepository.getCargoUnits().getCargoUnits()
     }
@@ -214,18 +218,16 @@ class ReceivingTask(val taskHeader: TaskInfo,
     private fun changeProductDiscrepancyToBatch(productInfo: TaskProductInfo, batchDiscrepancies: TaskBatchesDiscrepancies) {
         val countOfDiscrepanciesOfProduct = taskRepository
                 .getProductsDiscrepancies()
-                .getCountOfDiscrepanciesOfProduct(
+                .getCountOfDiscrepanciesOfProductOfProcessingUnit(
                         product = productInfo,
-                        typeDiscrepancies = batchDiscrepancies.typeDiscrepancies
+                        typeDiscrepancies = batchDiscrepancies.typeDiscrepancies,
+                        processingUnitNumber = batchDiscrepancies.processingUnitNumber
                 )
         val countAdd = countOfDiscrepanciesOfProduct + batchDiscrepancies.numberDiscrepancies.toDouble()
         val foundDiscrepancy = taskRepository
                 .getProductsDiscrepancies()
-                .findProductDiscrepanciesOfProduct(productInfo)
-                .findLast {
-                    it.materialNumber == productInfo.materialNumber
-                            && it.typeDiscrepancies == batchDiscrepancies.typeDiscrepancies
-                }
+                .findProductDiscrepanciesOfProductOfProcessingUnit(productInfo)
+                .findLast { it.typeDiscrepancies == batchDiscrepancies.typeDiscrepancies }
 
         if (foundDiscrepancy == null) {
             taskRepository
@@ -233,7 +235,7 @@ class ReceivingTask(val taskHeader: TaskInfo,
                     .changeProductDiscrepancy(
                             TaskProductDiscrepancies(
                                     materialNumber = productInfo.materialNumber,
-                                    processingUnitNumber = productInfo.processingUnit,
+                                    processingUnitNumber = batchDiscrepancies.processingUnitNumber,
                                     numberDiscrepancies = countAdd.toString(),
                                     uom = productInfo.uom,
                                     typeDiscrepancies = batchDiscrepancies.typeDiscrepancies,

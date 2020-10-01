@@ -67,6 +67,7 @@ import com.lenta.bp9.features.transfer_goods_section.TransferGoodsSectionFragmen
 import com.lenta.bp9.features.transport_marriage.TransportMarriageFragment
 import com.lenta.bp9.features.transport_marriage.cargo_unit.TransportMarriageCargoUnitFragment
 import com.lenta.bp9.features.goods_details.transport_marriage_goods_details.TransportMarriageGoodsDetailsFragment
+import com.lenta.bp9.features.goods_information.z_batches.task_pge.ZBatchesInfoPGEFragment
 import com.lenta.bp9.features.goods_information.marking.task_pge.marking_info_box_pge.MarkingInfoBoxPGEFragment
 import com.lenta.bp9.features.transport_marriage.goods_info.TransportMarriageGoodsInfoFragment
 import com.lenta.bp9.features.transportation_number.TransportationNumberFragment
@@ -1780,6 +1781,12 @@ class ScreenNavigator(
         )
     }
 
+    override fun openZBatchesInfoPGEScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean) {
+        runOrPostpone {
+            getFragmentStack()?.push(ZBatchesInfoPGEFragment.newInstance(productInfo, isDiscrepancy))
+        }
+    }
+
     private fun getFragmentStack() = foregroundActivityProvider.getActivity()?.fragmentStack
 }
 
@@ -1980,4 +1987,5 @@ interface IScreenNavigator : ICoreNavigator {
     fun showAlertNoIpPrinter()
     fun openSaveCountedQuantitiesAndGoToLabelPrintingDialog(yesCallbackFunc: () -> Unit)
     fun openAlertNotCorrectTime()
+    fun openZBatchesInfoPGEScreen(productInfo: TaskProductInfo, isDiscrepancy: Boolean)
 }

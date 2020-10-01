@@ -2,14 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".features.goods_information.z_batches.task_ppp.ZBatchesInfoPPPFragment">
+    tools:context=".features.goods_information.z_batches.task_pge.ZBatchesInfoPGEFragment">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp9.features.goods_information.z_batches.task_ppp.ZBatchesInfoPPPViewModel" />
-
+            type="com.lenta.bp9.features.goods_information.z_batches.task_pge.ZBatchesInfoPGEViewModel" />
 
     </data>
 
@@ -168,7 +167,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="1dp"
-            android:visibility="@{!vm.isDefect}"
+            android:visibility="@{!vm.isDefect || vm.isShelfLifeObtainedFromEWM}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/div_hor3">
@@ -200,10 +199,10 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/ConstraintBottlingDate"
+            android:id="@+id/ConstraintTermControl"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="@{!vm.isDefect}"
+            android:visibility="@{!vm.isDefect &amp;&amp; !vm.isShelfLifeObtainedFromEWM}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ConstraintManufacture">
@@ -282,26 +281,87 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/ConstraintDefect"
+            android:id="@+id/ConstraintProductionDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="@{vm.isDefect}"
+            android:visibility="@{vm.isShelfLifeObtainedFromEWM}"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ConstraintBottlingDate">
+            app:layout_constraintTop_toBottomOf="@+id/ConstraintTermControl">
+
+            <TextView
+                android:id="@+id/tv_production_date"
+                style="@style/TextTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:ellipsize="end"
+                android:text="@{vm.tvProductionDate}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/div_vert2"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="@string/zbatch_quantity_with_production_date" />
+
+            <View
+                android:id="@+id/div_hor5"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/color_divider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_production_date" />
 
             <com.lenta.shared.view.ClickableSpinner
-                android:id="@+id/spinner_reject_rejection"
+                android:id="@+id/spinner_production_date"
+                android:layout_width="0dp"
+                android:layout_height="32dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                app:items="@{vm.spinProductionDate}"
+                app:layout_constraintBottom_toTopOf="@+id/div_hor5"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/div_vert2"
+                app:layout_constraintTop_toTopOf="parent"
+                app:position="@{vm.spinProductionDateSelectedPosition}"
+                tools:entries="@array/test_list" />
+
+            <View
+                android:id="@+id/div_vert2"
+                android:layout_width="1dp"
+                android:layout_height="0dp"
+                android:background="@color/color_divider"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/ConstraintProcessingUnit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ConstraintProductionDate">
+
+            <com.lenta.shared.view.ClickableSpinner
+                android:id="@+id/spinner_processing_unit"
                 android:layout_width="0dp"
                 android:layout_height="32dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
-                app:items="@{vm.spinReasonRejection}"
+                app:items="@{vm.spinProcessingUnit}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:position="@{vm.spinReasonRejectionSelectedPosition}"
+                app:position="@{vm.spinProcessingUnitSelectedPosition}"
                 tools:entries="@array/test_list" />
 
             <View
@@ -312,7 +372,7 @@
                 android:background="@color/color_divider"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/spinner_reject_rejection" />
+                app:layout_constraintTop_toBottomOf="@+id/spinner_processing_unit" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -323,88 +383,143 @@
             android:visibility="@{!vm.isDefect}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ConstraintDefect">
+            app:layout_constraintTop_toBottomOf="@+id/ConstraintProcessingUnit">
 
-            <View
-                android:id="@+id/div_vert3"
-                android:layout_width="1dp"
-                android:layout_height="0dp"
-                android:background="@color/color_divider"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <TextView
-                android:id="@+id/tv_general_shelf_life"
-                style="@style/TextTitle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="@string/general_shelf_life"
-                app:layout_constraintBottom_toBottomOf="@+id/tv_general_shelf_life_val"
-                app:layout_constraintEnd_toStartOf="@+id/div_vert3"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/tv_general_shelf_life_val" />
-
-            <TextView
-                android:id="@+id/tv_general_shelf_life_val"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:ellipsize="end"
-                android:gravity="start|center_vertical"
-                android:maxLines="1"
-                android:text='@{vm.tvGeneralShelfLife}'
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/div_vert3"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="100 сут" />
-
-            <TextView
-                android:id="@+id/tv_remaining_shelf_life"
-                style="@style/TextTitle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:text="@string/remaining_shelf_life"
-                app:layout_constraintEnd_toStartOf="@+id/div_vert3"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_general_shelf_life" />
-
-            <TextView
-                android:id="@+id/tv_remaining_shelf_life_val"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:ellipsize="end"
-                android:gravity="start|center_vertical"
-                android:maxLines="1"
-                android:text='@{vm.tvRemainingShelfLife }'
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/div_vert3"
-                app:layout_constraintTop_toBottomOf="@+id/tv_general_shelf_life_val"
-                tools:text="70 сут" />
-
-            <View
-                android:id="@+id/div_hor7"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="8dp"
-                android:background="@color/color_divider"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_remaining_shelf_life_val" />
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_selectable"
+                android:orientation="vertical"
+                tools:ignore="MissingConstraints">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/common_row_height"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        style="@style/LinearCellStyle"
+                        android:layout_weight="33"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tv_general_shelf_life"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginTop="8dp"
+                                android:layout_marginBottom="6dp"
+                                android:ellipsize="end"
+                                android:gravity="start|center_vertical"
+                                android:maxLines="1"
+                                android:text='@{vm.tvGeneralShelfLife}'
+                                app:layout_constraintStart_toEndOf="@+id/div_vert3"
+                                app:layout_constraintTop_toTopOf="parent"
+                                tools:text="ОБЩ СГ 5 сут" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <View style="@style/VerticalDivider" />
+
+                    <LinearLayout
+                        style="@style/LinearCellStyle"
+                        android:layout_weight="33"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tv_remaining_shelf_life"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginTop="8dp"
+                                android:layout_marginBottom="6dp"
+                                android:ellipsize="end"
+                                android:gravity="start|center_vertical"
+                                android:maxLines="1"
+                                android:text='@{vm.tvRemainingShelfLife }'
+                                app:layout_constraintStart_toEndOf="@+id/div_vert3"
+                                app:layout_constraintTop_toTopOf="parent"
+                                tools:text="ОСТ СГ 3 сут" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <View style="@style/VerticalDivider" />
+
+                    <LinearLayout
+                        style="@style/LinearCellStyle"
+                        android:layout_weight="33"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tv_alternative_unit_measure"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginTop="8dp"
+                                android:layout_marginBottom="6dp"
+                                android:ellipsize="end"
+                                android:gravity="start|center_vertical"
+                                android:maxLines="1"
+                                android:text='@{vm.tvAlternativeUnitMeasure}'
+                                app:layout_constraintStart_toEndOf="@+id/div_vert3"
+                                app:layout_constraintTop_toTopOf="parent"
+                                tools:text="АЕИ 100 кор" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <View style="@style/HorizontalDivider" />
+
+            </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <ImageView
+            android:id="@+id/imgUnit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:visibility="@{!vm.isDisabledButtonUnitType}"
+            android:onClick="@{(v) -> vm.onClickUnitChange()}"
+            android:src="@{vm.isSelectedOrderUnit ? @drawable/ic_eiz_white_24dp : @drawable/ic_bei_white_24dp}"
+            app:layout_constraintBottom_toBottomOf="@+id/et_count"
+            app:layout_constraintEnd_toEndOf="@+id/et_count"
+            app:layout_constraintTop_toTopOf="@+id/et_count"
+            tools:src="@drawable/ic_eiz_white_24dp"/>
+
+        <ImageView
+            android:id="@+id/imgUnitDisabled"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:visibility="@{vm.isDisabledButtonUnitType}"
+            android:src="@drawable/ic_bei_disabled_24dp"
+            app:layout_constraintBottom_toBottomOf="@+id/et_count"
+            app:layout_constraintEnd_toEndOf="@+id/et_count"
+            app:layout_constraintTop_toTopOf="@+id/et_count" />
 
         <!-- Блок с иконками -->
         <LinearLayout
@@ -427,7 +542,10 @@
 
             </LinearLayout>
 
-            <View style="@style/BottomIconEmptyPlaceStyle" />
+            <ImageView
+                style="@style/BottomIconStyle"
+                app:goodTypeIcon="@{vm.productInfo.type}"
+                tools:src="@drawable/ic_zbatch_white_32dp" />
 
             <View style="@style/BottomIconEmptyPlaceStyle" />
 

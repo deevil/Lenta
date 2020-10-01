@@ -35,9 +35,6 @@ class MarkingBoxInfoViewModel : BaseGoodsInfo(),  OnPositionClickListener {
     lateinit var processMarkingBoxProductService: ProcessMarkingBoxProductService
 
     @Inject
-    lateinit var searchProductDelegate: SearchProductDelegate
-
-    @Inject
     lateinit var hyperHive: HyperHive
 
     val tvAccept: MutableLiveData<String> by lazy {
@@ -69,8 +66,6 @@ class MarkingBoxInfoViewModel : BaseGoodsInfo(),  OnPositionClickListener {
         MutableLiveData(productInfo.value?.isControlGTIN == true)
     }
 
-    val count: MutableLiveData<String> = MutableLiveData("0")
-    private val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
     val isUnitBox: MutableLiveData<Boolean> = MutableLiveData(true)
 
     private val enteredCountInBlockUnits: Double
@@ -89,21 +84,21 @@ class MarkingBoxInfoViewModel : BaseGoodsInfo(),  OnPositionClickListener {
             return addNewCount
         }
 
-    val acceptTotalCount: MutableLiveData<Double> =
+    private val acceptTotalCountBox: MutableLiveData<Double> =
             isUnitBox
                     .combineLatest(countValue)
                     .combineLatest(spinQualitySelectedPosition)
                     .map {
                         currentQualityInfoCode
                                 .takeIf { code -> code == TYPE_DISCREPANCIES_QUALITY_NORM }
-                                ?.run { enteredCountInBlockUnits + countAcceptOfProduct }
-                                ?: countAcceptOfProduct
+                                ?.run { enteredCountInBlockUnits + countAcceptOfProductByTaskType }
+                                ?: countAcceptOfProductByTaskType
                     }
 
-    val acceptTotalCountWithUom: MutableLiveData<String> = acceptTotalCount.map {
+    override val acceptTotalCountWithUom: MutableLiveData<String> = acceptTotalCountBox.map {
         val acceptTotalCount = it ?: 0.0
         val purchaseOrderUnits = productInfo.value?.purchaseOrderUnits?.name.orEmpty()
-        val countAcceptOfProductValue = countAcceptOfProduct
+        val countAcceptOfProductValue = countAcceptOfProductByTaskType
         val totalCountAcceptOfProduct =
                 countAcceptOfProductValue
                         .takeIf { count -> count > 0.0 }
@@ -116,25 +111,25 @@ class MarkingBoxInfoViewModel : BaseGoodsInfo(),  OnPositionClickListener {
                 ?: "$totalCountAcceptOfProduct $purchaseOrderUnits"
     }
 
-    val refusalTotalCount: MutableLiveData<Double> =
+    private val refusalTotalCountBox: MutableLiveData<Double> =
             isUnitBox
                     .combineLatest(countValue)
                     .combineLatest(spinQualitySelectedPosition)
                     .map {
                         currentQualityInfoCode
                                 .takeIf { code -> code != TYPE_DISCREPANCIES_QUALITY_NORM }
-                                ?.run { enteredCountInBlockUnits + countRefusalOfProduct }
-                                ?: countRefusalOfProduct
+                                ?.run { enteredCountInBlockUnits + countRefusalOfProductByTaskType }
+                                ?: countRefusalOfProductByTaskType
                     }
 
-    val refusalTotalCountWithUom: MutableLiveData<String> = refusalTotalCount.map {
+    override val refusalTotalCountWithUom: MutableLiveData<String> = refusalTotalCountBox.map {
         val refusalTotalCount = it ?: 0.0
         val purchaseOrderUnits = productInfo.value?.purchaseOrderUnits?.name.orEmpty()
         val totalCountRefusalOfProduct =
-                countRefusalOfProduct
+                countRefusalOfProductByTaskType
                         .takeIf { count -> count > 0.0 }
                         ?.run { "- ${this.toStringFormatted()}" }
-                        ?: countRefusalOfProduct.toStringFormatted()
+                        ?: countRefusalOfProductByTaskType.toStringFormatted()
 
         refusalTotalCount
                 .takeIf { count -> count > 0.0 }
@@ -144,7 +139,7 @@ class MarkingBoxInfoViewModel : BaseGoodsInfo(),  OnPositionClickListener {
 
     val checkStampControlVisibility: MutableLiveData<Boolean> = MutableLiveData()
 
-    val tvStampControlVal: MutableLiveData<String> = acceptTotalCount
+    val tvStampControlVal: MutableLiveData<String> = acceptTotalCountBox
             .combineLatest(spinQualitySelectedPosition)
             .combineLatest(countScannedBlocks)
             .map {
@@ -152,7 +147,7 @@ class MarkingBoxInfoViewModel : BaseGoodsInfo(),  OnPositionClickListener {
             }
 
     private fun getTvStampControlVal() : String {
-        val acceptTotalCountVal = acceptTotalCount.value ?: 0.0
+        val acceptTotalCountVal = acceptTotalCountBox.value ?: 0.0
         val countBlockScanned =
                 productInfo.value
                         ?.let { processMarkingBoxProductService.getCountProcessedBlockForDiscrepancies(TYPE_DISCREPANCIES_QUALITY_NORM).toDouble() }
@@ -210,7 +205,7 @@ class MarkingBoxInfoViewModel : BaseGoodsInfo(),  OnPositionClickListener {
 
     val checkBoxStampListVisibility: MutableLiveData<Boolean> = MutableLiveData()
 
-    val tvStampListVal: MutableLiveData<String> = refusalTotalCount
+    val tvStampListVal: MutableLiveData<String> = refusalTotalCountBox
             .combineLatest(spinQualitySelectedPosition)
             .combineLatest(spinReasonRejectionSelectedPosition)
             .combineLatest(countScannedBlocks)
@@ -230,7 +225,7 @@ class MarkingBoxInfoViewModel : BaseGoodsInfo(),  OnPositionClickListener {
                     }
                     val unprocessedQuantityOfBlocksVal = unprocessedQuantityOfBlocks.value
                             ?: 0.0
-                    if (currentTypeDiscrepanciesCode != TYPE_DISCREPANCIES_QUALITY_NORM) {
+                    if (currentTypeDiscrepanciesCodeByTaskType != TYPE_DISCREPANCIES_QUALITY_NORM) {
                         if (unprocessedQuantityOfBlocksVal == enteredCountInBlockUnits) {
                             checkBoxStampListVisibility.value = false
                             context.getString(R.string.not_required)
@@ -253,7 +248,7 @@ class MarkingBoxInfoViewModel : BaseGoodsInfo(),  OnPositionClickListener {
 
     val checkBoxStampList: MutableLiveData<Boolean> = checkBoxStampListVisibility.map {
         val countBlockScanned = countScannedBlocks.value ?: 0
-        (currentTypeDiscrepanciesCode != TYPE_DISCREPANCIES_QUALITY_NORM && it == false)
+        (currentTypeDiscrepanciesCodeByTaskType != TYPE_DISCREPANCIES_QUALITY_NORM && it == false)
                 || (countBlockScanned >= enteredCountInBlockUnits && enteredCountInBlockUnits > 0.0)
     }
 
@@ -261,7 +256,7 @@ class MarkingBoxInfoViewModel : BaseGoodsInfo(),  OnPositionClickListener {
             spinQualitySelectedPosition
                     .combineLatest(checkStampControl)
                     .combineLatest(checkBoxStampList)
-                    .combineLatest(acceptTotalCount)
+                    .combineLatest(acceptTotalCountBox)
                     .map {
                         getEnabledApplyButton()
                     }
@@ -269,10 +264,10 @@ class MarkingBoxInfoViewModel : BaseGoodsInfo(),  OnPositionClickListener {
     private fun getEnabledApplyButton() : Boolean {
         val checkStampControlValue = checkStampControl.value ?: false
         val checkBoxStampListValue = checkBoxStampList.value ?: false
-        val acceptTotalCountValue = acceptTotalCount.value ?: 0.0
+        val acceptTotalCountValue = acceptTotalCountBox.value ?: 0.0
 
-        return (enteredCountInBlockUnits > 0.0 || (acceptTotalCountValue > 0.0 && currentTypeDiscrepanciesCode == TYPE_DISCREPANCIES_QUALITY_NORM))
-                && (currentTypeDiscrepanciesCode == TYPE_DISCREPANCIES_QUALITY_NORM
+        return (enteredCountInBlockUnits > 0.0 || (acceptTotalCountValue > 0.0 && currentTypeDiscrepanciesCodeByTaskType == TYPE_DISCREPANCIES_QUALITY_NORM))
+                && (currentTypeDiscrepanciesCodeByTaskType == TYPE_DISCREPANCIES_QUALITY_NORM
                 || checkStampControlValue
                 || checkBoxStampListValue)
     }
@@ -438,21 +433,21 @@ class MarkingBoxInfoViewModel : BaseGoodsInfo(),  OnPositionClickListener {
     }
 
     private fun addInfo(): Boolean {
-        return if (currentTypeDiscrepanciesCode.isNotEmpty()) {
+        return if (currentTypeDiscrepanciesCodeByTaskType.isNotEmpty()) {
             val checkBoxGtinControlValue = checkBoxGtinControl.value ?: false
             val checkBoxGtinStampControl = checkBoxGtinStampControl.value ?: false
 
             with(processMarkingBoxProductService) {
-                if (currentTypeDiscrepanciesCode != TYPE_DISCREPANCIES_QUALITY_NORM
+                if (currentTypeDiscrepanciesCodeByTaskType != TYPE_DISCREPANCIES_QUALITY_NORM
                         && checkBoxStampListVisibility.value == false) {//выбрана категория брака и в поле Список марок отображается Не требуется
                     //сохраняем все необработанные блоки с текущей категорией брака
-                    addAllUntreatedBlocksAsDefect(currentTypeDiscrepanciesCode)
+                    addAllUntreatedBlocksAsDefect(currentTypeDiscrepanciesCodeByTaskType)
                 }
-                addProduct(enteredCountInBlockUnits.toStringFormatted(), currentTypeDiscrepanciesCode)
+                addProduct(enteredCountInBlockUnits.toStringFormatted(), currentTypeDiscrepanciesCodeByTaskType)
                 apply()
             }
 
-            if (currentTypeDiscrepanciesCode == TYPE_DISCREPANCIES_QUALITY_NORM
+            if (currentTypeDiscrepanciesCodeByTaskType == TYPE_DISCREPANCIES_QUALITY_NORM
                     && (checkBoxGtinControlValue || checkBoxGtinStampControl)) {
                 clearControl(checkBoxGtinControlValue, checkBoxGtinStampControl)
             } else {
@@ -486,9 +481,9 @@ class MarkingBoxInfoViewModel : BaseGoodsInfo(),  OnPositionClickListener {
 
     //https://trello.com/c/vl9wQg0Y https://trello.com/c/N6t51jru https://trello.com/c/vl9wQg0Y
     fun onScanResult(data: String) {
-        val acceptTotalCountValue = acceptTotalCount.value ?: 0.0
+        val acceptTotalCountValue = acceptTotalCountBox.value ?: 0.0
         if (enteredCountInBlockUnits <= 0.0) {
-            if (!(currentTypeDiscrepanciesCode == TYPE_DISCREPANCIES_QUALITY_NORM && acceptTotalCountValue > 0.0)) {
+            if (!(currentTypeDiscrepanciesCodeByTaskType == TYPE_DISCREPANCIES_QUALITY_NORM && acceptTotalCountValue > 0.0)) {
                 screenNavigator.openAlertMustEnterQuantityInfoGreenScreen()
                 return
             }
@@ -503,7 +498,7 @@ class MarkingBoxInfoViewModel : BaseGoodsInfo(),  OnPositionClickListener {
             in 0..7, in 9..11, in 15..20 -> screenNavigator.openAlertInvalidBarcodeFormatScannedScreen()
             //GTIN https://trello.com/c/y2ECoCw4
             8, in 12..14 -> {
-                if (currentTypeDiscrepanciesCode == TYPE_DISCREPANCIES_QUALITY_NORM) {
+                if (currentTypeDiscrepanciesCodeByTaskType == TYPE_DISCREPANCIES_QUALITY_NORM) {
                     gtinScannedCheck(data.padStart(14, '0'))
                 }
             }
@@ -595,17 +590,17 @@ class MarkingBoxInfoViewModel : BaseGoodsInfo(),  OnPositionClickListener {
 
     private fun blockProcessing(stampCode: String, blockInfo: TaskBlockInfo?) {
         if (productInfo.value?.isControlGTIN == true
-                && currentTypeDiscrepanciesCode == TYPE_DISCREPANCIES_QUALITY_NORM) {
+                && currentTypeDiscrepanciesCodeByTaskType == TYPE_DISCREPANCIES_QUALITY_NORM) {
             gtinControlValueCheck(
                     stampCode = stampCode,
                     blockInfo = blockInfo,
-                    typeDiscrepancies = currentTypeDiscrepanciesCode
+                    typeDiscrepancies = currentTypeDiscrepanciesCodeByTaskType
             )
         } else {
             //этот блок считается обработанным, т.к. здесь нету контроля gtin, сохраняем его для erp
             addBlock(
                     blockInfo = blockInfo,
-                    typeDiscrepancies = currentTypeDiscrepanciesCode,
+                    typeDiscrepancies = currentTypeDiscrepanciesCodeByTaskType,
                     isGtinControlPassed = true
             )
             //обновляем кол-во отсканированных марок/блоков для отображения на экране в поле «Контроль марок»
@@ -614,7 +609,7 @@ class MarkingBoxInfoViewModel : BaseGoodsInfo(),  OnPositionClickListener {
     }
 
     private fun callbackFuncAlertStampNotFoundReturnSupplierScreen() {
-        if (currentTypeDiscrepanciesCode == TYPE_DISCREPANCIES_QUALITY_NORM) {
+        if (currentTypeDiscrepanciesCodeByTaskType == TYPE_DISCREPANCIES_QUALITY_NORM) {
             count.value?.let {
                 if (it.toDouble() > 0.0) {
                     count.value = count.value?.toDouble()?.minus(1)?.toStringFormatted()
@@ -833,10 +828,10 @@ class MarkingBoxInfoViewModel : BaseGoodsInfo(),  OnPositionClickListener {
             return
         }
 
-        val checkBlocksCategoriesDifferentCurrent = processMarkingBoxProductService.checkBlocksCategoriesDifferentCurrent(boxMaterialNumber, currentTypeDiscrepanciesCode)
+        val checkBlocksCategoriesDifferentCurrent = processMarkingBoxProductService.checkBlocksCategoriesDifferentCurrent(boxMaterialNumber, currentTypeDiscrepanciesCodeByTaskType)
         if (checkBlocksCategoriesDifferentCurrent) {
             //Марки данной коробки были заявлены в другую категорию, для добавления оставшихся марок в категорию <Текущая категория> необходимо отсканировать каждую оставшуюся марку.
-            val typeDiscrepanciesName = getCurrentTypeDiscrepanciesName(currentTypeDiscrepanciesCode)
+            val typeDiscrepanciesName = getCurrentTypeDiscrepanciesName(currentTypeDiscrepanciesCodeByTaskType)
             screenNavigator.openMarkingBlockDeclaredDifferentCategoryScreen(typeDiscrepanciesName)
             return
         }
@@ -850,7 +845,7 @@ class MarkingBoxInfoViewModel : BaseGoodsInfo(),  OnPositionClickListener {
         //сохраняем короб и все оставшиеся неотсканированными блоки без is_scan
         val countAddBlocksForBox = processMarkingBoxProductService.addBoxDiscrepancy(
                 boxNumber = boxNumber,
-                typeDiscrepancies = currentTypeDiscrepanciesCode,
+                typeDiscrepancies = currentTypeDiscrepanciesCodeByTaskType,
                 isScan = true,
                 isDenialOfFullProductAcceptance = false
         )

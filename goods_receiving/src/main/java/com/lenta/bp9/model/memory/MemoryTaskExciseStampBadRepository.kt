@@ -37,7 +37,7 @@ class MemoryTaskExciseStampBadRepository : ITaskExciseStampBadRepository {
     }
 
     override fun updateExciseStampBad(newExciesStampBad: List<TaskExciseStampBad>) {
-        stampsBad.clear()
+        clear()
         newExciesStampBad.map {
             addExciseStampBad(it)
         }

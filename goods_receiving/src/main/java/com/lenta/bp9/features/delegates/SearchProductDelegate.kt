@@ -213,7 +213,9 @@ class SearchProductDelegate @Inject constructor(
                 numeratorConvertBaseUnitMeasure = eanInfo?.umrez?.toDouble() ?: 0.0,
                 denominatorConvertBaseUnitMeasure = eanInfo?.umren?.toDouble() ?: 0.0,
                 isZBatches = false,
-                isNeedPrint = false
+                isNeedPrint = false,
+                alternativeUnitMeasure = "",
+                quantityAlternativeUnitMeasure = 0.0
         )
         taskManager
                 .getReceivingTask()
@@ -272,7 +274,11 @@ class SearchProductDelegate @Inject constructor(
         Z-партии ППП -> это IS_VET= пусто, IS_ZPARTS=X
         если IS_VET=X + IS_ZPARTS=X товар считается как обычный меркурианский в дополнение просто отображается признак z-партионного учета*/
         if (taskProductInfo.isZBatches && !taskProductInfo.isVet) {
-            screenNavigator.openZBatchesInfoPPPScreen(taskProductInfo, isDiscrepancy, barcodeData)
+            if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.DirectSupplier) {
+                screenNavigator.openZBatchesInfoPPPScreen(taskProductInfo, isDiscrepancy, barcodeData)
+            } else {
+                screenNavigator.openZBatchesInfoPGEScreen(taskProductInfo, isDiscrepancy)
+            }
             return
         }
 

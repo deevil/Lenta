@@ -41,7 +41,7 @@ class MemoryTaskCargoUnitsRepository : ITaskCargoUnitsRepository {
     }
 
     override fun updateCargoUnits(newCargoUnits: List<TaskCargoUnitInfo>) {
-        cargoUnitsInfo.clear()
+        clear()
         newCargoUnits.map {
             addCargoUnit(it)
         }
