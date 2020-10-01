@@ -63,90 +63,91 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
         }
     }
 
+    private fun getCommonGoodInfoView(container: ViewGroup): View {
+        return DataBindingUtil.inflate<LayoutWlGoodInfoCommonBinding>(LayoutInflater.from(container.context),
+                R.layout.layout_wl_good_info_common,
+                container,
+                false).run {
+            vm = this@GoodInfoWlFragment.vm
+            lifecycleOwner = viewLifecycleOwner
+            this@GoodInfoWlFragment.vm.dateFields = listOf(dayField, monthField, yearField)
+
+            root
+        }
+    }
+
+    private fun getAdditionalGoodInfoView(container: ViewGroup): View {
+        return DataBindingUtil.inflate<LayoutWlGoodInfoAdditionalBinding>(LayoutInflater.from(container.context),
+                R.layout.layout_wl_good_info_additional,
+                container,
+                false).run {
+            vm = this@GoodInfoWlFragment.vm
+            lifecycleOwner = viewLifecycleOwner
+
+            root
+        }
+    }
+
+    private fun getGoodProviderPeriodView(container: ViewGroup): View {
+        return DataBindingUtil.inflate<LayoutWlGoodInfoProvidersBinding>(LayoutInflater.from(container.context),
+                R.layout.layout_wl_good_info_providers,
+                container,
+                false).run {
+            rvConfig = DataBindingRecyclerViewConfig<ItemGoodProviderPeriodBinding>(
+                    layoutId = R.layout.item_good_provider_period,
+                    itemId = BR.provider)
+
+            vm = this@GoodInfoWlFragment.vm
+            lifecycleOwner = viewLifecycleOwner
+
+            root
+        }
+    }
+
+    private fun getGoodStocksInfoView(container: ViewGroup): View {
+        return DataBindingUtil.inflate<LayoutWlGoodInfoStocksBinding>(LayoutInflater.from(container.context),
+                R.layout.layout_wl_good_info_stocks,
+                container,
+                false).run {
+            rvConfig = initRecycleAdapterDataBinding<ItemStorageStockBinding>(
+                    layoutId = R.layout.item_storage_stock,
+                    itemId = BR.stock,
+                    onItemBind = { binding, item ->
+                        binding.layoutStorage.setOnClickListener {
+                            this@GoodInfoWlFragment.vm.onStockItemClick(item)
+                        }
+                    }
+            )
+
+            vm = this@GoodInfoWlFragment.vm
+            lifecycleOwner = viewLifecycleOwner
+
+            root
+        }
+    }
+
+    private fun getGoodStockPartsView(container: ViewGroup): View {
+        return DataBindingUtil.inflate<LayoutWlGoodPartsStocksBinding>(LayoutInflater.from(container.context),
+                R.layout.layout_wl_good_parts_stocks,
+                container,
+                false).run {
+            rvConfig = DataBindingRecyclerViewConfig<ItemGoodZPartBinding>(
+                    layoutId = R.layout.item_good_z_part,
+                    itemId = BR.zPart)
+
+            vm = this@GoodInfoWlFragment.vm
+            lifecycleOwner = viewLifecycleOwner
+
+            root
+        }
+    }
+
     override fun getPagerItemView(container: ViewGroup, position: Int): View = when (position) {
-        FIRST_ITEM_POSITION -> {
-            DataBindingUtil.inflate<LayoutWlGoodInfoCommonBinding>(LayoutInflater.from(container.context),
-                    R.layout.layout_wl_good_info_common,
-                    container,
-                    false).let { layoutBinding ->
-
-                layoutBinding.vm = vm
-                layoutBinding.lifecycleOwner = viewLifecycleOwner
-
-                vm.dateFields = listOf(layoutBinding.dayField, layoutBinding.monthField, layoutBinding.yearField)
-
-                layoutBinding.root
-            }
-        }
-
-        SECOND_ITEM_POSITION -> {
-            DataBindingUtil.inflate<LayoutWlGoodInfoAdditionalBinding>(LayoutInflater.from(container.context),
-                    R.layout.layout_wl_good_info_additional,
-                    container,
-                    false).let { layoutBinding ->
-
-                layoutBinding.vm = vm
-                layoutBinding.lifecycleOwner = viewLifecycleOwner
-
-                layoutBinding.root
-            }
-        }
-
-        THIRD_ITEM_POSITION -> {
-            DataBindingUtil.inflate<LayoutWlGoodInfoProvidersBinding>(LayoutInflater.from(container.context),
-                    R.layout.layout_wl_good_info_providers,
-                    container,
-                    false).let { layoutBinding ->
-
-                layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemGoodProviderPeriodBinding>(
-                        layoutId = R.layout.item_good_provider_period,
-                        itemId = BR.provider)
-
-                layoutBinding.vm = vm
-                layoutBinding.lifecycleOwner = viewLifecycleOwner
-
-                layoutBinding.root
-            }
-        }
-
-        FOURTH_ITEM_POSITION -> {
-            DataBindingUtil.inflate<LayoutWlGoodInfoStocksBinding>(LayoutInflater.from(container.context),
-                    R.layout.layout_wl_good_info_stocks,
-                    container,
-                    false).let { layoutBinding ->
-
-                layoutBinding.rvConfig = initRecycleAdapterDataBinding<ItemStorageStockBinding>(
-                        layoutId = R.layout.item_storage_stock,
-                        itemId = BR.stock,
-                        onItemBind = {binding, item -> binding.layoutStorage.setOnClickListener {
-                            vm.onStockItemClick(item)
-                        }}
-                )
-
-                layoutBinding.vm = vm
-                layoutBinding.lifecycleOwner = viewLifecycleOwner
-
-                layoutBinding.root
-            }
-        }
-
-        FIFTH_ITEM_POSITION -> {
-            DataBindingUtil.inflate<LayoutWlGoodPartsStocksBinding>(LayoutInflater.from(container.context),
-                    R.layout.layout_wl_good_parts_stocks,
-                    container,
-                    false).let { layoutBinding ->
-
-                layoutBinding.rvConfig = DataBindingRecyclerViewConfig<ItemGoodZPartBinding>(
-                        layoutId = R.layout.item_good_z_part,
-                        itemId = BR.zPart)
-
-                layoutBinding.vm = vm
-                layoutBinding.lifecycleOwner = viewLifecycleOwner
-
-                layoutBinding.root
-            }
-        }
-
+        FIRST_ITEM_POSITION -> getCommonGoodInfoView(container)
+        SECOND_ITEM_POSITION -> getAdditionalGoodInfoView(container)
+        THIRD_ITEM_POSITION -> getGoodProviderPeriodView(container)
+        FOURTH_ITEM_POSITION -> getGoodStocksInfoView(container)
+        FIFTH_ITEM_POSITION -> getGoodStockPartsView(container)
         else -> throw IllegalArgumentException(WRONG_PAGER_POSITION_MESSAGE)
     }
 

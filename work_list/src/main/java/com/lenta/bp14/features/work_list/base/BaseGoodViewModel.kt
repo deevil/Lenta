@@ -8,7 +8,7 @@ import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.dropZeros
 import javax.inject.Inject
 
-open class BaseGoodViewModel : CoreViewModel() {
+abstract class BaseGoodViewModel : CoreViewModel() {
 
 
     @Inject
