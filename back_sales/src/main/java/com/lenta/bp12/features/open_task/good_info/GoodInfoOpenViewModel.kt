@@ -79,8 +79,6 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
 
     private val scanInfoResult = MutableLiveData<ScanInfoResult>()
 
-    private var isExistUnsavedData = false
-
     private var isEanLastScanned = false
 
     private var thereWasRollback = false
@@ -89,7 +87,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
     Ввод количества
      */
 
-    val quantityField = MutableLiveData("0")
+    override val quantityField = MutableLiveData("0")
 
     override val quantity = quantityField.map {
         it?.toDoubleOrNull() ?: ZERO_QUANTITY
@@ -103,48 +101,6 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
             }
         }
     }
-
-
-    /**
-    Список производителей
-     */
-
-    private val sourceProducers = MutableLiveData(listOf<ProducerInfo>())
-
-    private val producers = sourceProducers.map {
-        it?.let { producers ->
-            val list = producers.toMutableList()
-            if (list.size > 1) {
-                list.add(0, ProducerInfo(name = resource.chooseProducer))
-            }
-
-            list.toList()
-        }
-    }
-
-    val producerList by lazy {
-        producers.map { list ->
-            list?.map { it.name }
-        }
-    }
-
-    val producerEnabled by lazy {
-        producers.map { producers ->
-            producers?.size ?: 0 > 1
-        }
-    }
-
-    val producerPosition = MutableLiveData(FIRST_POSITION)
-
-    private val isProducerSelected = producerEnabled.combineLatest(producerPosition).map {
-        val isEnabled = it?.first ?: false
-        val position = it?.second ?: FIRST_POSITION
-
-        isProducerEnabledAndPositionChanged(isEnabled, position) or isProducerNotEnabledAndPositionDidntChanged(isEnabled, position)
-    }
-
-    private fun isProducerEnabledAndPositionChanged(isEnabled: Boolean, position: Int) = isEnabled && position > FIRST_POSITION
-    private fun isProducerNotEnabledAndPositionDidntChanged(isEnabled: Boolean, position: Int) = !isEnabled && position == FIRST_POSITION
 
     /**
     Дата производства
@@ -173,7 +129,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
                                 val isEnteredMoreThenZero = enteredQuantity > ZERO_QUANTITY
 
                                 val result = when (status) {
-                                    ScreenStatus.COMMON -> enteredQuantity != ZERO_QUANTITY && totalQuantity > 0.0
+                                    ScreenStatus.COMMON -> enteredQuantity != ZERO_QUANTITY && totalQuantity > ZERO_QUANTITY
                                     ScreenStatus.ALCOHOL -> isEnteredMoreThenZero && isProducerSelected && isDateEntered
                                     ScreenStatus.MARK_150 -> isEnteredMoreThenZero && isProducerSelected
                                     ScreenStatus.MARK_68 -> isEnteredMoreThenZero && isProducerSelected
@@ -446,7 +402,6 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
                     isWholesaleTask && isGoodVet -> showCantAddVetToWholeSale()
                     isWholesaleTask && isGoodExcise -> showCantAddExciseGoodForWholesale()
                     isGoodCorrespondToTask && isGoodCanBeAdded -> {
-                        isExistUnsavedData = true
                         result.materialInfo?.material?.let { material ->
                             findGoodByMaterial(material)?.let { good ->
                                 good.eans[number] = result.eanInfo.getQuantityForBox()
@@ -457,7 +412,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
                                 setGood(result, number)
                             }
                         }.orIfNull {
-                            Logg.e { "material null"}
+                            Logg.e { "material null" }
                             navigator.showInternalError(resource.goodNotFoundErrorMsg)
                         }
                     }
@@ -560,7 +515,6 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
 
     private fun addExciseMarkInfo(result: ScanInfoResult) {
         lastSuccessSearchNumber = originalSearchNumber
-        isExistUnsavedData = true
         scanInfoResult.value = result
         quantityField.value = DEFAULT_QUANTITY_STRING_FOR_EAN
 
@@ -579,7 +533,6 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
     private fun addPartInfo(result: ScanInfoResult) {
         screenStatus.value = ScreenStatus.PART
         lastSuccessSearchNumber = originalSearchNumber
-        isExistUnsavedData = true
         scanInfoResult.value = result
         quantityField.value = DEFAULT_QUANTITY_STRING_FOR_EAN
     }
@@ -614,7 +567,6 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
     private fun addBoxInfo(result: ScanInfoResult) {
         screenStatus.value = ScreenStatus.BOX
         lastSuccessSearchNumber = originalSearchNumber
-        isExistUnsavedData = true
         scanInfoResult.value = result
         quantityField.value = result.exciseMarks?.size?.toString().orIfNull { ZERO_QUANTITY_STRING }
         try {
@@ -674,14 +626,13 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
     }
 
     private fun updateProducers(producers: List<ProducerInfo>) {
-        sourceProducers.value = producers
+        sourceProducers.value = producers.toMutableList()
     }
 
     override suspend fun saveChanges(result: ScanInfoResult?) {
         screenStatus.value?.let { status ->
             good.value?.let { good ->
                 manager.saveGoodInTask(good)
-                isExistUnsavedData = false
             }.orIfNull {
                 Logg.e { "good null" }
                 navigator.showInternalError(resource.goodNotFoundErrorMsg)
@@ -793,8 +744,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
     Обработка нажатий кнопок
      */
     override fun onBackPressed() {
-        val enteredQuantity = quantity.value ?: ZERO_QUANTITY
-        if (isExistUnsavedData || enteredQuantity != ZERO_QUANTITY) {
+        if (isExistUnsavedData()) {
             navigator.showUnsavedDataWillBeLost {
                 navigator.goBack()
             }
@@ -815,7 +765,6 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
             navigator.showInternalError(resource.goodNotFoundErrorMsg)
         }
     }
-
 
     fun onClickMissing() {
         good.value?.let { changedGood ->
@@ -871,6 +820,17 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
                 Logg.e { "good null" }
                 navigator.showInternalError(resource.goodNotFoundErrorMsg)
             }
+        }
+    }
+
+    override fun isExistUnsavedData(): Boolean {
+        val isProducerChanged = isProducerEnabledAndChanged()
+        val isEnteredMoreThanZeroAndProviderSelected = isQuantityFieldChanged() || isProviderEnabledAndChanged()
+        val isDateEntered = date.value?.isEmpty() != true
+        return if (isGoodOrExciseAlco()) {
+            isEnteredMoreThanZeroAndProviderSelected || isProducerChanged || isDateEntered
+        } else {
+            isEnteredMoreThanZeroAndProviderSelected
         }
     }
 
