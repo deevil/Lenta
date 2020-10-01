@@ -3,6 +3,9 @@ package com.lenta.bp14.features.work_list.good_info
 import android.widget.EditText
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.liveData
+import androidx.lifecycle.switchMap
+import com.lenta.bp14.features.work_list.base.BaseGoodViewModel
 import com.lenta.bp14.models.check_price.IPriceInfoParser
 import com.lenta.bp14.models.data.GoodType
 import com.lenta.bp14.models.data.ScanInfoMode
@@ -32,13 +35,10 @@ import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 
-class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
+class GoodInfoWlViewModel : BaseGoodViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
 
     @Inject
     lateinit var navigator: IScreenNavigator
-
-    @Inject
-    lateinit var task: WorkListTask
 
     @Inject
     lateinit var additionalGoodInfoNetRequest: IAdditionalGoodInfoNetRequest
@@ -54,10 +54,6 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
 
     @Inject
     lateinit var resourceManager: IResourceManager
-
-    @Inject
-    lateinit var resourceFormatter: IResourceFormatter
-
 
     val loadingIndicatorVisibility = MutableLiveData<Boolean>(true)
 
@@ -78,9 +74,16 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
 
     val quantity = MutableLiveData<String>("")
 
-    private val totalQuantityValue: MutableLiveData<Double> by lazy {
-        good.combineLatest(quantity).mapSkipNulls {
-            it.first.getTotalQuantity().sumWith(it.second?.toDoubleOrNull() ?: 0.0)
+    private val totalQuantityValue: LiveData<Double> by lazy {
+        good.switchMap { goodValue ->
+            quantity.switchMap { quantityValue ->
+                liveData {
+                    val totalQuantity = goodValue.getTotalQuantity()
+                    val currentQuantity = quantityValue.toDoubleOrNull() ?: 0.0
+                    val result = totalQuantity.sumWith(currentQuantity)
+                    emit(result)
+                }
+            }
         }
     }
 
@@ -182,16 +185,8 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
     }
 
     val zParts: LiveData<List<ZPartUi>> by unsafeLazy {
-        good.map { good ->
-            good?.additional?.zParts?.mapIndexed { index, zPart ->
-                val quantity = "${zPart.quantity.dropZeros()} ${good.units.name}"
-                ZPartUi(
-                        "${index + 1}",
-                        zPart.stock,
-                        resourceFormatter.getFormattedZPartInfo(zPart),
-                        quantity
-                )
-            }
+        good.mapSkipNulls { good ->
+            good?.additional?.zParts.mapToZPartUiList(good.units.name)
         }
     }
 
