@@ -397,6 +397,16 @@ abstract class BaseTaskManager<T : Taskable> : ITaskManager<T> {
         this.ean = ""
     }
 
+    override fun deleteGood(good: Good) {
+        currentTask.value?.run {
+            goods.remove(good)
+            baskets.forEach { it.deleteGood(good) }
+            removeEmptyGoods()
+            removeEmptyBaskets()
+            updateCurrentTask(this)
+        }
+    }
+
     companion object {
         private const val NULL_BASKET_VOLUME = "Объем корзины отсутствует"
         private const val INDEX_OF_FIRST_BASKET = 1

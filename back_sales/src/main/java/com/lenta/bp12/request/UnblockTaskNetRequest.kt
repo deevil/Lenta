@@ -36,8 +36,8 @@ class UnblockTaskStatus : ObjectRawStatus<UnblockTaskResult>()
 data class UnblockTaskResult(
         /** Код возврата */
         @SerializedName("EV_RETCODE")
-        override val retCode: Int,
+        override val retCode: Int?,
         /** Текст ошибки */
         @SerializedName("EV_ERROR_TEXT")
-        override val errorText: String
+        override val errorText: String?
 ) : SapResponse

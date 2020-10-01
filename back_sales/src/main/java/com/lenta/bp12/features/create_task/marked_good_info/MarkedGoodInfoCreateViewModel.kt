@@ -14,24 +14,19 @@ import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.extentions.addMarks
 import com.lenta.bp12.platform.ZERO_QUANTITY
-import com.lenta.bp12.platform.navigation.IScreenNavigator
-import com.lenta.bp12.platform.resource.IResourceManager
-import com.lenta.bp12.repository.IDatabaseRepository
-import com.lenta.bp12.request.GoodInfoNetRequest
 import com.lenta.bp12.request.MarkCartonBoxGoodInfoNetRequest
-import com.lenta.bp12.request.ScanInfoNetRequest
-import com.lenta.shared.account.ISessionInfo
+import com.lenta.bp12.request.ScanInfoResult
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
-import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.extentions.launchAsyncTryCatch
+import com.lenta.shared.utilities.extentions.launchUITryCatch
+import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.unsafeLazy
 import com.lenta.shared.utilities.orIfNull
 import javax.inject.Inject
 
 class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelectionListener {
-
-    @Inject
-    override lateinit var navigator: IScreenNavigator
 
     /**
      * Менеджер ответственный за хранение задания и товаров
@@ -41,9 +36,6 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
     @Inject
     override lateinit var manager: ICreateTaskManager
 
-    @Inject
-    override lateinit var sessionInfo: ISessionInfo
-
     /**
      * Менеджер ответственный за обработку марок (не акцизных)
      * Имплементация:
@@ -52,28 +44,12 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
     @Inject
     lateinit var markManager: IMarkManager
 
-    /** "ZMP_UTZ_BKS_05_V001"
-     * Получение данных товара по ШК / SAP-коду
-     */
-    @Inject
-    lateinit var goodInfoNetRequest: GoodInfoNetRequest
-
-    /** "ZMP_UTZ_100_V001"
-     * Получение данных по акцизному товару  */
-    @Inject
-    override lateinit var scanInfoNetRequest: ScanInfoNetRequest
 
     /** ZMP_UTZ_WOB_07_V001
      * «Получение данных по марке/блоку/коробке/товару из ГМ»
      */
     @Inject
     lateinit var markCartonBoxGoodInfoNetRequest: MarkCartonBoxGoodInfoNetRequest
-
-    @Inject
-    override lateinit var database: IDatabaseRepository
-
-    @Inject
-    override lateinit var resource: IResourceManager
 
 
     /**
@@ -109,12 +85,15 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
     }
 
     val isBasketNumberVisible by unsafeLazy {
-        tempMarks.mapSkipNulls { tempMarksValue ->
-            good.mapSkipNulls { goodValue ->
-                goodValue.maxRetailPrice.isEmpty().not() ||
-                        tempMarksValue.takeIf { goodValue.isTobacco() }
-                                ?.isNotEmpty()
-                                .orIfNull { true }
+        tempMarks.switchMap { tempMarksValue ->
+            good.switchMap { goodValue ->
+                liveData {
+                    val result = goodValue.maxRetailPrice.isEmpty().not() ||
+                            tempMarksValue.takeIf { goodValue.isTobacco() }
+                                    ?.isNotEmpty()
+                                    .orIfNull { true }
+                    emit(result)
+                }
             }
         }
     }
@@ -219,25 +198,7 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
                 showProgressLoadingData()
                 val result = markManager.loadBoxInfo(number, WorkType.CREATE)
                 hideProgress()
-                when (result) {
-                    MarkScreenStatus.OK -> setMarksAndProperties()
-
-                    MarkScreenStatus.INTERNAL_ERROR ->
-                        showInternalError(markManager.getInternalErrorMessage())
-
-                    MarkScreenStatus.FAILURE -> handleMarkScanError()
-
-                    MarkScreenStatus.MARK_ALREADY_SCANNED ->
-                        showMarkAlreadyScannedDelete(::handleYesDeleteMappedMarksFromTempCallBack)
-
-                    MarkScreenStatus.CARTON_ALREADY_SCANNED ->
-                        showCartonAlreadyScannedDelete(::handleYesDeleteMappedMarksFromTempCallBack)
-
-                    MarkScreenStatus.BOX_ALREADY_SCANNED ->
-                        showBoxAlreadyScannedDelete(::handleYesDeleteMappedMarksFromTempCallBack)
-
-                    else -> showIncorrectEanFormat()
-                }
+                handleMarkResult(result)
             }
         }
     }
@@ -247,53 +208,69 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
      * */
     private fun checkMark(number: String) {
         launchUITryCatch {
-            with(navigator) {
-                showProgressLoadingData()
-                val result = markManager.checkMark(number, WorkType.CREATE, true)
-                hideProgress()
-                when (result) {
-                    MarkScreenStatus.OK -> setMarksAndProperties()
+            navigator.showProgressLoadingData()
+            val result = markManager.checkMark(number, WorkType.CREATE, true)
+            navigator.hideProgress()
+            handleMarkResult(result)
+        }
+    }
 
-                    MarkScreenStatus.CARTON_ALREADY_SCANNED ->
-                        showCartonAlreadyScannedDelete(::handleYesDeleteMappedMarksFromTempCallBack)
+    private fun handleMarkResult(result: MarkScreenStatus) {
+        with(navigator) {
+            when (result) {
+                MarkScreenStatus.OK -> setMarksAndProperties()
 
-                    MarkScreenStatus.MARK_ALREADY_SCANNED ->
-                        showMarkAlreadyScannedDelete(::handleYesDeleteMappedMarksFromTempCallBack)
+                MarkScreenStatus.CARTON_ALREADY_SCANNED ->
+                    showCartonAlreadyScannedDelete(::handleYesDeleteMappedMarksFromTempCallBack)
 
-                    MarkScreenStatus.BOX_ALREADY_SCANNED ->
-                        showBoxAlreadyScannedDelete(::handleYesDeleteMappedMarksFromTempCallBack)
+                MarkScreenStatus.MARK_ALREADY_SCANNED ->
+                    showMarkAlreadyScannedDelete(::handleYesDeleteMappedMarksFromTempCallBack)
 
-                    MarkScreenStatus.FAILURE -> handleMarkScanError()
+                MarkScreenStatus.BOX_ALREADY_SCANNED ->
+                    showBoxAlreadyScannedDelete(::handleYesDeleteMappedMarksFromTempCallBack)
 
-                    MarkScreenStatus.INCORRECT_EAN_FORMAT -> showIncorrectEanFormat()
+                MarkScreenStatus.FAILURE -> handleMarkScanError()
 
-                    MarkScreenStatus.GOOD_CANNOT_BE_ADDED -> showGoodCannotBeAdded()
+                MarkScreenStatus.INCORRECT_EAN_FORMAT -> showIncorrectEanFormat()
 
-                    MarkScreenStatus.INTERNAL_ERROR -> showInternalError(markManager.getInternalErrorMessage())
+                MarkScreenStatus.GOOD_CANNOT_BE_ADDED -> showGoodCannotBeAdded()
 
-                    MarkScreenStatus.CANT_SCAN_PACK -> showCantScanPackAlert()
+                MarkScreenStatus.INTERNAL_ERROR -> showInternalError(markManager.getInternalErrorMessage())
 
-                    MarkScreenStatus.GOOD_IS_MISSING_IN_TASK -> showGoodIsMissingInTask()
+                MarkScreenStatus.CANT_SCAN_PACK -> showCantScanPackAlert()
 
-                    MarkScreenStatus.MRC_NOT_SAME ->
-                        markManager.getCreatedGoodForError()?.let(::showMrcNotSameAlert)
+                MarkScreenStatus.GOOD_IS_MISSING_IN_TASK -> showGoodIsMissingInTask()
 
-                    MarkScreenStatus.MRC_NOT_SAME_IN_BASKET ->
-                        showMrcNotSameInBasketAlert(::handleYesSaveCurrentMarkToBasketAndOpenAnother)
+                MarkScreenStatus.MRC_NOT_SAME ->
+                    markManager.getCreatedGoodForError()?.let(::showMrcNotSameAlert)
 
-                    MarkScreenStatus.NOT_MARKED_GOOD -> showIncorrectEanFormat()
+                MarkScreenStatus.MRC_NOT_SAME_IN_BASKET ->
+                    showMrcNotSameInBasketAlert(::handleYesSaveCurrentMarkToBasketAndOpenAnother)
 
-                    MarkScreenStatus.OK_BUT_NEED_TO_SCAN_MARK -> Unit
+                MarkScreenStatus.NOT_MARKED_GOOD -> showIncorrectEanFormat()
 
-                    MarkScreenStatus.NOT_SAME_GOOD ->
-                        showScannedMarkBelongsToProduct(
-                                markManager.getCreatedGoodForError()?.name.orEmpty()
-                        )
+                MarkScreenStatus.OK_BUT_NEED_TO_SCAN_MARK -> Unit
 
-                    else -> showIncorrectEanFormat()
+                MarkScreenStatus.NOT_SAME_GOOD ->
+                    showScannedMarkBelongsToProduct(
+                            markManager.getCreatedGoodForError()?.name.orEmpty()
+                    )
 
-                }
+                MarkScreenStatus.ENTER_MRC_FROM_BOX -> handleEnterMrcFromBox()
+
+                else -> showIncorrectEanFormat()
+
             }
+        }
+    }
+
+
+    private fun handleEnterMrcFromBox() {
+        navigator.openEnterMrcFromBoxScreen(WorkType.CREATE) {
+            navigator.showProgressLoadingData()
+            val result = markManager.handleEnterMrcFromBox()
+            navigator.hideProgress()
+            handleMarkResult(result)
         }
     }
 
@@ -333,13 +310,14 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
     }
 
     private fun setMrc() {
-        val newMrc = tempMarks.value?.firstOrNull()?.run {
-            resource.mrcSpaceRub(maxRetailPrice)
-        }.orEmpty()
-        mrc.postValue(newMrc)
+        val mrcWithoutRub = tempMarks.value?.firstOrNull()?.maxRetailPrice
+        val mrcWithRub = mrcWithoutRub?.let ( resource::mrcSpaceRub ).orEmpty()
+        val goodValue = good.value?.apply { maxRetailPrice = mrcWithoutRub.orEmpty() }
+        mrc.postValue(mrcWithRub)
+        good.postValue(goodValue)
     }
 
-    override suspend fun saveChanges() {
+    override suspend fun saveChanges(result: ScanInfoResult?) {
         good.value?.let { good ->
             manager.saveGoodInTask(good)
             addMarks(good)
@@ -383,12 +361,12 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
         saveChangesAndExit()
     }
 
-    override fun saveChangesAndExit() {
+    override fun saveChangesAndExit(result: ScanInfoResult?) {
         launchUITryCatch {
             with(navigator) {
                 isExistUnsavedData = false
                 showProgressLoadingData()
-                saveChanges()
+                saveChanges(result)
                 hideProgress()
                 openBasketCreateGoodListScreen()
                 manager.isBasketsNeedsToBeClosed = false

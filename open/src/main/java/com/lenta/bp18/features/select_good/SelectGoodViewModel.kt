@@ -52,7 +52,7 @@ class SelectGoodViewModel : BarcodeViewModel() {
         navigator.showProgress(context.getString(R.string.load_barcode_data))
         val barcodeData = processBarcode(barcode)
         ean.value = barcodeData.barcodeInfo.barcode
-        searchEan(barcode, barcodeData.barcodeInfo.weight)
+        searchEan(ean.value.orEmpty(), barcodeData.barcodeInfo.weight)
     }
 
     private suspend fun searchEan(ean: String, weight: String) {

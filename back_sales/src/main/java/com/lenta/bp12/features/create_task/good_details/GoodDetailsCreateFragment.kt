@@ -8,16 +8,12 @@ import androidx.databinding.DataBindingUtil
 import com.lenta.bp12.BR
 import com.lenta.bp12.R
 import com.lenta.bp12.databinding.*
-import com.lenta.bp12.model.GoodKind
 import com.lenta.bp12.platform.extention.getAppComponent
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.databinding.DataBindingAdapter
-import com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig
-import com.lenta.shared.utilities.databinding.RecyclerViewKeyHandler
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.connectLiveData
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
@@ -25,9 +21,6 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodDetailsCreateFragment : CoreFragment<FragmentGoodDetailsCreateBinding, GoodDetailsCreateViewModel>(),
         ViewPagerSettings, ToolbarButtonsClickListener {
-
-    private var basketRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
-    private var categoryRecyclerViewKeyHandler: RecyclerViewKeyHandler<*>? = null
 
     override fun getLayoutId(): Int = R.layout.fragment_good_details_create
 
@@ -74,38 +67,27 @@ class GoodDetailsCreateFragment : CoreFragment<FragmentGoodDetailsCreateBinding,
                 false).let { layoutBinding ->
 
             val onClickSelectionListener = View.OnClickListener {
-                (it!!.tag as Int).let { position ->
+                (it.tag as? Int)?.let { position ->
                     vm.basketSelectionsHelper.revert(position = position)
                     layoutBinding.rv.adapter?.notifyItemChanged(position)
                 }
             }
 
-            layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                     layoutId = R.layout.item_basket_details,
                     itemId = BR.item,
-                    realisation = object : DataBindingAdapter<ItemBasketDetailsBinding> {
-                        override fun onCreate(binding: ItemBasketDetailsBinding) {
-                        }
-
-                        override fun onBind(binding: ItemBasketDetailsBinding, position: Int) {
-                            binding.tvItemNumber.tag = position
-                            binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                            binding.selectedForDelete = vm.basketSelectionsHelper.isSelected(position)
-                            basketRecyclerViewKeyHandler?.let {
-                                binding.root.isSelected = it.isSelected(position)
-                            }
-                        }
-                    }
+                    onItemBind = { binding: ItemBasketDetailsBinding, position: Int ->
+                        binding.tvItemNumber.tag = position
+                        binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                        binding.selectedForDelete = vm.basketSelectionsHelper.isSelected(position)
+                    },
+                    keyHandlerId = TAB_BASKETS,
+                    recyclerView = layoutBinding.rv,
+                    items = vm.baskets
             )
 
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
-            basketRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                    rv = layoutBinding.rv,
-                    items = vm.baskets,
-                    lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                    initPosInfo = basketRecyclerViewKeyHandler?.posInfo?.value
-            )
 
             return layoutBinding.root
         }
@@ -118,38 +100,27 @@ class GoodDetailsCreateFragment : CoreFragment<FragmentGoodDetailsCreateBinding,
                 false).let { layoutBinding ->
 
             val onClickSelectionListener = View.OnClickListener {
-                (it!!.tag as Int).let { position ->
+                (it.tag as? Int)?.let { position ->
                     vm.categorySelectionsHelper.revert(position = position)
                     layoutBinding.rv.adapter?.notifyItemChanged(position)
                 }
             }
 
-            layoutBinding.rvConfig = DataBindingRecyclerViewConfig(
+            layoutBinding.rvConfig = initRecycleAdapterDataBinding(
                     layoutId = R.layout.item_category,
                     itemId = BR.item,
-                    realisation = object : DataBindingAdapter<ItemCategoryBinding> {
-                        override fun onCreate(binding: ItemCategoryBinding) {
-                        }
-
-                        override fun onBind(binding: ItemCategoryBinding, position: Int) {
-                            binding.tvItemNumber.tag = position
-                            binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                            binding.selectedForDelete = vm.categorySelectionsHelper.isSelected(position)
-                            categoryRecyclerViewKeyHandler?.let {
-                                binding.root.isSelected = it.isSelected(position)
-                            }
-                        }
-                    }
+                    onItemBind = { binding: ItemCategoryBinding, position: Int ->
+                        binding.tvItemNumber.tag = position
+                        binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
+                        binding.selectedForDelete = vm.categorySelectionsHelper.isSelected(position)
+                    },
+                    keyHandlerId = TAB_CATEGORIES,
+                    recyclerView = layoutBinding.rv,
+                    items = vm.categories
             )
 
             layoutBinding.vm = vm
             layoutBinding.lifecycleOwner = viewLifecycleOwner
-            categoryRecyclerViewKeyHandler = RecyclerViewKeyHandler(
-                    rv = layoutBinding.rv,
-                    items = vm.categories,
-                    lifecycleOwner = layoutBinding.lifecycleOwner!!,
-                    initPosInfo = categoryRecyclerViewKeyHandler?.posInfo?.value
-            )
 
             return layoutBinding.root
         }
@@ -164,7 +135,7 @@ class GoodDetailsCreateFragment : CoreFragment<FragmentGoodDetailsCreateBinding,
     }
 
     override fun countTab(): Int {
-        return if (vm.good.value?.kind == GoodKind.COMMON) ONE_TAB else TWO_TABS
+        return vm.countTab()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -175,8 +146,6 @@ class GoodDetailsCreateFragment : CoreFragment<FragmentGoodDetailsCreateBinding,
     companion object {
         const val SCREEN_NUMBER = "96"
 
-        private const val ONE_TAB = 1
-        private const val TWO_TABS = 2
         private const val TAB_BASKETS = 0
         private const val TAB_CATEGORIES = 1
     }

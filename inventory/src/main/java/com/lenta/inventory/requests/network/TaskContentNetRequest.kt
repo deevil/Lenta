@@ -92,14 +92,14 @@ class TaskContentNetRequest
         if (materialInfo == null || uomInfo == null || materialNumber.isEmpty()) {
             return null
         }
-        return TaskProductInfo(materialNumber = materialInfo.material,
-                description = materialInfo.name,
+        return TaskProductInfo(materialNumber = materialInfo.material.orEmpty(),
+                description = materialInfo.name.orEmpty(),
                 uom = Uom(code = uomInfo.uom, name = uomInfo.name),
-                type = getProductType(isAlco = materialInfo.isAlco.isNotEmpty(), isExcise = materialInfo.isExc.isNotEmpty()),
+                type = getProductType(isAlco = materialInfo.isAlco?.isNotEmpty() == true, isExcise = materialInfo.isExc?.isNotEmpty() == true),
                 isSet = isSet.isNotEmpty(),
-                sectionId = materialInfo.abtnr,
-                matrixType = getMatrixType(materialInfo.matrType),
-                materialType = materialInfo.matype,
+                sectionId = materialInfo.abtnr.orEmpty(),
+                matrixType = getMatrixType(materialInfo.matrType.orEmpty()),
+                materialType = materialInfo.matype.orEmpty(),
                 placeCode = storePlaceCode,
                 factCount = factQuantity.toDouble(),
                 isPositionCalc = positionCounted.isNotEmpty(),

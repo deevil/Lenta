@@ -118,7 +118,7 @@ class WorkListTask @Inject constructor(
     override fun updateAdditionalGoodInfo(additionalGoodInfo: AdditionalGoodInfo) {
         val good = currentGood.value!!
         good.additional = additionalGoodInfo
-        currentGood.value = good
+        currentGood.postValue(good)
     }
 
     override fun addScanResult(scanResult: ScanResult) {

@@ -1,5 +1,6 @@
 package com.lenta.bp10.requests.network
 
+import androidx.annotation.Nullable
 import com.google.gson.annotations.SerializedName
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
@@ -24,14 +25,15 @@ class StockNetRequest
 class StockLockRequestStatus : ObjectRawStatus<StockLockRequestResult>()
 
 data class StockLockRequestResult(
+        @Nullable
         @SerializedName("ET_STORLOCS")
-        val stocksLocks: List<StockLock>
+        val stocksLocks: List<StockLock>?
 )
 
 data class StockLock(
         @SerializedName("STORLOC")
-        val storloc: String,
+        val storloc: String?,
 
         @SerializedName("LOCKED")
-        val locked: String
+        val locked: String?
 )
