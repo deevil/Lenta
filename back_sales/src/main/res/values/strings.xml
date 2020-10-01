@@ -87,6 +87,7 @@
     <string name="scanned_mark_with_different_mrc">Отсканирована марка с МРЦ, отличающаяся от МРЦ текущей корзинки. Сохранить подсчет текущей корзинки и открыть другую?</string>
     <string name="enter_mrc_from_box">Введите МРЦ, указанный на блоке из отсканированной коробки</string>
     <string name="enter_mrc">Введите МРЦ</string>
+    <string name="scan_marks_individually">Часть марок коробки уже добавлено. Отсканируйте каждую марку отдельно</string>
 
     // Описание иконок
     <string name="alcohol_good">Алкогольный товар</string>

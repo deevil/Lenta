@@ -53,8 +53,8 @@ abstract class BaseGoodInfoOpenViewModel : BaseGoodInfoViewModel<TaskOpen, IOpen
     }
 
     override fun isFactQuantityMoreThanPlanned(): Boolean {
-        val totalQuantity = good.value?.getTotalQuantity() ?: 0.0
-        val quantityValue = quantity.value ?: 0.0
+        val totalQuantity = good.value?.getTotalQuantity() ?: ZERO_QUANTITY
+        val quantityValue = quantity.value ?: ZERO_QUANTITY
         val quantitySum = quantityValue + totalQuantity
         val isFactQuantityMoreThanPlanned = quantitySum > plannedQuantity
         return isPlannedQuantityMoreThanZero && isFactQuantityMoreThanPlanned

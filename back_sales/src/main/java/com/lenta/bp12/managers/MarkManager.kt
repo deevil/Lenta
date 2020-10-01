@@ -11,6 +11,7 @@ import com.lenta.bp12.model.MarkStatus
 import com.lenta.bp12.model.WorkType
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.Mark
+import com.lenta.bp12.model.pojo.extentions.isAllAlreadyIn
 import com.lenta.bp12.model.pojo.extentions.isAnyAlreadyIn
 import com.lenta.bp12.model.pojo.extentions.mapToMarkList
 import com.lenta.bp12.model.pojo.open_task.TaskOpen
@@ -635,12 +636,19 @@ class MarkManager @Inject constructor(
             screenStatusIfAlreadyScanned: MarkScreenStatus
     ): MarkScreenStatus {
         val manager = chooseManager()
-        val goodThatHasMarks = manager.currentTask.value?.goods?.firstOrNull { it.marks.isAnyAlreadyIn(mappedMarks) }
-        return if (localTempMarks.isAnyAlreadyIn(mappedMarks) || goodThatHasMarks != null) {
-            this.mappedMarks = mappedMarks
-            screenStatusIfAlreadyScanned
-        } else {
-            addOrDeleteMarksFromTemp(foundGood, restProperties, localTempMarks, mappedMarks)
+        val goodThatHasMarksExist = manager.currentTask.value?.goods
+                ?.firstOrNull { it.marks.isAnyAlreadyIn(mappedMarks) } != null
+
+        return when {
+            (localTempMarks.isAllAlreadyIn(mappedMarks) || goodThatHasMarksExist) -> {
+                this.mappedMarks = mappedMarks
+                screenStatusIfAlreadyScanned
+            }
+
+            (localTempMarks.isAnyAlreadyIn(mappedMarks) || goodThatHasMarksExist) ->
+                MarkScreenStatus.SOME_MARKS_FROM_BOX_ALREADY_SCANNED
+
+            else -> addOrDeleteMarksFromTemp(foundGood, restProperties, localTempMarks, mappedMarks)
         }
     }
 
