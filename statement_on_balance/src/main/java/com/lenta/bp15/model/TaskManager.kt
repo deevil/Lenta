@@ -7,17 +7,19 @@ import com.lenta.bp15.model.pojo.Task
 import com.lenta.bp15.platform.navigation.IScreenNavigator
 import com.lenta.bp15.repository.database.IDatabaseRepository
 import com.lenta.bp15.repository.net_requests.INetRequestsRepository
-import com.lenta.bp15.repository.net_requests.pojo.TaskContentParams
-import com.lenta.bp15.repository.net_requests.pojo.TaskListParams
-import com.lenta.bp15.repository.net_requests.pojo.TaskSearchParams
-import com.lenta.bp15.repository.net_requests.pojo.UnlockTaskParams
+import com.lenta.bp15.repository.net_requests.pojo.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.device_info.DeviceInfo
 import com.lenta.shared.platform.livedata.SingleLiveEvent
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.isSapTrue
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.coroutines.CoroutineContext
 
 class TaskManager @Inject constructor(
         private val navigator: IScreenNavigator,
@@ -25,7 +27,11 @@ class TaskManager @Inject constructor(
         private val deviceInfo: DeviceInfo,
         private val database: IDatabaseRepository,
         private val netRequests: INetRequestsRepository
-) : ITaskManager {
+) : ITaskManager, CoroutineScope {
+
+    private val job = SupervisorJob()
+
+    override val coroutineContext: CoroutineContext = Dispatchers.Main + job
 
     private val failure = SingleLiveEvent<Failure>()
 
@@ -37,25 +43,67 @@ class TaskManager @Inject constructor(
 
     override val currentGood = MutableLiveData<Good>()
 
+
+    override fun updateProcessingTasks(tasks: List<Task>) {
+        processingTasks.value = tasks
+    }
+
+    override fun updateSearchTasks(tasks: List<Task>) {
+        searchTasks.value = tasks
+    }
+
     override fun updateCurrentTask(task: Task) {
         currentTask.value = task
     }
 
-    override suspend fun loadProcessingTaskList() {
-        navigator.showProgressLoadingData()
+    override fun loadProcessingTaskList() {
+        launch {
+            navigator.showProgressLoadingData()
 
-        netRequests.getTaskList(TaskListParams(
-                tkNumber = sessionInfo.market.orEmpty(),
-                userName = sessionInfo.userName.orEmpty(),
-                userNumber = sessionInfo.personnelNumber.orEmpty(),
-                deviceIp = deviceInfo.getDeviceIp(),
-                mode = TaskSearchMode.COMMON.mode
-        )).either(::handleFailure) { result ->
-            processingTasks.postValue(result.convertToTasks())
+            netRequests.getTaskList(TaskListParams(
+                    tkNumber = sessionInfo.market.orEmpty(),
+                    userName = sessionInfo.userName.orEmpty(),
+                    userNumber = sessionInfo.personnelNumber.orEmpty(),
+                    deviceIp = deviceInfo.getDeviceIp(),
+                    mode = TaskSearchMode.COMMON.mode
+            )).either(::handleFailure) { result ->
+                launch {
+                    handleTaskListResult(result)
+                }
+            }
+
+            loadChangedTasksFromPreviousSession()
+            navigator.hideProgress()
         }
+    }
 
-        loadChangedTasksFromPreviousSession()
-        navigator.hideProgress()
+    private suspend fun handleTaskListResult(result: TaskListResult) {
+        val tasks = result.convertToTasks()?.map { task ->
+            task.type = database.getTaskTypeByCode(task.type.code)
+            task
+        } ?: emptyList()
+
+        /*val yyyy = result.tasks?.map { taskRawInfo ->
+            Task(
+                    number = taskRawInfo.number,
+                    type = database.getTaskTypeByCode(taskRawInfo.type),
+                    firstLine = taskRawInfo.firstLine,
+                    secondLine = taskRawInfo.secondLine,
+                    title = taskRawInfo.title,
+                    description = taskRawInfo.description,
+                    goodsQuantity = taskRawInfo.goodsQuantity.toIntOrNull() ?: 0,
+                    marksQuantity = taskRawInfo.marksQuantity.toIntOrNull() ?: 0,
+                    block = Block(
+                            type = BlockType.from(taskRawInfo.lockType),
+                            user = taskRawInfo.lockUser,
+                            ip = taskRawInfo.lockIp
+                    ),
+                    isFinished = !taskRawInfo.isNotFinish.isSapTrue(),
+                    comment = taskRawInfo.comment
+            )
+        } ?: emptyList()*/
+
+        processingTasks.value = tasks
     }
 
     private fun loadChangedTasksFromPreviousSession() {
@@ -146,16 +194,15 @@ interface ITaskManager {
     val currentTask: MutableLiveData<Task>
     val currentGood: MutableLiveData<Good>
 
+    fun updateProcessingTasks(tasks: List<Task>)
+    fun updateSearchTasks(tasks: List<Task>)
     fun updateCurrentTask(task: Task)
 
-    suspend fun loadProcessingTaskList()
+    fun loadProcessingTaskList()
     suspend fun loadSearchTaskList(searchParams: TaskSearchParams)
     fun setCurrentTask(task: Task)
     suspend fun loadGoodListToCurrentTask()
     suspend fun unlockTask(task: Task)
-
-
-
 
 
 }

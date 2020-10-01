@@ -1,8 +1,8 @@
 package com.lenta.bp15.features.task_card
 
-data class TaskInfoUi(
-        val type: String,
-        val name: String,
+data class TaskCardUi(
+        val typeName: String,
+        val taskName: String,
         val quantity: String,
         val description: String,
         val comment: String

@@ -24,7 +24,7 @@
                 <EditText
                     style="@style/CellEditTextStyle"
                     android:enabled="false"
-                    android:text="@{vm.taskInfo.type}"
+                    android:text="@{vm.taskInfo.typeName}"
                     tools:text="Постановка на баланс ТК" />
 
             </LinearLayout>
@@ -41,7 +41,7 @@
                 <EditText
                     style="@style/CellEditTextStyle"
                     android:enabled="false"
-                    android:text="@{vm.taskInfo.name}"
+                    android:text="@{vm.taskInfo.taskName}"
                     tools:text="Постановка на баланс от 05.08.2020 15:16" />
 
             </LinearLayout>

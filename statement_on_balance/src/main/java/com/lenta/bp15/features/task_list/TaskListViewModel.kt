@@ -81,9 +81,11 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
      */
 
     private fun updateTaskList() {
-        launchUITryCatch {
+        manager.loadProcessingTaskList()
+
+        /*launchUITryCatch {
             manager.loadProcessingTaskList()
-        }
+        }*/
     }
 
     override fun onPageSelected(position: Int) {

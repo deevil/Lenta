@@ -1,6 +1,10 @@
 package com.lenta.bp15.repository.database
 
 
+import com.lenta.bp15.platform.extention.getTaskTypeByCode
+import com.lenta.bp15.platform.extention.getTaskTypeList
+import com.lenta.bp15.platform.extention.getUnknownTaskType
+import com.lenta.bp15.repository.database.pojo.TaskType
 import com.lenta.shared.fmp.resources.dao_ext.*
 import com.lenta.shared.fmp.resources.fast.*
 import com.lenta.shared.fmp.resources.slow.*
@@ -58,6 +62,17 @@ class DatabaseRepository @Inject constructor(
         }
     }
 
+    override suspend fun getTaskTypeList(): List<TaskType> {
+        return withContext(Dispatchers.IO) {
+            taskTypes.getTaskTypeList()
+        }
+    }
+
+    override suspend fun getTaskTypeByCode(taskTypeCode: String): TaskType {
+        return withContext(Dispatchers.IO) {
+            taskTypes.getTaskTypeByCode(taskTypeCode) ?: getUnknownTaskType()
+        }
+    }
 }
 
 interface IDatabaseRepository {
@@ -65,5 +80,7 @@ interface IDatabaseRepository {
     suspend fun getEanListByMaterialUnits(material: String, unitsCode: String): List<String>
     suspend fun getEanInfo(ean: String): com.lenta.shared.requests.combined.scan_info.pojo.EanInfo?
     suspend fun getAllowedAppVersion(): String?
+    suspend fun getTaskTypeList(): List<TaskType>
+    suspend fun getTaskTypeByCode(taskTypeCode: String): TaskType
 
 }

@@ -3,6 +3,7 @@ package com.lenta.bp15.repository.net_requests.pojo
 import com.google.gson.annotations.SerializedName
 import com.lenta.bp15.model.pojo.Block
 import com.lenta.bp15.model.pojo.Task
+import com.lenta.bp15.repository.database.pojo.TaskType
 import com.lenta.shared.utilities.BlockType
 import com.lenta.shared.utilities.extentions.IResultWithRetCodes
 import com.lenta.shared.utilities.extentions.isSapTrue
@@ -20,7 +21,11 @@ data class TaskListResult(
         return tasks?.map { taskRawInfo ->
             Task(
                     number = taskRawInfo.number,
-                    type = taskRawInfo.type,
+                    type = TaskType(
+                            code = taskRawInfo.type,
+                            name = "",
+                            description = ""
+                    ),
                     firstLine = taskRawInfo.firstLine,
                     secondLine = taskRawInfo.secondLine,
                     title = taskRawInfo.title,
@@ -37,4 +42,5 @@ data class TaskListResult(
             )
         }
     }
+
 }

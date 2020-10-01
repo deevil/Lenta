@@ -1,11 +1,12 @@
 package com.lenta.bp15.model.pojo
 
-import com.lenta.bp15.features.task_card.TaskInfoUi
+import com.lenta.bp15.features.task_card.TaskCardUi
 import com.lenta.bp15.features.task_list.ItemTaskUi
+import com.lenta.bp15.repository.database.pojo.TaskType
 
 data class Task(
         val number: String,
-        val type: String,
+        var type: TaskType,
         val firstLine: String,
         val secondLine: String,
         val title: String,
@@ -15,7 +16,7 @@ data class Task(
         val block: Block,
         val isFinished: Boolean,
         val comment: String,
-        var goods: List<Good>
+        var goods: List<Good> = emptyList()
 ) {
 
     private var startHashState = NO_HASH
@@ -36,12 +37,12 @@ data class Task(
         )
     }
 
-    fun convertToTaskInfoUi(): TaskInfoUi {
-        return TaskInfoUi(
-                type = type,
-                name = secondLine,
+    fun convertToTaskInfoUi(): TaskCardUi {
+        return TaskCardUi(
+                typeName = type.name,
+                taskName = secondLine,
                 quantity = "$marksQuantity",
-                description = description,
+                description = type.description,
                 comment = comment
         )
     }
