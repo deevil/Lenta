@@ -94,8 +94,8 @@ class TaskContentNetRequest
         }
         return TaskProductInfo(materialNumber = materialInfo.material.orEmpty(),
                 description = materialInfo.name.orEmpty(),
-                uom = Uom(code = uomInfo.uom, name = uomInfo.name),
-                type = getProductType(isAlco = materialInfo.isAlco!!.isNotEmpty(), isExcise = materialInfo.isExc!!.isNotEmpty()),
+                uom = Uom(code = uomInfo.uom.orEmpty(), name = uomInfo.name.orEmpty()),
+                type = getProductType(isAlco = materialInfo.isAlco?.isNotEmpty() == true, isExcise = materialInfo.isExc?.isNotEmpty() == true),
                 isSet = isSet.isNotEmpty(),
                 sectionId = materialInfo.abtnr.orEmpty(),
                 matrixType = getMatrixType(materialInfo.matrType.orEmpty()),

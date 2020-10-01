@@ -100,7 +100,7 @@ abstract class BaseGoodInfoViewModel<R : Taskable, T : ITaskManager<R>> : CoreVi
             }
         }
     }
-    
+
     /**
      * Количество по корзине
      * */

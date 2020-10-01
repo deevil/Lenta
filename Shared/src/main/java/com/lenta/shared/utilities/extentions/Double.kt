@@ -1,5 +1,7 @@
 package com.lenta.shared.utilities.extentions
 
+import kotlin.math.pow
+import kotlin.math.round
 import kotlin.math.roundToInt
 
 fun Double?.toStringFormatted(): String {
@@ -13,7 +15,14 @@ fun Double?.toStringFormatted(): String {
 }
 
 fun Double?.sumWith(other: Double?): Double {
-    return ((this ?: 0.0).toBigDecimal() + (other ?: 0.0).toBigDecimal()).toDouble()
+    val sum = ((this ?: 0.0).toBigDecimal() + (other ?: 0.0).toBigDecimal()).toDouble()
+    return sum.roundTo(2)
+}
+
+fun Double.roundTo(numberOfZeroes: Int): Double {
+    val divider = 10.0
+    val dividerWithPow = divider.pow(numberOfZeroes)
+    return round((this) * dividerWithPow) / dividerWithPow
 }
 
 fun Double?.subWith(other: Double?): Double {

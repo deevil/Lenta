@@ -158,7 +158,7 @@ object EAN128Parser {
                 return null
             }
             // get the AI sub string
-            var ai = data.substring(index, addedIndex)
+            var ai = data.substring(index, addedIndex).replace(groutSeperator.toString(), "")
             if (usePlaceHolder && ai.isNotEmpty()) {
                 ai = ai.removeRange(ai.length - 1, ai.length) + "d"
             }

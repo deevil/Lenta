@@ -97,8 +97,7 @@ class GoodsInfoShipmentPPViewModel : CoreViewModel(), OnPositionClickListener {
                         return@launchUITryCatch
                     }
 
-            searchProductDelegate.init(viewModelScope = this@GoodsInfoShipmentPPViewModel::viewModelScope,
-                    scanResultHandler = this@GoodsInfoShipmentPPViewModel::handleProductSearchResult)
+            searchProductDelegate.init(scanResultHandler = this@GoodsInfoShipmentPPViewModel::handleProductSearchResult)
 
             suffix.value = uom.value?.name
 

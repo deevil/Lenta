@@ -9,6 +9,7 @@ import com.lenta.bp9.databinding.FragmentZBatchesInfoPppBinding
 import com.lenta.bp9.features.goods_information.mercury.GoodsMercuryInfoFragment
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.extentions.getAppComponent
+import com.lenta.shared.models.core.BarcodeData
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -28,10 +29,11 @@ class ZBatchesInfoPPPFragment : CoreFragment<FragmentZBatchesInfoPppBinding, ZBa
         OnBackPresserListener {
 
     companion object {
-        fun newInstance(productInfo: TaskProductInfo, isDiscrepancy: Boolean): ZBatchesInfoPPPFragment {
+        fun newInstance(productInfo: TaskProductInfo, isDiscrepancy: Boolean, barcodeData: BarcodeData?): ZBatchesInfoPPPFragment {
             ZBatchesInfoPPPFragment().let {
                 it.productInfo = productInfo
                 it.isDiscrepancy = isDiscrepancy
+                it.barcodeData = barcodeData
                 return it
             }
         }
@@ -39,6 +41,7 @@ class ZBatchesInfoPPPFragment : CoreFragment<FragmentZBatchesInfoPppBinding, ZBa
 
     private var isDiscrepancy by state<Boolean?>(null)
     private var productInfo by state<TaskProductInfo?>(null)
+    private var barcodeData by state<BarcodeData?>(null)
 
     override fun getLayoutId(): Int = R.layout.fragment_z_batches_info_ppp
 
@@ -49,6 +52,7 @@ class ZBatchesInfoPPPFragment : CoreFragment<FragmentZBatchesInfoPppBinding, ZBa
             getAppComponent()?.inject(vm)
             this.productInfo?.let { vm.initProduct(it) }
             this.isDiscrepancy?.let { vm.initDiscrepancy(it) }
+            this.barcodeData?.let { vm.initBarcodeData(it) }
             return vm
         }
     }

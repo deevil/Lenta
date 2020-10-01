@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".features.goods_information.marking.task_pge.marking_info_box_pge.MarkingBoxInfoPGEFragment">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.lenta.bp9.features.goods_information.marking.task_pge.marking_info_box_pge.MarkingInfoBoxPGEViewModel" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <View
+            android:id="@+id/div_hor1"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/size_8dp"
+            android:background="@color/color_divider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5" />
+
+        <View
+            android:id="@+id/div_vert1"
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:background="@color/color_divider"
+            app:layout_constraintBottom_toBottomOf="@+id/div_hor3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/div_hor1" />
+
+        <com.lenta.shared.view.ClickableSpinner
+            android:id="@+id/spinner_quality"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/spinner_quality_height"
+            android:layout_marginStart="@dimen/size_8dp"
+            android:layout_marginEnd="@dimen/size_8dp"
+            app:items="@{vm.spinQuality}"
+            android:enabled="@{vm.spinQualityEnabled}"
+            app:layout_constraintBottom_toBottomOf="@+id/et_count"
+            app:layout_constraintEnd_toStartOf="@+id/div_vert1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/et_count"
+            app:position="@{vm.spinQualitySelectedPosition}"
+            tools:entries="@array/test_list" />
+
+        <com.lenta.shared.view.EditTextWithSuffix
+            android:id="@+id/et_count"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/size_8dp"
+            android:layout_marginTop="@dimen/size_8dp"
+            android:layout_marginEnd="@dimen/size_8dp"
+            android:ellipsize="end"
+            android:inputType="numberDecimal"
+            android:maxLength="6"
+            android:maxLines="1"
+            android:text="@={vm.count}"
+            app:digitsForUom="@{vm.productInfo.uom}"
+            app:onlyDigits="@{true}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/div_vert1"
+            app:layout_constraintTop_toTopOf="@+id/div_vert1"
+            app:maxLengthForScanProtect="@{6}"
+            app:suffix="@{vm.suffix}"
+            app:cursorToLastPos="@{false}"
+            app:requestFocus="@{vm.requestFocusToCount}"
+            tools:text="1 КОР" />
+
+        <ImageView
+            android:id="@+id/imgUnit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/size_8dp"
+            android:enabled="@{vm.enabled}"
+            android:onClick="@{(v) -> vm.onClickUnitChange()}"
+            android:src="@{vm.isUnitBox ? @drawable/ic_eiz_white_24dp : @drawable/ic_block_24dp}"
+            app:layout_constraintBottom_toBottomOf="@+id/et_count"
+            app:layout_constraintEnd_toEndOf="@+id/et_count"
+            app:layout_constraintTop_toTopOf="@+id/et_count"
+            tools:src="@drawable/ic_block_24dp"/>
+
+        <View
+            android:id="@+id/div_hor2"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/size_8dp"
+            android:background="@color/color_divider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/et_count" />
+
+        <TextView
+            android:id="@+id/tv_accept"
+            style="@style/TextTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/size_8dp"
+            android:layout_marginEnd="@dimen/size_8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="@{vm.tvAccept}"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_accept_val"
+            app:layout_constraintEnd_toStartOf="@+id/div_vert1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tv_accept_val"
+            tools:text="Принять (блок=10 шт)" />
+
+        <TextView
+            android:id="@+id/tv_accept_val"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/size_8dp"
+            android:layout_marginTop="@dimen/size_8dp"
+            android:layout_marginEnd="@dimen/size_8dp"
+            android:ellipsize="end"
+            android:gravity="start|center_vertical"
+            android:maxLines="1"
+            android:text='@{vm.acceptTotalCountWithUom}'
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/div_hor2"
+            tools:text="+ 10 шт" />
+
+        <TextView
+            android:id="@+id/tv_refusal"
+            style="@style/TextTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/size_8dp"
+            android:layout_marginEnd="@dimen/size_8dp"
+            android:text="@string/refusal"
+            app:layout_constraintEnd_toStartOf="@+id/guideline"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_accept" />
+
+        <TextView
+            android:id="@+id/tv_refusal_val"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/size_8dp"
+            android:layout_marginEnd="@dimen/size_8dp"
+            android:ellipsize="end"
+            android:gravity="start|center_vertical"
+            android:maxLines="1"
+            android:text='@{vm.refusalTotalCountWithUom}'
+            android:textColor="@color/color_pressed_red"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/tv_accept_val"
+            tools:text="- 10 шт" />
+
+        <View
+            android:id="@+id/div_hor3"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/size_28dp"
+            android:background="@color/color_divider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_accept_val" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/ConstraintNorm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="@{!vm.isDefect}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/div_hor3">
+
+            <View
+                android:id="@+id/div_vert2"
+                android:layout_width="1dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="1dp"
+                android:background="@color/color_divider"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_stamps_control"
+                style="@style/TextTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/size_8dp"
+                android:layout_marginEnd="@dimen/size_8dp"
+                android:ellipsize="end"
+                android:text="@string/stamps_control_in_box"
+                app:layout_constraintBottom_toBottomOf="@+id/tv_stamps_control_val"
+                app:layout_constraintEnd_toStartOf="@+id/div_vert2"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/tv_stamps_control_val" />
+
+            <TextView
+                android:id="@+id/tv_stamps_control_val"
+                style="@style/TextTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/size_8dp"
+                android:layout_marginTop="@dimen/size_12dp"
+                android:layout_marginEnd="@dimen/size_8dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="@{vm.tvStampControlVal}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/checkBox_stamp_control"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="0 из 5" />
+
+            <CheckBox
+                android:id="@+id/checkBox_stamp_control"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/size_8dp"
+                android:layout_marginTop="@dimen/size_10dp"
+                android:checked="@{vm.checkStampControl}"
+                android:enabled="false"
+                android:visibility="@{vm.checkStampControlVisibility}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/div_vert2"
+                app:layout_constraintTop_toTopOf="@+id/div_vert2" />
+
+            <View
+                android:id="@+id/div_hor5"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="@dimen/size_12dp"
+                android:background="@color/color_divider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_stamps_control_val" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/ConstraintDefect"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ConstraintNorm">
+
+            <TextView
+                android:id="@+id/tv_stamp_list"
+                style="@style/TextTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/size_8dp"
+                android:layout_marginEnd="@dimen/size_8dp"
+                android:ellipsize="end"
+                android:text="@string/control_boxes"
+                app:layout_constraintBottom_toBottomOf="@+id/tv_stamp_list_val"
+                app:layout_constraintEnd_toStartOf="@+id/div_vert3"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/tv_stamp_list_val" />
+
+            <CheckBox
+                android:id="@+id/checkBox_stamp_list"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/size_8dp"
+                android:layout_marginTop="@dimen/size_10dp"
+                android:checked="@{vm.checkBoxStampList}"
+                android:enabled="false"
+                android:visibility="@{vm.checkBoxStampListVisibility}"
+                app:layout_constraintStart_toEndOf="@+id/div_vert3"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_stamp_list_val"
+                style="@style/TextTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/size_8dp"
+                android:layout_marginTop="@dimen/size_12dp"
+                android:layout_marginEnd="@dimen/size_8dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="@{vm.tvBoxListVal}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/checkBox_stamp_list"
+                app:layout_constraintTop_toTopOf="@+id/div_vert3"
+                tools:text="0 из 2" />
+
+            <View
+                android:id="@+id/div_vert3"
+                android:layout_width="1dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="1dp"
+                android:background="@color/color_divider"
+                app:layout_constraintBottom_toBottomOf="@+id/div_hor7"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <View
+                android:id="@+id/div_hor7"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="@dimen/size_12dp"
+                android:background="@color/color_divider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_stamp_list_val" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- Блок с иконками -->
+        <LinearLayout
+            style="@style/BottomIconBarStyle"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <LinearLayout style="@style/BottomIconContainerStyle">
+
+                <TextView
+                    android:id="@+id/tv_product_section_id"
+                    style="@style/BottomCircleIconStyle"
+                    android:onClick="@{(v) -> vm.screenNavigator.openSectionInfoScreen(vm.productInfo.sectionId)}"
+                    android:text='@{"" + vm.productInfo.sectionId}'
+                    tools:text="03" />
+
+            </LinearLayout>
+
+            <ImageView
+                style="@style/BottomIconStyle"
+                android:onClick="@{(v) -> vm.screenNavigator.openMarkingGoodsInfoScreen()}"
+                android:src="@drawable/ic_marked_white_32dp" />
+
+            <View style="@style/BottomIconEmptyPlaceStyle" />
+
+            <View style="@style/BottomIconEmptyPlaceStyle" />
+
+            <View style="@style/BottomIconEmptyPlaceStyle" />
+
+            <ImageView
+                style="@style/BottomIconStyle"
+                android:onClick="@{(v) -> vm.screenNavigator.openBoxInfoScreen()}"
+                android:src="@drawable/ic_scan_box_white_32dp" />
+
+            <ImageView
+                style="@style/BottomIconStyle"
+                android:onClick="@{(v) -> vm.screenNavigator.openESInfoScreen()}"
+                android:src="@drawable/ic_scan_barcode_es_white_32dp" />
+
+            <ImageView
+                style="@style/BottomIconStyle"
+                android:onClick="@{(v) -> vm.screenNavigator.openEanInfoScreen()}"
+                android:src="@drawable/ic_scan_barcode_white_32dp" />
+
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

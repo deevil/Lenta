@@ -106,7 +106,7 @@ class ProcessSetsService @Inject constructor() : IProcessProductService {
                             eans.ean
                         },
                         count = data.menge.toString(),
-                        uom = Uom(code = uomInfo!!.uom, name = uomInfo.name),
+                        uom = Uom(code = uomInfo?.uom.orEmpty(), name = uomInfo?.name.orEmpty()),
                         matrixType = getMatrixType(it.matrType.orEmpty()),
                         sectionId = it.abtnr.orEmpty(),
                         typeProduct = getProductType(it.isAlco == "X", it.isExc == "X"),
