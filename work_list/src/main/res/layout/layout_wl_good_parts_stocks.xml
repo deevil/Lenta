@@ -109,7 +109,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="@dimen/size_10dp"
                 android:text="@string/data_loading" />
 
         </LinearLayout>
@@ -118,7 +118,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_margin="20dp"
+            android:layout_margin="@dimen/size_20dp"
             android:gravity="center"
             android:text="@{vm.dataLoadingError}"
             android:visibility="@{vm.dataLoadingErrorVisibility}"

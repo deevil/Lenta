@@ -399,6 +399,16 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showAlertWithStockItemNotFound() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.stock_item_not_found),
+                    iconRes = R.drawable.ic_warning_yellow_80dp,
+                    pageNumber = "14"
+            ))
+        }
+    }
+
     override fun openVideoScanProductScreen() {
         runOrPostpone {
             getFragmentStack()?.push(EanVideoScannerFragment())
@@ -414,8 +424,10 @@ class ScreenNavigator @Inject constructor(
 
     override fun openPictogrammInfoZPart() {
         runOrPostpone {
-            getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.z_part),
-                    iconRes = R.drawable.ic_z), CustomAnimation.vertical)
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.z_part),
+                    iconRes = R.drawable.ic_z
+            ), CustomAnimation.vertical)
         }
     }
 
@@ -542,6 +554,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun showIncorrectProductionDate(backCallback: () -> Unit)
     fun showNumberOfCopiesExceedsMaximum()
     fun showSetZeroQuantity(yesCallback: () -> Unit, quantity: Int)
+    fun showAlertWithStockItemNotFound()
 
     fun openTestScanBarcodeScreen()
     fun openScanPriceScreen()

@@ -8,6 +8,7 @@ import com.lenta.bp14.R
 import com.lenta.bp14.databinding.FragmentStorageZPartsBinding
 import com.lenta.bp14.databinding.ItemStorageZPartBinding
 import com.lenta.bp14.di.WorkListComponent
+import com.lenta.bp14.platform.extentions.getHelperComponent
 import com.lenta.shared.di.CoreInjectHelper
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -20,11 +21,8 @@ class StorageZPartsFragment : CoreFragment<FragmentStorageZPartsBinding, Storage
 
     override fun getPageNumber(): String = PAGE_NUMBER
 
-    override fun getViewModel(): StorageZPartsViewModel {
-        provideViewModel(StorageZPartsViewModel::class.java).let {
-            CoreInjectHelper.getComponent(WorkListComponent::class.java)!!.inject(it)
-            return it
-        }
+    override fun getViewModel(): StorageZPartsViewModel = provideViewModel(StorageZPartsViewModel::class.java).apply {
+        getHelperComponent<WorkListComponent>()?.inject(this)
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {

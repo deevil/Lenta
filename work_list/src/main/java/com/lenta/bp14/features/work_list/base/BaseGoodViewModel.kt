@@ -10,11 +10,15 @@ import javax.inject.Inject
 
 open class BaseGoodViewModel : CoreViewModel() {
 
+
     @Inject
     lateinit var task: WorkListTask
 
     @Inject
     lateinit var resourceFormatter: IResourceFormatter
+
+    val good by lazy { task.currentGood }
+
 
     protected fun List<ZPart>?.mapToZPartUiList(goodUnitsName: String): List<ZPartUi> {
         return this?.mapIndexed { index, zPart ->

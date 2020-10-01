@@ -64,16 +64,18 @@ class AdditionalGoodInfoNetRequest
     private fun ProductInfoResult.extractZParts() = zParts.map { it.toZPart() }
 
 
-    private fun ZPartDTO.toZPart() = ZPart(batch.orEmpty(),
-            stock.orEmpty(),
-            producer.orEmpty(),
-            quantity.toDoubleOrZero(),
-            meins.orEmpty(),
-            dateExpir.orEmpty(),
-            dateProd.orEmpty()
+    private fun ZPartDTO.toZPart() = ZPart(
+            batch = batch.orEmpty(),
+            stock = stock.orEmpty(),
+            producer = producer.orEmpty(),
+            quantity = quantity.toDoubleOrZero(),
+            meins = meins.orEmpty(),
+            dateExpir = dateExpir.orEmpty(),
+            dateProd = dateProd.orEmpty()
     )
 
     private fun String?.toDoubleOrZero(): Double = this?.toDoubleOrNull() ?: 0.0
+
     private fun List<ZPart>.quantitySum(): Double {
         var sum = 0.0
         for(zPart in this) {

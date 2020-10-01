@@ -31,6 +31,7 @@ import com.lenta.shared.utilities.actionByNumber
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -70,8 +71,6 @@ class GoodInfoWlViewModel : BaseGoodViewModel(), PageSelectionListener, OnOkInSo
 
     val commentsPosition = MutableLiveData(0)
     val shelfLifeTypePosition = MutableLiveData(0)
-
-    val good by lazy { task.currentGood }
 
     val title = MutableLiveData<String>("")
 
@@ -188,8 +187,11 @@ class GoodInfoWlViewModel : BaseGoodViewModel(), PageSelectionListener, OnOkInSo
     }
 
     val zParts: LiveData<List<ZPartUi>> by unsafeLazy {
-        good.mapSkipNulls { good ->
-            good?.additional?.zParts.mapToZPartUiList(good.units.name)
+        good.switchMap { good ->
+            asyncLiveData<List<ZPartUi>> {
+                val result = good?.additional?.zParts.mapToZPartUiList(good.units.name)
+                emit(result)
+            }
         }
     }
 
@@ -270,13 +272,13 @@ class GoodInfoWlViewModel : BaseGoodViewModel(), PageSelectionListener, OnOkInSo
 
     // -----------------------------
 
-    private suspend fun loadAdditionalInfo() = withContext(Dispatchers.IO) {
+    private suspend fun loadAdditionalInfo() {
         additionalGoodInfoNetRequest(AdditionalGoodInfoParams(
                 tkNumber = sessionInfo.market.orEmpty(),
                 ean = good.value?.ean,
                 matNr = good.value?.material
         )).also {
-            loadingIndicatorVisibility.postValue(false)
+            loadingIndicatorVisibility.value = false
         }.either(::handleAdditionalInfoFailure, ::updateAdditionalGoodInfo)
 
     }
@@ -284,8 +286,8 @@ class GoodInfoWlViewModel : BaseGoodViewModel(), PageSelectionListener, OnOkInSo
     private fun handleAdditionalInfoFailure(failure: Failure) {
         super.handleFailure(failure)
         val error = if (failure is Failure.SapError) failure.message else resourceManager.serverConnectionError
-        dataLoadingError.postValue(error)
-        dataLoadingErrorVisibility.postValue(true)
+        dataLoadingError.value = error
+        dataLoadingErrorVisibility.value = true
     }
 
     private fun updateAdditionalGoodInfo(result: AdditionalGoodInfo) {
@@ -363,8 +365,11 @@ class GoodInfoWlViewModel : BaseGoodViewModel(), PageSelectionListener, OnOkInSo
     }
 
     fun onStockItemClick(itemIndex: Int) {
-        stocks.value?.get(itemIndex)?.let { stock ->
+        stocks.value?.getOrNull(itemIndex)?.let { stock ->
             navigator.openStorageZPartsScreen(stock.storage)
+        }.orIfNull {
+            Logg.w { "Stock value is null!" }
+            navigator.showAlertWithStockItemNotFound()
         }
     }
 

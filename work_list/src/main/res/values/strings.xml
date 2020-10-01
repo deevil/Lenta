@@ -51,6 +51,7 @@
     <string name="server_connection_error">Ошибка подключения к серверу</string>
     <string name="number_of_copies_exceeds_maximum">Количество копий превышает максимально допустимое.</string>
     <string name="set_zero_quantity">Вы действительно хотите установить 0 в поле количества для %1$d товаров из списка?</string>
+    <string name="stock_item_not_found">Не удалось найти данные о складе!</string>
     <string name="z_part">Z-партия</string>
 
 
