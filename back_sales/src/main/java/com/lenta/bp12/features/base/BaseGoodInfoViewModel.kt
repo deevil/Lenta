@@ -189,7 +189,7 @@ abstract class BaseGoodInfoViewModel<R : Taskable, T : ITaskManager<R>> : CoreVi
     protected val producers = sourceProducers.mapSkipNulls { producers ->
         producers.apply {
             if (size > 1) {
-                add(0, ProducerInfo(name = resource.chooseProducer()))
+                add(0, ProducerInfo(name = resource.chooseProducer))
             }
         }
     }
