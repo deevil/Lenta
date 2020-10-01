@@ -59,9 +59,9 @@ data class Task(
         } else false
     }
 
-    fun clearStartState() {
+    /*fun clearStartState() {
         startHashState = NO_HASH
-    }
+    }*/
 
     private fun isNotSavedStartState(): Boolean {
         return startHashState == NO_HASH

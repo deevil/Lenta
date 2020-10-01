@@ -71,10 +71,12 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
 
     fun onBackPressed() {
         task.value?.let { task ->
-            navigator.goBack()
-            if (!task.isChanged()) {
-                launchUITryCatch {
-                    manager.unlockTask(task)
+            if (task.isChanged()) {
+                navigator.showTaskUnsentDataWillBeDeleted(task.firstLine) {
+                    navigator.goBack()
+                    launchUITryCatch {
+                        manager.unlockTask(task)
+                    }
                 }
             }
         }

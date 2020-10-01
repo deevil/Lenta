@@ -82,14 +82,6 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     Методы
      */
 
-    private fun updateTaskList() {
-        manager.loadProcessingTaskList()
-
-        /*launchUITryCatch {
-            manager.loadProcessingTaskList()
-        }*/
-    }
-
     override fun onPageSelected(position: Int) {
         selectedPage.value = position
     }
@@ -145,6 +137,10 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     fun onClickUpdate() {
         updateTaskList()
+    }
+
+    private fun updateTaskList() {
+        manager.loadProcessingTaskList()
     }
 
     fun onClickFilter() {

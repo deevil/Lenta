@@ -26,6 +26,7 @@
     <string name="stamp_already_processed">Марка уже обработана.</string>
     <string name="invalid_barcode_format_scanned">Отсканирован неверный формат штрихкода.</string>
     <string name="scanned_stamp_is_not_on_task">Отсканированная марка не числится в задании.</string>
+    <string name="task_unsent_data_will_be_deleted">По заданию \"%1$s\" будут удалены все непереданные данные</string>
 
     // Описание иконок
     <string name="marked_good">Маркированный товар</string>

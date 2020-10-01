@@ -218,6 +218,17 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showTaskUnsentDataWillBeDeleted(taskName: String, applyCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.task_unsent_data_will_be_deleted, taskName),
+                    iconRes = R.drawable.ic_delete_red_80dp,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(applyCallback),
+                    rightButtonDecorationInfo = ButtonDecorationInfo.apply
+            ))
+        }
+    }
+
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -246,5 +257,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun showStampAlreadyProcessed()
     fun showInvalidBarcodeFormatScanned()
     fun showScannedStampIsNotOnTask()
+    fun showTaskUnsentDataWillBeDeleted(taskName: String, applyCallback: () -> Unit)
 
 }
