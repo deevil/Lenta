@@ -14,7 +14,6 @@ import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.launchUITryCatch
-import com.lenta.shared.utilities.extentions.mapSkipNulls
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.mapSkipNulls
 import com.lenta.shared.utilities.extentions.unsafeLazy
