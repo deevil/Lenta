@@ -83,7 +83,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
     Ввод количества
      */
 
-    val quantityField = MutableLiveData(ZERO_QUANTITY_STRING)
+    override val quantityField = MutableLiveData(ZERO_QUANTITY_STRING)
 
     override val quantity = quantityField.map {
         it?.toDoubleOrNull() ?: ZERO_QUANTITY
@@ -96,41 +96,6 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
                 else -> false
             }
         }
-    }
-
-    /**
-    Список производителей
-     */
-
-    private val sourceProducers = MutableLiveData(mutableListOf<ProducerInfo>())
-
-    private val producers = sourceProducers.mapSkipNulls { producers ->
-        producers.toMutableList().apply {
-            if (size > 1) {
-                add(0, ProducerInfo(name = resource.chooseProducer()))
-            }
-        }
-    }
-
-    val producerList by lazy {
-        producers.mapSkipNulls { list ->
-            list.map { it.name }
-        }
-    }
-
-    val producerEnabled by lazy {
-        producers.map { producers ->
-            producers?.size ?: 0 > 1
-        }
-    }
-
-    val producerPosition = MutableLiveData(FIRST_POSITION)
-
-    private val isProducerSelected = producerEnabled.combineLatest(producerPosition).map {
-        val isEnabled = it?.first ?: false
-        val position = it?.second ?: FIRST_POSITION
-
-        (isEnabled && position > FIRST_POSITION) || (!isEnabled && position == FIRST_POSITION)
     }
 
     /**
@@ -772,18 +737,6 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
      */
 
 
-    override fun onBackPressed() {
-        with(navigator) {
-            if (isExistUnsavedData()) {
-                showUnsavedDataWillBeLost {
-                    goBack()
-                }
-            } else {
-                goBack()
-            }
-        }
-    }
-
     override fun onClickRollback() {
         good.value?.let { good ->
             thereWasRollback = true
@@ -840,20 +793,15 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
         }
     }
 
-    private fun isExistUnsavedData(): Boolean {
-        return good.value?.let { goodValue ->
-            val isQuantityFieldChanged = quantityField.value != ZERO_QUANTITY_STRING
-            val isProviderSelected = providerEnabled.value == true && providerPosition.value != FIRST_POSITION
-            val isProducerSelected = producerEnabled.value == true && producerPosition.value != FIRST_POSITION
-
-            val isEnteredMoreThanZeroAndProviderSelected = isQuantityFieldChanged || isProviderSelected
-            val isDateEntered = date.value?.isEmpty() != true
-            return if (goodValue.isAlco() || goodValue.isExciseAlco()) {
-                isEnteredMoreThanZeroAndProviderSelected || isProducerSelected || isDateEntered
-            } else {
-                isEnteredMoreThanZeroAndProviderSelected
-            }
-        }.orIfNull { false }
+    override fun isExistUnsavedData(): Boolean {
+        val isProducerChanged = isProducerEnabledAndChanged() == true
+        val isEnteredMoreThanZeroAndProviderSelected = isQuantityFieldChanged() == true || isProviderEnabledAndChanged() == true
+        val isDateEntered = date.value?.isEmpty() != true
+        return if (isGoodAlcoOrExciseAlco() == true) {
+            isEnteredMoreThanZeroAndProviderSelected || isProducerChanged || isDateEntered
+        } else {
+            isEnteredMoreThanZeroAndProviderSelected
+        }
     }
 
     override fun afterTextChanged(s: Editable?) {
@@ -861,6 +809,6 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
     }
 
     companion object {
-        private const val ZERO_QUANTITY_STRING = "0"
+
     }
 }

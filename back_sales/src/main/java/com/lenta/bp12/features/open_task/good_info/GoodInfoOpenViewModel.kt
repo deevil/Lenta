@@ -87,7 +87,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
     Ввод количества
      */
 
-    val quantityField = MutableLiveData("0")
+    override val quantityField = MutableLiveData("0")
 
     override val quantity = quantityField.map {
         it?.toDoubleOrNull() ?: ZERO_QUANTITY
@@ -101,48 +101,6 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
             }
         }
     }
-
-
-    /**
-    Список производителей
-     */
-
-    private val sourceProducers = MutableLiveData(listOf<ProducerInfo>())
-
-    private val producers = sourceProducers.map {
-        it?.let { producers ->
-            val list = producers.toMutableList()
-            if (list.size > 1) {
-                list.add(0, ProducerInfo(name = resource.chooseProducer()))
-            }
-
-            list.toList()
-        }
-    }
-
-    val producerList by lazy {
-        producers.map { list ->
-            list?.map { it.name }
-        }
-    }
-
-    val producerEnabled by lazy {
-        producers.map { producers ->
-            producers?.size ?: 0 > 1
-        }
-    }
-
-    val producerPosition = MutableLiveData(FIRST_POSITION)
-
-    private val isProducerSelected = producerEnabled.combineLatest(producerPosition).map {
-        val isEnabled = it?.first ?: false
-        val position = it?.second ?: FIRST_POSITION
-
-        isProducerEnabledAndPositionChanged(isEnabled, position) or isProducerNotEnabledAndPositionDidntChanged(isEnabled, position)
-    }
-
-    private fun isProducerEnabledAndPositionChanged(isEnabled: Boolean, position: Int) = isEnabled && position > FIRST_POSITION
-    private fun isProducerNotEnabledAndPositionDidntChanged(isEnabled: Boolean, position: Int) = !isEnabled && position == FIRST_POSITION
 
     /**
     Дата производства
@@ -171,7 +129,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
                                 val isEnteredMoreThenZero = enteredQuantity > ZERO_QUANTITY
 
                                 val result = when (status) {
-                                    ScreenStatus.COMMON -> enteredQuantity != ZERO_QUANTITY && totalQuantity > 0.0
+                                    ScreenStatus.COMMON -> enteredQuantity != ZERO_QUANTITY && totalQuantity > ZERO_QUANTITY
                                     ScreenStatus.ALCOHOL -> isEnteredMoreThenZero && isProducerSelected && isDateEntered
                                     ScreenStatus.MARK_150 -> isEnteredMoreThenZero && isProducerSelected
                                     ScreenStatus.MARK_68 -> isEnteredMoreThenZero && isProducerSelected
@@ -454,7 +412,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
                                 setGood(result, number)
                             }
                         }.orIfNull {
-                            Logg.e { "material null"}
+                            Logg.e { "material null" }
                             navigator.showInternalError(resource.goodNotFoundErrorMsg)
                         }
                     }
@@ -668,7 +626,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
     }
 
     private fun updateProducers(producers: List<ProducerInfo>) {
-        sourceProducers.value = producers
+        sourceProducers.value = producers.toMutableList()
     }
 
     override suspend fun saveChanges(result: ScanInfoResult?) {
@@ -808,7 +766,6 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
         }
     }
 
-
     fun onClickMissing() {
         good.value?.let { changedGood ->
             changedGood.isCounted = true
@@ -866,19 +823,15 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
         }
     }
 
-    private fun isExistUnsavedData(): Boolean {
-        return good.value?.let { goodValue ->
-            val isQuantityFieldChanged = quantityField.value != ZERO_QUANTITY_STRING
-            val isProviderChanged = providerEnabled.value == true && providerPosition.value != FIRST_POSITION
-            val isProducerChanged = producerEnabled.value == true && producerPosition.value != FIRST_POSITION
-            val isQuantityOrProviderChanged = isQuantityFieldChanged || isProviderChanged
-            val isDateEntered = date.value?.isEmpty() != true
-            return if (goodValue.isAlco() || goodValue.isExciseAlco()) {
-                isQuantityOrProviderChanged || isProducerChanged || isDateEntered
-            } else {
-                isQuantityOrProviderChanged
-            }
-        }.orIfNull { false }
+    override fun isExistUnsavedData(): Boolean {
+        val isProducerChanged = isProducerEnabledAndChanged() == true
+        val isEnteredMoreThanZeroAndProviderSelected = isQuantityFieldChanged() == true || isProviderEnabledAndChanged() == true
+        val isDateEntered = date.value?.isEmpty() != true
+        return if (isGoodAlcoOrExciseAlco() == true) {
+            isEnteredMoreThanZeroAndProviderSelected || isProducerChanged || isDateEntered
+        } else {
+            isEnteredMoreThanZeroAndProviderSelected
+        }
     }
 
     override fun afterTextChanged(s: Editable?) {
