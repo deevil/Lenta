@@ -1,7 +1,6 @@
 package com.lenta.bp7.requests.network
 
 
-import com.lenta.shared.fmp.resources.slow.ZmpUtz24V001
 import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
 import com.lenta.shared.requests.network.CoreResourcesMultiRequest
 import com.mobrun.plugin.api.HyperHive
@@ -15,7 +14,6 @@ class SlowResourcesMultiRequest @Inject constructor(private val hyperHive: Hyper
 
     override fun getMapOfRequests(): Map<String, RequestBuilder<out CustomParameter, out ScalarParameter<Any>>> {
         return mapOf(
-                ZmpUtz24V001.NAME_RESOURCE to ZmpUtz24V001(hyperHive).newRequest(),
                 ZmpUtz25V001.NAME_RESOURCE to ZmpUtz25V001(hyperHive).newRequest()
         )
     }
