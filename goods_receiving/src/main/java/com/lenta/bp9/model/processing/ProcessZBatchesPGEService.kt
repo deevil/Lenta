@@ -67,7 +67,14 @@ class ProcessZBatchesPGEService
                 .isNullOrEmpty()
     }
 
-    fun removeDiscrepancyFromProduct(typeDiscrepancies: String, processingUnitNumber: String) {
+    fun removeDiscrepancyFromProduct(
+            typeDiscrepancies: String,
+            processingUnitNumber: String,
+            manufactureCode: String,
+            shelfLifeDate: String,
+            shelfLifeTime: String,
+            productionDate: String
+    ) {
         taskRepository
                 ?.getProductsDiscrepancies()
                 ?.deleteProductDiscrepancyOfProcessingUnit(
@@ -75,6 +82,38 @@ class ProcessZBatchesPGEService
                         typeDiscrepancies = typeDiscrepancies,
                         processingUnitNumber = processingUnitNumber
                 )
+
+        val foundZBatchesDiscrepancy =
+                taskRepository
+                        ?.getZBatchesDiscrepancies()
+                        ?.findZBatchDiscrepanciesOfProduct(productInfo.materialNumber)
+                        ?.findLast {
+                            it.typeDiscrepancies == typeDiscrepancies
+                                    && it.processingUnit == processingUnitNumber
+                                    && it.manufactureCode == manufactureCode
+                                    && it.shelfLifeDate == shelfLifeDate
+                                    && it.shelfLifeTime == shelfLifeTime
+                        }
+
+        foundZBatchesDiscrepancy?.let {
+            taskRepository?.getZBatchesDiscrepancies()?.deleteZBatchDiscrepancies(it)
+        }
+
+        val foundPartySign =
+                taskRepository
+                        ?.getZBatchesDiscrepancies()
+                        ?.findPartySignsOfProduct(productInfo.materialNumber, processingUnitNumber)
+                        ?.findLast {
+                            it.typeDiscrepancies == typeDiscrepancies
+                                    && it.manufactureCode == manufactureCode
+                                    && it.shelfLifeDate == shelfLifeDate
+                                    && it.shelfLifeTime == shelfLifeTime
+                                    && it.productionDate == productionDate
+                        }
+
+        foundPartySign?.let {
+            taskRepository?.getZBatchesDiscrepancies()?.deletePartySignOfZBatches(it)
+        }
     }
 
     fun addWithoutUnderload(
@@ -202,7 +241,7 @@ class ProcessZBatchesPGEService
             partySignsType: PartySignsTypeOfZBatches
     ) {
 
-        var foundDiscrepancy =
+        var foundPartySign =
                 taskRepository
                         ?.getZBatchesDiscrepancies()
                         ?.findPartySignsOfProduct(productInfo.materialNumber, processingUnit)
@@ -214,8 +253,8 @@ class ProcessZBatchesPGEService
                                     && it.productionDate == productionDate
                         }
 
-        foundDiscrepancy =
-                foundDiscrepancy
+        foundPartySign =
+                foundPartySign
                         ?.copy(partySign = partySignsType)
                         ?: PartySignsOfZBatches(
                                 processingUnit = processingUnit,
@@ -231,7 +270,7 @@ class ProcessZBatchesPGEService
 
         taskRepository
                 ?.getZBatchesDiscrepancies()
-                ?.changePartySign(foundDiscrepancy)
+                ?.changePartySign(foundPartySign)
     }
 
     fun countEqualOrigQuantityPGE (count: Double) : Boolean {
@@ -304,7 +343,8 @@ class ProcessZBatchesPGEService
                         ?.getProductsDiscrepancies()
                         ?.findProductDiscrepanciesOfProduct(productInfo)
                         ?.filter {
-                            it.typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM || it.typeDiscrepancies == paramGrwOlGrundcat
+                            it.typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM
+                                    || it.typeDiscrepancies == paramGrwOlGrundcat
                         }?.sumByDouble {
                             it.numberDiscrepancies.toDouble()
                         } ?: 0.0
@@ -320,6 +360,38 @@ class ProcessZBatchesPGEService
                         typeDiscrepancies = TYPE_DISCREPANCIES_QUALITY_NORM,
                         processingUnitNumber = processingUnit
                 )
+
+        var foundZBatchesDiscrepancy =
+                taskRepository
+                        ?.getZBatchesDiscrepancies()
+                        ?.findZBatchDiscrepanciesOfProduct(productInfo.materialNumber)
+                        ?.findLast {
+                            it.typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM
+                                    && it.processingUnit == processingUnit
+                                    && it.manufactureCode == manufactureCode
+                                    && it.shelfLifeDate == shelfLifeDate
+                                    && it.shelfLifeTime == shelfLifeTime
+                        }
+
+        foundZBatchesDiscrepancy?.let {
+            taskRepository?.getZBatchesDiscrepancies()?.deleteZBatchDiscrepancies(it)
+        }
+
+        var foundPartySign =
+                taskRepository
+                        ?.getZBatchesDiscrepancies()
+                        ?.findPartySignsOfProduct(productInfo.materialNumber, processingUnit)
+                        ?.findLast {
+                            it.typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM
+                                    && it.manufactureCode == manufactureCode
+                                    && it.shelfLifeDate == shelfLifeDate
+                                    && it.shelfLifeTime == shelfLifeTime
+                                    && it.productionDate == productionDate
+                        }
+
+        foundPartySign?.let {
+            taskRepository?.getZBatchesDiscrepancies()?.deletePartySignOfZBatches(it)
+        }
 
         add(count = productInfo.orderQuantity,
                 typeDiscrepancies = TYPE_DISCREPANCIES_QUALITY_NORM,
@@ -341,6 +413,38 @@ class ProcessZBatchesPGEService
                         typeDiscrepancies = paramGrwOlGrundcat,
                         processingUnitNumber = processingUnit
                 )
+
+        foundZBatchesDiscrepancy =
+                taskRepository
+                        ?.getZBatchesDiscrepancies()
+                        ?.findZBatchDiscrepanciesOfProduct(productInfo.materialNumber)
+                        ?.findLast {
+                            it.typeDiscrepancies == paramGrwOlGrundcat
+                                    && it.processingUnit == processingUnit
+                                    && it.manufactureCode == manufactureCode
+                                    && it.shelfLifeDate == shelfLifeDate
+                                    && it.shelfLifeTime == shelfLifeTime
+                        }
+
+        foundZBatchesDiscrepancy?.let {
+            taskRepository?.getZBatchesDiscrepancies()?.deleteZBatchDiscrepancies(it)
+        }
+
+        foundPartySign =
+                taskRepository
+                        ?.getZBatchesDiscrepancies()
+                        ?.findPartySignsOfProduct(productInfo.materialNumber, processingUnit)
+                        ?.findLast {
+                            it.typeDiscrepancies == paramGrwOlGrundcat
+                                    && it.manufactureCode == manufactureCode
+                                    && it.shelfLifeDate == shelfLifeDate
+                                    && it.shelfLifeTime == shelfLifeTime
+                                    && it.productionDate == productionDate
+                        }
+
+        foundPartySign?.let {
+            taskRepository?.getZBatchesDiscrepancies()?.deletePartySignOfZBatches(it)
+        }
 
         add(count = (countNormAndParam - productInfo.orderQuantity.toDouble()).toString(),
                 typeDiscrepancies = paramGrwOlGrundcat,

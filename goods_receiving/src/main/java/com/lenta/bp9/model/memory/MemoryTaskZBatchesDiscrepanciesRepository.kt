@@ -144,6 +144,22 @@ class MemoryTaskZBatchesDiscrepanciesRepository : ITaskZBatchesDiscrepanciesRepo
                 }
     }
 
+    override fun updatePartySignFromZBatch(zBatchesDiscrepancies: TaskZBatchesDiscrepancies, productionDate: String) {
+        addPartySignOfZBatches(
+                PartySignsOfZBatches(
+                        processingUnit = zBatchesDiscrepancies.processingUnit,
+                        materialNumber = zBatchesDiscrepancies.materialNumber,
+                        batchNumber = zBatchesDiscrepancies.batchNumber,
+                        typeDiscrepancies = zBatchesDiscrepancies.typeDiscrepancies,
+                        manufactureCode = zBatchesDiscrepancies.manufactureCode,
+                        shelfLifeDate = zBatchesDiscrepancies.shelfLifeDate,
+                        shelfLifeTime = zBatchesDiscrepancies.shelfLifeTime,
+                        productionDate = productionDate,
+                        partySign = PartySignsTypeOfZBatches.ProductionDate
+                )
+        )
+    }
+
     override fun addPartySignOfZBatches(partySign: PartySignsOfZBatches): Boolean {
         return partySignsOfZBatches.addItemToListWithPredicate(partySign) {
             it.materialNumber == partySign.materialNumber

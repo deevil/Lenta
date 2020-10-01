@@ -586,13 +586,20 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
     //ПГЕ блок 7.55
     private fun checkParamGrwUlGrundcat() {
         val paramGrwUlGrundcatValue = paramGrwUlGrundcat.value.orEmpty()
-        if (processZBatchesPGEService.checkParam(paramGrwUlGrundcat.value.orEmpty())) {//блок 7.55 (да)
+        if (processZBatchesPGEService.checkParam(paramGrwUlGrundcatValue)) {//блок 7.55 (да)
             //блок 7.96
             val countWithoutParamGrwUlGrundcat = processZBatchesPGEService.countWithoutParamGrwUlGrundcatPGE(paramGrwOlGrundcat.value.orEmpty(), paramGrwUlGrundcat.value.orEmpty())
             //блок 7.135
             if (countWithoutParamGrwUlGrundcat == 0.0) {//блок 7.135 (да)
                 //блок 7.133
-                processZBatchesPGEService.removeDiscrepancyFromProduct(paramGrwUlGrundcat.value.orEmpty(), currentProcessingUnitNumber)
+                processZBatchesPGEService.removeDiscrepancyFromProduct(
+                        typeDiscrepancies = paramGrwUlGrundcatValue,
+                        processingUnitNumber = currentProcessingUnitNumber,
+                        manufactureCode = currentManufactureCode,
+                        shelfLifeDate = getShelfLifeDate(),
+                        shelfLifeTime = getShelfLifeTime(),
+                        productionDate = getProductionDate()
+                )
                 //блок 7.177
                 saveCategoryPGE(true)
             } else {//блок 7.135 (нет)
@@ -614,7 +621,14 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
                     saveCategoryPGE(true)
                 } else {//блок 7.157 (нет)
                     //блок 7.165
-                    processZBatchesPGEService.removeDiscrepancyFromProduct(paramGrwUlGrundcatValue, currentProcessingUnitNumber)
+                    processZBatchesPGEService.removeDiscrepancyFromProduct(
+                            typeDiscrepancies = paramGrwUlGrundcatValue,
+                            processingUnitNumber = currentProcessingUnitNumber,
+                            manufactureCode = currentManufactureCode,
+                            shelfLifeDate = getShelfLifeDate(),
+                            shelfLifeTime = getShelfLifeTime(),
+                            productionDate = getProductionDate()
+                    )
                     noParamGrwUlGrundcat()
                 }
             }
@@ -657,9 +671,10 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
 
     //ПГЕ блок 7.198
     private fun checkParamGrwOlGrundcat() {
-        if (qualityInfo.value!![spinQualitySelectedPosition.value!!].code == "1" || qualityInfo.value!![spinQualitySelectedPosition.value!!].code == paramGrwOlGrundcat.value!!) {//блок 7.198 (да)
+        if (currentTypeDiscrepanciesCodeByTaskType == TYPE_DISCREPANCIES_QUALITY_NORM ||
+                currentTypeDiscrepanciesCodeByTaskType == paramGrwOlGrundcat.value) {//блок 7.198 (да)
             //блок 7.202
-            val countNormAndParamMoreOrderQuantity = processZBatchesPGEService.countNormAndParamMoreOrderQuantityPGE(paramGrwOlGrundcat.value!!, convertEizToBei())
+            val countNormAndParamMoreOrderQuantity = processZBatchesPGEService.countNormAndParamMoreOrderQuantityPGE(paramGrwOlGrundcat.value.orEmpty(), convertEizToBei())
             if (countNormAndParamMoreOrderQuantity) {//блок 7.202 (да)
                 //блок 7.205
                 screenNavigator.openAlertCountMoreCargoUnitDialog(
@@ -695,21 +710,22 @@ class ZBatchesInfoPGEViewModel : BaseGoodsInfo() {
     private fun saveCategoryPGE(checkCategoryType: Boolean) {
         //если checkCategoryType==true, значит перед сохранением (блок 7.185) делаем блок 7.177
         if (checkCategoryType && currentTypeDiscrepanciesCodeByTaskType == paramGrwOlGrundcat.value) { //блок 7.177 (да)
-            //блоки 7.181 и 7.185
-        } else {
-            //блок 7.185
-            processZBatchesPGEService.add(
-                    count = convertEizToBei().toString(),
-                    typeDiscrepancies = currentTypeDiscrepanciesCodeByTaskType,
-                    manufactureCode = currentManufactureCode,
-                    shelfLifeDate = getShelfLifeDate(),
-                    shelfLifeTime = getShelfLifeTime(),
-                    productionDate = getProductionDate(),
-                    processingUnit = currentProcessingUnitNumber,
-                    partySignsType = getPartySignsType(),
-                    isShelfLifeObtainedFromEWM = isShelfLifeObtainedFromEWM.value ?: false
-            )
+            //блоки 7.181
+            //todo 7.181 Норма =Норма + значение из поля «кол-ва» Значение из поля «кол-ва» = 0, уточнить у аналитика, что это значит
         }
+
+        //блок 7.177 (нет) и блок 7.185
+        processZBatchesPGEService.add(
+                count = convertEizToBei().toString(),
+                typeDiscrepancies = currentTypeDiscrepanciesCodeByTaskType,
+                manufactureCode = currentManufactureCode,
+                shelfLifeDate = getShelfLifeDate(),
+                shelfLifeTime = getShelfLifeTime(),
+                productionDate = getProductionDate(),
+                processingUnit = currentProcessingUnitNumber,
+                partySignsType = getPartySignsType(),
+                isShelfLifeObtainedFromEWM = isShelfLifeObtainedFromEWM.value ?: false
+        )
 
         //ПГЕ блок 7.188
         clickBtnApply()
