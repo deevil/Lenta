@@ -4,15 +4,14 @@ import android.text.Editable
 import androidx.databinding.adapters.TextViewBindingAdapter
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
 import com.lenta.bp12.managers.interfaces.ITaskManager
 import com.lenta.bp12.model.Taskable
 import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.extentions.getQuantityOfGood
-import com.lenta.bp12.platform.FIRST_BASKET
-import com.lenta.bp12.platform.FIRST_POSITION
-import com.lenta.bp12.platform.ZERO_QUANTITY
+import com.lenta.bp12.platform.*
 import com.lenta.bp12.platform.extention.isWholesaleType
 import com.lenta.bp12.platform.extention.resolveMinuses
 import com.lenta.bp12.platform.navigation.IScreenNavigator
@@ -21,6 +20,7 @@ import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.request.GoodInfoNetRequest
 import com.lenta.bp12.request.ScanInfoNetRequest
 import com.lenta.bp12.request.ScanInfoResult
+import com.lenta.bp12.request.pojo.ProducerInfo
 import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -180,6 +180,44 @@ abstract class BaseGoodInfoViewModel<R : Taskable, T : ITaskManager<R>> : CoreVi
         }
     }
 
+    /**
+    Список производителей
+     */
+
+    protected val sourceProducers = MutableLiveData(mutableListOf<ProducerInfo>())
+
+    protected val producers = sourceProducers.mapSkipNulls { producers ->
+        producers.apply {
+            if (size > 1) {
+                add(0, ProducerInfo(name = resource.chooseProducer))
+            }
+        }
+    }
+
+    val producerList by lazy {
+        producers.mapSkipNulls { list ->
+            list.map { it.name }
+        }
+    }
+
+    val producerEnabled by lazy {
+        producers.map { producers ->
+            producers?.size ?: 0 > 1
+        }
+    }
+
+    val producerPosition = MutableLiveData(FIRST_POSITION)
+
+    protected val isProducerSelected = producerEnabled.switchMap { isEnabled ->
+        producerPosition.switchMap { position ->
+            liveData {
+                val result = (isEnabled && position > FIRST_POSITION) ||
+                        (!isEnabled && position == FIRST_POSITION)
+                emit(result)
+            }
+        }
+    }
+
     val providers = sourceProviders.mapSkipNulls {
         val list = it.toMutableList()
         if (list.size > 1) {
@@ -208,8 +246,29 @@ abstract class BaseGoodInfoViewModel<R : Taskable, T : ITaskManager<R>> : CoreVi
         val isEnabled = it?.first ?: false
         val position = it?.second ?: FIRST_POSITION
 
-        isProviderEnabledAndPositionChanged(isEnabled, position) or
-                isProviderNotEnabledAndPositionDidntChanged(isEnabled, position)
+        (isEnabled && position > FIRST_POSITION) ||
+                (!isEnabled && position == FIRST_POSITION)
+    }
+
+    fun isQuantityFieldChanged(): Boolean {
+        val quantityFieldValue = quantityField.value ?: ZERO_QUANTITY_STRING
+        return quantityFieldValue != ZERO_QUANTITY_STRING
+    }
+
+    fun isProviderEnabledAndChanged(): Boolean {
+        val providerPositionValue = providerPosition.value ?: DEFAULT_POSITION
+        return providerEnabled.value == true && providerPositionValue > FIRST_POSITION
+    }
+
+    fun isProducerEnabledAndChanged(): Boolean {
+        val producerPositionValue = producerPosition.value ?: DEFAULT_POSITION
+        return producerEnabled.value == true && producerPositionValue > FIRST_POSITION
+    }
+
+    fun isGoodOrExciseAlco(): Boolean {
+        return good.value?.let {
+            it.isAlco() or it.isExciseAlco()
+        } ?: false
     }
 
     abstract var manager: T
@@ -218,9 +277,7 @@ abstract class BaseGoodInfoViewModel<R : Taskable, T : ITaskManager<R>> : CoreVi
     abstract val applyEnabled: LiveData<Boolean>
     abstract val totalWithUnits: MutableLiveData<String>
     abstract val closeEnabled: MutableLiveData<Boolean>
-
-    private fun isProviderEnabledAndPositionChanged(isEnabled: Boolean, position: Int) = isEnabled && position > FIRST_POSITION
-    private fun isProviderNotEnabledAndPositionDidntChanged(isEnabled: Boolean, position: Int) = !isEnabled && position == FIRST_POSITION
+    abstract val quantityField: LiveData<String>
 
     protected suspend fun findGoodByMaterial(material: String): Good? {
         navigator.showProgressLoadingData()
@@ -290,6 +347,18 @@ abstract class BaseGoodInfoViewModel<R : Taskable, T : ITaskManager<R>> : CoreVi
         }
     }
 
+    open fun onBackPressed() {
+        with(navigator) {
+            if (isExistUnsavedData()) {
+                showUnsavedDataWillBeLost {
+                    goBack()
+                }
+            } else {
+                goBack()
+            }
+        }
+    }
+
     override fun afterTextChanged(s: Editable?) {
         quantityField.value = s.resolveMinuses(good.value?.isCommon() == true)
     }
@@ -299,6 +368,6 @@ abstract class BaseGoodInfoViewModel<R : Taskable, T : ITaskManager<R>> : CoreVi
     abstract fun saveChangesAndExit(result: ScanInfoResult? = null)
     abstract suspend fun saveChanges(result: ScanInfoResult? = null)
     abstract fun onClickRollback()
-    abstract fun onBackPressed()
     abstract fun loadBoxInfo(number: String)
+    abstract fun isExistUnsavedData(): Boolean
 }

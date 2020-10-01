@@ -222,6 +222,8 @@
     <string name="open">Открыть</string>
     <string name="twelve_characters_entered">Введено 12 знаков. Какой код вы ввели?</string>
     <string name="incorrect_ean_format">Неверный формат штрихкода</string>
+    <string name="client">Клиент</string>
+
     <string name="zbatch_goods">Z-партии</string>
     <string name="vet_good">Ветиринарный товар</string>
 </resources>
