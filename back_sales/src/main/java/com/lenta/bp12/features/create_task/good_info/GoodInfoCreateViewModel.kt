@@ -847,7 +847,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
     }
 
     override fun afterTextChanged(s: Editable?) {
-        quantityField.value = s.returnWithNoSecondMinus()
+        quantityField.value = s.resolveMinuses(good.value?.isCommon() == true)
     }
 
     companion object {

@@ -457,7 +457,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
                                 setGood(result, number)
                             }
                         }.orIfNull {
-                            Logg.e { "material null"}
+                            Logg.e { "material null" }
                             navigator.showInternalError(resource.goodNotFoundErrorMsg)
                         }
                     }
@@ -875,7 +875,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
     }
 
     override fun afterTextChanged(s: Editable?) {
-        quantityField.value = s.returnWithNoSecondMinus()
+        quantityField.value = s.resolveMinuses(good.value?.isCommon() == true)
     }
 
     companion object {
