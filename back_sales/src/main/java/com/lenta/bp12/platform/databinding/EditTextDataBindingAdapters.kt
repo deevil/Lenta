@@ -13,5 +13,5 @@ fun setQuantityTypeIcon(editText: EditText, differentUnits: Boolean) {
         ContextCompat.getDrawable(editText.context, R.drawable.ic_bei_12dp)
     }
 
-    editText.setCompoundDrawables(null, null, icon, null)
+    editText.setCompoundDrawablesWithIntrinsicBounds(null, null, icon, null)
 }

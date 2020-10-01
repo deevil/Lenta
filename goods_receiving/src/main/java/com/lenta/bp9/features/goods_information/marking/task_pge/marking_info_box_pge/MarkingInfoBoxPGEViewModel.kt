@@ -1,15 +1,16 @@
 package com.lenta.bp9.features.goods_information.marking.task_pge.marking_info_box_pge
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
-import com.lenta.bp9.features.delegates.ISaveProductDelegate
-import com.lenta.bp9.features.delegates.SearchProductDelegate
 import com.lenta.bp9.features.goods_information.base.BaseGoodsInfo
 import com.lenta.bp9.model.processing.ProcessMarkingBoxPGEProductService
-import com.lenta.bp9.model.task.*
+import com.lenta.bp9.model.task.TaskBoxInfo
+import com.lenta.bp9.model.task.TaskExciseStampInfo
+import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
-import com.lenta.bp9.requests.network.*
+import com.lenta.bp9.requests.network.ZmpUtzGrz44V001NetRequest
+import com.lenta.bp9.requests.network.ZmpUtzGrz44V001Params
+import com.lenta.bp9.requests.network.ZmpUtzGrz44V001Result
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.fmp.resources.dao_ext.getUomInfo
@@ -18,7 +19,10 @@ import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
-import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
+import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.utilities.orIfNull
 import com.mobrun.plugin.api.HyperHive
 import javax.inject.Inject
@@ -27,9 +31,6 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
 
     @Inject
     lateinit var processMarkingBoxPGEProductService: ProcessMarkingBoxPGEProductService
-
-    @Inject
-    lateinit var searchProductDelegate: SearchProductDelegate
 
     @Inject
     lateinit var zmpUtzGrz44V001NetRequest: ZmpUtzGrz44V001NetRequest
@@ -59,8 +60,6 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
 
     private val unprocessedQuantityOfBox: MutableLiveData<Double> = MutableLiveData(0.0)
 
-    val count: MutableLiveData<String> = MutableLiveData("0")
-    private val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
     val isUnitBox: MutableLiveData<Boolean> = MutableLiveData(true)
     val enabled: MutableLiveData<Boolean> = MutableLiveData(false)
     val numberBoxesControl: MutableLiveData<Double> = MutableLiveData()
@@ -342,7 +341,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
     }
 
     private fun addInfo(): Boolean {
-        return if (currentTypeDiscrepanciesCode.isNotEmpty()) {
+        return if (currentTypeDiscrepanciesCodeByTaskType.isNotEmpty()) {
 
             if (currentTypeDiscrepanciesCode != TYPE_DISCREPANCIES_QUALITY_NORM) {
                 processMarkingBoxPGEProductService.clearModifications()
@@ -465,7 +464,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
 
         if (boxInfo != null) {
             //сохраняем короб
-            addBox(boxInfo, currentTypeDiscrepanciesCode, barcode)
+            addBox(boxInfo, currentTypeDiscrepanciesCodeByTaskType, barcode)
         }
     }
 

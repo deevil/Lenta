@@ -13,10 +13,7 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.utilities.extentions.connectLiveData
-import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
-import com.lenta.shared.utilities.extentions.provideViewModel
-import com.lenta.shared.utilities.extentions.unsafeLazy
+import com.lenta.shared.utilities.extentions.*
 
 class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel>(), ToolbarButtonsClickListener, OnBackPresserListener {
 
@@ -34,9 +31,15 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
         provideViewModel(GoodInfoViewModel::class.java).let {
             getAppComponent()?.inject(it)
             it.selectedEan.value = goodParams.ean
-            it.weight.value = goodParams.weight.toDouble()
+            it.weight.value = goodParams.weight.toDoubleWeight()
+            it.partNumberField.value = goodParams.batchNumber
             return it
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        vm.requestFocusToQuantityField.value = true
     }
 
     override fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel) {

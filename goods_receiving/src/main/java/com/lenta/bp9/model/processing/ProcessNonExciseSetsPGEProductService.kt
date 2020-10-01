@@ -30,8 +30,8 @@ class ProcessNonExciseSetsPGEProductService
         } else null
     }
 
-    private fun getCountOfDiscrepanciesOfSet(typeDiscrepancies: String): Double {
-        return taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountOfDiscrepanciesOfProduct(productInfo, typeDiscrepancies)
+    private fun getCountOfDiscrepanciesOfSet(typeDiscrepancies: String, processingUnitNumber: String): Double {
+        return taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.getCountOfDiscrepanciesOfProductOfProcessingUnit(productInfo, typeDiscrepancies, processingUnitNumber)
                 ?: 0.0
     }
 
@@ -48,13 +48,17 @@ class ProcessNonExciseSetsPGEProductService
     }
 
     fun apply(count: String, typeDiscrepancies: String, processingUnit: String) {
-        val countAdd: Double = getCountOfDiscrepanciesOfSet(typeDiscrepancies) + count.toDouble()
-        var foundDiscrepancy = taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(productInfo)?.findLast {
-            it.materialNumber == productInfo.materialNumber && it.typeDiscrepancies == typeDiscrepancies
-        }
+        val countAdd: Double = getCountOfDiscrepanciesOfSet(typeDiscrepancies, processingUnit) + count.toDouble()
+        var foundDiscrepancy =
+                taskManager
+                        .getReceivingTask()
+                        ?.taskRepository
+                        ?.getProductsDiscrepancies()
+                        ?.findProductDiscrepanciesOfProductOfProcessingUnit(productInfo.materialNumber, processingUnit)
+                        ?.findLast { it.typeDiscrepancies == typeDiscrepancies }
 
         if (foundDiscrepancy == null) {
-            taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.changeProductDiscrepancy(TaskProductDiscrepancies(
+            taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.changeProductDiscrepancyOfProcessingUnit(TaskProductDiscrepancies(
                     materialNumber = productInfo.materialNumber,
                     processingUnitNumber = processingUnit,
                     numberDiscrepancies = countAdd.toString(),
@@ -65,7 +69,7 @@ class ProcessNonExciseSetsPGEProductService
                     notEditNumberDiscrepancies = ""
             ))
         } else {
-            taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.changeProductDiscrepancy(foundDiscrepancy.copy(numberDiscrepancies = countAdd.toString(), processingUnitNumber = processingUnit))
+            taskManager.getReceivingTask()?.taskRepository?.getProductsDiscrepancies()?.changeProductDiscrepancyOfProcessingUnit(foundDiscrepancy.copy(numberDiscrepancies = countAdd.toString(), processingUnitNumber = processingUnit))
         }
 
         if (currentComponentsDiscrepancies.isNotEmpty()) {
@@ -74,7 +78,7 @@ class ProcessNonExciseSetsPGEProductService
                         .getReceivingTask()
                         ?.taskRepository
                         ?.getProductsDiscrepancies()
-                        ?.changeProductDiscrepancy(it)
+                        ?.changeProductDiscrepancyOfProcessingUnit(it)
             }
         }
 

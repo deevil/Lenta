@@ -253,7 +253,7 @@ class ProcessMarkingBoxProductService
 
             repository
                     .getProductsDiscrepancies()
-                    .changeProductDiscrepancy(foundDiscrepancy)
+                    .changeProductDiscrepancyOfProcessingUnit(foundDiscrepancy)
         }
     }
 

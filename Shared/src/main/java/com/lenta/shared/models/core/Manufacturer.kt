@@ -1,8 +1,16 @@
 package com.lenta.shared.models.core
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 
-class Manufacturer(@SerializedName("ZPROD") val code: String, @SerializedName("PROD_NAME") val name: String) {
+@Parcelize
+data class Manufacturer(
+        @SerializedName("ZPROD")
+        val code: String,
+        @SerializedName("PROD_NAME")
+        val name: String
+) : Parcelable {
 
     companion object {
         val DEFAULT = Manufacturer("", "Нет производителя")

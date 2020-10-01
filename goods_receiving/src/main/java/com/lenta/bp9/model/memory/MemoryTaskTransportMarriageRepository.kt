@@ -43,7 +43,7 @@ class MemoryTaskTransportMarriageRepository : ITaskTransportMarriageRepository {
     }
 
     override fun updateTransportMarriage(newTransportMarriage: List<TaskTransportMarriageInfo>) {
-        transportMarriageInfo.clear()
+        clear()
         newTransportMarriage.map {
             addTransportMarriage(it)
         }

@@ -68,6 +68,13 @@
 
             </LinearLayout>
 
+
+            <ImageView
+                style="@style/BottomIconStyle"
+                android:onClick="@{(v) -> vm.navigator.openPictogrammInfoZPart()}"
+                app:invisible="@{!vm.additional.hasZParts}"
+                android:src="@drawable/ic_z" />
+
             <ImageView
                 style="@style/BottomIconStyle"
                 app:goodTypeIcon="@{vm.options.goodType}"
