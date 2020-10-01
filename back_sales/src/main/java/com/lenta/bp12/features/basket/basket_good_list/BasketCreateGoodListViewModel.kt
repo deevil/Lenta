@@ -6,16 +6,10 @@ import androidx.lifecycle.switchMap
 import com.lenta.bp12.features.create_task.base.BaseGoodListCreateViewModel
 import com.lenta.bp12.features.create_task.task_content.TaskContentFragment
 import com.lenta.bp12.managers.interfaces.ICreateTaskManager
-import com.lenta.bp12.managers.interfaces.IMarkManager
 import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.create_task.TaskCreate
 import com.lenta.bp12.model.pojo.extentions.*
-import com.lenta.bp12.platform.navigation.IScreenNavigator
-import com.lenta.bp12.platform.resource.IResourceManager
-import com.lenta.bp12.repository.IDatabaseRepository
-import com.lenta.bp12.request.GoodInfoNetRequest
-import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
@@ -29,28 +23,7 @@ import javax.inject.Inject
 class BasketCreateGoodListViewModel : BaseGoodListCreateViewModel(), OnOkInSoftKeyboardListener {
 
     @Inject
-    override lateinit var navigator: IScreenNavigator
-
-    @Inject
     override lateinit var manager: ICreateTaskManager
-
-    @Inject
-    override lateinit var resource: IResourceManager
-
-    /** "ZMP_UTZ_BKS_05_V001"
-     * Получение данных товара по ШК / SAP-коду
-     */
-    @Inject
-    override lateinit var goodInfoNetRequest: GoodInfoNetRequest
-
-    @Inject
-    override lateinit var sessionInfo: ISessionInfo
-
-    @Inject
-    override lateinit var database: IDatabaseRepository
-
-    @Inject
-    override lateinit var markManager: IMarkManager
 
     val selectionsHelper = SelectionItemsHelper()
 
@@ -130,7 +103,6 @@ class BasketCreateGoodListViewModel : BaseGoodListCreateViewModel(), OnOkInSoftK
             goods.getOrNull(position)?.let { item ->
                 val good = item.good
                 manager.updateCurrentGood(good)
-                navigator.goBack()
                 if (good.isMarked()) {
                     navigator.openMarkedGoodInfoCreateScreen()
                 } else {
@@ -227,7 +199,7 @@ class BasketCreateGoodListViewModel : BaseGoodListCreateViewModel(), OnOkInSoftK
                 updateCurrentBasket(basketValue)
                 updateCurrentTask(taskValue)
             }
-            navigator.goBack()
+            navigator.goBackTo(TaskContentFragment::class.simpleName)
         }
     }
 

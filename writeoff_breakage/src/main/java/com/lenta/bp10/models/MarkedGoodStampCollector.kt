@@ -8,7 +8,6 @@ import com.lenta.bp10.models.task.ProcessMarkedGoodProductService
 import com.lenta.bp10.models.task.TaskExciseStamp
 import com.lenta.bp10.models.task.WriteOffReason
 import com.lenta.bp10.requests.network.pojo.MarkInfo
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.orIfNull
 
@@ -16,58 +15,44 @@ class MarkedGoodStampCollector(private val processMarkedGoodProductService: Proc
 
     private val countLiveData = MutableLiveData(0.0)
 
-    private val stamps = mutableListOf<TaskExciseStamp>()
+    private val stamps = mutableListOf<List<TaskExciseStamp>>()
 
     private val boxes = mutableListOf<String>()
 
-    private val lastAddedMarks = mutableListOf<TaskExciseStamp>()
-
-    val isCanBeRollback = MutableLiveData(false)
-
     fun addMark(markNumber: String, material: String, writeOffReason: String) {
-        clearLastAddedList()
-
         val stamp = TaskExciseStamp(
                 material = material,
                 markNumber = markNumber,
                 writeOffReason = writeOffReason
         )
 
-        stamps.add(stamp)
-        addMarkToLastAddedList(stamp)
+        stamps.add(listOf(stamp))
 
         onDataChanged()
     }
 
-    fun addMarks(marks: List<MarkInfo>, material: String, writeOffReason: String) {
-        clearLastAddedList()
-
-        marks.mapTo(stamps) {mark ->
-            val boxNumber = mark.boxNumber.orEmpty()
-            val markNumber = mark.markNumber.orEmpty()
-
-            val stamp = TaskExciseStamp(
+    fun addMarks(boxNumber: String, marks: List<MarkInfo>, material: String, writeOffReason: String) {
+        val stampList = mutableListOf<TaskExciseStamp>()
+        marks.mapTo(stampList) { mark ->
+            TaskExciseStamp(
                     material = material,
-                    markNumber = markNumber,
+                    markNumber = mark.markNumber.orEmpty(),
                     boxNumber = boxNumber,
                     packNumber = mark.packNumber.orEmpty(),
                     writeOffReason = writeOffReason
             )
-
-            if (!boxes.contains(boxNumber)) {
-                boxes.add(boxNumber)
-            }
-
-            addMarkToLastAddedList(stamp)
-            stamp
         }
+
+        if (!boxes.contains(boxNumber)) {
+            boxes.add(boxNumber)
+        }
+
+        stamps.add(stampList)
 
         onDataChanged()
     }
 
     fun addBadMark(material: String, writeOffReason: String) {
-        clearLastAddedList()
-
         val stamp = TaskExciseStamp(
                 material = material,
                 markNumber = "",
@@ -75,35 +60,34 @@ class MarkedGoodStampCollector(private val processMarkedGoodProductService: Proc
                 isBadStamp = true
         )
 
-        stamps.add(stamp)
-        addMarkToLastAddedList(stamp)
+        stamps.add(listOf(stamp))
 
         onDataChanged()
     }
 
     fun rollback() {
-        if (lastAddedMarks.isNotEmpty()) {
-            lastAddedMarks.forEach { mark ->
-                val foundMark = stamps.find { it == mark }
-
-                stamps.remove(foundMark)
-                boxes.remove(foundMark?.boxNumber)
+        if (stamps.isNotEmpty()) {
+            val boxNumber = stamps[stamps.lastIndex][0].boxNumber
+            if (boxNumber.isNotEmpty()) {
+                boxes.remove(boxNumber)
             }
 
-            isCanBeRollback.value = false
+            stamps.removeAt(stamps.lastIndex)
 
             onDataChanged()
         }
     }
 
     fun processAll(reason: WriteOffReason) {
-        stamps.forEach { processMarkedGoodProductService.add(reason, 1.0, it) }
+        stamps.flatten().forEach {
+            processMarkedGoodProductService.add(reason, 1.0, it)
+        }
         clear()
     }
 
 
     fun isContainsStamp(code: String): Boolean {
-        return stamps.firstOrNull { it.code == code } != null ||
+        return stamps.flatten().firstOrNull { it.code == code } != null ||
                 processMarkedGoodProductService.taskRepository.getExciseStamps().isContainsStamp(code)
     }
 
@@ -115,23 +99,12 @@ class MarkedGoodStampCollector(private val processMarkedGoodProductService: Proc
     fun clear() {
         stamps.clear()
         boxes.clear()
-        clearLastAddedList()
 
         onDataChanged()
     }
 
-    private fun addMarkToLastAddedList(stamp: TaskExciseStamp) {
-        lastAddedMarks.add(stamp)
-        isCanBeRollback.value = true
-    }
-
-    private fun clearLastAddedList() {
-        lastAddedMarks.clear()
-        isCanBeRollback.value = false
-    }
-
-    private fun onDataChanged() {
-        countLiveData.postValue(stamps.size.toDouble())
+    fun onDataChanged() {
+        countLiveData.value = stamps.flatten().size.toDouble()
     }
 
     fun observeCount(): LiveData<Double> {
@@ -143,13 +116,14 @@ class MarkedGoodStampCollector(private val processMarkedGoodProductService: Proc
     }
 
     fun getCount(materialNumber: String): Double {
-        return stamps.filter { it.materialNumber == materialNumber }.count().toDouble()
+        return stamps.flatten().filter { it.materialNumber == materialNumber }.count().toDouble()
     }
 
     fun clear(materialNumber: String?) {
-        val otherStamps = stamps.filter { it.materialNumber != materialNumber }
+        val otherStamps = stamps.flatten().filter { it.materialNumber != materialNumber }
+
         stamps.clear()
-        stamps.addAll(otherStamps)
+        stamps.addAll(listOf(otherStamps))
         onDataChanged()
     }
 

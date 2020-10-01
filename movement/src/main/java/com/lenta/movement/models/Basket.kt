@@ -1,5 +1,6 @@
 package com.lenta.movement.models
 
+import com.lenta.movement.R
 import com.lenta.shared.models.core.Supplier
 
 class Basket(
@@ -12,7 +13,10 @@ class Basket(
     val isUsual: Boolean?,
     val isVet: Boolean?,
     val isFood: Boolean?,
-    val matkl: String?
+    val isMarked: Boolean?,
+    val matkl: String?,
+    val materialType: String?,
+    val sectionId: String?
 ) : MutableMap<ProductInfo, Int> by mutableMapOf() {
 
     override val size: Int
@@ -40,6 +44,27 @@ class Basket(
                 isVet?.equals(product.isVet) ?: true &&
                 isFood?.equals(product.isFood) ?: true &&
                 this.supplier?.equals(supplier) ?: true &&
-                matkl?.equals(product.matkl) ?: true
+                matkl?.equals(product.matkl) ?: true &&
+                materialType?.equals(product.materialType) ?: true &&
+                sectionId?.equals(product.sectionId) ?: true
+    }
+
+    /**
+     * Получение сведений о корзине, является ли деление по данному признаку правильным
+     */
+    fun isDivisionTrue(division: GoodsSignOfDivision) = when(division) {
+        GoodsSignOfDivision.MARK_PARTS -> isMarked != null && isMarked
+        GoodsSignOfDivision.ALCO -> isAlco != null && isAlco
+        GoodsSignOfDivision.USUAL -> isUsual != null && isUsual
+        GoodsSignOfDivision.VET -> isVet != null && isVet
+        GoodsSignOfDivision.FOOD -> isFood != null && isFood
+        else -> false
+    }
+
+    fun getStringDescription(division: GoodsSignOfDivision): String = when(division) {
+        GoodsSignOfDivision.SECTION -> "$sectionId"
+        GoodsSignOfDivision.LIF_NUMBER -> "${supplier?.code} ${supplier?.name}"
+        GoodsSignOfDivision.MATERIAL_NUMBER -> "$matkl"
+        else -> ""
     }
 }

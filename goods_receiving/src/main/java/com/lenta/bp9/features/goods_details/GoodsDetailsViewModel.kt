@@ -46,7 +46,7 @@ class GoodsDetailsViewModel : CoreViewModel() {
     private val formatterRU = SimpleDateFormat("dd.MM.yyyy")
 
     @SuppressLint("SimpleDateFormat")
-    private val formatterERP = SimpleDateFormat(Constants.DATE_FORMAT_yyyyMMdd)
+    private val formatterERP = SimpleDateFormat(Constants.DATE_FORMAT_yyyy_mm_dd)
 
     private val taskRepository by lazy { taskManager.getReceivingTask()?.taskRepository }
     private val boxNumberForTaskPGEBoxAlco: MutableLiveData<String> = MutableLiveData("")

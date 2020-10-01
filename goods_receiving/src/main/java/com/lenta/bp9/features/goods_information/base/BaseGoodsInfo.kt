@@ -37,7 +37,7 @@ abstract class BaseGoodsInfo : BaseFeatures(),
     override val formatterEN = SimpleDateFormat(Constants.DATE_FORMAT_yyyy_mm_dd)
 
     @SuppressLint("SimpleDateFormat")
-    override val formatterERP = SimpleDateFormat(Constants.DATE_FORMAT_yyyyMMdd)
+    override val formatterERP = SimpleDateFormat(Constants.DATE_FORMAT_yyyy_mm_dd)
 
     override val productInfo: MutableLiveData<TaskProductInfo> = MutableLiveData()
 

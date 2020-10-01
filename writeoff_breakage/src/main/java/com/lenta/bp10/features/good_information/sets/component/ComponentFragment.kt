@@ -23,19 +23,6 @@ class ComponentFragment : ExciseAlcoInfoFragment() {
 
     private var componentViewModel: ComponentViewModel? = null
 
-    companion object {
-        fun create(productInfo: ProductInfo, componentItem: ComponentItem, targetTotalCount: Double): ComponentFragment {
-            ComponentFragment().let {
-                it.productInfo = productInfo
-                it.componentItem = componentItem
-                it.targetTotalCount = targetTotalCount
-                return it
-            }
-        }
-
-    }
-
-
     override fun getViewModel(): ComponentViewModel {
         provideViewModel(ComponentViewModel::class.java).let { vm ->
             getAppComponent()?.inject(vm)
@@ -51,6 +38,7 @@ class ComponentFragment : ExciseAlcoInfoFragment() {
             }
 
             componentViewModel = vm
+            vm.initExciseAlcoDelegate()
             return vm
         }
     }
@@ -87,5 +75,14 @@ class ComponentFragment : ExciseAlcoInfoFragment() {
         }
     }
 
-
+    companion object {
+        fun newInstance(productInfo: ProductInfo, componentItem: ComponentItem, targetTotalCount: Double): ComponentFragment {
+            ComponentFragment().let {
+                it.productInfo = productInfo
+                it.componentItem = componentItem
+                it.targetTotalCount = targetTotalCount
+                return it
+            }
+        }
+    }
 }

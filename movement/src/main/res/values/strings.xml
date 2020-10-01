@@ -95,5 +95,18 @@
     <string name="to_process">К обработке</string>
     <string name="tasks_to_move">Задания на перемещение</string>
     <string name="enter_task_num_or_login">Введите номер задания или адресата</string>
+
+    <!-- Task basket info -->
+    <string name="marked_good">Марочный товар</string>
     <string name="alco_good">Алкогольный товар</string>
+    <string name="usual_good">Обычный товар</string>
+    <string name="vet_good">Меркурианский товар</string>
+    <string name="good_parts">Партия товара</string>
+    <string name="food">Еда</string>
+    <string name="lif_number">Поставщик</string>
+    <string name="material_number">SAP-код товара</string>
+    <string name="section">Секция</string>
+    <string name="mtart">Вид товара</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
 </resources>

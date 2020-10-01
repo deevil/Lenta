@@ -53,7 +53,7 @@ data class TaskOpen(
         }
     }
 
-    fun getFormattedName(withFullName: Boolean = false): String {
+    override fun getFormattedName(withFullName: Boolean): String {
         var formattedName = name
         if (!withFullName) {
             runCatching {
@@ -99,7 +99,11 @@ data class TaskOpen(
     }
 
     override fun removeEmptyGoods() {
-        goods.removeAll(goods.filter { it.getTotalQuantity() == ZERO_QUANTITY })
+        goods.forEach {
+            if (it.getTotalQuantity() == ZERO_QUANTITY) {
+                it.isCounted = false
+            }
+        }
     }
 
     override fun removeEmptyBaskets() {

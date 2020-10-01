@@ -21,9 +21,7 @@ import com.lenta.shared.utilities.extentions.provideViewModel
 import com.lenta.shared.utilities.state.state
 
 open class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, BaseProductInfoViewModel>(),
-        ToolbarButtonsClickListener,
-        OnBackPresserListener,
-        OnScanResultListener {
+        ToolbarButtonsClickListener, OnBackPresserListener, OnScanResultListener {
 
     protected var productInfo by state<ProductInfo?>(null)
 
@@ -89,11 +87,12 @@ open class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, BaseProductI
 
     override fun onResume() {
         super.onResume()
+        vm.updateCounter()
         vm.requestFocusToQuantity.value = true
     }
 
     companion object {
-        fun create(productInfo: ProductInfo, initCount: Double): GoodInfoFragment {
+        fun newInstance(productInfo: ProductInfo, initCount: Double): GoodInfoFragment {
             GoodInfoFragment().let {
                 it.productInfo = productInfo
                 it.initCount = initCount

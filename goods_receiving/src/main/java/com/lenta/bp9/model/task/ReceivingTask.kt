@@ -54,7 +54,7 @@ class ReceivingTask(val taskHeader: TaskInfo,
     }
 
     fun getProcessedBoxes(): List<TaskBoxInfo> {
-        return taskRepository.getBoxes().getBoxes()
+        return taskRepository.getBoxesRepository().getTaskBoxes()
     }
 
     fun getProcessedBoxesDiscrepancies(): List<TaskBoxDiscrepancies> {
@@ -156,7 +156,7 @@ class ReceivingTask(val taskHeader: TaskInfo,
                 .getExciseStampsBad()
                 .updateExciseStampBad(taskContentsInfo.taskExciseStampBad)
         taskRepository
-                .getBoxes()
+                .getBoxesRepository()
                 .updateBoxes(taskContentsInfo.taskBoxes)
         taskRepository
                 .getBoxesDiscrepancies()
@@ -217,7 +217,7 @@ class ReceivingTask(val taskHeader: TaskInfo,
     //количество коробов для товара прошедших контроль
     fun countBoxesPassedControlOfProduct(productInfo: TaskProductInfo): Int { //https://trello.com/c/Z1SPfmAJ-контроль коробов, https://trello.com/c/Hve509E5 - контроль короба
         return taskRepository
-                .getBoxes()
+                .getBoxesRepository()
                 .findBoxesOfProduct(productInfo)
                 ?.filter { taskBoxInfo ->
                     val countProcessedBoxes = taskRepository

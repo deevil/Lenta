@@ -8,7 +8,7 @@ class MemoryTaskBoxesRepository : ITaskBoxesRepository {
 
     private val boxes: ArrayList<TaskBoxInfo> = ArrayList()
 
-    override fun getBoxes(): List<TaskBoxInfo> {
+    override fun getTaskBoxes(): List<TaskBoxInfo> {
         return boxes
     }
 

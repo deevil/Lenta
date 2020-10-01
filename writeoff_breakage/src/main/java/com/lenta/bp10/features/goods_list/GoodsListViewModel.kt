@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import com.lenta.bp10.models.repositories.IWriteOffTaskManager
 import com.lenta.bp10.models.repositories.getTotalCountForProduct
 import com.lenta.bp10.models.task.TaskWriteOffReason
+import com.lenta.bp10.models.task.WriteOffTask
 import com.lenta.bp10.models.task.getPrinterTask
 import com.lenta.bp10.models.task.getReport
 import com.lenta.bp10.platform.navigation.IScreenNavigator
@@ -27,6 +28,7 @@ import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
 import com.lenta.shared.utilities.extentions.toStringFormatted
+import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import com.mobrun.plugin.api.HyperHive
 import javax.inject.Inject
@@ -60,14 +62,23 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     @Inject
     lateinit var analyticsHelper: AnalyticsHelper
 
-    val countedGoods: MutableLiveData<List<GoodItem>> = MutableLiveData()
-    val filteredGoods: MutableLiveData<List<FilterItem>> = MutableLiveData()
-    val categories: MutableLiveData<List<String>> = MutableLiveData()
-    val requestFocusToEan: MutableLiveData<Boolean> = MutableLiveData()
-    val selectedCategoryPosition: MutableLiveData<Int> = MutableLiveData(0)
-    val eanCode: MutableLiveData<String> = MutableLiveData()
+
     val countedSelectionsHelper = SelectionItemsHelper()
+
     val filteredSelectionsHelper = SelectionItemsHelper()
+
+    val eanCode = MutableLiveData("")
+
+    val requestFocusToEan = MutableLiveData(false)
+
+    val countedGoods: MutableLiveData<List<GoodItem>> = MutableLiveData()
+
+    val filteredGoods: MutableLiveData<List<FilterItem>> = MutableLiveData()
+
+    val categories: MutableLiveData<List<String>> = MutableLiveData()
+
+    val selectedCategoryPosition = MutableLiveData(0)
+
 
     val deleteEnabled: MutableLiveData<Boolean> = selectedPage
             .combineLatest(countedSelectionsHelper.selectedPositions)
@@ -114,7 +125,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     override fun onOkInSoftKeyboard(): Boolean {
         eanCode.value?.let {
-            searchProductDelegate.searchCode(it, fromScan = false)
+            searchProductDelegate.searchCode(it)
         }
         return true
     }
@@ -134,7 +145,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
     }
 
     fun onScanResult(data: String) {
-        searchProductDelegate.searchCode(code = data, fromScan = true)
+        searchProductDelegate.searchCode(code = data)
     }
 
     fun onClickSave() {
@@ -162,41 +173,51 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                         writeOffTask.deleteProducts(it)
                     }
                 }
-                else -> {
+                1 -> {
                     with(filteredSelectionsHelper) {
-                        if (isSelectedEmpty() && (selectedCategoryPosition.value == 0 &&
-                                        (categories.value?.size ?: 0) > 1)) {
-                            screenNavigator
-                                    .openRemoveLinesConfirmationScreen(
-                                            taskDescription = writeOffTask.taskDescription.taskName,
-                                            count = filteredGoods.value?.size ?: 0,
-                                            codeConfirmation = requestCodeDelete)
-                        } else {
-                            if (isSelectedEmpty()) {
-                                filteredGoods.value?.let {
-                                    addAll(it)
-                                }
-                            }
-                            selectedPositions.value?.map { position ->
-                                filteredGoods.value!![position].let { filterItem ->
-                                    writeOffTask.deleteTaskWriteOffReason(filterItem.taskWriteOffReason)
-                                }
-                            }
+                        val categoriesSize = categories.value?.size ?: 0
+                        val isEmptyCategory = (selectedCategoryPosition.value == 0) && (categoriesSize > 1)
+                        val countGoodsForRemove = filteredGoods.value?.size ?: 0
 
+                        if (isSelectedEmpty() && isEmptyCategory) {
+                            screenNavigator.openRemoveLinesConfirmationScreen(
+                                    taskDescription = writeOffTask.taskDescription.taskName,
+                                    count = countGoodsForRemove,
+                                    codeConfirmation = requestCodeDelete
+                            )
+
+                            return
                         }
+
+                        if (isSelectedEmpty()) {
+                            filteredGoods.value?.let { addAll(it) }
+                            screenNavigator.openRemoveItemsFromSelectedCategory(countGoodsForRemove) {
+                                removeSelectedFilteredPositions(writeOffTask)
+                            }
+
+                            return
+                        }
+
+                        removeSelectedFilteredPositions(writeOffTask)
                     }
-
-
                 }
-
-
+                else -> throw IllegalArgumentException("Wrong pager position!")
             }
+
             selectedCategoryPosition.value = 0
             updateCounted()
             updateFilter()
-
         }
+    }
 
+    private fun removeSelectedFilteredPositions(writeOffTask: WriteOffTask) {
+        filteredSelectionsHelper.selectedPositions.value?.map { position ->
+            filteredGoods.value?.getOrNull(position)?.let { filterItem ->
+                writeOffTask.deleteTaskWriteOffReason(filterItem.taskWriteOffReason)
+            }.orIfNull {
+                Logg.e { "removeSelectedFilteredPositions no item in position $position" }
+            }
+        }
     }
 
     fun onResult(code: Int?) {
@@ -215,7 +236,6 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 screenNavigator.hideProgress()
             }
         }
-
     }
 
     fun onClickItemPosition(position: Int) {
@@ -224,7 +244,7 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         } else {
             filteredGoods.value?.getOrNull(position)?.productInfo
         }?.let {
-            searchProductDelegate.openProductScreen(it, 0.0)
+            searchProductDelegate.openProductScreen(it, DEFAULT_QUANTITY)
         }
     }
 
@@ -250,8 +270,6 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
             analyticsHelper.onRetCodeNotEmpty("$sendWriteOffDataResult")
             screenNavigator.openAlertScreen(sendWriteOffDataResult.errorText)
         }
-
-
     }
 
     private fun onConfirmAllDelete() {
@@ -291,7 +309,6 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
 
     private fun updateFilter() {
         processServiceManager.getWriteOffTask()?.let { writeOffTask ->
-
             val writeOffReasons = writeOffTask.taskRepository.getWriteOffReasons().getWriteOffReasons()
 
             val reasons = writeOffReasons.map {
@@ -307,7 +324,8 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                 categories.postValue(it)
             }
 
-            val selectedCategory = reasons.getOrNull((selectedCategoryPosition.value ?: -1) - 1)
+            val selectedPosition = selectedCategoryPosition.value ?: -1
+            val selectedCategory = reasons.getOrNull(selectedPosition - 1)
 
             filteredGoods.postValue(
                     mutableListOf<FilterItem>().apply {
@@ -329,8 +347,6 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
                                         )
                                         )
                                     }
-
-
                                 }
                     }.reversed()
             )
@@ -339,6 +355,9 @@ class GoodsListViewModel : CoreViewModel(), OnOkInSoftKeyboardListener {
         filteredSelectionsHelper.clearPositions()
     }
 
+    companion object {
+        private const val DEFAULT_QUANTITY = 0.0
+    }
 
 }
 
@@ -365,6 +384,3 @@ data class FilterItem(
     override fun isEven() = even
 
 }
-
-
-

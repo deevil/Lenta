@@ -1,5 +1,6 @@
 package com.lenta.bp10.features.good_information.marked
 
+import androidx.lifecycle.MutableLiveData
 import com.lenta.bp10.platform.navigation.IScreenNavigator
 import com.lenta.bp10.requests.network.MarkedInfoNetRequest
 import com.lenta.bp10.requests.network.MarkedInfoParams
@@ -8,6 +9,7 @@ import com.lenta.bp10.requests.network.pojo.MarkInfo
 import com.lenta.bp10.requests.network.pojo.Property
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.models.core.ProductInfo
+import com.lenta.shared.utilities.Logg
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -24,6 +26,8 @@ class MarkSearchDelegate @Inject constructor(
 
     override val coroutineContext: CoroutineContext = Dispatchers.Main + job
 
+    private lateinit var isSpecialMode: MutableLiveData<Boolean>
+
     private lateinit var tkNumber: String
 
     private var productInfo: ProductInfo? = null
@@ -32,15 +36,17 @@ class MarkSearchDelegate @Inject constructor(
 
     private lateinit var handleScannedMark: (mark: String) -> Unit
 
-    private lateinit var handleScannedBox: (marks: List<MarkInfo>) -> Unit
+    private lateinit var handleScannedBox: (boxNumber: String, marks: List<MarkInfo>) -> Unit
 
 
-    fun init(tkNumber: String,
+    fun init(isSpecialMode: MutableLiveData<Boolean>,
+             tkNumber: String,
              productInfo: ProductInfo?,
              handleScannedMark: (mark: String) -> Unit,
-             handleScannedBox: (marks: List<MarkInfo>) -> Unit,
+             handleScannedBox: (boxNumber: String, marks: List<MarkInfo>) -> Unit,
              updateProperties: (properties: List<Property>) -> Unit) {
 
+        this.isSpecialMode = isSpecialMode
         this.tkNumber = tkNumber
         this.productInfo = productInfo
         this.updateProperties = updateProperties
@@ -64,18 +70,18 @@ class MarkSearchDelegate @Inject constructor(
         }
     }
 
-    fun requestPackInfo(number: String) {
+    fun requestPackInfo(boxNumber: String) {
         launch {
             navigator.showProgress(markedInfoNetRequest)
             markedInfoNetRequest(MarkedInfoParams(
                     tkNumber = tkNumber,
                     material = productInfo?.materialNumber.orEmpty(),
-                    packNumber = number,
+                    packNumber = boxNumber,
                     markType = productInfo?.markedGoodType.orEmpty()
             )).also {
                 navigator.hideProgress()
             }.either(::handleFailure) { result ->
-                handleBoxRequestResult(result)
+                handleBoxRequestResult(boxNumber, result)
             }
         }
     }
@@ -85,26 +91,37 @@ class MarkSearchDelegate @Inject constructor(
     }
 
     private fun handleMarkRequestResult(markNumber: String, result: MarkedInfoResult) {
-        if (result.status == MARK_CODE_OK) {
-            updateProperties.invoke(result.properties.orEmpty())
-            handleScannedMark.invoke(markNumber)
-        } else {
-            navigator.openInfoScreen(result.statusDescription.orEmpty())
+        with(result) {
+            val isSpecialMode = isSpecialMode.value ?: false
+
+            val isValidForCommonMode = !isSpecialMode && status == COMMON_MODE_MARK_OK
+            val isValidForSpecialMode = isSpecialMode && status == SPECIAL_MODE_MARK_OK
+            val isIncorrectMarkMode = isSpecialMode && status == COMMON_MODE_MARK_OK
+
+            when {
+                isValidForCommonMode || isValidForSpecialMode -> {
+                    updateProperties.invoke(properties.orEmpty())
+                    handleScannedMark.invoke(markNumber)
+                }
+                isIncorrectMarkMode -> navigator.showIncorrectMarkScanMode()
+                else -> navigator.openInfoScreen(statusDescription.orEmpty())
+            }
         }
     }
 
-    private fun handleBoxRequestResult(result: MarkedInfoResult) {
-        if (result.status == BOX_CODE_OK) {
+    private fun handleBoxRequestResult(boxNumber: String, result: MarkedInfoResult) {
+        if (result.status == BOX_MARK_OK) {
             updateProperties.invoke(result.properties.orEmpty())
-            handleScannedBox(result.marks.orEmpty())
+            handleScannedBox(boxNumber, result.marks.orEmpty())
         } else {
             navigator.openInfoScreen(result.statusDescription.orEmpty())
         }
     }
 
     companion object {
-        private const val MARK_CODE_OK = "0"
-        private const val BOX_CODE_OK = "100"
+        private const val COMMON_MODE_MARK_OK = "0"
+        private const val SPECIAL_MODE_MARK_OK = "1"
+        private const val BOX_MARK_OK = "100"
     }
 
 }

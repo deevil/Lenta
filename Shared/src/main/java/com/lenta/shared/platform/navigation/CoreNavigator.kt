@@ -101,7 +101,7 @@ class CoreNavigator @Inject constructor(
     override fun goBackTo(fragmentName: String?) {
         runOrPostpone {
             analyticsHelper.onGoBack()
-                getFragmentStack()?.pop(fragmentName)
+            getFragmentStack()?.pop(fragmentName)
 
         }
     }
@@ -122,12 +122,14 @@ class CoreNavigator @Inject constructor(
 
     }
 
-    override fun openAlertScreen(message: String,
-                                 iconRes: Int,
-                                 textColor: Int?,
-                                 pageNumber: String?,
-                                 timeAutoExitInMillis: Int?,
-                                 onlyIfFirstAlert: Boolean) {
+    override fun openAlertScreen(
+            message: String,
+            iconRes: Int,
+            textColor: Int?,
+            pageNumber: String?,
+            timeAutoExitInMillis: Int?,
+            onlyIfFirstAlert: Boolean
+    ) {
         runOrPostpone {
             getFragmentStack()?.let {
 
@@ -506,7 +508,7 @@ class CoreNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.task_block_user_with_tsd_ip, userName, deviceIp),
-                    iconRes = R.drawable.ic_info_pink_80dp,
+                    iconRes = R.drawable.ic_warning_red_80dp,
                     pageNumber = "94",
                     leftButtonDecorationInfo = ButtonDecorationInfo.back
             )
@@ -514,10 +516,10 @@ class CoreNavigator @Inject constructor(
         }
     }
 
-    override fun showAlertBlockedTaskByMe(userName: String, yesCallback: () -> Unit) {
+    override fun showAlertBlockedTaskByMe(yesCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
-                    message = context.getString(R.string.user_self_block_task, userName),
+                    message = context.getString(R.string.user_self_block_task),
                     iconRes = R.drawable.ic_question_yellow_80dp,
                     pageNumber = "94",
                     leftButtonDecorationInfo = ButtonDecorationInfo.back,
@@ -586,12 +588,14 @@ interface ICoreNavigator {
     fun goBack()
     fun goBackTo(fragmentName: String?)
     fun finishApp(restart: Boolean = false)
-    fun openAlertScreen(message: String,
-                        iconRes: Int = 0,
-                        textColor: Int? = null,
-                        pageNumber: String? = null,
-                        timeAutoExitInMillis: Int? = null,
-                        onlyIfFirstAlert: Boolean = false)
+    fun openAlertScreen(
+            message: String,
+            iconRes: Int = 0,
+            textColor: Int? = null,
+            pageNumber: String? = null,
+            timeAutoExitInMillis: Int? = null,
+            onlyIfFirstAlert: Boolean = false
+    )
 
     fun openAlertScreen(failure: Failure, pageNumber: String = "96", timeAutoExitInMillis: Int? = null)
     fun openSupportScreen()
@@ -632,7 +636,7 @@ interface ICoreNavigator {
     fun showProgressConnection()
     fun showAlertBlockedTaskAnotherUser(userName: String)
     fun showAlertBlockedTaskAnotherUser(userName: String, deviceIp: String)
-    fun showAlertBlockedTaskByMe(userName: String, yesCallback: () -> Unit)
+    fun showAlertBlockedTaskByMe(yesCallback: () -> Unit)
     fun openCode128InfoScreen()
     fun openGS1InfoScreen()
     fun openPlanInfoScreen()

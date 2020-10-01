@@ -254,8 +254,7 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
                         return@launchUITryCatch
                     }
 
-            searchProductDelegate.init(viewModelScope = this@GoodsInfoViewModel::viewModelScope,
-                    scanResultHandler = this@GoodsInfoViewModel::handleProductSearchResult)
+            searchProductDelegate.init(scanResultHandler = this@GoodsInfoViewModel::handleProductSearchResult)
 
             if (taskManager.getReceivingTask()?.taskHeader?.taskType == TaskType.RecalculationCargoUnit) {
                 paramGrwOlGrundcat.value = dataBase.getParamGrwOlGrundcat() ?: ""

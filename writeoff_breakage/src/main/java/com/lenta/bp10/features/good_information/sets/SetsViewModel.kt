@@ -194,7 +194,7 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
             }
 
             componentsDataList.forEachIndexed { index, _ ->
-                searchComponentDelegate.copy().searchCode(componentsDataList[index].matnr, fromScan = false, isBarCode = false)
+                searchComponentDelegate.copy().searchCode(componentsDataList[index].matnr)
             }
             screenNavigator.hideProgress()
             suffix.value = setProductInfo.value?.uom?.name
@@ -298,7 +298,7 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
             }
         }
         if (enabledApplyButton.value == true || countValue.value == 0.0) {
-            searchProductDelegate.searchCode(code = materialNumber, fromScan = false, isBarCode = false)
+            searchProductDelegate.searchCode(code = materialNumber)
         } else {
             anotherProductMaterialNumber = materialNumber
             screenNavigator.openNotAllComponentProcessedScreen(requestCodeNotSaveComponents)
@@ -336,7 +336,7 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
                 screenNavigator.openAlertDoubleScanStamp()
             }
         } else {
-            searchSetDelegate.searchCode(code, fromScan = true)
+            searchSetDelegate.searchCode(code)
         }
     }
 
@@ -382,7 +382,7 @@ class SetsViewModel : CoreViewModel(), OnPositionClickListener, OnOkInSoftKeyboa
             stampsCollectorManager.clearAllStampsCollectors()
             count.value = "0"
             anotherProductMaterialNumber?.let {
-                searchProductDelegate.searchCode(it, fromScan = true, isBarCode = false)
+                searchProductDelegate.searchCode(it)
             }
 
             return

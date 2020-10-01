@@ -53,7 +53,7 @@ class ScanInfoNetRequest @Inject constructor(
                     ProductInfo(
                             materialNumber = productNumber,
                             description = product.name.orEmpty(),
-                            uom = Uom(code = actualUom.uom, name = actualUom.name),
+                            uom = Uom(code = actualUom.uom.orEmpty(), name = actualUom.name.orEmpty()),
                             type = getProductType(
                                     isAlco = product.isAlco?.isNotEmpty() ?: false,
                                     isExcise = product.isExcise?.isNotEmpty() ?: false,

@@ -12,7 +12,6 @@ object Constants {
     const val TIME_FORMAT_HHmm = "HH:mm"
     const val TIME_FORMAT_mmss = "mm:ss"
     const val TIME_FORMAT_hhmmss = "HH:mm:ss"
-    const val TIME_FORMAT_ERP_hhmmss = "HHmmss"
     const val TIME_FORMAT_LOGS = "yyyy-MM-dd_HH-mm-ss-SSS"
     const val CHECK_DATA_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss"
     const val TIME_FORMAT_HH = "HH"
@@ -37,6 +36,7 @@ object Constants {
     const val SAP_6 = 6
     const val SAP_18 = 18
     const val SAP_OR_BAR_12 = 12
+    const val SAP_OR_BAR_13 = 13
 
     // Mark code length
     const val EXCISE_MARK_150 = 150
@@ -65,5 +65,6 @@ object Constants {
 
     //Other
     const val DIV_TO_KG = 1000
+    const val DIV_TO_RUB = 100
 
 }

@@ -3,24 +3,31 @@ package com.lenta.bp12.platform.extention
 import android.text.Editable
 import com.lenta.bp12.R
 import com.lenta.bp12.model.*
+import com.lenta.bp12.model.pojo.Good
+import com.lenta.bp12.model.pojo.Part
 import com.lenta.bp12.model.pojo.TaskType
-import com.lenta.bp12.platform.DEFAULT_DATE_LENGTH
+import com.lenta.bp12.platform.ONE_QUANTITY_IN_FLOAT
 import com.lenta.bp12.platform.ZERO_QUANTITY
+import com.lenta.bp12.request.ScanInfoResult
 import com.lenta.bp12.request.pojo.CreateTaskBasketInfo
+import com.lenta.bp12.request.pojo.EanInfo
 import com.lenta.bp12.request.pojo.TaskInfo
 import com.lenta.bp12.request.pojo.good_info.GoodInfoResult
 import com.lenta.bp12.request.pojo.markCartonBoxGoodInfoNetRequest.MarkCartonBoxGoodInfoNetRequestResult
 import com.lenta.bp12.request.pojo.markCartonBoxGoodInfoNetRequest.MarkRequestStatus
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
+import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
+import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.utilities.enumValueOrNull
 import com.lenta.shared.utilities.extentions.dropZeros
 import com.lenta.shared.utilities.extentions.getConvertedQuantity
 import com.lenta.shared.utilities.extentions.isSapTrue
+import com.lenta.shared.utilities.getDateFromString
 import com.lenta.shared.utilities.orIfNull
-import java.math.BigInteger
-import java.text.SimpleDateFormat
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.util.*
 
 fun GoodKind.getDescriptionResId(): Int {
@@ -59,7 +66,8 @@ fun MarkCartonBoxGoodInfoNetRequestResult.getMarkStatus(): MarkStatus {
 
         MarkRequestStatus.MARK_NOT_FOUND_IN_TASK,
         MarkRequestStatus.MARK_NOT_FOUND_OR_PROBLEMATIC,
-        MarkRequestStatus.MARK_OF_DIFFERENT_GOOD -> MarkStatus.BAD_MARK
+        MarkRequestStatus.MARK_OF_DIFFERENT_GOOD
+        -> MarkStatus.BAD_MARK
 
         MarkRequestStatus.CARTON_FOUND_OR_GRAYZONE -> MarkStatus.GOOD_CARTON
 
@@ -67,14 +75,18 @@ fun MarkCartonBoxGoodInfoNetRequestResult.getMarkStatus(): MarkStatus {
         MarkRequestStatus.CARTON_NOT_FOUND,
         MarkRequestStatus.CARTON_NOT_FOUND_IN_TASK,
         MarkRequestStatus.CARTON_OF_DIFFERENT_GOOD,
-        MarkRequestStatus.CARTON_OLD -> MarkStatus.BAD_CARTON
+        MarkRequestStatus.CARTON_OLD,
+        MarkRequestStatus.CARTON_NOT_SAME_IN_SYSTEM
+        -> MarkStatus.BAD_CARTON
 
         MarkRequestStatus.BOX_FOUND -> MarkStatus.GOOD_BOX
 
         MarkRequestStatus.BOX_NOT_FOUND,
         MarkRequestStatus.BOX_OF_DIFFERENT_GOOD,
         MarkRequestStatus.BOX_INCOMPLETE,
-        MarkRequestStatus.BOX_NOT_FOUND_IN_TASK -> MarkStatus.BAD_BOX
+        MarkRequestStatus.BOX_NOT_FOUND_IN_TASK,
+        MarkRequestStatus.BOX_NOT_SAME_IN_SYSTEM
+        -> MarkStatus.BAD_BOX
 
         else -> MarkStatus.UNKNOWN
     }
@@ -134,61 +146,6 @@ fun CreateTaskBasketInfo.getControlType(): ControlType {
     }
 }
 
-fun String.addZerosToStart(targetLength: Int): String {
-    var value = this
-    while (value.length < targetLength) {
-        value = "0$value"
-    }
-
-    return value
-}
-
-/** Проверка даты на корректность
- * если дата в формате dd.mm.yyyy */
-private fun String.isDateInFormatDdMmYyyyWithDotsCorrect(): Boolean {
-    return if (this.isNotEmpty() && (this.length == DEFAULT_DATE_LENGTH)) {
-        try {
-            val splitCheckDate = this.split(".")
-            val day = splitCheckDate[0].toInt()
-            val month = splitCheckDate[1].toInt()
-            val year = splitCheckDate[2].toInt()
-            val monthWith31Days = listOf(1, 3, 5, 7, 8, 10, 12)
-            val monthWith30Days = listOf(4, 6, 9, 11)
-            when {
-                (year < 1) || (year > 2100) -> false
-                monthWith31Days.contains(month) -> day <= 31
-                monthWith30Days.contains(month) && (month != 2) -> day <= 30
-                (year % 4 == 0) -> day <= 29
-                (month == 2) -> day <= 28
-                else -> false
-            }
-        } catch (e: RuntimeException) {
-            false
-        }
-    } else {
-        false
-    }
-}
-
-/** Проверка даты на корректность и что она не позже сегодняшней даты
- * если дата в формате dd.mm.yyyy */
-fun String.isDateCorrectAndNotAfterToday(): Boolean {
-    return if (this.isDateInFormatDdMmYyyyWithDotsCorrect()) {
-        try {
-            val date = SimpleDateFormat(
-                    Constants.DATE_FORMAT_dd_mm_yyyy,
-                    Locale.getDefault()
-            ).parse(this)
-
-            date <= Date()
-        } catch (e: RuntimeException) {
-            false
-        }
-    } else {
-        false
-    }
-}
-
 /**
  * Метод проверяет по регулярке есть ли второй минус в строке (учитывая что в строку может попасть только цифры и минус)
  * Использовать вместе с
@@ -205,27 +162,6 @@ fun Editable?.returnWithNoSecondMinus(): String {
     }
 }
 
-/**
- * Метод удаляет второй минус в строке
- * Использовать только если строка не проходит по регулярке Constants.STRING_WITH_ONLY_ONE_MINUS_IN_BEGINNING_PATTERN
- * */
-private fun String.deleteSecondMinus(): String {
-    val newString = this
-    val indexOfLast = newString.indexOfLast { it == '-' }
-    return if (indexOfLast > 0) {
-        buildString {
-            append(newString.substring(0, indexOfLast))
-            append(newString.substring(indexOfLast + 1, newString.length))
-        }
-    } else {
-        newString
-    }
-}
-
-fun String.extractAlcoCode(): String {
-    return BigInteger(this.substring(7, 19), 36).toString().padStart(19, '0')
-}
-
 
 fun TaskType.isWholesaleType(): Boolean {
     return this.code == TypeCode.WHOLESALE.code
@@ -240,6 +176,50 @@ fun ScanCodeInfo.getConvertedQuantityString(divider: Double): String {
     return converted.dropZeros()
 }
 
+fun Float.dropZeros(): String {
+    return if (this == this.toLong().toFloat())
+        String.format("%d", this.toLong())
+    else
+        String.format("%s", this)
+}
+
+fun ScanInfoResult.getParts(good: Good, date: String, providerCode: String, producerCode: String): List<Part> {
+    val formattedDate = try {
+        getDateFromString(date, Constants.DATE_FORMAT_dd_mm_yyyy)
+    } catch (e: RuntimeException) {
+        Date()
+    }
+
+    return this.parts?.map { partFromServer ->
+        Part(
+                number = partFromServer.partNumber.orEmpty(),
+                material = good.material,
+                providerCode = providerCode,
+                producerCode = producerCode,
+                date = formattedDate
+        )
+    }.orEmpty()
+}
+
+suspend fun ZmpUtz25V001.getEanMapByMaterialUnits(material: String, unitsCode: String): MutableMap<String, Float> {
+    @Suppress("INACCESSIBLE_TYPE")
+    return withContext(Dispatchers.IO) {
+        localHelper_ET_EANS.getWhere("MATERIAL = \"$material\" AND UOM = \"${unitsCode.toUpperCase(Locale.getDefault())}\"")
+                .associateByTo(
+                        destination = mutableMapOf<String, Float>(),
+                        keySelector = { it.ean.orEmpty() },
+                        valueTransform = { cell ->
+                            cell.umrez?.let { umrez ->
+                                cell.umren?.let { umren ->
+                                    (umrez.toFloat() / umren.toFloat()).takeIf { cell.uom == Uom.DATA_KAR }
+                                }
+                            } ?: ONE_QUANTITY_IN_FLOAT
+                        }
+                )
+    }
+}
+
+
 fun <T> MutableCollection<T>.addIf(predicate: Boolean, whatToAdd: () -> T) {
     if (predicate) this.add(whatToAdd())
 }
@@ -248,10 +228,20 @@ infix fun <T> MutableCollection<T>.add(whatToAdd: T): Holder<T> {
     return Holder(whatToAdd, this)
 }
 
-infix fun<T> Holder<T>.ifTrue(predictValue: Boolean) {
-    if(predictValue) {
+infix fun <T> Holder<T>.ifTrue(predictValue: Boolean) {
+    if (predictValue) {
         this.who.add(this.value)
     }
 }
 
-data class Holder<T>(val value:T, val who:MutableCollection<T> )
+data class Holder<T>(val value: T, val who: MutableCollection<T>)
+
+fun EanInfo?.getQuantityForBox(): Float {
+    return this?.let {
+        it.umrez?.toFloatOrNull()?.let { umrez ->
+            it.umren?.toFloatOrNull()?.let { umren ->
+                (umrez / umren).takeIf { unitCode == Uom.DATA_KAR }
+            }
+        }
+    } ?: ONE_QUANTITY_IN_FLOAT
+}

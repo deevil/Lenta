@@ -60,7 +60,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     private val formatterRU = SimpleDateFormat("dd.MM.yyyy")
 
     @SuppressLint("SimpleDateFormat")
-    private val formatterERP = SimpleDateFormat(Constants.DATE_FORMAT_yyyyMMdd)
+    private val formatterERP = SimpleDateFormat(Constants.DATE_FORMAT_yyyy_mm_dd)
 
     val countedSelectionsHelper = SelectionItemsHelper()
     val toProcessingSelectionsHelper = SelectionItemsHelper()
@@ -115,8 +115,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
 
     init {
         launchUITryCatch {
-            searchProductDelegate.init(viewModelScope = this@GoodsListViewModel::viewModelScope,
-                    scanResultHandler = this@GoodsListViewModel::handleProductSearchResult)
+            searchProductDelegate.init(scanResultHandler = this@GoodsListViewModel::handleProductSearchResult)
         }
     }
 

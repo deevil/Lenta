@@ -87,16 +87,26 @@ class MarkedInfoFragment : CoreFragment<FragmentMarkedInfoBinding, MarkedInfoVie
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        vm.updateCounter()
+        vm.requestFocusToQuantity.value = true
+    }
+
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_2 -> vm.onClickRollBack()
             R.id.b_3 -> vm.onClickDetails()
+            R.id.b_4 -> if (vm.isSpecialMode.value == true) vm.onClickDamaged() else vm.onClickAdd()
+            R.id.b_5 -> vm.onClickApply()
+            //R.id.b_2 -> vm.onScanResult("00000046207999000001ctFCOdglt") // пачка сигарет 436094
             //R.id.b_3 -> vm.onScanResult("010460606832938921SkBoU)pIP8hKg91pqrs92ZfetuVyAMPGOpWAWcpKZDOCZIpKcvMTxzlwdtOuqhdnXBhGMswLgWAhbDfThrjBrXXnbgKVZGQZhTGIsvcuvfBKg") // обувь 521460
+            //R.id.b_3 -> vm.onScanResult("010460606832930321lV\"Uj/!zo6t<891qrst92bqayYmJBoBksrEBIDkeDsADTYwzBIUqqmNdMXSJLWYjCFuNnzCGITHGVZWZfCIjhXZiYVJFSmyoPfduOeRgBWYoH") // обувь 521445
             //R.id.b_3 -> vm.onScanResult("00000046207999000001lySEIZZut") // пачка сигарет 436094
             //R.id.b_3 -> vm.onScanResult("010460026601165721000001C800508768593kKBf") // блок сигарет 436094
             //R.id.b_3 -> vm.onScanResult("010460026601165721000001G800512683393JEPq") // блок сигарет 436094
-            R.id.b_4 -> if (vm.isSpecialMode.value == true) vm.onClickDamaged() else vm.onClickAdd()
-            R.id.b_5 -> vm.onClickApply()
+            //R.id.b_3 -> vm.onScanResult("010460026601165721000001H800543025793psSa") // блок сигарет 436094
+            //R.id.b_3 -> vm.onScanResult("010460026601165721000001G800512683393JEPq") // блок сигарет
         }
     }
 

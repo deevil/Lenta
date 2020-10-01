@@ -25,7 +25,9 @@ class ProcessMarkedGoodProductService(
     }
 
     fun add(writeOffReason: WriteOffReason, count: Double, stamp: TaskExciseStamp? = null): ProcessMarkedGoodProductService {
-        // добавить товар если его нету в таске товаров, в репозитории найти причину списания для данного товара, если есть, то увеличить count иначе создать новый, добавить марку
+        // Добавить товар если его нету в таске товаров,
+        // в репозитории найти причину списания для данного товара,
+        // если есть, то увеличить count иначе создать новый, добавить марку
         if (stamp != null && taskRepository.getExciseStamps().isContainsStamp(stamp.code)) {
             return ProcessMarkedGoodProductService(taskDescription, taskRepository, productInfo)
         }
@@ -39,7 +41,7 @@ class ProcessMarkedGoodProductService(
             var lastIndex = -1
 
             arrTaskWriteOffReason.forEachIndexed { index, reason ->
-                if(writeOffReason == reason.writeOffReason) {
+                if (writeOffReason == reason.writeOffReason) {
                     taskRepository.getWriteOffReasons().deleteWriteOffReason(taskWriteOfReason)
                     val newCount = arrTaskWriteOffReason[index].count + count
                     taskWriteOfReason = TaskWriteOffReason(writeOffReason, productInfo.materialNumber, newCount)

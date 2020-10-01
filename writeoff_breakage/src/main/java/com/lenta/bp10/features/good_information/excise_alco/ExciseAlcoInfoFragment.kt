@@ -2,6 +2,7 @@ package com.lenta.bp10.features.good_information.excise_alco
 
 import android.os.Bundle
 import android.view.View
+import androidx.lifecycle.Observer
 import com.lenta.bp10.R
 import com.lenta.bp10.features.good_information.base.BaseProductInfoViewModel
 import com.lenta.bp10.features.good_information.general.GoodInfoFragment
@@ -43,23 +44,30 @@ open class ExciseAlcoInfoFragment : GoodInfoFragment() {
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         super.setupBottomToolBar(bottomToolbarUiModel)
         bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.rollback)
+
+        vm.isSpecialMode.observe(viewLifecycleOwner, Observer { isSpecialMode ->
+            bottomToolbarUiModel.uiModelButton4.show(
+                    if (isSpecialMode) ButtonDecorationInfo.damaged else ButtonDecorationInfo.add
+            )
+        })
+
         exciseAlcoInfoViewModel?.let {
             connectLiveData(it.rollBackEnabled, bottomToolbarUiModel.uiModelButton2.enabled)
         }
 
-
+        connectLiveData(vm.damagedEnabled, bottomToolbarUiModel.uiModelButton4.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
             R.id.b_2 -> exciseAlcoInfoViewModel?.onClickRollBack()
+            R.id.b_4 -> if (vm.isSpecialMode.value == true) exciseAlcoInfoViewModel?.onClickDamaged() else exciseAlcoInfoViewModel?.onClickAdd()
             else -> super.onToolbarButtonClick(view)
         }
-
     }
 
     companion object {
-        fun create(productInfo: ProductInfo): ExciseAlcoInfoFragment {
+        fun newInstance(productInfo: ProductInfo): ExciseAlcoInfoFragment {
             ExciseAlcoInfoFragment().let {
                 it.productInfo = productInfo
                 it.initCount = 0.0

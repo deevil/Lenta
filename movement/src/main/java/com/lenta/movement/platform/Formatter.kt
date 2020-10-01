@@ -1,7 +1,9 @@
 package com.lenta.movement.platform
 
+import com.lenta.movement.R
 import com.lenta.movement.models.*
 import com.lenta.shared.models.core.Uom
+import com.lenta.shared.models.core.getDescriptionResId
 
 class Formatter : IFormatter {
 
@@ -115,15 +117,11 @@ class Formatter : IFormatter {
         }
     }
 
-    override fun basketGisControl(basket: Basket): String {
-        return when {
-            basket.isAlco ?: false -> ALCO
-            basket.isExciseAlco ?: false -> EXCISE_ALCO
-            basket.isNotExciseAlco ?: false -> NOT_EXCISE_ALCO
-            basket.isUsual ?: false -> USUAL
-            basket.isVet ?: false -> VET
-            basket.isFood ?: false -> FOOD
-            else -> ""
+    override fun basketGisControl(basket: Basket): Int {
+        return if (basket.isEmpty()) {
+            DEFAULT_GIS_VALUE
+        } else {
+            basket.keys.random().type.getDescriptionResId()
         }
     }
 
@@ -218,5 +216,7 @@ class Formatter : IFormatter {
 
         private const val TRANSFER_WITH_ORDER = "Трансфер с заказа"
         private const val TRANSFER_WITHOUT_ORDER = "Трансфер без заказа"
+
+        private const val DEFAULT_GIS_VALUE = R.string.usual_good
     }
 }

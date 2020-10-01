@@ -80,13 +80,17 @@ class ProductInfoNetRequest
 
         return ProductInfo(
                 materialNumber = material.material,
-                description = material.name,
-                uom = Uom(code = uomInfo.uom, name = uomInfo.name),
-                type = getProductType(isAlco = material.isAlco.isNotEmpty(), isExcise = material.isExcise.isNotEmpty(), isMarkedGood = material.isMark.isNotEmpty()),
+                description = material.name.orEmpty(),
+                uom = Uom(code = uomInfo.uom.orEmpty(), name = uomInfo.name.orEmpty()),
+                type = getProductType(
+                        isAlco = material.isAlco?.isNotEmpty() == true,
+                        isExcise = material.isExcise?.isNotEmpty() == true,
+                        isMarkedGood = material.isMark?.isNotEmpty() == true
+                ),
                 isSet = !set.isNullOrEmpty(),
-                sectionId = material.abtnr,
-                matrixType = getMatrixType(material.matrixType),
-                materialType = material.materialType
+                sectionId = material.abtnr.orEmpty(),
+                matrixType = getMatrixType(material.matrixType.orEmpty()),
+                materialType = material.materialType.orEmpty()
         )
 
     }
@@ -112,60 +116,60 @@ data class ProductServerInfo(
         @SerializedName("ET_SET")
         val set: List<Set>?,
         @SerializedName("EV_ERROR_TEXT")
-        val errorText: String,
+        val errorText: String?,
         @SerializedName("EV_RETCODE")
-        val retCode: Int
+        val retCode: Int?
 )
 
 data class Material(
         @SerializedName("ABTNR")
-        val abtnr: String,
+        val abtnr: String?,
         @SerializedName("BUOM")
-        val buom: String,
+        val buom: String?,
         @SerializedName("EKGRP")
-        val ekgrp: String,
+        val ekgrp: String?,
         @SerializedName("IS_ALCO")
-        val isAlco: String,
+        val isAlco: String?,
         @SerializedName("IS_EXC")
-        val isExcise: String,
+        val isExcise: String?,
         @SerializedName("IS_MARK")
-        val isMark: String,
+        val isMark: String?,
         @SerializedName("IS_RETURN")
-        val isReturn: String,
+        val isReturn: String?,
         @SerializedName("MATERIAL")
-        val material: String,
+        val material: String?,
         @SerializedName("MATKL")
-        val matkl: String,
+        val matkl: String?,
         @SerializedName("MATR_TYPE")
-        val matrixType: String,
+        val matrixType: String?,
         @SerializedName("MATYPE")
-        val materialType: String,
+        val materialType: String?,
         @SerializedName("NAME")
-        val name: String
+        val name: String?
 )
 
 data class Ean(
         @SerializedName("EAN")
-        val ean: String,
+        val ean: String?,
         @SerializedName("MATERIAL")
-        val materialNumber: String,
+        val materialNumber: String?,
         @SerializedName("UMREN")
-        val umren: String,
+        val umren: String?,
         @SerializedName("UMREZ")
-        val umrez: String,
+        val umrez: String?,
         @SerializedName("UOM")
-        val uom: String
+        val uom: String?
 )
 
 data class Set(
         @SerializedName("MATNR")
-        val matNr: String,
+        val matNr: String?,
         @SerializedName("MATNR_OSN")
-        val matNrOsn: String,
+        val matNrOsn: String?,
         @SerializedName("MEINS")
-        val meins: String,
+        val meins: String?,
         @SerializedName("MENGE")
-        val menge: String
+        val menge: String?
 )
 
 

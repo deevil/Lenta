@@ -63,14 +63,14 @@ class ProductInfoDbRequest
         }
 
         return Either.Right(ProductInfo(
-                materialNumber = materialInfo.material,
-                description = materialInfo.name,
-                uom = Uom(code = uomInfo.uom, name = uomInfo.name),
+                materialNumber = materialInfo.material.orEmpty(),
+                description = materialInfo.name.orEmpty(),
+                uom = Uom(code = uomInfo.uom.orEmpty(), name = uomInfo.name.orEmpty()),
                 type = materialInfo.getProductType(),
-                isSet = getIsSet(materialInfo.material),
-                sectionId = materialInfo.abtnr,
+                isSet = getIsSet(materialInfo.material.orEmpty()),
+                sectionId = materialInfo.abtnr.orEmpty(),
                 matrixType = materialInfo.getMatrixType(),
-                materialType = materialInfo.matype
+                materialType = materialInfo.matype.orEmpty()
         ))
 
     }

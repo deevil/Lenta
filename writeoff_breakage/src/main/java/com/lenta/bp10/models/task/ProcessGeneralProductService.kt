@@ -5,9 +5,11 @@ import com.lenta.bp10.models.repositories.ITaskRepository
 import com.lenta.bp10.models.repositories.getTotalCountForProduct
 import com.lenta.shared.models.core.ProductInfo
 
-class ProcessGeneralProductService(val taskDescription: TaskDescription,
-                                   val taskRepository: ITaskRepository,
-                                   val productInfo: ProductInfo) : IProcessProductService {
+class ProcessGeneralProductService(
+        val taskDescription: TaskDescription,
+        val taskRepository: ITaskRepository,
+        val productInfo: ProductInfo
+) : IProcessProductService {
 
     override fun getTotalCount(): Double {
         // (Артем И., 09.04.2019) по данному продукту ИТОГО причин списания
@@ -55,4 +57,5 @@ class ProcessGeneralProductService(val taskDescription: TaskDescription,
 
         return ProcessGeneralProductService(taskDescription, taskRepository, productInfo)
     }
+
 }

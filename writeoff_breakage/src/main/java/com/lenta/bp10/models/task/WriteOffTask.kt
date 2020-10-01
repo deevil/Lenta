@@ -9,7 +9,10 @@ import com.lenta.bp10.requests.network.pojo.MaterialNumber
 import com.lenta.shared.models.core.ProductInfo
 import com.lenta.shared.models.core.ProductType
 
-class WriteOffTask(val taskDescription: TaskDescription, internal val taskRepository: ITaskRepository) {
+class WriteOffTask(
+        val taskDescription: TaskDescription,
+        internal val taskRepository: ITaskRepository
+) {
 
     fun deleteProducts(products: List<ProductInfo>): WriteOffTask {
         // (Артем И., 09.04.2019) удалить перечень продуктов (products), причины списания и марки
@@ -61,9 +64,10 @@ class WriteOffTask(val taskDescription: TaskDescription, internal val taskReposi
     fun getTotalCountOfProduct(product: ProductInfo): Double {
         // считать ИТОГО причин списания, а для акцизного товара ИТОГО + кол-во марок
         return when (product.type) {
-            ProductType.General -> processGeneralProduct(product)!!.getTotalCount()
-            ProductType.NonExciseAlcohol -> processGeneralProduct(product)!!.getTotalCount()
-            ProductType.ExciseAlcohol -> processExciseAlcoProduct(product)!!.getTotalCount()
+            ProductType.General -> processGeneralProduct(product)?.getTotalCount() ?: 0.0
+            ProductType.NonExciseAlcohol -> processGeneralProduct(product)?.getTotalCount() ?: 0.0
+            ProductType.ExciseAlcohol -> processExciseAlcoProduct(product)?.getTotalCount() ?: 0.0
+            ProductType.Marked -> processMarkedGoodProduct(product)?.getTotalCount() ?: 0.0
             else -> 0.0
         }
     }
@@ -81,20 +85,21 @@ class WriteOffTask(val taskDescription: TaskDescription, internal val taskReposi
 
     fun deleteTaskWriteOffReason(taskWriteOffReason: TaskWriteOffReason) {
         taskRepository.getWriteOffReasons().deleteWriteOffReason(taskWriteOffReason)
-        taskRepository.getProducts().findProduct(taskWriteOffReason.materialNumber)?.let {
-            if (getTotalCountOfProduct(it) <= 0) {
-                deleteProduct(it)
+
+        taskRepository.getProducts().findProduct(taskWriteOffReason.materialNumber)?.let { productInfo ->
+            if (getTotalCountOfProduct(productInfo) <= 0) {
+                deleteProduct(productInfo)
             }
         }
 
-        taskRepository.getExciseStamps()
-                .findExciseStampsOfProduct(taskWriteOffReason.materialNumber)
-                .filter { it.writeOffReason == taskWriteOffReason.writeOffReason.code }
-                .forEach {
-                    taskRepository.getExciseStamps().deleteExciseStamp(it)
-                }
+        taskRepository.getExciseStamps().apply {
+            findExciseStampsOfProduct(taskWriteOffReason.materialNumber)
+                    .filter { it.writeOffReason == taskWriteOffReason.writeOffReason.code }
+                    .forEach { taskExciseStamp ->
+                        deleteExciseStamp(taskExciseStamp)
+                    }
+        }
     }
-
 
 }
 

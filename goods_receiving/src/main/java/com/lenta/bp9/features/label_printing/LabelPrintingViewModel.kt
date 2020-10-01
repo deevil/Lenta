@@ -15,7 +15,6 @@ import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.fmp.resources.dao_ext.getUomInfo
 import com.lenta.shared.fmp.resources.fast.ZmpUtz07V001
 import com.lenta.shared.platform.constants.Constants
-import com.lenta.shared.platform.constants.Constants.TIME_FORMAT_ERP_hhmmss
 import com.lenta.shared.platform.constants.Constants.TIME_FORMAT_hhmmss
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
@@ -63,7 +62,7 @@ class LabelPrintingViewModel : CoreViewModel() {
     private val formatterEN = SimpleDateFormat(Constants.DATE_FORMAT_yyyy_mm_dd)
 
     @SuppressLint("SimpleDateFormat")
-    val formatterERP = SimpleDateFormat(Constants.DATE_FORMAT_yyyyMMdd)
+    val formatterERP = SimpleDateFormat(Constants.DATE_FORMAT_yyyy_mm_dd)
 
     val enabledNextBtn: MutableLiveData<Boolean> = MutableLiveData(false)
 
@@ -162,7 +161,7 @@ class LabelPrintingViewModel : CoreViewModel() {
                             partySign.shelfLifeTime
                         }
                         val formatterTime = SimpleDateFormat(TIME_FORMAT_hhmmss)
-                        val formatterTimeERP = SimpleDateFormat(TIME_FORMAT_ERP_hhmmss)
+                        val formatterTimeERP = SimpleDateFormat(TIME_FORMAT_hhmmss)
                         partySignTime = formatterTime.format(formatterTimeERP.parse(partySignTime))
                         partySign.processingUnit == label.processingUnit
                                 && partySign.manufactureCode == label.manufactureCode

@@ -12,6 +12,7 @@ import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_DELIVERY_ERRORS
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_REASON_REJECTION_NOT_ORDER
+import com.lenta.shared.models.core.BarcodeData
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
@@ -35,6 +36,7 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
     lateinit var processZBatchesPPPService: ProcessZBatchesPPPService
 
     val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData(false)
+    val barcodeData: MutableLiveData<BarcodeData> = MutableLiveData()
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
     val spinTermControl: MutableLiveData<List<String>> = MutableLiveData()
     val spinReasonRejection: MutableLiveData<List<String>> = MutableLiveData()
@@ -66,7 +68,7 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
             val quantity =
                     denominatorConvertBaseUnitMeasure
                             .takeIf { it > 0.0 }
-                            ?.let { numeratorConvertBaseUnitMeasure / denominatorConvertBaseUnitMeasure }
+                            ?.let { numeratorConvertBaseUnitMeasure / it }
                             ?: 0.0
 
             MutableLiveData(context.getString(R.string.accept, "$purchaseOrderUnitsName=${quantity.toStringFormatted()} $uomName"))
@@ -125,8 +127,7 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
                         return@launchUITryCatch
                     }
 
-            searchProductDelegate.init(viewModelScope = this@ZBatchesInfoPPPViewModel::viewModelScope,
-                    scanResultHandler = this@ZBatchesInfoPPPViewModel::handleProductSearchResult)
+            searchProductDelegate.init(scanResultHandler = this@ZBatchesInfoPPPViewModel::handleProductSearchResult)
 
             currentDate.value = timeMonitor.getServerDate()
             expirationDate.value = Calendar.getInstance()
@@ -149,6 +150,17 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
                                 ?.indexOfLast { it.code == TYPE_DISCREPANCIES_QUALITY_DELIVERY_ERRORS }
                                 ?: -1
             } else {
+                //https://trello.com/c/mcEA3n84
+                barcodeData.value?.let {
+                    if (it.barcodeInfo.isWeight) {
+                        val weightInGrams = it.barcodeInfo.weight.toDoubleOrNull() ?: 0.0
+                        if (productInfo.value?.purchaseOrderUnits?.code?.toUpperCase(Locale.getDefault()) == UNIT_KG) {
+                            count.value = (weightInGrams / 1000).toStringFormatted()
+                        } else {
+                            count.value = weightInGrams.toStringFormatted()
+                        }
+                    }
+                }
                 qualityInfo.value = dataBase.getQualityMercuryInfo().orEmpty()
             }
 
@@ -200,8 +212,12 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
         productInfo.value = initProductInfo
     }
 
-    fun initDiscrepancy(initDiscrepancy: Boolean) {
-        isDiscrepancy.value = initDiscrepancy
+    fun initDiscrepancy(_initDiscrepancy: Boolean) {
+        isDiscrepancy.value = _initDiscrepancy
+    }
+
+    fun initBarcodeData(_initBarcodeData: BarcodeData) {
+        barcodeData.value = _initBarcodeData
     }
 
     fun getTitle(): String {
@@ -629,5 +645,6 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
     companion object {
         private const val TERM_CONTROL_CODE_SHELF_LIFE = "001"
         private const val TERM_CONTROL_CODE_PRODUCTION_DATE = "002"
+        private const val UNIT_KG = "KG"
     }
 }

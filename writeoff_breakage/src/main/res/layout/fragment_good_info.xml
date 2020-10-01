@@ -79,7 +79,7 @@
             app:requestFocus="@{vm.requestFocusToQuantity}"
             app:selectAfterFocus="@{true}"
             app:suffix="@{vm.suffix}"
-            tools:text="1 ШТ" />
+            tools:text="1 шт" />
 
         <View
             android:id="@+id/div_hor2"
@@ -142,8 +142,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/div_vert"
-            app:onPositionClickListener="@{vm.onSelectReason}"
-            app:position="@{vm.reasonPosition}"
+            app:position="@={vm.reasonPosition}"
             tools:entries="@array/test_list" />
 
         <View
@@ -167,7 +166,7 @@
 
                 <TextView
                     style="@style/BottomCircleIconStyle"
-                    android:onClick="@{(v) -> vm.screenNavigator.openMatrixInfoScreen(vm.productInfo.matrixType)}"
+                    android:onClick="@{(v) -> vm.navigator.openMatrixInfoScreen(vm.productInfo.matrixType)}"
                     app:matrixType="@{vm.productInfo.matrixType}"
                     tools:text="A" />
 
@@ -177,7 +176,7 @@
 
                 <TextView
                     style="@style/BottomCircleIconStyle"
-                    android:onClick="@{(v) -> vm.screenNavigator.openSectionInfoScreen(vm.productInfo.sectionId)}"
+                    android:onClick="@{(v) -> vm.navigator.openSectionInfoScreen(vm.productInfo.sectionId)}"
                     android:text='@{"" + vm.productInfo.sectionId}'
                     tools:text="02" />
 
@@ -195,13 +194,13 @@
             <ImageView
                 android:id="@+id/b_scan_es"
                 style="@style/BottomIconStyle"
-                android:onClick="@{(v) -> vm.screenNavigator.openESInfoScreen()}"
+                android:onClick="@{(v) -> vm.navigator.openESInfoScreen()}"
                 android:src="@drawable/ic_scan_barcode_es_white_32dp" />
 
             <ImageView
                 android:id="@+id/b_scan"
                 style="@style/BottomIconStyle"
-                android:onClick="@{(v) -> vm.screenNavigator.openEanInfoScreen()}"
+                android:onClick="@{(v) -> vm.navigator.openEanInfoScreen()}"
                 android:src="@drawable/ic_scan_barcode_white_32dp" />
 
         </LinearLayout>

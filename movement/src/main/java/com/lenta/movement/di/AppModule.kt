@@ -82,5 +82,4 @@ class AppModule {
     internal fun provideICargoUnitRepository(): ICargoUnitRepository {
         return MemoryCargoUnitRepository()
     }
-
 }

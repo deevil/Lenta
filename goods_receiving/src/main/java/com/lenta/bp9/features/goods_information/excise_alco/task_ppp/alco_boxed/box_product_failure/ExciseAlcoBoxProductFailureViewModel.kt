@@ -32,7 +32,7 @@ class ExciseAlcoBoxProductFailureViewModel : CoreViewModel() {
          * Частичный отказ. Кнопка становится доступной для нажатия, если по товару имеется хотя бы один обработанный короб. Логика обработанных коробов описана в тикете
          * проверка проводится как и в ф-ции processExciseAlcoBoxAccService.boxControl(boxInfo) только для всех коробов, и если хоть один обработанный, то делаем кнопку активной
          */
-        MutableLiveData((taskManager.getReceivingTask()?.taskRepository?.getBoxes()?.findBoxesOfProduct(productInfo.value!!)?.filter {taskBoxInfo ->
+        MutableLiveData((taskManager.getReceivingTask()?.taskRepository?.getBoxesRepository()?.findBoxesOfProduct(productInfo.value!!)?.filter { taskBoxInfo ->
             val countScannedBoxex = taskManager.getReceivingTask()?.taskRepository?.getBoxesDiscrepancies()?.findBoxesDiscrepanciesOfProduct(productInfo.value!!)?.filter {
                 it.isScan && it.boxNumber == taskBoxInfo.boxNumber
             }?.size ?: 0

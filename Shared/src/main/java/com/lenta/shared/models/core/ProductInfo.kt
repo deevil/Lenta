@@ -12,7 +12,6 @@ open class ProductInfo(
         val markedGoodType:  String = ""
 ) : IProduct {
 
-
     override fun getMaterialLastSix(): String {
         return if (materialNumber.length > 6)
             materialNumber.substring(materialNumber.length - 6)

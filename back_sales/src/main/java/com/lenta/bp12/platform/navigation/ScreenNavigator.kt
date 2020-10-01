@@ -13,6 +13,7 @@ import com.lenta.bp12.features.create_task.marked_good_info.MarkedGoodInfoCreate
 import com.lenta.bp12.features.create_task.task_card.TaskCardCreateFragment
 import com.lenta.bp12.features.create_task.task_content.TaskContentFragment
 import com.lenta.bp12.features.enter_employee_number.EnterEmployeeNumberFragment
+import com.lenta.bp12.features.enter_mrc.EnterMrcFragment
 import com.lenta.bp12.features.loading.fast.FastDataLoadingFragment
 import com.lenta.bp12.features.main_menu.MainMenuFragment
 import com.lenta.bp12.features.open_task.discrepancy_list.DiscrepancyListFragment
@@ -25,6 +26,7 @@ import com.lenta.bp12.features.open_task.task_list.TaskListFragment
 import com.lenta.bp12.features.open_task.task_search.TaskSearchFragment
 import com.lenta.bp12.features.save_data.SaveDataFragment
 import com.lenta.bp12.features.select_market.SelectMarketFragment
+import com.lenta.bp12.model.WorkType
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.exception.Failure
@@ -197,6 +199,17 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun openEnterMrcFromBoxScreen(workType: WorkType, onNextCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(
+                    EnterMrcFragment.newInstance(
+                            workType,
+                            backFragmentResultHelper.setFuncForResult(onNextCallback)
+                    )
+            )
+        }
+    }
+
     // Информационные экраны
     override fun showUnsentDataFoundOnDevice(deleteCallback: () -> Unit, goOverCallback: () -> Unit) {
         runOrPostpone {
@@ -232,7 +245,8 @@ class ScreenNavigator @Inject constructor(
                     message = context.getString(R.string.unsaved_data_will_be_lost),
                     iconRes = R.drawable.ic_question_yellow_80dp,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(proceedCallback),
-                    rightButtonDecorationInfo = ButtonDecorationInfo.proceed
+                    rightButtonDecorationInfo = ButtonDecorationInfo.proceed,
+                    leftButtonDecorationInfo = ButtonDecorationInfo.cancel
             ))
         }
     }
@@ -282,9 +296,10 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun showForGoodNeedScanFirstMark() {
+    override fun showForGoodNeedScanFirstMark(goodTitle: String) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
+                    title = goodTitle,
                     pageNumber = "85",
                     message = context.getString(R.string.for_good_need_scan_first_mark),
                     iconRes = R.drawable.ic_info_green_80dp,
@@ -317,11 +332,11 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun showDoYouReallyWantSetZeroQuantity(yesCallback: () -> Unit, counted: Int) {
+    override fun showDoYouReallyWantSetZeroQuantity(count: Int, yesCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "65",
-                    message = context.getString(R.string.do_you_really_want_set_zero_quantity, counted),
+                    message = context.getString(R.string.do_you_really_want_set_zero_quantity, count),
                     iconRes = R.drawable.ic_question_yellow_80dp,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes
@@ -515,10 +530,11 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "81",
                     message = context.getString(R.string.pallet_list_printed),
-                    iconRes = R.drawable.ic_done_green_80dp,
+                    iconRes = R.drawable.ic_info_green_80dp,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.next,
-                    leftButtonDecorationInfo = ButtonDecorationInfo.empty
+                    leftButtonDecorationInfo = ButtonDecorationInfo.empty,
+                    isVisibleLeftButton = false
             ))
         }
     }
@@ -538,7 +554,7 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "93",
                     message = context.getString(R.string.mark_already_scanned_delete),
-                    iconRes = R.drawable.ic_warning_red_80dp,
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback)
             ))
@@ -550,7 +566,7 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "91",
                     message = context.getString(R.string.carton_already_scanned_delete),
-                    iconRes = R.drawable.ic_warning_red_80dp,
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback)
             ))
@@ -562,7 +578,7 @@ class ScreenNavigator @Inject constructor(
             getFragmentStack()?.push(AlertFragment.create(
                     pageNumber = "89",
                     message = context.getString(R.string.box_already_scanned_delete),
-                    iconRes = R.drawable.ic_warning_red_80dp,
+                    iconRes = R.drawable.ic_question_yellow_80dp,
                     rightButtonDecorationInfo = ButtonDecorationInfo.yes,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(yesCallback)
             ))
@@ -631,6 +647,16 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showAlertDialogWithRedTriangle(errorText: String, screenNumber: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = screenNumber,
+                    message = errorText,
+                    iconRes = R.drawable.ic_warning_red_80dp
+            ))
+        }
+    }
+
     override fun showChooseProviderFirst() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
@@ -675,6 +701,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openGoodInfoOpenScreen()
     fun openMarkedGoodInfoCreateScreen()
     fun openMarkedGoodInfoOpenScreen()
+    fun openEnterMrcFromBoxScreen(workType: WorkType, nextCallback: () -> Unit)
 
     fun showUnsentDataFoundOnDevice(deleteCallback: () -> Unit, goOverCallback: () -> Unit)
     fun showUnsavedDataWillBeLost(proceedCallback: () -> Unit)
@@ -683,10 +710,10 @@ interface IScreenNavigator : ICoreNavigator {
     fun showScannedMarkBelongsToProduct(productName: String)
     fun showForExciseGoodNeedScanFirstMark()
 
-    fun showForGoodNeedScanFirstMark()
+    fun showForGoodNeedScanFirstMark(goodTitle: String)
     fun showRawGoodsRemainedInTask(yesCallback: () -> Unit)
     fun showBoxWasLastScanned(afterShowCallback: () -> Unit)
-    fun showDoYouReallyWantSetZeroQuantity(yesCallback: () -> Unit, counted: Int)
+    fun showDoYouReallyWantSetZeroQuantity(count: Int, yesCallback: () -> Unit)
     fun showNotMatchTaskSettingsAddingNotPossible()
     fun showGoodCannotBeAdded()
     fun openScannedMarkIsNotOnBalanceInCurrentStore(proceedCallback: () -> Unit)
@@ -727,4 +754,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun showCantAddVetToWholeSale()
 
     fun showMarkScanError(errorText: String)
+
+    fun showAlertDialogWithRedTriangle(errorText: String, screenNumber: String = "97")
 }

@@ -188,7 +188,7 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
     private fun checkCode(code: String?) {
         actionByNumber(
                 number = code.orEmpty(),
-                funcForEan = { ean -> searchCode(ean) },
+                funcForEan = { ean, _ -> searchCode(ean) },
                 funcForMaterial = { material -> searchCode(material) },
                 funcForPriceQrCode = { qrCode ->
                     priceInfoParser.getPriceInfoFromRawCode(qrCode)?.let {

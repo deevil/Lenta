@@ -3,73 +3,75 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="vm"
             type="com.lenta.movement.features.task.basket.info.TaskBasketInfoViewModel" />
+
+        <variable
+            name="rvConfig"
+            type="com.lenta.shared.utilities.databinding.DataBindingRecyclerViewConfig" />
     </data>
 
-    <FrameLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.lenta.movement.view.BorderedTableLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/size_16dp"
-            android:stretchColumns="*">
+            android:orientation="vertical">
 
-            <TableRow>
+            <com.lenta.movement.view.BorderedTableLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/size_16dp"
+                android:stretchColumns="*">
 
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="@string/basket_value"
-                    android:layout_margin="@dimen/size_16dp"/>
+                <TableRow>
 
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    tools:text="60 шт"
-                    android:text="@{vm.size}"
-                    android:layout_margin="@dimen/size_16dp"/>
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/size_16dp"
+                        android:text="@string/basket_value" />
 
-            </TableRow>
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/size_16dp"
+                        android:text="@{vm.size}"
+                        tools:text="60 шт" />
 
-            <TableRow android:visibility="@{vm.gisControlVisible}">
+                </TableRow>
 
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="@string/gis_control"
-                    android:layout_margin="@dimen/size_16dp"/>
+                <TableRow android:visibility="@{vm.gisControlVisible}">
 
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    tools:text="Обычный товар"
-                    android:text="@{vm.gisControl}"
-                    android:layout_margin="@dimen/size_16dp"/>
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/size_16dp"
+                        android:text="@string/gis_control" />
 
-            </TableRow>
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/size_16dp"
+                        android:text="@{vm.gisControl}"
+                        tools:text="Обычный товар" />
 
-            <TableRow android:visibility="@{vm.supplierVisible}">
+                </TableRow>
+            </com.lenta.movement.view.BorderedTableLayout>
 
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="@string/provider"
-                    android:layout_margin="@dimen/size_16dp"/>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv"
+                items="@{vm.propertyItems}"
+                rv_config="@{rvConfig}"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:nestedScrollingEnabled="false"
+                tools:listitem="@layout/layout_item_basket_properties" />
 
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    tools:text="106453 Поставщик 4"
-                    android:text="@{vm.supplier}"
-                    android:layout_margin="@dimen/size_16dp"/>
-
-            </TableRow>
-
-        </com.lenta.movement.view.BorderedTableLayout>
-
-    </FrameLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 </layout>

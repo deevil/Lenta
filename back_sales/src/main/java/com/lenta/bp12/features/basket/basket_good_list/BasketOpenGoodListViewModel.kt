@@ -6,7 +6,6 @@ import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
 import com.lenta.bp12.features.open_task.base.BaseGoodListOpenViewModel
 import com.lenta.bp12.features.open_task.good_list.GoodListFragment
-import com.lenta.bp12.managers.interfaces.IMarkManager
 import com.lenta.bp12.managers.interfaces.IOpenTaskManager
 import com.lenta.bp12.model.MarkType
 import com.lenta.bp12.model.pojo.Basket
@@ -14,11 +13,6 @@ import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.extentions.*
 import com.lenta.bp12.model.pojo.open_task.TaskOpen
 import com.lenta.bp12.platform.ZERO_QUANTITY
-import com.lenta.bp12.platform.navigation.IScreenNavigator
-import com.lenta.bp12.platform.resource.IResourceManager
-import com.lenta.bp12.repository.IDatabaseRepository
-import com.lenta.bp12.request.GoodInfoNetRequest
-import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.SelectionItemsHelper
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
@@ -32,28 +26,7 @@ import javax.inject.Inject
 class BasketOpenGoodListViewModel : BaseGoodListOpenViewModel(), OnOkInSoftKeyboardListener {
 
     @Inject
-    override lateinit var navigator: IScreenNavigator
-
-    @Inject
     override lateinit var manager: IOpenTaskManager
-
-    @Inject
-    override lateinit var sessionInfo: ISessionInfo
-
-    @Inject
-    override lateinit var resource: IResourceManager
-
-    @Inject
-    override lateinit var markManager: IMarkManager
-
-    @Inject
-    override lateinit var database: IDatabaseRepository
-
-    /** "ZMP_UTZ_BKS_05_V001"
-     * Получение данных товара по ШК / SAP-коду
-     */
-    @Inject
-    override lateinit var goodInfoNetRequest: GoodInfoNetRequest
 
     val selectionsHelper = SelectionItemsHelper()
 
@@ -140,7 +113,6 @@ class BasketOpenGoodListViewModel : BaseGoodListOpenViewModel(), OnOkInSoftKeybo
         goods.value?.let {
             it.getOrNull(position)?.let { item ->
                 manager.updateCurrentGood(item.good)
-                navigator.goBack()
                 if (item.good.markType == MarkType.UNKNOWN)
                     navigator.openGoodInfoOpenScreen()
                 else navigator.openMarkedGoodInfoOpenScreen()
@@ -239,7 +211,7 @@ class BasketOpenGoodListViewModel : BaseGoodListOpenViewModel(), OnOkInSoftKeybo
                 updateCurrentBasket(basketValue)
                 updateCurrentTask(taskValue)
             }
-            navigator.goBack()
+            navigator.goBackTo(GoodListFragment::class.simpleName)
         }
     }
 
@@ -253,7 +225,7 @@ class BasketOpenGoodListViewModel : BaseGoodListOpenViewModel(), OnOkInSoftKeybo
 
     private fun isDivByMrcAndItsNotZero(mrc: String, task: TaskOpen): Boolean {
         val isDivByMinimalPrice = task.type?.isDivByMinimalPrice == true
-        return isDivByMinimalPrice && (mrc.isEmpty().not() || mrc != ZERO_MRC_STRING)
+        return isDivByMinimalPrice && (mrc.isEmpty().not() && mrc != ZERO_MRC_STRING)
     }
 
     companion object {

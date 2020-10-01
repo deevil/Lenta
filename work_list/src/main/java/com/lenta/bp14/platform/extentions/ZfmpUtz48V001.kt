@@ -3,31 +3,39 @@ package com.lenta.bp14.platform.extentions
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 
 fun ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST.toCheckListGoodInfo(): CheckListGoodInfo? {
-    return CheckListGoodInfo(
-            material = material,
-            name = name,
-            unitsCode = buom
-    )
+    return if (material == null && name == null && buom == null) {
+        null
+    } else {
+        CheckListGoodInfo(
+                material = material.orEmpty(),
+                name = name.orEmpty(),
+                unitsCode = buom.orEmpty()
+        )
+    }
 }
 
 fun ZfmpUtz48V001.ItemLocal_ET_MATNR_LIST.toWorkListGoodInfo(): WorkListGoodInfo? {
-    return WorkListGoodInfo(
-            material = material,
-            name = name,
-            unitsCode = buom,
-            goodGroup = matkl,
-            purchaseGroup = ekgrp,
-            shelfLife = mhdhbDays,
-            remainingShelfLife = mhdrzDays,
-            matrixType = matrType,
-            section = abtnr,
-            isExcise = isExc,
-            isAlcohol = isAlco,
-            isMark = isMark,
-            isRusWine = isRusWine,
-            healthFood = isHf,
-            novelty = isNew
-    )
+    return if (material == null && name == null && buom == null) {
+        null
+    } else {
+        return WorkListGoodInfo(
+                material = material.orEmpty(),
+                name = name.orEmpty(),
+                unitsCode = buom.orEmpty(),
+                goodGroup = matkl.orEmpty(),
+                purchaseGroup = ekgrp.orEmpty(),
+                shelfLife = mhdhbDays ?: 0,
+                remainingShelfLife = mhdrzDays ?: 0,
+                matrixType = matrType.orEmpty(),
+                section = abtnr.orEmpty(),
+                isExcise = isExc.orEmpty(),
+                isAlcohol = isAlco.orEmpty(),
+                isMark = isMark.orEmpty(),
+                isRusWine = isRusWine,
+                healthFood = isHf.orEmpty(),
+                novelty = isNew.orEmpty()
+        )
+    }
 }
 
 data class CheckListGoodInfo(
