@@ -20,7 +20,7 @@ class FastResourcesMultiRequest @Inject constructor(val hyperHive: HyperHive) : 
                 ZfmpUtz52V001.NAME_RESOURCE to ZfmpUtz52V001(hyperHive).newRequest(), // ZFMP_UTZ_52_V001 Справочник типов заданий
                 ZfmpUtz53V001.NAME_RESOURCE to ZfmpUtz53V001(hyperHive).newRequest(), // ZFMP_UTZ_53_V001 Справочник типов марок
 
-                ZmpUtz25V001.NAME_RESOURCE to ZmpUtz25V001(hyperHive).newRequest(), // ZMP_UTZ_25_V001 Справочник штрих-кодов
+                //ZmpUtz25V001.NAME_RESOURCE to ZmpUtz25V001(hyperHive).newRequest(), // ZMP_UTZ_25_V001 Справочник штрих-кодов
                 ZfmpUtz48V001.NAME_RESOURCE to ZfmpUtz48V001(hyperHive).newRequest() // ZFMP_UTZ_48_V002 Справочник товаров
         )
     }

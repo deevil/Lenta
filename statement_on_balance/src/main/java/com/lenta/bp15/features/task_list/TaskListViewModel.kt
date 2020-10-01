@@ -73,7 +73,9 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
      */
 
     init {
-        updateTaskList()
+        launchUITryCatch {
+            updateTaskList()
+        }
     }
 
     /**

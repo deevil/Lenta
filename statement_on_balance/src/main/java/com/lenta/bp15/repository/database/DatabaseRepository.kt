@@ -22,7 +22,7 @@ class DatabaseRepository @Inject constructor(
     private val taskTypes: ZfmpUtz52V001 by lazy { ZfmpUtz52V001(hyperHive) } // Типы заданий
     private val markTypes: ZfmpUtz53V001 by lazy { ZfmpUtz53V001(hyperHive) } // Типы марок
 
-    private val eanInfo: ZmpUtz25V001 by lazy { ZmpUtz25V001(hyperHive) } // Информация о штрих-коде
+    //private val eanInfo: ZmpUtz25V001 by lazy { ZmpUtz25V001(hyperHive) } // Информация о штрих-коде
     private val products: ZfmpUtz48V001 by lazy { ZfmpUtz48V001(hyperHive) } // Информация о товаре
 
     /*private val dictionary: ZmpUtz17V001 by lazy { ZmpUtz17V001(hyperHive) } // Справочник с наборами данных
@@ -40,7 +40,7 @@ class DatabaseRepository @Inject constructor(
     private val markGroup: ZmpUtz109V001 by lazy { ZmpUtz109V001(hyperHive) } //группы маркировки*/
 
 
-    private suspend fun getEanByMaterialUnits(material: String, unitsCode: String): String {
+    /*private suspend fun getEanByMaterialUnits(material: String, unitsCode: String): String {
         return withContext(Dispatchers.IO) {
             eanInfo.getEanInfoByMaterialUnits(material, unitsCode)?.toEanInfo()?.ean.orEmpty()
         }
@@ -54,7 +54,7 @@ class DatabaseRepository @Inject constructor(
 
     override suspend fun getEanInfo(ean: String): com.lenta.shared.requests.combined.scan_info.pojo.EanInfo? {
         return eanInfo.getEanInfo(ean)?.toEanInfo()
-    }
+    }*/
 
     override suspend fun getAllowedAppVersion(): String? {
         return withContext(Dispatchers.IO) {
@@ -77,8 +77,8 @@ class DatabaseRepository @Inject constructor(
 
 interface IDatabaseRepository {
 
-    suspend fun getEanListByMaterialUnits(material: String, unitsCode: String): List<String>
-    suspend fun getEanInfo(ean: String): com.lenta.shared.requests.combined.scan_info.pojo.EanInfo?
+    //suspend fun getEanListByMaterialUnits(material: String, unitsCode: String): List<String>
+    //suspend fun getEanInfo(ean: String): com.lenta.shared.requests.combined.scan_info.pojo.EanInfo?
     suspend fun getAllowedAppVersion(): String?
     suspend fun getTaskTypeList(): List<TaskType>
     suspend fun getTaskTypeByCode(taskTypeCode: String): TaskType

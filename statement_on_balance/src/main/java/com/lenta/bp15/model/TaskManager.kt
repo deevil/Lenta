@@ -68,65 +68,40 @@ class TaskManager @Inject constructor(
                     mode = TaskSearchMode.COMMON.mode
             )).either(::handleFailure) { result ->
                 launch {
-                    handleTaskListResult(result)
+                    processingTasks.value = getTaskListFromResult(result)
                 }
             }
 
-            loadChangedTasksFromPreviousSession()
             navigator.hideProgress()
         }
     }
 
-    private suspend fun handleTaskListResult(result: TaskListResult) {
-        val tasks = result.convertToTasks()?.map { task ->
+    override fun loadSearchTaskList(searchParams: TaskSearchParams) {
+        launch {
+            navigator.showProgressLoadingData()
+
+            netRequests.getTaskList(TaskListParams(
+                    tkNumber = sessionInfo.market.orEmpty(),
+                    userName = sessionInfo.userName.orEmpty(),
+                    userNumber = sessionInfo.personnelNumber.orEmpty(),
+                    deviceIp = deviceInfo.getDeviceIp(),
+                    mode = TaskSearchMode.WITH_PARAMS.mode,
+                    searchParams = searchParams
+            )).either(::handleFailure) { result ->
+                launch {
+                    searchTasks.value = getTaskListFromResult(result)
+                }
+            }
+
+            navigator.hideProgress()
+        }
+    }
+
+    private suspend fun getTaskListFromResult(result: TaskListResult): List<Task> {
+        return result.convertToTasks()?.map { task ->
             task.type = database.getTaskTypeByCode(task.type.code)
             task
         } ?: emptyList()
-
-        /*val yyyy = result.tasks?.map { taskRawInfo ->
-            Task(
-                    number = taskRawInfo.number,
-                    type = database.getTaskTypeByCode(taskRawInfo.type),
-                    firstLine = taskRawInfo.firstLine,
-                    secondLine = taskRawInfo.secondLine,
-                    title = taskRawInfo.title,
-                    description = taskRawInfo.description,
-                    goodsQuantity = taskRawInfo.goodsQuantity.toIntOrNull() ?: 0,
-                    marksQuantity = taskRawInfo.marksQuantity.toIntOrNull() ?: 0,
-                    block = Block(
-                            type = BlockType.from(taskRawInfo.lockType),
-                            user = taskRawInfo.lockUser,
-                            ip = taskRawInfo.lockIp
-                    ),
-                    isFinished = !taskRawInfo.isNotFinish.isSapTrue(),
-                    comment = taskRawInfo.comment
-            )
-        } ?: emptyList()*/
-
-        processingTasks.value = tasks
-    }
-
-    private fun loadChangedTasksFromPreviousSession() {
-        // Получаем список локально сохраненных задач (вероятно 1-2 задачи)
-        // Ищем эти задачи в текущем списке и обновляем данные по отсканированным маркам
-
-    }
-
-    override suspend fun loadSearchTaskList(searchParams: TaskSearchParams) {
-        navigator.showProgressLoadingData()
-
-        netRequests.getTaskList(TaskListParams(
-                tkNumber = sessionInfo.market.orEmpty(),
-                userName = sessionInfo.userName.orEmpty(),
-                userNumber = sessionInfo.personnelNumber.orEmpty(),
-                deviceIp = deviceInfo.getDeviceIp(),
-                mode = TaskSearchMode.WITH_PARAMS.mode,
-                searchParams = searchParams
-        )).either(::handleFailure) { result ->
-            searchTasks.postValue(result.convertToTasks())
-        }
-
-        navigator.hideProgress()
     }
 
     override fun setCurrentTask(task: Task) {
@@ -199,7 +174,7 @@ interface ITaskManager {
     fun updateCurrentTask(task: Task)
 
     fun loadProcessingTaskList()
-    suspend fun loadSearchTaskList(searchParams: TaskSearchParams)
+    fun loadSearchTaskList(searchParams: TaskSearchParams)
     fun setCurrentTask(task: Task)
     suspend fun loadGoodListToCurrentTask()
     suspend fun unlockTask(task: Task)
