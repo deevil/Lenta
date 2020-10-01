@@ -600,23 +600,23 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     private fun checkParamGrsGrundNeg() {
         if (processGeneralProductService.checkParam(paramGrsGrundNeg.value!!)) {//блок 6.58 (да)
             //блок 6.93
-            val countWithoutParamGrsGrundNeg = processGeneralProductService.countWithoutParamGrsGrundNegPPP(paramGrsGrundNeg.value!!)
+            val countWithoutParamGrsGrundNeg = processGeneralProductService.countWithoutParamGrsGrundNegPPP(paramGrsGrundNeg.value.orEmpty())
             //блок 6.130
             if (countWithoutParamGrsGrundNeg == 0.0) {//блок 6.130 (да)
                 //блок 6.121
-                processGeneralProductService.removeDiscrepancyFromProduct(paramGrsGrundNeg.value!!)
+                processGeneralProductService.removeDiscrepancyFromProduct(paramGrsGrundNeg.value.orEmpty(), productInfo.value?.processingUnit.orEmpty())
                 //блок 6.172
                 saveCategory()
             } else {//блок 6.130 (нет)
                 //блок 6.147
                 if (countWithoutParamGrsGrundNeg > 0.0) {//блок 6.147 (да)
                     //блок 6.145
-                    processGeneralProductService.addWithoutUnderload(paramGrsGrundNeg.value!!, countWithoutParamGrsGrundNeg.toString(), productInfo.value!!.processingUnit)
+                    processGeneralProductService.addWithoutUnderload(paramGrsGrundNeg.value.orEmpty(), countWithoutParamGrsGrundNeg.toString(), productInfo.value?.processingUnit.orEmpty())
                     //блок 6.172
                     saveCategory()
                 } else {//блок 6.147 (нет)
                     //блок 6.155
-                    processGeneralProductService.removeDiscrepancyFromProduct(paramGrsGrundNeg.value!!)
+                    processGeneralProductService.removeDiscrepancyFromProduct(paramGrsGrundNeg.value.orEmpty(), productInfo.value?.processingUnit.orEmpty())
                     noParamGrsGrundNeg()
                 }
             }
@@ -844,23 +844,23 @@ class GoodsInfoViewModel : CoreViewModel(), OnPositionClickListener {
     private fun checkParamGrwUlGrundcat() {
         if (processGeneralProductService.checkParam(paramGrwUlGrundcat.value!!)) {//блок 7.55 (да)
             //блок 7.96
-            val countWithoutParamGrwUlGrundcat = processGeneralProductService.countWithoutParamGrwUlGrundcatPGE(paramGrwOlGrundcat.value!!, paramGrwUlGrundcat.value!!)
+            val countWithoutParamGrwUlGrundcat = processGeneralProductService.countWithoutParamGrwUlGrundcatPGE(paramGrwOlGrundcat.value.orEmpty(), paramGrwUlGrundcat.value.orEmpty())
             //блок 7.135
             if (countWithoutParamGrwUlGrundcat == 0.0) {//блок 7.135 (да)
                 //блок 7.133
-                processGeneralProductService.removeDiscrepancyFromProduct(paramGrwUlGrundcat.value!!)
+                processGeneralProductService.removeDiscrepancyFromProduct(paramGrwUlGrundcat.value.orEmpty(), spinReasonRejection.value!![spinReasonRejectionSelectedPosition.value!!].substring(5))
                 //блок 7.177
                 saveCategoryPGE(true)
             } else {//блок 7.135 (нет)
                 //блок 7.157
                 if (countWithoutParamGrwUlGrundcat > 0.0) {//блок 7.157 (да)
                     //блок 7.155
-                    processGeneralProductService.addWithoutUnderload(paramGrwUlGrundcat.value!!, countWithoutParamGrwUlGrundcat.toString(), spinReasonRejection.value!![spinReasonRejectionSelectedPosition.value!!].substring(5))
+                    processGeneralProductService.addWithoutUnderload(paramGrwUlGrundcat.value.orEmpty(), countWithoutParamGrwUlGrundcat.toString(), spinReasonRejection.value!![spinReasonRejectionSelectedPosition.value!!].substring(5))
                     //блок 7.177
                     saveCategoryPGE(true)
                 } else {//блок 7.157 (нет)
                     //блок 7.165
-                    processGeneralProductService.removeDiscrepancyFromProduct(paramGrwUlGrundcat.value!!)
+                    processGeneralProductService.removeDiscrepancyFromProduct(paramGrwUlGrundcat.value.orEmpty(), spinReasonRejection.value!![spinReasonRejectionSelectedPosition.value!!].substring(5))
                     noParamGrwUlGrundcat()
                 }
             }

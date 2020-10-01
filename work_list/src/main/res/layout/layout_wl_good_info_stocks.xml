@@ -36,7 +36,7 @@
 
                     <LinearLayout
                         style="@style/LinearCellStyle"
-                        android:layout_weight="@integer/three_two_1">
+                        android:layout_weight="@integer/four_three_1">
 
                         <TextView
                             style="@style/FirstRowTextStyle"
@@ -46,7 +46,7 @@
 
                     <LinearLayout
                         style="@style/LinearCellStyle"
-                        android:layout_weight="@integer/three_two_2">
+                        android:layout_weight="@integer/four_three_2">
 
                         <TextView
                             style="@style/FirstRowTextStyle"
@@ -56,14 +56,23 @@
 
                     <LinearLayout
                         style="@style/LinearCellStyle"
-                        android:layout_weight="@integer/three_two_3">
+                        android:layout_weight="@integer/four_three_3">
 
                         <TextView
                             style="@style/FirstRowTextStyle"
                             android:text="@string/quantity" />
 
                     </LinearLayout>
+                    <LinearLayout
+                        style="@style/LinearCellStyle"
+                        android:visibility="@{vm.additional.hasZParts}"
+                        android:layout_weight="@integer/four_three_4">
 
+                        <TextView
+                            style="@style/FirstRowTextStyle"
+                            android:text="@string/z_parts" />
+
+                    </LinearLayout>
                 </LinearLayout>
 
                 <View

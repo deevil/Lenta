@@ -199,7 +199,7 @@ class BasketCreateGoodListViewModel : BaseGoodListCreateViewModel(), OnOkInSoftK
                 updateCurrentBasket(basketValue)
                 updateCurrentTask(taskValue)
             }
-            navigator.goBack()
+            navigator.goBackTo(TaskContentFragment::class.simpleName)
         }
     }
 

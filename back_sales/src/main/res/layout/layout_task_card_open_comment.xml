@@ -47,7 +47,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
                     android:singleLine="false"
-                    android:text="@{vm.ui.description}"
+                    android:text="@{vm.description}"
                     tools:text="Очень очень очень очень очень очень очень очень очень очень очень очень очень очень очень очень очень очень очень очень очень очень очень очень очень очень очень очень очень очень очень очень очень очень очень очень очень очень очень очень очень очень очень очень очень очень очень очень очень очень длинный текст" />
 
             </LinearLayout>
@@ -87,7 +87,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
                     android:singleLine="false"
-                    android:text="@{vm.ui.comment}"
+                    android:text="@{vm.comment}"
                     tools:text="Комплектование необходимо выполнить до 16:00!!!" />
 
             </LinearLayout>

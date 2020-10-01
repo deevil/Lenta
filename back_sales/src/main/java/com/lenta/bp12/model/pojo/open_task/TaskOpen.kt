@@ -32,7 +32,8 @@ data class TaskOpen(
         val mrcList: MutableList<Mrc> = mutableListOf(),
 
         val isStrict: Boolean,
-        var isFinished: Boolean
+        var isFinished: Boolean,
+        val wholesaleBuyer: String?
 ) : Taskable {
 
     fun getProviderCodeWithName(): String {

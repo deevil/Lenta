@@ -1,15 +1,17 @@
 package com.lenta.bp9.features.goods_information.marking.task_pge.marking_info_box_pge
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.lenta.bp9.R
-import com.lenta.bp9.features.delegates.ISaveProductDelegate
 import com.lenta.bp9.features.delegates.SearchProductDelegate
 import com.lenta.bp9.features.goods_information.base.BaseGoodsInfo
 import com.lenta.bp9.model.processing.ProcessMarkingBoxPGEProductService
-import com.lenta.bp9.model.task.*
+import com.lenta.bp9.model.task.TaskBoxInfo
+import com.lenta.bp9.model.task.TaskExciseStampInfo
+import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
-import com.lenta.bp9.requests.network.*
+import com.lenta.bp9.requests.network.ZmpUtzGrz44V001NetRequest
+import com.lenta.bp9.requests.network.ZmpUtzGrz44V001Params
+import com.lenta.bp9.requests.network.ZmpUtzGrz44V001Result
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.fmp.resources.dao_ext.getUomInfo
@@ -18,7 +20,10 @@ import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
 import com.lenta.shared.requests.combined.scan_info.pojo.QualityInfo
-import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.launchUITryCatch
+import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.extentions.toStringFormatted
 import com.lenta.shared.utilities.orIfNull
 import com.mobrun.plugin.api.HyperHive
 import javax.inject.Inject

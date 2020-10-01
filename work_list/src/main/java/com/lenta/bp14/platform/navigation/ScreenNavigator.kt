@@ -27,6 +27,7 @@ import com.lenta.bp14.features.work_list.good_details.GoodDetailsFragment
 import com.lenta.bp14.features.work_list.good_info.GoodInfoWlFragment
 import com.lenta.bp14.features.work_list.good_sales.GoodSalesFragment
 import com.lenta.bp14.features.work_list.goods_list.GoodsListWlFragment
+import com.lenta.bp14.features.work_list.storage_z_parts.StorageZPartsFragment
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -398,6 +399,16 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showAlertWithStockItemNotFound() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.stock_item_not_found),
+                    iconRes = R.drawable.ic_warning_yellow_80dp,
+                    pageNumber = "14"
+            ))
+        }
+    }
+
     override fun openVideoScanProductScreen() {
         runOrPostpone {
             getFragmentStack()?.push(EanVideoScannerFragment())
@@ -408,6 +419,15 @@ class ScreenNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(message = context.getString(R.string.picto_nova),
                     iconRes = com.lenta.shared.R.drawable.ic_new_white_32dp), CustomAnimation.vertical)
+        }
+    }
+
+    override fun openPictogrammInfoZPart() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.z_part),
+                    iconRes = R.drawable.ic_z
+            ), CustomAnimation.vertical)
         }
     }
 
@@ -479,6 +499,12 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun openStorageZPartsScreen(storage: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(StorageZPartsFragment.newInstance(storage))
+        }
+    }
+
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -528,13 +554,15 @@ interface IScreenNavigator : ICoreNavigator {
     fun showIncorrectProductionDate(backCallback: () -> Unit)
     fun showNumberOfCopiesExceedsMaximum()
     fun showSetZeroQuantity(yesCallback: () -> Unit, quantity: Int)
+    fun showAlertWithStockItemNotFound()
 
     fun openTestScanBarcodeScreen()
     fun openScanPriceScreen()
     fun openConfirmationExitTask(taskName: String, callbackFunc: () -> Unit)
     fun openVideoScanProductScreen()
     fun openPictogrammInfoNova()
+    fun openPictogrammInfoZPart()
     fun openPictogrammInfoHealthyFood()
     fun openConfirmationNotSaveChanges(yesCallback: () -> Unit)
-
+    fun openStorageZPartsScreen(storage: String)
 }

@@ -48,7 +48,7 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
     private var originalSearchNumber = ""
 
     val accountingType by unsafeLazy {
-        resource.typeMark()
+        resource.typeMark
     }
 
     private var isExistUnsavedData = false

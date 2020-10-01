@@ -160,5 +160,10 @@ data class TaskComposition(
         @SerializedName("IS_ZPARTS")
         val isZBatches: String?, // Z-партии
         @SerializedName("IS_NEEDPRINT")
-        val isNeedPrint: String? // Z-партии, печать этикеток
+        val isNeedPrint: String?, // Z-партии, печать этикеток
+        @SerializedName("ALTME")
+        val alternativeUnitMeasure: String?, // альтернативная единица измерения
+        @SerializedName("ALTVOLUME")
+        val quantityAlternativeUnitMeasure: String? // количество в альтернативной единице измерения
+
 )

@@ -168,7 +168,7 @@ abstract class BaseGoodInfoViewModel<R : Taskable, T : ITaskManager<R>> : CoreVi
     Количество товара по корзинам
      */
     val basketTitle by unsafeLazy {
-        MutableLiveData(resource.byBasket())
+        MutableLiveData(resource.byBasket)
     }
 
     val totalTitle by unsafeLazy {
@@ -181,9 +181,7 @@ abstract class BaseGoodInfoViewModel<R : Taskable, T : ITaskManager<R>> : CoreVi
         val list = it.toMutableList()
         if (list.size > 1) {
             list.add(0,
-                    ProviderInfo(
-                            name = resource.chooseProvider()
-                    ))
+                    ProviderInfo(name = resource.chooseProvider))
         }
 
         list.toList()
