@@ -277,7 +277,6 @@ abstract class BaseGoodInfoViewModel<R : Taskable, T : ITaskManager<R>> : CoreVi
     abstract val applyEnabled: LiveData<Boolean>
     abstract val totalWithUnits: MutableLiveData<String>
     abstract val closeEnabled: MutableLiveData<Boolean>
-    abstract val quantityField: LiveData<String>
 
     protected suspend fun findGoodByMaterial(material: String): Good? {
         navigator.showProgressLoadingData()

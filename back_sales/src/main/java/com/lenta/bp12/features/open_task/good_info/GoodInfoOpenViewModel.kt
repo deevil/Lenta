@@ -13,10 +13,7 @@ import com.lenta.bp12.model.pojo.extentions.addMark
 import com.lenta.bp12.model.pojo.extentions.addMarks
 import com.lenta.bp12.model.pojo.extentions.addPosition
 import com.lenta.bp12.model.pojo.extentions.getScreenStatus
-import com.lenta.bp12.platform.DEFAULT_QUANTITY_STRING
-import com.lenta.bp12.platform.FIRST_POSITION
-import com.lenta.bp12.platform.ZERO_QUANTITY
-import com.lenta.bp12.platform.ZERO_VOLUME
+import com.lenta.bp12.platform.*
 import com.lenta.bp12.platform.extention.*
 import com.lenta.bp12.request.ScanInfoParams
 import com.lenta.bp12.request.ScanInfoResult
