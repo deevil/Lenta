@@ -212,8 +212,7 @@ class ExciseAlcoBoxAccInfoPGEViewModel : CoreViewModel(), OnPositionClickListene
                         return@launchUITryCatch
                     }
 
-            searchProductDelegate.init(viewModelScope = this@ExciseAlcoBoxAccInfoPGEViewModel::viewModelScope,
-                    scanResultHandler = this@ExciseAlcoBoxAccInfoPGEViewModel::handleProductSearchResult)
+            searchProductDelegate.init(scanResultHandler = this@ExciseAlcoBoxAccInfoPGEViewModel::handleProductSearchResult)
 
             suffix.value = productInfo.value?.purchaseOrderUnits?.name
             qualityInfo.value = dataBase.getQualityInfoNormPGE()

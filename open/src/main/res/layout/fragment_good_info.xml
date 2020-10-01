@@ -46,8 +46,8 @@
                         android:textSize="@dimen/text_14sp"
                         android:text="@={vm.quantityField}"
                         app:suffix="@{vm.suffix}"
+                        app:cursorToLastPos="@{true}"
                         app:requestFocus="@{vm.requestFocusToQuantityField}"
-                        app:cursorToLastPos="@{false}"
                         style="@style/CellEditTextStyle"
                         tools:text="10 кг"/>
 

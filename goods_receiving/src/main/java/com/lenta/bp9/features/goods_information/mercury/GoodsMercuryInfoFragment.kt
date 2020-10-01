@@ -8,6 +8,7 @@ import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentGoodsMercuryInfoBinding
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.extentions.getAppComponent
+import com.lenta.shared.models.core.BarcodeData
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -26,10 +27,11 @@ class GoodsMercuryInfoFragment : CoreFragment<FragmentGoodsMercuryInfoBinding, G
         OnBackPresserListener {
 
     companion object {
-        fun create(productInfo: TaskProductInfo, isDiscrepancy: Boolean): GoodsMercuryInfoFragment {
+        fun newInstance(productInfo: TaskProductInfo, isDiscrepancy: Boolean, barcodeData: BarcodeData?): GoodsMercuryInfoFragment {
             GoodsMercuryInfoFragment().let {
                 it.productInfo = productInfo
                 it.isDiscrepancy = isDiscrepancy
+                it.barcodeData = barcodeData
                 return it
             }
         }
@@ -37,6 +39,7 @@ class GoodsMercuryInfoFragment : CoreFragment<FragmentGoodsMercuryInfoBinding, G
 
     private var isDiscrepancy by state<Boolean?>(null)
     private var productInfo by state<TaskProductInfo?>(null)
+    private var barcodeData by state<BarcodeData?>(null)
 
     override fun getLayoutId(): Int = R.layout.fragment_goods_mercury_info
 
@@ -47,6 +50,7 @@ class GoodsMercuryInfoFragment : CoreFragment<FragmentGoodsMercuryInfoBinding, G
             getAppComponent()?.inject(vm)
             vm.productInfo.value = this.productInfo
             vm.isDiscrepancy.value = this.isDiscrepancy
+            vm.barcodeData.value = this.barcodeData
             return vm
         }
     }
