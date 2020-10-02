@@ -250,6 +250,8 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
 
                 MarkScreenStatus.ENTER_MRC_FROM_BOX -> handleEnterMrcFromBox()
 
+                MarkScreenStatus.SOME_MARKS_FROM_BOX_ALREADY_SCANNED -> showScanMarksIndividiuallyAlert()
+
                 else -> showIncorrectEanFormat()
 
             }

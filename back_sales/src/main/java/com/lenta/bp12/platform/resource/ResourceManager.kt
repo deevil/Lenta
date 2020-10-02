@@ -40,6 +40,7 @@ class ResourceManager @Inject constructor(
     override fun basket(description: String): String = context.getString(R.string.basket_title, description)
     override fun mrcDashCostRub(mrc: String): String = context.getString(R.string.mrc_dash_cost_rub, mrc)
     override fun mrcSpaceRub(mrc: String): String = context.getString(R.string.mrc_space_rub, mrc)
+    override fun fromPlannedQuantity(plannedQuantity: String): String = context.getString(R.string.from_planned_quantity, plannedQuantity)
 }
 
 interface IResourceManager {
@@ -73,5 +74,5 @@ interface IResourceManager {
     fun basket(description: String): String
     fun mrcDashCostRub(mrc: String): String
     fun mrcSpaceRub(mrc: String): String
-
+    fun fromPlannedQuantity(plannedQuantity: String): String
 }
