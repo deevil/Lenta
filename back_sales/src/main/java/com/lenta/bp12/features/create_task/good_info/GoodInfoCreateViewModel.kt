@@ -60,9 +60,9 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
     val accountingType by unsafeLazy {
         screenStatus.map { status ->
             when (status) {
-                ScreenStatus.MARK_150, ScreenStatus.MARK_68 -> resource.typeMark()
-                ScreenStatus.ALCOHOL, ScreenStatus.PART -> resource.typePart()
-                else -> resource.typeQuantity()
+                ScreenStatus.MARK_150, ScreenStatus.MARK_68 -> resource.typeMark
+                ScreenStatus.ALCOHOL, ScreenStatus.PART -> resource.typePart
+                else -> resource.typeQuantity
             }
         }
     }
@@ -473,14 +473,14 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
                 val alcoCodeInfoList = database.getAlcoCodeInfoList(number.extractAlcoCode())
 
                 if (alcoCodeInfoList.isEmpty()) {
-                    navigator.openAlertScreen(resource.unknownAlcocode())
+                    navigator.openAlertScreen(resource.unknownAlcocode)
                     return
                 }
 
                 if (alcoCodeInfoList.find { it.material == good.value?.material } != null) {
                     addPartInfo(result)
                 } else {
-                    navigator.openAlertScreen(resource.alcocodeDoesNotApplyToThisGood())
+                    navigator.openAlertScreen(resource.alcocodeDoesNotApplyToThisGood)
                 }
             }
         }
@@ -600,6 +600,8 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
                 providerPosition.value?.let { position ->
                     providerCode = providers.getOrNull(position)?.code.orEmpty()
                 }
+            }.orIfNull {
+                Logg.e { "getProviderCode() providers is null" }
             }
         }
 
@@ -613,6 +615,8 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
                 producerPosition.value?.let { position ->
                     producerCode = producers.getOrNull(position)?.code.orEmpty()
                 }
+            }.orIfNull {
+                Logg.e { "getProducerCode() producers is null" }
             }
         }
 
@@ -689,8 +693,9 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
                     date = date.value.orEmpty(),
                     providerCode = getProviderCode(),
                     producerCode = getProducerCode()
-            )
-            parts?.forEach { part ->
+            ).orEmpty()
+
+            parts.forEach { part ->
                 manager.addOrDeleteGoodToBasket(
                         good = changedGood,
                         part = part,
@@ -716,6 +721,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
                     )
                 }
                 changedGood.addMarks(mappedMarks)
+
                 mappedMarks.forEach { markFromBox ->
                     Logg.d { "--> add mark from box = $markFromBox" }
                     manager.addGoodToBasketWithMark(
@@ -724,6 +730,8 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
                             provider = getProvider()
                     )
                 }
+            }.orIfNull {
+                Logg.e { "scanInfoResult.value?.exciseMarks is null" }
             }
             manager.updateCurrentGood(changedGood)
         }.orIfNull {
@@ -794,10 +802,10 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
     }
 
     override fun isExistUnsavedData(): Boolean {
-        val isProducerChanged = isProducerEnabledAndChanged() == true
-        val isEnteredMoreThanZeroAndProviderSelected = isQuantityFieldChanged() == true || isProviderEnabledAndChanged() == true
+        val isProducerChanged = isProducerEnabledAndChanged()
+        val isEnteredMoreThanZeroAndProviderSelected = isQuantityFieldChanged() || isProviderEnabledAndChanged()
         val isDateEntered = date.value?.isEmpty() != true
-        return if (isGoodAlcoOrExciseAlco() == true) {
+        return if (isGoodOrExciseAlco()) {
             isEnteredMoreThanZeroAndProviderSelected || isProducerChanged || isDateEntered
         } else {
             isEnteredMoreThanZeroAndProviderSelected
@@ -806,9 +814,5 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
 
     override fun afterTextChanged(s: Editable?) {
         quantityField.value = s.returnWithNoSecondMinus()
-    }
-
-    companion object {
-
     }
 }

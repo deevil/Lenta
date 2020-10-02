@@ -5,6 +5,7 @@ import com.lenta.bp14.features.work_list.good_details.GoodDetailsViewModel
 import com.lenta.bp14.features.work_list.good_info.GoodInfoWlViewModel
 import com.lenta.bp14.features.work_list.good_sales.GoodSalesViewModel
 import com.lenta.bp14.features.work_list.goods_list.GoodsListWlViewModel
+import com.lenta.bp14.features.work_list.storage_z_parts.StorageZPartsViewModel
 import com.lenta.bp14.models.filter.FilterFieldType.*
 import com.lenta.bp14.models.filter.FilterableDelegate
 import com.lenta.bp14.models.filter.IFilterable
@@ -14,7 +15,10 @@ import com.lenta.bp14.models.work_list.WorkListTaskDescription
 import com.lenta.bp14.models.work_list.WorkListTaskManager
 import com.lenta.bp14.models.work_list.repo.IWorkListRepo
 import com.lenta.bp14.models.work_list.repo.WorkListRepo
+import com.lenta.bp14.platform.resource.IResourceFormatter
+import com.lenta.bp14.platform.resource.ResourceFormatter
 import com.lenta.bp14.requests.work_list.*
+import com.lenta.shared.di.AppScope
 import dagger.Binds
 import dagger.Component
 import dagger.Module
@@ -34,7 +38,7 @@ interface WorkListComponent {
     fun inject(it: GoodDetailsViewModel)
     fun inject(it: ExpectedDeliveriesViewModel)
     fun inject(it: GoodSalesViewModel)
-
+    fun inject(it: StorageZPartsViewModel)
 }
 
 @Module(includes = [WorkListModule.Declarations::class])
@@ -66,6 +70,11 @@ class WorkListModule(private val taskDescription: WorkListTaskDescription) {
         @Binds
         @WorkListScope
         fun bindCheckMarkNetRequest(realisation: CheckMarkNetRequest): ICheckMarkNetRequest
+
+
+        @Binds
+        @WorkListScope
+        fun bindResourceFormatter(realization: ResourceFormatter): IResourceFormatter
 
     }
 

@@ -44,13 +44,12 @@ class GoodListFragment : CoreFragment<FragmentGoodListBinding, GoodListViewModel
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
         bottomToolbarUiModel.uiModelButton3.show(ButtonDecorationInfo.delete, enabled = false)
         bottomToolbarUiModel.uiModelButton4.show(ButtonDecorationInfo.print, enabled = false)
-        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save, enabled = false)
+        bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.save)
 
         connectLiveData(vm.deleteEnabled, bottomToolbarUiModel.uiModelButton3.enabled)
         connectLiveData(vm.deleteVisible, bottomToolbarUiModel.uiModelButton3.visibility)
         connectLiveData(vm.printEnabled, bottomToolbarUiModel.uiModelButton4.enabled)
         connectLiveData(vm.printVisibility, bottomToolbarUiModel.uiModelButton4.visibility)
-        connectLiveData(vm.saveEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {

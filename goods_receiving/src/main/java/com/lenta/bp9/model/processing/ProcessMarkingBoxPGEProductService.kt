@@ -1,6 +1,5 @@
 package com.lenta.bp9.model.processing
 
-import com.lenta.bp9.features.goods_information.marking.MarkingBlocksDiscrepanciesInfo
 import com.lenta.bp9.features.goods_information.marking.TypeLastStampScanned
 import com.lenta.bp9.model.repositories.ITaskRepository
 import com.lenta.bp9.model.task.*
@@ -24,8 +23,8 @@ class ProcessMarkingBoxPGEProductService
     private lateinit var productInfo: TaskProductInfo
     private val boxes: ArrayList<TaskBoxInfo> = ArrayList()
     private val currentBoxDiscrepancies: ArrayList<TaskBoxDiscrepancies> = ArrayList()
-    private val blocks: ArrayList<TaskBlockInfo> = ArrayList()
-    private val currentBlocksDiscrepancies: ArrayList<MarkingBlocksDiscrepanciesInfo> = ArrayList()
+    private val stamps: ArrayList<TaskExciseStampInfo> = ArrayList()
+    private val currentStampDiscrepancies: ArrayList<TaskExciseStampDiscrepancies> = ArrayList()
     private val currentGtin: ArrayList<String> = ArrayList()
     private val currentScannedTypesStamps: ArrayList<TypeLastStampScanned> = ArrayList()
     private var taskRepository: ITaskRepository? = null
@@ -39,7 +38,7 @@ class ProcessMarkingBoxPGEProductService
         return this
                 .takeIf {
                     inputProductInfo.type == ProductType.General
-                            && getMarkingGoodsRegime(taskManager,inputProductInfo) == MarkingGoodsRegime.UomSTWithBoxesPGE
+                            && getMarkingGoodsRegime(taskManager, inputProductInfo) == MarkingGoodsRegime.UomSTWithBoxesPGE
                 }
                 ?.apply {
                     this.productInfo = inputProductInfo.copy()
@@ -63,19 +62,19 @@ class ProcessMarkingBoxPGEProductService
                                         .mapTo(currentBoxDiscrepancies) { it.copy() }
                             }
 
-                    blocks.clear()
+                    stamps.clear()
                     taskRepository
-                            ?.getBlocks()
-                            ?.findBlocksOfProduct(productInfo)
-                            ?.mapTo(blocks) { it.copy() }
+                            ?.getExciseStamps()
+                            ?.findExciseStampsOfProduct(productInfo)
+                            ?.mapTo(stamps) { it.copy() }
 
-                    currentBlocksDiscrepancies.clear()
+                    currentStampDiscrepancies.clear()
                     taskRepository
                             ?.run {
-                                getBlocksDiscrepancies()
-                                        .findBlocksDiscrepanciesOfProduct(productInfo)
-                                        .mapTo(currentBlocksDiscrepancies) {
-                                            MarkingBlocksDiscrepanciesInfo(it.copy(), true)
+                                getExciseStampsDiscrepancies()
+                                        .findExciseStampsDiscrepanciesOfProduct(productInfo)
+                                        .mapTo(currentStampDiscrepancies) {
+                                            it.copy()
                                         }
                             }
                 }
@@ -91,43 +90,38 @@ class ProcessMarkingBoxPGEProductService
                                         .filter { box -> box.isScan }
                             }
 
-                    var countNotScannedBlocks = 0.0
+                    var countNotScannedStamps = 0.0
                     processedBox
                             .forEach { boxScanned ->
-                                countNotScannedBlocks +=
+                                countNotScannedStamps +=
                                         repository.run {
-                                            getBlocksDiscrepancies()
-                                                    .findBlocksDiscrepanciesOfProduct(productInfo)
-                                                    .filter { blocksDiscrepancies ->
-                                                        !blocksDiscrepancies.isScan
-                                                                && blocksDiscrepancies.boxNumber == boxScanned.boxNumber
+                                            getExciseStampsDiscrepancies()
+                                                    .findExciseStampsDiscrepanciesOfProduct(productInfo)
+                                                    .filter { stampsDiscrepancies ->
+                                                        !stampsDiscrepancies.isScan
+                                                                && stampsDiscrepancies.boxNumber == boxScanned.boxNumber
                                                     }
                                                     .size
                                                     .toDouble()
                                         }
                             }
 
-                    val countScannedBlocks =
+                    val countScannedStamps =
                             repository.run {
-                                getBlocksDiscrepancies()
-                                        .findBlocksDiscrepanciesOfProduct(productInfo)
+                                getExciseStampsDiscrepancies()
+                                        .findExciseStampsDiscrepanciesOfProduct(productInfo)
                                         .filter { it.isScan }
                                         .size
                                         .toDouble()
                             }
 
-                    val totalCountProcessedBlocks = countNotScannedBlocks + countScannedBlocks
-
-                    val nestingInOneBlock = productInfo.nestingInOneBlock.toDouble()
-
-                    return totalCountProcessedBlocks * nestingInOneBlock
+                    return countNotScannedStamps + countScannedStamps
                 }
                 ?: 0.0
     }
 
     override fun getCountBlocksUnderload(paramGrzGrundMarkCode: String): Double {
-        val countUnderload =
-                taskManager
+        return  taskManager
                         .getReceivingTask()
                         ?.run {
                             taskRepository
@@ -139,9 +133,6 @@ class ProcessMarkingBoxPGEProductService
                         }
                         ?: 0.0
 
-        val nestingInOneBlock = productInfo.nestingInOneBlock.toDouble()
-
-        return countUnderload / nestingInOneBlock
     }
 
     override fun denialOfFullProductAcceptance(typeDiscrepancies: String) {
@@ -153,8 +144,8 @@ class ProcessMarkingBoxPGEProductService
 
         //удаляем всю информацию по блокам
         taskRepository
-                ?.getBlocksDiscrepancies()
-                ?.deleteBlocksDiscrepanciesForProduct(productInfo)
+                ?.getExciseStampsDiscrepancies()
+                ?.deleteExciseStampsDiscrepanciesForProduct(productInfo)
 
         //отмечаем все коробки и блоки для продукта категорией для брака из параметра GRZ_GRUND_MARK
         boxes.forEach {
@@ -166,7 +157,7 @@ class ProcessMarkingBoxPGEProductService
             )
         }
 
-        filterAndUpdateBlockDiscrepansies()
+        filterAndUpdateStampDiscrepancies()
 
         //удаляем всю информацию по продукту
         taskRepository
@@ -192,20 +183,20 @@ class ProcessMarkingBoxPGEProductService
             )
         }
 
-        filterAndUpdateBlockDiscrepansies()
+        filterAndUpdateStampDiscrepancies()
 
         val notConfirmedByScanning = productInfo.origQuantity.toDouble() - getCountAcceptOfProduct() - getCountRefusalOfProduct()
         addProduct(notConfirmedByScanning.toString(), typeDiscrepancies)
     }
 
-    fun filterAndUpdateBlockDiscrepansies() {
-        currentBlocksDiscrepancies
+    fun filterAndUpdateStampDiscrepancies() {
+        currentStampDiscrepancies
                 .takeIf { it.isNotEmpty() }
-                ?.filter { blockDiscrepanciesInfo -> blockDiscrepanciesInfo.isGtinControlPassed }
-                ?.forEach { block ->
+                ?.filter { currentStampDiscrepancies -> currentStampDiscrepancies.isScan }
+                ?.forEach { stamp ->
                     taskRepository
-                            ?.getBlocksDiscrepancies()
-                            ?.changeBlockDiscrepancy(block.blockDiscrepancies)
+                            ?.getExciseStampsDiscrepancies()
+                            ?.changeExciseStampDiscrepancy(stamp)
 
                 }
 
@@ -254,44 +245,40 @@ class ProcessMarkingBoxPGEProductService
         }
     }
 
-    fun addBlockDiscrepancies(blockInfo: TaskBlockInfo, typeDiscrepancies: String, isScan: Boolean, isGtinControlPassed: Boolean) {
-        val boxNumber = blocks
-                .findLast { it.blockNumber == blockInfo.blockNumber }
+    fun addStampDiscrepancies(stampInfo: TaskExciseStampInfo,isScan: Boolean) {
+        val boxNumber = stamps
+                .findLast { it.boxNumber == stampInfo.boxNumber }
                 ?.boxNumber
                 .orEmpty()
 
-        var foundBlockDiscrepancy =
-                currentBlocksDiscrepancies
-                        .findLast { it.blockDiscrepancies.blockNumber == blockInfo.blockNumber }
+        var foundStampDiscrepancy =
+                currentStampDiscrepancies
+                        .findLast { it.materialNumber == stampInfo.materialNumber }
 
-        foundBlockDiscrepancy =
-                foundBlockDiscrepancy
+        foundStampDiscrepancy = foundStampDiscrepancy
                         ?.let {
-                            MarkingBlocksDiscrepanciesInfo(
-                                    blockDiscrepancies = it.blockDiscrepancies.copy(typeDiscrepancies = typeDiscrepancies),
-                                    isGtinControlPassed = it.isGtinControlPassed
-                            )
+                            it.copy()
                         }
-                        ?: MarkingBlocksDiscrepanciesInfo(
-                                blockDiscrepancies = TaskBlockDiscrepancies(
-                                        processingUnitNumber = blockInfo.processingUnitNumber,
-                                        materialNumber = blockInfo.materialNumber,
-                                        blockNumber = blockInfo.blockNumber,
-                                        boxNumber = boxNumber,
-                                        typeDiscrepancies = typeDiscrepancies,
+                        ?: TaskExciseStampDiscrepancies(
+                                        materialNumber = stampInfo.materialNumber.orEmpty(),
+                                        code = stampInfo.code.orEmpty(),
+                                        processingUnitNumber = stampInfo.processingUnitNumber.orEmpty(),
+                                        typeDiscrepancies = "",
                                         isScan = isScan,
-                                        isMsc = false,
-                                        isUnknown = false,
-                                        isGrayZone = false
-                                ),
-                                isGtinControlPassed = isGtinControlPassed
+                                        boxNumber = boxNumber,
+                                        packNumber = "",
+                                        isMSC = false,
+                                        organizationCodeEGAIS = "",
+                                        bottlingDate =  "",
+                                        isUnknown = false
                         )
 
-        currentBlocksDiscrepancies.removeItemFromListWithPredicate { block ->
-            block.blockDiscrepancies.blockNumber == blockInfo.blockNumber
+
+        currentStampDiscrepancies.removeItemFromListWithPredicate { stamp ->
+            stamp.materialNumber == stampInfo.materialNumber
         }
 
-        currentBlocksDiscrepancies.add(foundBlockDiscrepancy)
+        currentStampDiscrepancies.add(foundStampDiscrepancy)
 
         addTypeLastStampScanned(TypeLastStampScanned.BLOCK)
     }
@@ -317,49 +304,45 @@ class ProcessMarkingBoxPGEProductService
 
         currentBoxDiscrepancies.add(foundBoxDiscrepancy)
 
-        //сохраняем все необработанные блоки для коробки без isScan, но с isGtinControlPassed
-        var countAddBlocks = 0
-        val blocksFromBox = blocks.filter { it.boxNumber == boxNumber }
-        blocksFromBox
-                .filter { block ->
-                    val lastBlock = currentBlocksDiscrepancies.findLast { it.blockDiscrepancies.blockNumber == block.blockNumber }
-                    lastBlock == null || isDenialOfFullProductAcceptance
+        //сохраняем все необработанные блоки для коробки без isScan
+        var countAddStamps = 0
+        val stampsFromBox = stamps.filter { it.boxNumber == boxNumber }
+        stampsFromBox
+                .filter { stamp ->
+                    val lastStamp = currentStampDiscrepancies.findLast { it.materialNumber == stamp.materialNumber }
+                    lastStamp == null
                 }
-                .forEach { blockInfo ->
-                    addBlockDiscrepancies(
-                            blockInfo = blockInfo,
-                            typeDiscrepancies = typeDiscrepancies,
-                            isScan = false,
-                            isGtinControlPassed = true
+                .forEach { stampInfo ->
+                    addStampDiscrepancies(
+                            stampInfo = stampInfo,
+                            isScan = false
                     )
-                    countAddBlocks += 1
+                    countAddStamps += 1
                 }
 
         addTypeLastStampScanned(TypeLastStampScanned.BOX)
 
-        return countAddBlocks
+        return countAddStamps
     }
 
-    fun addAllUntreatedBlocksAsDefect(typeDiscrepancies: String) {
+    fun addAllUntreatedStampsAsDefect() {
         //отмечаем все не обработанные блоки/марки для продукта категорией выбранной категорией для брака
-        blocks.filter { block ->
-            currentBlocksDiscrepancies.findLast { it.blockDiscrepancies.blockNumber == block.blockNumber } == null
-        }.forEach { blockInfo ->
-            addBlockDiscrepancies(
-                    blockInfo = blockInfo,
-                    typeDiscrepancies = typeDiscrepancies,
-                    isScan = false, //передаем false, т.к. эта ф-ция вызывается при сохранении всех необработанных блоков в брак без сканирования
-                    isGtinControlPassed = true
+        stamps.filter { stamp ->
+            currentStampDiscrepancies.findLast { it.materialNumber == stamp.materialNumber } == null
+        }.forEach { stampInfo ->
+            addStampDiscrepancies(
+                    stampInfo = stampInfo,
+                    isScan = false  //передаем false, т.к. эта ф-ция вызывается при сохранении всех необработанных блоков в брак без сканирования
             )
         }
     }
 
-    fun getTotalScannedBlocks(): Int {
-        return currentBlocksDiscrepancies.size
+    fun getTotalScannedBoxes(): Int {
+        return currentStampDiscrepancies.size
     }
 
-    fun getCountProcessedBlockForDiscrepancies(typeDiscrepancies: String): Int {
-        return currentBlocksDiscrepancies.count { it.blockDiscrepancies.typeDiscrepancies == typeDiscrepancies && it.isGtinControlPassed }
+    fun getCountProcessedStampForDiscrepancies(typeDiscrepancies: String): Int {
+        return currentStampDiscrepancies.count { it.typeDiscrepancies == typeDiscrepancies }
     }
 
 
@@ -367,9 +350,9 @@ class ProcessMarkingBoxPGEProductService
         return productInfo.origQuantity.toDouble() < (getCountAcceptOfProduct() + getCountRefusalOfProduct() + count)
     }
 
-    fun searchBlock(blockNumber: String): TaskBlockInfo? {
-        return blocks.findLast {
-            it.blockNumber == blockNumber
+    fun searchStamp(stampNumber: String): TaskExciseStampInfo? {
+        return stamps.findLast {
+            it.materialNumber == stampNumber
         }
     }
 
@@ -380,9 +363,15 @@ class ProcessMarkingBoxPGEProductService
         }
     }
 
-    fun blockIsAlreadyProcessed(code: String): Boolean {
-        return currentBlocksDiscrepancies.any {
-            it.blockDiscrepancies.blockNumber == code && it.blockDiscrepancies.isScan
+    fun stampIsAlreadyProcessed(code: String): Boolean {
+        return currentStampDiscrepancies.any {
+            it.materialNumber == code && it.isScan
+        }
+    }
+
+    fun boxIsAlreadyProcessed(code: String): Boolean {
+        return currentBoxDiscrepancies.any {
+            it.boxNumber == code && it.isScan
         }
     }
 
@@ -424,12 +413,12 @@ class ProcessMarkingBoxPGEProductService
     }
 
     fun modifications(): Boolean {
-        val blocksDiscrepanciesOfProduct =
+        val stampsDiscrepanciesOfProduct =
                 taskRepository
-                        ?.getBlocksDiscrepancies()
-                        ?.findBlocksDiscrepanciesOfProduct(productInfo)
+                        ?.getExciseStampsDiscrepancies()
+                        ?.findExciseStampsDiscrepanciesOfProduct(productInfo)
 
-        return currentBlocksDiscrepancies != blocksDiscrepanciesOfProduct
+        return currentStampDiscrepancies != stampsDiscrepanciesOfProduct
     }
 
     fun clearModifications() {
@@ -437,12 +426,12 @@ class ProcessMarkingBoxPGEProductService
         currentScannedTypesStamps.clear()
         boxes.clear()
         currentBoxDiscrepancies.clear()
-        blocks.clear()
-        currentBlocksDiscrepancies.clear()
+        stamps.clear()
+        currentStampDiscrepancies.clear()
 
         receivingTask
-                ?.getProcessedBlocks()
-                ?.mapTo(blocks) { it.copy() }
+                ?.getProcessedExciseStamps()
+                ?.mapTo(stamps) { it.copy() }
 
         taskRepository?.let { repository ->
             repository
@@ -460,11 +449,9 @@ class ProcessMarkingBoxPGEProductService
 
             repository
                     .apply {
-                        getBlocksDiscrepancies()
-                                .findBlocksDiscrepanciesOfProduct(productInfo)
-                                .mapTo(currentBlocksDiscrepancies) {
-                                    MarkingBlocksDiscrepanciesInfo(blockDiscrepancies = it.copy(), isGtinControlPassed = true)
-                                }
+                        getExciseStampsDiscrepancies()
+                                .findExciseStampsDiscrepanciesOfProduct(productInfo)
+                                .mapTo(currentStampDiscrepancies) { it.copy() }
                     }
         }
     }

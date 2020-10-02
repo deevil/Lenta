@@ -64,9 +64,9 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
     val accountingType by lazy {
         screenStatus.map { status ->
             when (status) {
-                ScreenStatus.MARK_150, ScreenStatus.MARK_68 -> resource.typeMark()
-                ScreenStatus.ALCOHOL, ScreenStatus.PART -> resource.typePart()
-                else -> resource.typeQuantity()
+                ScreenStatus.MARK_150, ScreenStatus.MARK_68 -> resource.typeMark
+                ScreenStatus.ALCOHOL, ScreenStatus.PART -> resource.typePart
+                else -> resource.typeQuantity
             }
         }
     }
@@ -500,14 +500,14 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
                 val alcoCodeInfoList = database.getAlcoCodeInfoList(number.extractAlcoCode())
 
                 if (alcoCodeInfoList.isEmpty()) {
-                    navigator.openAlertScreen(resource.unknownAlcocode())
+                    navigator.openAlertScreen(resource.unknownAlcocode)
                     return
                 }
 
                 if (alcoCodeInfoList.find { it.material == good.value?.material } != null) {
                     addPartInfo(result)
                 } else {
-                    navigator.openAlertScreen(resource.alcocodeDoesNotApplyToThisGood())
+                    navigator.openAlertScreen(resource.alcocodeDoesNotApplyToThisGood)
                 }
             }
         }
@@ -824,10 +824,10 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
     }
 
     override fun isExistUnsavedData(): Boolean {
-        val isProducerChanged = isProducerEnabledAndChanged() == true
-        val isEnteredMoreThanZeroAndProviderSelected = isQuantityFieldChanged() == true || isProviderEnabledAndChanged() == true
+        val isProducerChanged = isProducerEnabledAndChanged()
+        val isEnteredMoreThanZeroAndProviderSelected = isQuantityFieldChanged() || isProviderEnabledAndChanged()
         val isDateEntered = date.value?.isEmpty() != true
-        return if (isGoodAlcoOrExciseAlco() == true) {
+        return if (isGoodOrExciseAlco()) {
             isEnteredMoreThanZeroAndProviderSelected || isProducerChanged || isDateEntered
         } else {
             isEnteredMoreThanZeroAndProviderSelected

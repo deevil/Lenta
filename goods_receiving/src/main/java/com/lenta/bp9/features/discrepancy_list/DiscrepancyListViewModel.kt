@@ -189,25 +189,29 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                                     .getBatches()
                                                     .findBatchOfProduct(productInfo)
 
+                                    @Suppress("IMPLICIT_CAST_TO_ANY")
                                     batchesInfoOfProduct
                                             ?.map { batch ->
                                                 index += 1
-                                                val itemNotProcessedBatch = getItemNotProcessedBatch(
-                                                        task = task,
-                                                        batch = batch,
-                                                        product = productInfo,
-                                                        index = index
+                                                arrayNotCounted.add(
+                                                        getItemNotProcessedBatch(
+                                                                task = task,
+                                                                batch = batch,
+                                                                product = productInfo,
+                                                                index = index
+                                                        )
                                                 )
-                                                arrayNotCounted.add(itemNotProcessedBatch)
                                             }
                                 } else {
                                     index += 1
-                                    val itemNotProcessedProduct = getItemNotProcessedProduct(
-                                            task = task,
-                                            product = productInfo,
-                                            index = index
+                                    @Suppress("IMPLICIT_CAST_TO_ANY")
+                                    arrayNotCounted.add(
+                                            getItemNotProcessedProduct(
+                                                    task = task,
+                                                    product = productInfo,
+                                                    index = index
+                                            )
                                     )
-                                    arrayNotCounted.add(itemNotProcessedProduct)
                                 }
                             }
                             .toList()
@@ -398,6 +402,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                         && !productInfo.isBoxFl
                                         && !productInfo.isMarkFl) {
                                     //показываем партии без разбивки по расхождениям
+                                    @Suppress("IMPLICIT_CAST_TO_ANY")
                                     addBatchProduct
                                             .takeIf {
                                                 it != productInfo.materialNumber
@@ -418,6 +423,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                                                         }
                                             }
                                 } else {
+                                    @Suppress("IMPLICIT_CAST_TO_ANY")
                                     productInfo?.let { product ->
                                         index += 1
                                         val itemProcessedProduct = getItemProcessedProduct(
@@ -597,7 +603,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun onClickItemPosition(position: Int) {
-        val selectedNotProcessedProduct = countNotProcessed.value?.get(position)?.productInfo
+        val selectedNotProcessedProduct = countNotProcessed.value?.getOrNull(position)?.productInfo
         val selectedMaterialNumber =
                 if (selectedPage.value == SELECTED_PAGE_NOT_PROCESSED) {
                     selectedNotProcessedProduct?.materialNumber.orEmpty()
@@ -605,7 +611,7 @@ class DiscrepancyListViewModel : CoreViewModel(), PageSelectionListener {
                     getMaterialNumberFromPrediction(position)
                 }
 
-        val mode = repoInMemoryHolder.taskList.value?.taskListLoadingMode
+        val mode = repoInMemoryHolder.taskList.value?.taskListLoadingMode ?: TaskListLoadingMode.None
 
         //коробочный учет для ПРИЕМКИ https://trello.com/c/WeGFSdAW
         if (mode == TaskListLoadingMode.Receiving

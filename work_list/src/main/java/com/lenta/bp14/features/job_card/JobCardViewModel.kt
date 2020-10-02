@@ -134,7 +134,7 @@ class JobCardViewModel : CoreViewModel() {
         when {
             taskFromTaskList?.isNotFinished == true -> openTask()
             taskFromTaskList?.isMyBlock == true -> {
-                screenNavigator.showAlertBlockedTaskByMe(taskFromTaskList!!.blockingUser) {
+                screenNavigator.showAlertBlockedTaskByMe {
                     openTask()
                 }
 
