@@ -171,7 +171,7 @@ class GoodInfoNeViewModel : BaseGoodInfoViewModel(), PageSelectionListener {
 
     fun getTitle(): String? {
         return goodInfo?.productInfo?.run {
-            return "${matNr.takeLast(6)} $name"
+            return "${matNr.takeLast(LAST_MATNR_TITLE_PART_COUNT)} $name"
         }
     }
 
@@ -224,7 +224,7 @@ class GoodInfoNeViewModel : BaseGoodInfoViewModel(), PageSelectionListener {
             }.either(::handleFailure) { scanInfoResult ->
                 if (scanInfoResult.productInfo.materialNumber == goodInfo?.productInfo?.matNr) {
                     if (isEmptyPlaceMarked.value == null) {
-                        val newQuantity = ((quantityValue.value ?: 0.0) + scanInfoResult.quantity)
+                        val newQuantity = ((quantityValue.value ?: DEFAULT_QUANTITY_VALUE) + scanInfoResult.quantity)
                         //TODO maxQuantity - это максимальное количество позиций в задании. Нужно переделать
                         /*if (maxQuantity != null && newQuantity > maxQuantity!!) {
                             navigator.showMaxCountProductAlert()
@@ -281,6 +281,11 @@ class GoodInfoNeViewModel : BaseGoodInfoViewModel(), PageSelectionListener {
     override fun handleFailure(failure: Failure) {
         super.handleFailure(failure)
         navigator.openAlertScreen(failure)
+    }
+
+    companion object {
+        private const val LAST_MATNR_TITLE_PART_COUNT = 6
+        private const val DEFAULT_QUANTITY_VALUE = 0.0
     }
 }
 
