@@ -8,7 +8,7 @@ data class MarkRawInfo(
         val material: String,
         /** Код идентификации */
         @SerializedName("MARK_NUM")
-        val markNumber: String,
+        val number: String,
         /** Признак: марка обработана */
         @SerializedName("IS_SCAN")
         val isScan: String

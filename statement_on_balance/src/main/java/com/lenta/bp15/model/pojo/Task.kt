@@ -77,12 +77,22 @@ data class Task(
         return "$firstLine / $secondLine"
     }
 
+    fun getAllMarks(): Map<String, Mark> {
+        val allMarks = mutableMapOf<String, Mark>()
+        goods.map { good ->
+            allMarks.putAll(good.marks)
+        }
+
+        return allMarks
+    }
+
     fun getProcessedMarkListForSave(): List<MarkRawInfo> {
         return goods.map { good ->
-            good.marks.filter { it.isScan }.map { mark ->
+            good.marks.filter { it.value.isScan }.map {
+                val mark = it.value
                 MarkRawInfo(
-                        material = good.material,
-                        markNumber = mark.number,
+                        material = mark.material,
+                        number = mark.number,
                         isScan = mark.isScan.toSapBooleanString()
                 )
             }

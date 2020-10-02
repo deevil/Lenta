@@ -109,7 +109,7 @@ class TaskManager @Inject constructor(
         } ?: emptyList()
     }
 
-    override fun loadGoodListToCurrentTask() {
+    override fun loadContentToCurrentTask() {
         launch {
             currentTask.value?.let { currentTask ->
                 navigator.showProgressLoadingData()
@@ -170,6 +170,11 @@ class TaskManager @Inject constructor(
         return database.getMaterialByEan(ean)
     }
 
+    override fun backupCurrentTask() {
+        // Сохранить текущую задачу в базу данных
+
+    }
+
     private fun handleFailure(failure: Failure) {
         Logg.e { "handleFailure: $failure" }
         this.failure.postValue(failure)
@@ -194,10 +199,11 @@ interface ITaskManager {
 
     fun loadProcessingTaskList()
     fun loadSearchTaskList(searchParams: TaskSearchParams)
-    fun loadGoodListToCurrentTask()
+    fun loadContentToCurrentTask()
     suspend fun unlockTask(task: Task)
     suspend fun getMaterialByEan(ean: String): String?
     suspend fun saveTaskDataToServer(handleSaveDataSuccess: () -> Unit)
+    fun backupCurrentTask()
 
 
 }

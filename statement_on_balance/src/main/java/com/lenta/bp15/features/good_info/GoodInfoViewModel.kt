@@ -2,13 +2,14 @@ package com.lenta.bp15.features.good_info
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.map
-import com.lenta.bp15.features.good_list.GoodListFragment
 import com.lenta.bp15.model.ITaskManager
+import com.lenta.bp15.model.pojo.Mark
 import com.lenta.bp15.platform.navigation.IScreenNavigator
 import com.lenta.bp15.platform.resource.IResourceManager
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
-import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.actionByNumber
+import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.mapSkipNulls
 import javax.inject.Inject
 
@@ -58,9 +59,9 @@ class GoodInfoViewModel : CoreViewModel() {
         }
     }
 
-    private val processedMarks by lazy {
-        good.map { it.getProcessedMarksCount() }
-    }
+    private var allTaskMarks = emptyMap<String, Mark>()
+
+    private var processedMarksQuantity = 0
 
     private val totalMarks by lazy {
         good.map { it.planQuantity }
@@ -68,7 +69,7 @@ class GoodInfoViewModel : CoreViewModel() {
 
     val markScanProgress by lazy {
         quantity.map { currentScannedQuantity ->
-            val processed = processedMarks.value ?: 0 + currentScannedQuantity
+            val processed = processedMarksQuantity + currentScannedQuantity
             val total = totalMarks.value ?: 0
             resource.processingProgress("$processed", "$total")
         }
@@ -76,7 +77,7 @@ class GoodInfoViewModel : CoreViewModel() {
 
     val allMarkProcessed by lazy {
         quantity.map { currentScannedQuantity ->
-            val processed = processedMarks.value ?: 0 + currentScannedQuantity
+            val processed = processedMarksQuantity + currentScannedQuantity
             val total = totalMarks.value ?: 0
             processed == total
         }
@@ -87,8 +88,63 @@ class GoodInfoViewModel : CoreViewModel() {
     val rollbackEnabled = quantity.map { it > 0 }
 
     /**
+    Блок инициализации
+     */
+
+    init {
+        launchUITryCatch {
+            navigator.showProgressLoadingData()
+
+            processedMarksQuantity = good.value?.getProcessedMarksCount() ?: 0
+            allTaskMarks = task.value?.getAllMarks() ?: emptyMap()
+
+            navigator.hideProgress()
+        }
+    }
+
+    /**
     Методы
      */
+
+    fun onScanResult(data: String) {
+        actionByNumber(
+                number = data,
+                funcForShoes = ::checkScannedMark,
+                funcForNotValidFormat = navigator::showIncorrectEanFormat
+        )
+    }
+
+    private fun checkScannedMark(number: String) {
+        good.value?.let { good ->
+            allTaskMarks.get(number)?.let { mark ->
+                when {
+                    mark.isScan -> navigator::showMarkAlreadyProcessed
+                    mark.material != good.material -> navigator.showScannedMarkBelongsToAnotherGood(good.material)
+                    else -> addMarkToList(number)
+                }
+            } ?: navigator::showScannedMarkIsNotOnTask
+        }
+    }
+
+    private fun addMarkToList(number: String) {
+        scannedMarks.value?.let { marks ->
+            marks.add(number)
+            scannedMarks.value = marks
+        }
+    }
+
+    fun onBackPressed() {
+        quantity.value?.let { quantity ->
+            if (quantity > 0) {
+                navigator.showUnsavedDataWillBeRemoved {
+                    navigator.goBack()
+                    navigator.goBack()
+                }
+            } else {
+                navigator.goBack()
+            }
+        }
+    }
 
     fun onClickRollback() {
         scannedMarks.value?.let { marks ->
@@ -98,22 +154,18 @@ class GoodInfoViewModel : CoreViewModel() {
     }
 
     fun onClickApply() {
+        good.value?.let { good ->
+            navigator.showProgressLoadingData()
 
-    }
-
-    fun onScanResult(data: String) {
-
-    }
-
-    fun onBackPressed() {
-        quantity.value?.let { quantity ->
-            if (quantity > 0) {
-                navigator.showUnsavedDataWillBeRemoved {
-                    navigator.goBackTo(GoodListFragment::class.simpleName)
-                }
-            } else {
-                navigator.goBack()
+            scannedMarks.value?.let { marks ->
+                good.changeScanStatusFor(marks)
             }
+
+            manager.backupCurrentTask()
+
+            navigator.hideProgress()
+
+            navigator.goBack()
         }
     }
 

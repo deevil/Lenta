@@ -170,10 +170,10 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun showRequiredToDestroyNonGluedStamps(nextCallback: () -> Unit) {
+    override fun showRequiredToDestroyNonGluedMarks(nextCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
-                    message = context.getString(R.string.required_to_destroy_non_glued_stamps),
+                    message = context.getString(R.string.required_to_destroy_non_glued_marks),
                     iconRes = R.drawable.ic_warning_red_80dp,
                     codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallback),
                     rightButtonDecorationInfo = ButtonDecorationInfo.next
@@ -190,10 +190,19 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun showStampAlreadyProcessed() {
+    override fun showScannedMarkBelongsToAnotherGood(material: String) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
-                    message = context.getString(R.string.stamp_already_processed),
+                    message = context.getString(R.string.scanned_mark_belongs_to_another_good, material),
+                    iconRes = R.drawable.ic_warning_red_80dp
+            ))
+        }
+    }
+
+    override fun showMarkAlreadyProcessed() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.mark_already_processed),
                     iconRes = R.drawable.ic_warning_red_80dp
             ))
         }
@@ -208,10 +217,10 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
-    override fun showScannedStampIsNotOnTask() {
+    override fun showScannedMarkIsNotOnTask() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
-                    message = context.getString(R.string.scanned_stamp_is_not_on_task),
+                    message = context.getString(R.string.scanned_mark_is_not_on_task),
                     iconRes = R.drawable.ic_warning_red_80dp
             ))
         }
@@ -263,11 +272,12 @@ interface IScreenNavigator : ICoreNavigator {
     fun showMakeTaskProcessedAndClose(yesCallback: () -> Unit)
     fun showSuccessSaveData()
     fun showUnprocessedGoodsInTask(publishedCallback: () -> Unit, processedCallback: () -> Unit)
-    fun showRequiredToDestroyNonGluedStamps(nextCallback: () -> Unit)
+    fun showRequiredToDestroyNonGluedMarks(nextCallback: () -> Unit)
     fun showGoodIsMissingFromTask(material: String)
-    fun showStampAlreadyProcessed()
+    fun showScannedMarkBelongsToAnotherGood(material: String)
+    fun showMarkAlreadyProcessed()
     fun showInvalidBarcodeFormatScanned()
-    fun showScannedStampIsNotOnTask()
+    fun showScannedMarkIsNotOnTask()
     fun showTaskUnsentDataWillBeDeleted(taskName: String, applyCallback: () -> Unit)
     fun showUnsavedDataWillBeRemoved(nextCallback: () -> Unit)
 

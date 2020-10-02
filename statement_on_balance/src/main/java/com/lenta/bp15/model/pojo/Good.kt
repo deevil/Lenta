@@ -11,31 +11,25 @@ data class Good(
         var section: String = "",
         val planQuantity: Int,
         val markType: ShoesMarkType,
-        val marks: List<Mark> = mutableListOf()
+        var marks: Map<String, Mark> = emptyMap()
 ) {
 
     fun getShortMaterialWithName(): String {
         return "${material.takeLast(6)} $name"
     }
 
-    private fun getQuantityToProcessing(): Int {
-        return planQuantity - getProcessedMarksCount()
-    }
-
     fun getProcessedMarksCount(): Int {
-        return marks.filter { it.isScan }.size
-    }
-
-    private fun getProcessedMarks(): List<Mark> {
-        return marks.filter { it.isScan }
-    }
-
-    fun isProcessed(): Boolean {
-        return !isExistUnprocessedMarks()
+        return marks.filter { it.value.isScan }.size
     }
 
     fun isExistUnprocessedMarks(): Boolean {
-        return marks.any { !it.isScan }
+        return marks.any { !it.value.isScan }
+    }
+
+    fun changeScanStatusFor(scannedMarks: List<String>) {
+        scannedMarks.forEach { number ->
+            marks.getValue(number).isScan = true
+        }
     }
 
     fun convertToItemGoodUi(index: Int): ItemGoodUi {
@@ -43,7 +37,7 @@ data class Good(
                 position = "${index + 1}",
                 material = material,
                 name = getShortMaterialWithName(),
-                quantity = "${getQuantityToProcessing()}"
+                quantity = "${marks.size}"
         )
     }
 

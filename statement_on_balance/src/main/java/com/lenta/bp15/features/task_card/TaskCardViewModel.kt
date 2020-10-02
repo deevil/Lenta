@@ -3,8 +3,6 @@ package com.lenta.bp15.features.task_card
 import androidx.lifecycle.map
 import com.lenta.bp15.model.ITaskManager
 import com.lenta.bp15.platform.navigation.IScreenNavigator
-import com.lenta.bp15.platform.resource.IResourceManager
-import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.launchUITryCatch
@@ -53,7 +51,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     fun onClickNext() {
         task.value?.let { task ->
             if (task.isEmptyGoodList()) {
-                manager.loadGoodListToCurrentTask()
+                manager.loadContentToCurrentTask()
                 navigator.openGoodListScreen()
             } else {
                 navigator.openGoodListScreen()
