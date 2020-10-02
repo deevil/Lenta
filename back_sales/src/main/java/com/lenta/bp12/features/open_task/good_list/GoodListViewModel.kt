@@ -126,8 +126,13 @@ class GoodListViewModel : BaseGoodListOpenViewModel(), PageSelectionListener, On
      */
 
     val deleteVisible by lazy {
-        task.map { task ->
-            task?.isStrict == false
+        task.switchMap { task ->
+            selectedPage.switchMap { page ->
+                liveData {
+                    val isTaskStrictAndPageProcessing = task.isStrict && page == PROCESSING_PAGE_INDEX
+                    emit(!isTaskStrictAndPageProcessing)
+                }
+            }
         }
     }
 
