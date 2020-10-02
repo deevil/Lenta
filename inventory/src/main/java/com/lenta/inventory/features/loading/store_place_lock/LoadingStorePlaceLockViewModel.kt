@@ -72,6 +72,7 @@ class LoadingStorePlaceLockViewModel : CoreLoadingViewModel() {
                 }
             }
             StorePlaceLockMode.Unlock -> screenNavigator.goBack()
+            else -> Unit
         }
     }
 

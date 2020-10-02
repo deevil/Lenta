@@ -1,18 +1,15 @@
 package com.lenta.shared.analytics
 
 import androidx.annotation.WorkerThread
-import com.lenta.shared.analytics.db.dao.LogDao
-import com.lenta.shared.analytics.db.entity.InfoLevel
-import com.lenta.shared.analytics.db.entity.LogMessage
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.lenta.shared.utilities.Logg
 import com.mobrun.plugin.api.HyperHive
 import java.util.*
 import javax.inject.Inject
 
-class FmpAnalytics @Inject constructor(val hyperHive: HyperHive, val logDao: LogDao) : IAnalytics {
+class FmpAnalytics @Inject constructor(val hyperHive: HyperHive) : IAnalytics {
 
     private var isEnabledLogs = false
-
 
     override fun enableLogs(enable: Boolean) {
         this.isEnabledLogs = enable
@@ -28,8 +25,10 @@ class FmpAnalytics @Inject constructor(val hyperHive: HyperHive, val logDao: Log
         if (!isEnabledLogs) {
             return
         }
-        Logg.d { "logTrace: $tag, message: $message" }
-        logDao.insert(LogMessage(Date(), InfoLevel.INFO, message))
+        val logMessage = "logTrace: $tag, message: $message"
+        Logg.d { logMessage }
+        FirebaseCrashlytics.getInstance().log("${Date()} - $logMessage")
+        //logDao.insert(LogMessage(Date(), InfoLevel.INFO, message))
         //enableLogsFuncDisableLogs(tag, message, hyperHive.loggingAPI::logTrace)
     }
 
@@ -38,8 +37,10 @@ class FmpAnalytics @Inject constructor(val hyperHive: HyperHive, val logDao: Log
         if (!isEnabledLogs) {
             return
         }
-        Logg.d { "logError: $tag, message: $message" }
-        logDao.insert(LogMessage(Date(), InfoLevel.ERROR, message))
+        val logMessage = "logError: $tag, message: $message"
+        Logg.e { logMessage }
+        FirebaseCrashlytics.getInstance().log("${Date()} - $logMessage")
+        //logDao.insert(LogMessage(Date(), InfoLevel.ERROR, message))
         //enableLogsFuncDisableLogs(tag, message, hyperHive.loggingAPI::logWarning)
     }
 
@@ -47,8 +48,10 @@ class FmpAnalytics @Inject constructor(val hyperHive: HyperHive, val logDao: Log
         if (!isEnabledLogs) {
             return
         }
-        Logg.d { "logFatal: $tag, message: $message" }
-        logDao.insert(LogMessage(Date(), InfoLevel.FATAL, message))
+        val logMessage = "logFatal: $tag, message: $message"
+        Logg.d { logMessage }
+        FirebaseCrashlytics.getInstance().log("${Date()} - $logMessage")
+        //logDao.insert(LogMessage(Date(), InfoLevel.FATAL, message))
         //enableLogsFuncDisableLogs(tag, message, hyperHive.loggingAPI::logFatal)
     }
 

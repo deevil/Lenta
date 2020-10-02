@@ -77,7 +77,7 @@ class ExciseAlcoBoxCardPGEFragment : CoreFragment<FragmentExciseAlcoBoxCardPgeBi
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding?.etCount?.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
+        binding?.etCount?.setOnKeyListener(View.OnKeyListener { _, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
                 if (vm.enabledApplyBtn.value == true) {
                     vm.onClickApply()

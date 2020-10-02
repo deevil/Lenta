@@ -1,5 +1,6 @@
 package com.lenta.bp18
 
+import com.google.firebase.FirebaseApp
 import com.lenta.bp18.platform.extention.getAppComponent
 import com.lenta.shared.CoreApplication
 import com.lenta.shared.settings.DefaultConnectionSettings
@@ -21,13 +22,17 @@ class AndroidApplication : CoreApplication() {
         )
     }
 
+    override fun onCreate() {
+        super.onCreate()
+        FirebaseApp.initializeApp(this)
+    }
+
     override fun onHandleException() {
         ExceptionHandler().let {
             getAppComponent(coreComponent).inject(it)
             it.handleException()
         }
     }
-
 }
 
 class ExceptionHandler {
