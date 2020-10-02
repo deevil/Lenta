@@ -11,6 +11,7 @@ import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.models.core.getProductType
+import com.lenta.shared.platform.constants.Constants.DATE_FORMAT_yyyyMMdd
 import com.lenta.shared.platform.constants.Constants.DATE_FORMAT_yyyy_mm_dd
 import com.mobrun.plugin.api.HyperHive
 import java.text.SimpleDateFormat

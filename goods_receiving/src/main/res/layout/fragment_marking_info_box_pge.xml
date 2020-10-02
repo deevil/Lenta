@@ -285,9 +285,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/size_8dp"
                 android:layout_marginTop="@dimen/size_10dp"
-                android:checked="@{vm.checkBoxStampList}"
+                android:checked="@{vm.checkBoxList}"
                 android:enabled="false"
-                android:visibility="@{vm.checkBoxStampListVisibility}"
+                android:visibility="@{vm.checkBoxListVisibility}"
                 app:layout_constraintStart_toEndOf="@+id/div_vert3"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -297,12 +297,13 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/size_8dp"
-                android:layout_marginTop="@dimen/size_12dp"
+                android:layout_marginTop="@dimen/size_16dp"
                 android:layout_marginEnd="@dimen/size_8dp"
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:text="@{vm.tvBoxListVal}"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toEndOf="@+id/checkBox_stamp_list"
                 app:layout_constraintTop_toTopOf="@+id/div_vert3"
                 tools:text="0 из 2" />
