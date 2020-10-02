@@ -10,13 +10,9 @@ import com.lenta.bp14.models.not_exposed.INotExposedTask
 import com.lenta.bp14.models.ui.ItemStockUi
 import com.lenta.bp14.models.ui.ZPartUi
 import com.lenta.bp14.platform.navigation.IScreenNavigator
-import com.lenta.bp14.platform.resource.IResourceFormatter
 import com.lenta.shared.exception.Failure
-import com.lenta.shared.fmp.resources.dao_ext.getMaxPositionsProdWkl
-import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.getMatrixType
-import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequest
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequestParams
@@ -45,20 +41,13 @@ class GoodInfoNeViewModel : BaseGoodInfoViewModel(), PageSelectionListener {
     @Inject
     lateinit var hyperHive: HyperHive
 
-    @Inject
-    lateinit var screenNavigator: IScreenNavigator
-
-    private val maxQuantity: Double? by lazy {
-        ZmpUtz14V001(hyperHive).getMaxPositionsProdWkl()
-    }
-
     val goodInfo by lazy {
-        task.getProcessedProductInfoResult()!!.goodInfo
+        task.getProcessedProductInfoResult()?.goodInfo
     }
 
     val productParamsUi: MutableLiveData<ProductParamsUi> by lazy {
         MutableLiveData<ProductParamsUi>(
-                goodInfo.let {
+                goodInfo?.let {
                     ProductParamsUi(
                             matrixType = getMatrixType(it.productInfo.matrixType),
                             sectionId = it.productInfo.sectionNumber,
@@ -72,7 +61,7 @@ class GoodInfoNeViewModel : BaseGoodInfoViewModel(), PageSelectionListener {
 
     val stocks: MutableLiveData<List<ItemStockUi>> by lazy {
         MutableLiveData<List<ItemStockUi>>(
-                goodInfo.let { goodInfo ->
+                goodInfo?.let { goodInfo ->
                     goodInfo.stocks.mapIndexed { index, stock ->
                         val goodInfoUnits = goodInfo.units?.name.orEmpty()
                         val quantity = "${stock.quantity.toStringFormatted()} $goodInfoUnits"
@@ -87,9 +76,9 @@ class GoodInfoNeViewModel : BaseGoodInfoViewModel(), PageSelectionListener {
         )
     }
 
-    val zParts: LiveData<List<ZPartUi>> by unsafeLazy {
+    override val zParts: LiveData<List<ZPartUi>> by unsafeLazy {
         asyncLiveData<List<ZPartUi>> {
-            val result = goodInfo.zParts.mapToZPartUiList(goodInfo.units?.name.orEmpty())
+            val result = goodInfo?.zParts.mapToZPartUiList(goodInfo?.units?.name.orEmpty())
             emit(result)
         }
     }
@@ -100,8 +89,8 @@ class GoodInfoNeViewModel : BaseGoodInfoViewModel(), PageSelectionListener {
     }
 
     val marketStorage by lazy {
-        "${(goodInfo.stocks.sumByDouble { it.quantity }).toStringFormatted()} ${
-            goodInfo.units?.name
+        "${(goodInfo?.stocks?.sumByDouble { it.quantity }).toStringFormatted()} ${
+            goodInfo?.units?.name
                     .orEmpty()
         }"
     }
@@ -130,7 +119,7 @@ class GoodInfoNeViewModel : BaseGoodInfoViewModel(), PageSelectionListener {
 
     val totalQuantity: MutableLiveData<String> by lazy {
         totalQuantityValue.map {
-            "${it.dropZeros()} ${goodInfo.units?.name.orEmpty()}"
+            "${it.dropZeros()} ${goodInfo?.units?.name.orEmpty()}"
         }
     }
 
@@ -181,8 +170,8 @@ class GoodInfoNeViewModel : BaseGoodInfoViewModel(), PageSelectionListener {
     }
 
     fun getTitle(): String? {
-        goodInfo.productInfo.let {
-            return "${it.matNr.takeLast(6)} ${it.name}"
+        return goodInfo?.productInfo?.run {
+            return "${matNr.takeLast(6)} $name"
         }
     }
 
@@ -233,7 +222,7 @@ class GoodInfoNeViewModel : BaseGoodInfoViewModel(), PageSelectionListener {
             ).also {
                 navigator.hideProgress()
             }.either(::handleFailure) { scanInfoResult ->
-                if (scanInfoResult.productInfo.materialNumber == goodInfo.productInfo.matNr) {
+                if (scanInfoResult.productInfo.materialNumber == goodInfo?.productInfo?.matNr) {
                     if (isEmptyPlaceMarked.value == null) {
                         val newQuantity = ((quantityValue.value ?: 0.0) + scanInfoResult.quantity)
                         //TODO maxQuantity - это максимальное количество позиций в задании. Нужно переделать
@@ -286,15 +275,6 @@ class GoodInfoNeViewModel : BaseGoodInfoViewModel(), PageSelectionListener {
         }.orIfNull {
             Logg.w { "Stock value is null!" }
             navigator.showAlertWithStockItemNotFound()
-        }
-    }
-
-    fun showZPartInfo(index: Int) {
-        zParts.value?.getOrNull(index)?.let { zPart ->
-            screenNavigator.openZPartInfoFragment(zPart)
-        }.orIfNull {
-            Logg.w { "ZPart value is null!" }
-            screenNavigator.showAlertWithStockItemNotFound()
         }
     }
 

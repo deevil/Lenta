@@ -57,9 +57,6 @@ class GoodInfoWlViewModel : BaseGoodInfoViewModel(), PageSelectionListener, OnOk
     @Inject
     lateinit var task: WorkListTask
 
-    @Inject
-    lateinit var screenNavigator: IScreenNavigator
-
     val good by lazy { task.currentGood }
 
     val loadingIndicatorVisibility = MutableLiveData<Boolean>(true)
@@ -185,7 +182,7 @@ class GoodInfoWlViewModel : BaseGoodInfoViewModel(), PageSelectionListener, OnOk
         }
     }
 
-    val zParts: LiveData<List<ZPartUi>> by unsafeLazy {
+    override val zParts: LiveData<List<ZPartUi>> by unsafeLazy {
         good.switchMap { good ->
             asyncLiveData<List<ZPartUi>> {
                 val result = good?.additional?.zParts.mapToZPartUiList(good.units.name)
@@ -505,15 +502,6 @@ class GoodInfoWlViewModel : BaseGoodInfoViewModel(), PageSelectionListener, OnOk
     private fun isIncorrectEnteredDate(): Boolean {
         return enteredDate.value != null && shelfLifeTypePosition.value == ShelfLifeType.PRODUCTION.position
                 && enteredDate.value!!.after(Date())
-    }
-
-    fun showZPartInfo(index: Int) {
-        zParts.value?.getOrNull(index)?.let { zPart ->
-            screenNavigator.openZPartInfoFragment(zPart)
-        }.orIfNull {
-            Logg.w { "ZPart value is null!" }
-            screenNavigator.showAlertWithStockItemNotFound()
-        }
     }
 
     override fun onOkInSoftKeyboard(): Boolean {
