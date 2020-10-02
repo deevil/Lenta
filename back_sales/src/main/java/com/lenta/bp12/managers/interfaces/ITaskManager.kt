@@ -39,6 +39,7 @@ interface ITaskManager<T : Taskable> {
 
     fun updateCurrentBasket(basket: Basket?)
     fun updateCurrentGood(good: Good?)
+    fun updateCurrentTask(task: T?)
 
     fun saveGoodInTask(good: Good)
     fun findGoodByEan(ean: String): Good?

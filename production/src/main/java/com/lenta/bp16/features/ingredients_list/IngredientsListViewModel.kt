@@ -226,7 +226,7 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
                             }
 
                     when (selectedIngredient.blockType) {
-                        IngredientInfoUI.BLOCK_BY_MYSELF -> openAlertBlockedTaskByMe(sessionInfo.userName.orEmpty(), selectedIngredient, barcode)
+                        IngredientInfoUI.BLOCK_BY_MYSELF -> openAlertBlockedTaskByMe(selectedIngredient, barcode)
                         IngredientInfoUI.BLOCK_BY_OTHER -> navigator.showAlertBlockedTaskAnotherUser(selectedIngredient.lockUser, selectedIngredient.lockIp)
                         else -> openDetailsOrRemakeScreen(selectedIngredient, barcode)
                     }
@@ -235,7 +235,7 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
         }
     }
 
-    private fun openAlertBlockedTaskByMe(userName: String, selectedIngredient: IngredientInfoUI, barcode: OrderByBarcodeUI){
+    private fun openAlertBlockedTaskByMe(selectedIngredient: IngredientInfoUI, barcode: OrderByBarcodeUI) {
         navigator.showAlertBlockedTaskByMe {
             if (selectedIngredient.isByOrder) {
                 navigator.openOrderDetailsScreen(selectedIngredient, barcode)

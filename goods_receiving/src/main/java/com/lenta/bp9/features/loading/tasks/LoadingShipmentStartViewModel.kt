@@ -16,8 +16,10 @@ import com.lenta.bp9.requests.network.ZmpUtzGrz37V001Result
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.loading.CoreLoadingViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.launchUITryCatch
+import com.lenta.shared.utilities.orIfNull
 import javax.inject.Inject
 
 class LoadingShipmentStartViewModel : CoreLoadingViewModel() {
@@ -43,19 +45,19 @@ class LoadingShipmentStartViewModel : CoreLoadingViewModel() {
     override val sizeInMb: MutableLiveData<Float> = MutableLiveData()
 
     val taskDescription: String by lazy {
-        "\"" + (taskManager.getReceivingTask()?.taskDescription?.currentStatus?.stringValue() ?: "") + "\" -> \"" + taskManager.getReceivingTask()?.taskDescription?.nextStatusText + "\""
+        "\"" + (taskManager.getReceivingTask()?.taskDescription?.currentStatus?.stringValue().orEmpty()) + "\" -> \"" + taskManager.getReceivingTask()?.taskDescription?.nextStatusText + "\""
     }
 
     init {
         launchUITryCatch {
             progress.value = true
-            taskManager.getReceivingTask()?.let { task ->
+            taskManager.getReceivingTask()?.let { _ ->
                 val params = ZmpUtzGrz37V001Params(
                         deviceIP = context.getDeviceIp(),
-                        taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
-                        personalNumber = sessionInfo.personnelNumber ?: "",
-                        loadingStartDate = taskManager.getReceivingTask()?.taskDescription?.nextStatusDate ?: "",
-                        loadingStartTime = taskManager.getReceivingTask()?.taskDescription?.nextStatusTime ?: ""
+                        taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber.orEmpty(),
+                        personalNumber = sessionInfo.personnelNumber.orEmpty(),
+                        loadingStartDate = taskManager.getReceivingTask()?.taskDescription?.nextStatusDate.orEmpty(),
+                        loadingStartTime = taskManager.getReceivingTask()?.taskDescription?.nextStatusTime.orEmpty()
                 )
                 zmpUtzGrz37V001NetRequest(params).either(::handleFailure, ::handleSuccess)
             }
@@ -84,11 +86,14 @@ class LoadingShipmentStartViewModel : CoreLoadingViewModel() {
                 /** На карточке задания в статусе "Прибыло" (CUR_STAT=4) , при вызове интерфейса ZMP_UTZ_GRZ_37_V001, проверять наличие записей в таблицах ET_COND_CHECK и ET_COND_NOTIFY*/
                 if (result.conditionNotifications.isEmpty() && result.transportConditions.isEmpty()) {
                     screenNavigator.openCheckingNotNeededAlert(context.getString(R.string.revise_not_needed)) {
-                        screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType ?: TaskType.None)
+                        screenNavigator.openTaskCardScreen(TaskCardMode.Full, taskManager.getReceivingTask()?.taskHeader?.taskType
+                                ?: TaskType.None)
                     }
                 } else {
                     screenNavigator.openTransportConditionsScreen() //экран Контроль условий перевозки
                 }
+            }.orIfNull {
+                Logg.e { "taskHeader is Null" }
             }
         }
     }

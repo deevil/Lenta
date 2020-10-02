@@ -9,7 +9,6 @@ import androidx.lifecycle.LiveData
 import com.lenta.shared.R
 import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.analytics.IAnalytics
-import com.lenta.shared.analytics.db.RoomAppDatabase
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.alert.AlertFragment
@@ -51,7 +50,6 @@ class CoreNavigator @Inject constructor(
         private val failureInterpreter: IFailureInterpreter,
         private val analytics: IAnalytics,
         private val analyticsHelper: AnalyticsHelper,
-        private val roomAppDatabase: RoomAppDatabase,
         override val backFragmentResultHelper: BackFragmentResultHelper,
         private val iconDescriptionHelper: IIconDescriptionHelper
 ) : ICoreNavigator {
@@ -110,7 +108,6 @@ class CoreNavigator @Inject constructor(
         runOrPostpone {
             foregroundActivityProvider.getActivity()?.finish()
             analytics.cleanLogs()
-            roomAppDatabase.close()
             hyperHive.databaseAPI.closeDefaultBase()
             hyperHive.authAPI.unAuth()
             if (restart) {

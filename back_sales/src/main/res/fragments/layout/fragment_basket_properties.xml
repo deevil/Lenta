@@ -99,7 +99,7 @@
                 <TextView
                     android:id="@+id/tv_purchase_group"
                     style="@style/CellTextStyle"
-                    android:text="@{vm.properties.section}"
+                    android:text="@{vm.properties.purchaseGroup}"
                     tools:text="123456" />
 
             </LinearLayout>
@@ -197,9 +197,8 @@
                 <TextView
                     android:id="@+id/tv_markType"
                     style="@style/CellTextStyle"
-                    android:singleLine="false"
                     android:text="@{vm.properties.markTypeGroup}"
-                    tools:text="Сигареты\nМРЦ-150р." />
+                    tools:text="Сигареты" />
 
             </LinearLayout>
 
