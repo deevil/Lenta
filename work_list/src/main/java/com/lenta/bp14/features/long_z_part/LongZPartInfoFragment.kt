@@ -30,7 +30,7 @@ class LongZPartInfoFragment : CoreFragment<FragmentLongZPartInfoBinding, LongZPa
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            vm.zPart = it.getParcelable(Z_PART)!!
+            vm.initZPart(it.getParcelable(Z_PART))
         }
     }
 

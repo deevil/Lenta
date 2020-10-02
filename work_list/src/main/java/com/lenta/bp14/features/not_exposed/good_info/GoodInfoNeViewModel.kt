@@ -89,10 +89,10 @@ class GoodInfoNeViewModel : BaseGoodInfoViewModel(), PageSelectionListener {
     }
 
     val marketStorage by lazy {
-        "${(goodInfo?.stocks?.sumByDouble { it.quantity }).toStringFormatted()} ${
-            goodInfo?.units?.name
-                    .orEmpty()
-        }"
+        val stocksQuantitySum = (goodInfo?.stocks?.sumByDouble { it.quantity }).toStringFormatted()
+        val goodUnitsName = goodInfo?.units?.name.orEmpty()
+
+        "$stocksQuantitySum $goodUnitsName"
     }
 
     val quantityField by lazy {

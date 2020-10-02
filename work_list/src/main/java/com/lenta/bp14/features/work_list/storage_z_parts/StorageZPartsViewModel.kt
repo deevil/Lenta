@@ -13,7 +13,7 @@ class StorageZPartsViewModel : BaseGoodInfoViewModel() {
     @Inject
     lateinit var task: WorkListTask
 
-    lateinit var storage: String
+    var storage: String = ""
 
     val good by lazy { task.currentGood }
 

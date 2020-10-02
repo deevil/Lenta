@@ -77,9 +77,8 @@ data class GoodInfo(
         val units: Uom?,
         val zParts: List<ZPart>
 ) {
-    val hasZParts: Boolean by unsafeLazy {
-        zParts.isNotEmpty()
-    }
+    val hasZParts: Boolean
+        get() = zParts.isNotEmpty()
 }
 
 data class NotExposedInfoRequestParams(

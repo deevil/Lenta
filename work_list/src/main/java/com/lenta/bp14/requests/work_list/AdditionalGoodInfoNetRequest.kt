@@ -3,6 +3,7 @@ package com.lenta.bp14.requests.work_list
 import com.lenta.bp14.models.general.AppTaskTypes
 import com.lenta.bp14.models.work_list.AdditionalGoodInfo
 import com.lenta.bp14.models.work_list.Provider
+import com.lenta.bp14.platform.extentions.toDoubleOrZero
 import com.lenta.bp14.requests.*
 import com.lenta.bp14.requests.base.BaseGoodInfoNetRequest
 import com.lenta.shared.exception.Failure

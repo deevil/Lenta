@@ -9,8 +9,6 @@ abstract class BaseGoodInfoNetRequest {
 
     protected fun List<ZPartDTO>.mapToZPartList(): List<ZPart> = this.map { it.toZPart() }
 
-    protected fun String?.toDoubleOrZero(): Double = this?.toDoubleOrNull() ?: 0.0
-
     protected fun ProductInfoResult.extractStocks(zParts: List<ZPart>) = stocks.map { stock ->
         val zPartQuantity = zParts.filter { it.stock == stock.lgort }.quantitySum()
         Stock(
@@ -28,15 +26,4 @@ abstract class BaseGoodInfoNetRequest {
         }
         return sum
     }
-
-    private fun ZPartDTO.toZPart() = ZPart(
-            batch = batch.orEmpty(),
-            stock = stock.orEmpty(),
-            producer = producerName.orEmpty(),
-            quantity = quantity.toDoubleOrZero(),
-            meins = meins.orEmpty(),
-            dateExpir = dateExpir.orEmpty(),
-            dateProd = dateProd.orEmpty()
-    )
-
 }

@@ -13,7 +13,7 @@ class StorageZPartsNotExposedViewModel : BaseGoodInfoViewModel() {
     @Inject
     lateinit var task: INotExposedTask
 
-    lateinit var storage: String
+    var storage: String = ""
 
     val goodInfo by lazy {
         task.getProcessedProductInfoResult()?.goodInfo
