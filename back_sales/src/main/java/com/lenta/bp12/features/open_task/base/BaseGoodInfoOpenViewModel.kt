@@ -25,7 +25,7 @@ abstract class BaseGoodInfoOpenViewModel : BaseGoodInfoViewModel<TaskOpen, IOpen
                 buildString {
                     append(quantity.dropZeros())
                     if (isPlannedQuantityMoreThanZero) {
-                        append(" $FROM_STRING ${it.planQuantity.dropZeros()}")
+                        append(resource.fromPlannedQuantity(it.planQuantity.dropZeros()))
                     }
                     append(" ")
                     append(it.commonUnits.name)

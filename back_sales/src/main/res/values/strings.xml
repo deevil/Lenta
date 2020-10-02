@@ -142,5 +142,6 @@
     <string name="mrc_dash_cost_rub">МРЦ-%s руб.</string>
     <string name="mrc_space_rub">%s руб.</string>
     <string name="page_not_found_error_msg">экран содержит ошибку</string>
+    <string name="from_planned_quantity"> из %1$s</string>
 
 </resources>
