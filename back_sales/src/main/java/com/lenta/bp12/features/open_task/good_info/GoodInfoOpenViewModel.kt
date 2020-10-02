@@ -49,8 +49,6 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
     Переменные
      */
 
-    private var originalSearchNumber = ""
-
     private var lastSuccessSearchNumber = ""
 
     val isCommonGood by lazy {
@@ -234,7 +232,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
     private fun isApplyEnabled() = applyEnabled.value == true
 
     override fun checkSearchNumber(number: String) {
-        originalSearchNumber = number
+        manager.ean = number
         actionByNumber(
                 number = number,
                 funcForEan = ::getGoodByEan,
@@ -329,7 +327,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
     }
 
     private fun getQuantityForCommonGood(good: Good): String {
-        val ean = originalSearchNumber
+        val ean = manager.ean
         val isEanLastScanned = ean.isNotEmpty()
         return if (good.isDifferentUnits() && isEanLastScanned) {
             ScanCodeInfo(ean).getConvertedQuantityString(good.innerQuantity)
@@ -514,11 +512,11 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
     }
 
     private fun addExciseMarkInfo(result: ScanInfoResult) {
-        lastSuccessSearchNumber = originalSearchNumber
+        lastSuccessSearchNumber = manager.ean
         scanInfoResult.value = result
         quantityField.value = DEFAULT_QUANTITY_STRING_FOR_EAN
 
-        when (originalSearchNumber.length) {
+        when (manager.ean.length) {
             Constants.EXCISE_MARK_150 -> {
                 screenStatus.value = ScreenStatus.MARK_150
                 updateProducers(result.producers.orEmptyMutable())
@@ -532,7 +530,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
 
     private fun addPartInfo(result: ScanInfoResult) {
         screenStatus.value = ScreenStatus.PART
-        lastSuccessSearchNumber = originalSearchNumber
+        lastSuccessSearchNumber = manager.ean
         scanInfoResult.value = result
         quantityField.value = DEFAULT_QUANTITY_STRING_FOR_EAN
     }
@@ -566,7 +564,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
 
     private fun addBoxInfo(result: ScanInfoResult) {
         screenStatus.value = ScreenStatus.BOX
-        lastSuccessSearchNumber = originalSearchNumber
+        lastSuccessSearchNumber = manager.ean
         scanInfoResult.value = result
         quantityField.value = result.exciseMarks?.size?.toString().orIfNull { ZERO_QUANTITY_STRING }
         try {
