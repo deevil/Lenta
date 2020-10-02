@@ -15,7 +15,6 @@ abstract class CoreApplication : Application(), CoreComponentProvider {
 
     protected lateinit var coreComponent: CoreComponent
 
-
     override fun provideCoreComponent(): CoreComponent {
         if (!this::coreComponent.isInitialized) {
             coreComponent = DaggerCoreComponent.builder()
@@ -27,9 +26,7 @@ abstract class CoreApplication : Application(), CoreComponentProvider {
         return coreComponent
     }
 
-
     abstract fun getDefaultConnectionSettings(): DefaultConnectionSettings
-
 
     private fun setDefaultUncaughtExceptionHandler(coreComponent: CoreComponent) {
 
@@ -42,12 +39,11 @@ abstract class CoreApplication : Application(), CoreComponentProvider {
                                     "Thread:${thread.name}")
                     sendLogs()
                 }
-                Thread(Runnable {
+                Thread {
                     onHandleException()
                     Thread.sleep(200)
-                    coreComponent.getRoomAppDatabase().close()
                     exitProcess(1)
-                }).run()
+                }.run()
 
             }
         }

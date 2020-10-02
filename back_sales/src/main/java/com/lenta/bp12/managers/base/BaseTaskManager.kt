@@ -299,7 +299,7 @@ abstract class BaseTaskManager<T : Taskable> : ITaskManager<T> {
         }
     }
 
-    fun updateCurrentTask(task: T?) {
+    override fun updateCurrentTask(task: T?) {
         currentTask.postValue(task)
     }
 

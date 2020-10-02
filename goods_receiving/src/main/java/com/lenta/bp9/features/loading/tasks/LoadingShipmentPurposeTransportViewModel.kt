@@ -38,17 +38,17 @@ class LoadingShipmentPurposeTransportViewModel : CoreLoadingViewModel() {
     override val sizeInMb: MutableLiveData<Float> = MutableLiveData()
 
     val taskDescription: String by lazy {
-        "\"" + (taskManager.getReceivingTask()?.taskDescription?.currentStatus?.stringValue() ?: "") + "\" -> \"" + taskManager.getReceivingTask()?.taskDescription?.nextStatusText + "\""
+        "\"" + (taskManager.getReceivingTask()?.taskDescription?.currentStatus?.stringValue().orEmpty()) + "\" -> \"" + taskManager.getReceivingTask()?.taskDescription?.nextStatusText + "\""
     }
 
     init {
         launchUITryCatch {
             progress.value = true
-            taskManager.getReceivingTask()?.let { task ->
+            taskManager.getReceivingTask()?.let { _ ->
                 val params = ZmpUtzGrz35V001Params(
                         deviceIP = context.getDeviceIp(),
-                        taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
-                        personalNumber = sessionInfo.personnelNumber ?: "",
+                        taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber.orEmpty(),
+                        personalNumber = sessionInfo.personnelNumber.orEmpty(),
                         mode = mode,
                         shipmentTransportation = transportationNumber
                 )

@@ -1,10 +1,8 @@
 package com.lenta.bp9.features.loading.tasks
 
 import android.content.Context
-import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp9.R
-import com.lenta.bp9.features.reject.RejectType
 import com.lenta.bp9.model.task.*
 import com.lenta.bp9.model.task.revise.*
 import com.lenta.bp9.platform.navigation.IScreenNavigator
@@ -114,7 +112,7 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                         if (taskHeader.status == TaskStatus.Unloaded) {
                             taskCardNetRequest(params).either(::handleFailure, ::handleSuccess)
                         } else {
-                            val params = TaskContentsReceptionDistrCenterParameters(
+                            val paramsForTask = TaskContentsReceptionDistrCenterParameters(
                                     mode = mode.TaskCardModeString,
                                     deviceIP = context.getDeviceIp(),
                                     personalNumber = sessionInfo.personnelNumber.orEmpty(),
@@ -122,17 +120,17 @@ class LoadingTaskCardViewModel : CoreLoadingViewModel() {
                                     taskType = TaskType.RecalculationCargoUnit.taskTypeString,
                                     operatingSystem = OPERATING_SYSTEM_ANDROID
                             )
-                            taskContentsReceptionDistrCenterNetRequest(params).either(::handleFailure, ::handleSuccessRDS)
+                            taskContentsReceptionDistrCenterNetRequest(paramsForTask).either(::handleFailure, ::handleSuccessRDS)
                         }
                     }
                     TaskType.ShipmentRC -> {
-                        val params = ZmpUtzGrz43V001Params(
+                        val paramsShipment = ZmpUtzGrz43V001Params(
                                 mode = mode.TaskCardModeString,
                                 deviceIP = context.getDeviceIp(),
                                 personalNumber = sessionInfo.personnelNumber.orEmpty(),
                                 taskNumber = taskNumber
                         )
-                        zmpUtzGrz43V001NetRequest(params).either(::handleFailure, ::handleSuccessShipmentRC)
+                        zmpUtzGrz43V001NetRequest(paramsShipment).either(::handleFailure, ::handleSuccessShipmentRC)
                     }
                     else -> taskContentsNetRequest(params).either(::handleFailure, ::handleFullDataSuccess)
                 }
