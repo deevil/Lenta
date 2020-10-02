@@ -21,7 +21,6 @@ import com.lenta.bp12.platform.FIRST_POSITION
 import com.lenta.bp12.platform.ZERO_QUANTITY
 import com.lenta.bp12.platform.ZERO_VOLUME
 import com.lenta.bp12.platform.extention.*
-import com.lenta.bp12.platform.navigation.goBackIfBasketIsEmpty
 import com.lenta.bp12.request.ScanInfoParams
 import com.lenta.bp12.request.ScanInfoResult
 import com.lenta.bp12.request.pojo.ProducerInfo
@@ -825,6 +824,10 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
 
     override fun afterTextChanged(s: Editable?) {
         quantityField.value = s.returnWithNoSecondMinus()
+    }
+
+    override fun onBackPressed(){
+        handleBackPress<GoodListFragment>()
     }
 
     companion object {

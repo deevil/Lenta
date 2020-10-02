@@ -49,6 +49,7 @@ interface ITaskManager<T : Taskable> {
     suspend fun isGoodCanBeAdded(goodInfo: GoodInfoResult): Boolean
 
     fun clearCurrentGood()
+    fun clearCurrentBasket()
     fun removeBaskets(basketList: MutableList<Basket>)
 
     fun prepareSendTaskDataParams(deviceIp: String, tkNumber: String, userNumber: String)

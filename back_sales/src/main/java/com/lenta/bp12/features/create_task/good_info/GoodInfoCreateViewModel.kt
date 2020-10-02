@@ -815,4 +815,8 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
     override fun afterTextChanged(s: Editable?) {
         quantityField.value = s.returnWithNoSecondMinus()
     }
+
+    override fun onBackPressed(){
+        handleBackPress<TaskContentFragment>()
+    }
 }

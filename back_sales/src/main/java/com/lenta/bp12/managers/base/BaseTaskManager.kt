@@ -315,6 +315,10 @@ abstract class BaseTaskManager<T : Taskable> : ITaskManager<T> {
         currentGood.value = null
     }
 
+    override fun clearCurrentBasket() {
+        currentBasket.value = null
+    }
+
     override fun saveGoodInTask(good: Good) {
         currentTask.value?.let { task ->
             task.goods.find {
@@ -389,6 +393,9 @@ abstract class BaseTaskManager<T : Taskable> : ITaskManager<T> {
     override fun removeBaskets(basketList: MutableList<Basket>) {
         currentTask.value?.let { task ->
             task.removeBaskets(basketList)
+            if (basketList.contains(currentBasket.value)) {
+                clearCurrentBasket()
+            }
             updateCurrentTask(task)
         }
     }

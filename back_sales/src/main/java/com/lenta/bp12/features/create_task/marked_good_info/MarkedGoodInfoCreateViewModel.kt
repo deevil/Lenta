@@ -15,7 +15,6 @@ import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.Mark
 import com.lenta.bp12.model.pojo.extentions.addMarks
 import com.lenta.bp12.platform.ZERO_QUANTITY
-import com.lenta.bp12.platform.navigation.goBackIfBasketIsEmpty
 import com.lenta.bp12.request.MarkCartonBoxGoodInfoNetRequest
 import com.lenta.bp12.request.ScanInfoResult
 import com.lenta.shared.exception.Failure
@@ -337,7 +336,7 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
      */
 
     override fun onBackPressed() {
-        super.onBackPressed()
+        handleBackPress<TaskContentFragment>()
         markManager.clearData()
     }
 
