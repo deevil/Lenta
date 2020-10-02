@@ -428,7 +428,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
             val errorText = result.errorText
             if (indicatorOnePosition in 1..3) {  //Излишек
                 //          todo  Излишек    screenNavigator. https://trello.com/c/8esE7TKN
-            } else if (retCode == 1) {
+            } else if (retCode == RET_CODE_ONE) {
                 Failure.SapError(errorText)
             }
         }
@@ -533,6 +533,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
         private const val DEFAULT_INT_VALUE = 0
         private const val DEFAULT_COUNT = "0"
         private const val MULTIPLY = "x"
+        private const val RET_CODE_ONE = 1
         private const val COUNT_IS_ZERO = "0 ШТ"
         const val REGEX_BARCODE_STAMP = """^(?<barcode>01(?<gtin>\d{14})21(?<serial>\S{13})).?(?:240(?<tradeCode>\d{4}))?.?(?:91(?<verificationKey>\S{4}))?.?(?:92(?<verificationCode>\S{88}))?${'$'}"""
     }

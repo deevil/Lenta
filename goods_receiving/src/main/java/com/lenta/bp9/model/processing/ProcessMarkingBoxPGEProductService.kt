@@ -90,7 +90,7 @@ class ProcessMarkingBoxPGEProductService
                                         .filter { box -> box.isScan }
                             }
 
-                    var countNotScannedStamps = 0.0
+                    var countNotScannedStamps = DEFAULT_DOUBLE_VALUE
                     processedBox
                             .forEach { boxScanned ->
                                 countNotScannedStamps +=
@@ -117,7 +117,7 @@ class ProcessMarkingBoxPGEProductService
 
                     return countNotScannedStamps + countScannedStamps
                 }
-                ?: 0.0
+                ?: DEFAULT_DOUBLE_VALUE
     }
 
     override fun getCountBlocksUnderload(paramGrzGrundMarkCode: String): Double {
@@ -131,7 +131,7 @@ class ProcessMarkingBoxPGEProductService
                             ?.numberDiscrepancies
                             ?.toDouble()
                 }
-                ?: 0.0
+                ?: DEFAULT_DOUBLE_VALUE
 
     }
 
@@ -305,7 +305,7 @@ class ProcessMarkingBoxPGEProductService
         currentBoxDiscrepancies.add(foundBoxDiscrepancy)
 
         //сохраняем все необработанные блоки для коробки без isScan
-        var countAddStamps = 0
+        var countAddStamps = DEFAULT_INT_VALUE
         val stampsFromBox = stamps.filter { it.boxNumber == boxNumber }
         stampsFromBox
                 .filter { stamp ->
@@ -383,7 +383,7 @@ class ProcessMarkingBoxPGEProductService
                             .filter { productDiscrepancies -> productDiscrepancies.typeDiscrepancies == typeDiscrepancies }
                             .sumByDouble { it.numberDiscrepancies.toDouble() }
                 }
-                ?: 0.0
+                ?: DEFAULT_DOUBLE_VALUE
     }
 
     fun getCountAcceptOfProduct(): Double {
@@ -394,7 +394,7 @@ class ProcessMarkingBoxPGEProductService
                             .filter { productDiscrepancies -> productDiscrepancies.typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM }
                             .sumByDouble { it.numberDiscrepancies.toDouble() }
                 }
-                ?: 0.0
+                ?: DEFAULT_DOUBLE_VALUE
     }
 
     fun getCountRefusalOfProduct(): Double {
@@ -405,7 +405,7 @@ class ProcessMarkingBoxPGEProductService
                             .filter { productDiscrepancies -> productDiscrepancies.typeDiscrepancies != TYPE_DISCREPANCIES_QUALITY_NORM }
                             .sumByDouble { it.numberDiscrepancies.toDouble() }
                 }
-                ?: 0.0
+                ?: DEFAULT_DOUBLE_VALUE
     }
 
     private fun addTypeLastStampScanned(typeLastStampScanned: TypeLastStampScanned) {
@@ -468,6 +468,11 @@ class ProcessMarkingBoxPGEProductService
                     ?.getBoxesDiscrepancies()
                     ?.changeBoxDiscrepancy(it)
         }
+    }
+
+    companion object {
+        private const val DEFAULT_DOUBLE_VALUE = 0.0
+        private const val DEFAULT_INT_VALUE = 0
     }
 }
 
