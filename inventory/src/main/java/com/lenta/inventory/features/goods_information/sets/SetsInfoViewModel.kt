@@ -136,6 +136,7 @@ class SetsInfoViewModel : CoreViewModel(), OnPositionClickListener {
         }
     }
 
+    @Suppress("UNUSED_PARAMETER")
     private fun handleProductSearchResult(scanInfoResult: ScanInfoResult?): Boolean {
         enabledBtn()
         screenNavigator.goBack()

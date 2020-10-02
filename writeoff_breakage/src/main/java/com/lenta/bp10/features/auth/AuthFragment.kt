@@ -33,6 +33,4 @@ class AuthFragment : CoreLoginFragment() {
         super.onViewCreated(view, savedInstanceState)
         vm.appTitle.value = context?.getAppInfo(withHash = false)
     }
-
-
 }

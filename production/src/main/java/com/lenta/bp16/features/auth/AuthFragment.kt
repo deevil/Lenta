@@ -19,7 +19,7 @@ class AuthFragment : CoreLoginFragment() {
     override fun getViewModel(): CoreAuthViewModel {
         provideViewModel(AuthViewModel::class.java).let {
             getAppComponent()?.inject(it)
-            it.packageName.value = context!!.packageName
+            it.packageName.value = requireContext().packageName
             return it
         }
     }

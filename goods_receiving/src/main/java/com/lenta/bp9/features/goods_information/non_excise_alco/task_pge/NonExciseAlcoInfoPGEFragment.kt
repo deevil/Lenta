@@ -81,7 +81,7 @@ class NonExciseAlcoInfoPGEFragment : CoreFragment<FragmentNonExciseAlcoInfoPgeBi
             }
         }
 
-        binding?.etCount?.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
+        binding?.etCount?.setOnKeyListener(View.OnKeyListener { _, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
                 if (vm.enabledApplyButton.value == true) {
                     vm.onClickApply()
