@@ -97,11 +97,8 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
     Ввод количества
      */
     override val quantityField by unsafeLazy {
-        tempMarks.switchMap {
-            liveData {
-                val size = "${it.size}"
-                emit(size)
-            }
+        tempMarks.mapSkipNulls {
+            "${it.size}"
         }
     }
 

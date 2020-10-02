@@ -5,6 +5,7 @@
     tools:context="com.lenta.bp12.features.create_task.marked_good_info.MarkedGoodInfoCreateFragment">
 
     <data>
+
         <variable
             name="vm"
             type="com.lenta.bp12.features.open_task.marked_good_info.MarkedGoodInfoOpenViewModel" />
@@ -41,6 +42,7 @@
                     <com.lenta.shared.view.EditTextWithSuffix
                         style="@style/CellEditTextStyle"
                         android:enabled="@{vm.quantityFieldEnabled}"
+                        android:maxLength="8"
                         android:text="@{vm.quantityField}"
                         app:digitsForUom="@{vm.good.commonUnits}"
                         app:quantityTypeIcon="@{vm.good.isDifferentUnits()}"
@@ -131,7 +133,8 @@
                 android:visibility="@{!vm.isWholesaleTaskType}" />
 
             <!-- МРЦ -->
-            <LinearLayout style="@style/LinearRowStyle"
+            <LinearLayout
+                style="@style/LinearRowStyle"
                 android:visibility="@{vm.isMrcVisible}">
 
                 <LinearLayout style="@style/LinearCellStyle">
@@ -149,9 +152,9 @@
 
                     <EditText
                         style="@style/CellEditTextStyle"
+                        android:enabled="false"
                         android:text="@={vm.mrc}"
-                        tools:text="150 руб"
-                        android:enabled="false"/>
+                        tools:text="150 руб" />
 
                 </LinearLayout>
 
