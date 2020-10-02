@@ -1,7 +1,5 @@
 package com.lenta.bp12.features.create_task.good_info
 
-import android.text.Editable
-import androidx.databinding.adapters.TextViewBindingAdapter
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
@@ -36,7 +34,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAdapter.AfterTextChanged {
+class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
 
     @Inject
     override lateinit var manager: ICreateTaskManager
@@ -44,8 +42,6 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
     /**
     Переменные
      */
-
-    private var originalSearchNumber = ""
 
     private var lastSuccessSearchNumber = ""
 
@@ -219,7 +215,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
     private fun isApplyEnabled() = applyEnabled.value == true
 
     override fun checkSearchNumber(number: String) {
-        originalSearchNumber = number
+        manager.ean = number
         actionByNumber(
                 number = number,
                 funcForEan = ::getGoodByEan,
@@ -260,6 +256,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
      * */
     private fun getGoodByMaterial(material: String) {
         launchUITryCatch {
+            manager.clearEan()
             findGoodByMaterial(material)?.let {
                 lastSuccessSearchNumber = material
                 isEanLastScanned = false
@@ -294,7 +291,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
     }
 
     private fun getQuantityForCommonGood(good: Good): String {
-        val ean = originalSearchNumber
+        val ean = manager.ean
         val isEanLastScanned = ean.isNotEmpty()
         return if (good.isDifferentUnits() && isEanLastScanned) {
             ScanCodeInfo(ean).getConvertedQuantityString(good.innerQuantity)
@@ -487,11 +484,11 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
     }
 
     private fun addMarkExciseInfo(result: ScanInfoResult) {
-        lastSuccessSearchNumber = originalSearchNumber
+        lastSuccessSearchNumber = manager.ean
         scanInfoResult.value = result
         quantityField.value = "1"
 
-        when (originalSearchNumber.length) {
+        when (manager.ean.length) {
             Constants.EXCISE_MARK_150 -> {
                 screenStatus.value = ScreenStatus.MARK_150
                 updateProducers(result.producers.orEmptyMutable())
@@ -509,7 +506,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
 
     private fun addPartInfo(result: ScanInfoResult) {
         screenStatus.value = ScreenStatus.PART
-        lastSuccessSearchNumber = originalSearchNumber
+        lastSuccessSearchNumber = manager.ean
         scanInfoResult.value = result
         quantityField.value = "1"
     }
@@ -543,7 +540,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
 
     private fun addBoxInfo(result: ScanInfoResult) {
         screenStatus.value = ScreenStatus.BOX
-        lastSuccessSearchNumber = originalSearchNumber
+        lastSuccessSearchNumber = manager.ean
         scanInfoResult.value = result
         quantityField.value = result.exciseMarks?.size?.toString().orIfNull { ZERO_QUANTITY_STRING }
         try {
@@ -810,10 +807,6 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
         } else {
             isEnteredMoreThanZeroAndProviderSelected
         }
-    }
-
-    override fun afterTextChanged(s: Editable?) {
-        quantityField.value = s.returnWithNoSecondMinus()
     }
 
     override fun onBackPressed(){

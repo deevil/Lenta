@@ -241,6 +241,10 @@ class TaskContentFragment : CoreFragment<FragmentTaskContentBinding, TaskContent
 //                vm.onScanResult("2811189054009")
 //                return true
 //            }
+//            KeyCode.KEYCODE_7 -> { // Сыр 305346
+//                vm.onScanResult("2406786000018")
+//                return true
+//            }
 //        }
 //        return false
 //    }

@@ -1,10 +1,12 @@
 package com.lenta.bp12.features.open_task.base
 
-import androidx.lifecycle.MutableLiveData
 import com.lenta.bp12.features.base.BaseGoodListViewModel
 import com.lenta.bp12.features.open_task.base.interfaces.IBaseGoodListOpenViewModel
 import com.lenta.bp12.managers.interfaces.IOpenTaskManager
-import com.lenta.bp12.model.*
+import com.lenta.bp12.model.GoodKind
+import com.lenta.bp12.model.MarkScreenStatus
+import com.lenta.bp12.model.ScanInfoMode
+import com.lenta.bp12.model.WorkType
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.open_task.TaskOpen
 import com.lenta.bp12.platform.ZERO_QUANTITY
@@ -18,9 +20,6 @@ import com.lenta.bp12.request.pojo.good_info.GoodInfoParams
 import com.lenta.bp12.request.pojo.good_info.GoodInfoResult
 import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.utilities.extentions.launchUITryCatch
-import com.lenta.shared.utilities.orIfNull
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 /**
  * Базовый класс вьюмодели списка товаров для Работы с заданиями
@@ -30,63 +29,12 @@ import kotlinx.coroutines.withContext
  * */
 abstract class BaseGoodListOpenViewModel: BaseGoodListViewModel<TaskOpen, IOpenTaskManager>(), IBaseGoodListOpenViewModel {
 
-
-    /**
-     * Метод проверяет длину отсканированного/введенного кода
-     * */
-    override fun checkSearchNumber(number: String) {
-        manager.ean = number
-        actionByNumber(
-                number = number,
-                funcForEan = {
-                    getGoodByEan(number)
-                },
-                funcForMaterial = ::getGoodByMaterial,
-                funcForSapOrBar = navigator::showTwelveCharactersEntered,
-                funcForMark = ::checkMark,
-                funcForNotValidBarFormat = navigator::showIncorrectEanFormat
-        )
-        numberField.value = ""
-    }
-
-    /**
-     * Метод ищет есть ли уже товар в задании по EAN,
-     * если есть то отправляет на его карточку
-     * если нет то создает товар
-     * */
-    override fun getGoodByEan(ean: String) {
-        launchUITryCatch {
-            navigator.showProgressLoadingData()
-            val foundGood = withContext(Dispatchers.IO) { manager.findGoodByEan(ean) }
-            navigator.hideProgress()
-            foundGood?.let(::setFoundGood).orIfNull {
-                actionWhenGoodNotFoundByEan(ean)
-            }
-        }
-    }
-
-    private suspend fun actionWhenGoodNotFoundByEan(ean: String) {
+    override suspend fun actionWhenGoodNotFoundByEan(ean: String) {
         if (task.value?.isStrict == false) {
             loadGoodInfoByEan(ean)
         } else {
             navigator.showGoodIsMissingInTask()
         }
-    }
-
-    private suspend fun loadGoodInfoByEan(ean: String) {
-        navigator.showProgressLoadingData(::handleFailure)
-        goodInfoNetRequest(
-                GoodInfoParams(
-                        tkNumber = sessionInfo.market.orEmpty(),
-                        ean = ean,
-                        taskType = task.value?.type?.code.orEmpty()
-                )
-        ).also {
-            navigator.hideProgress()
-        }.either(
-                fnL = ::handleFailure,
-                fnR = ::handleLoadGoodInfoResult
-        )
     }
 
     override fun setFoundGood(foundGood: Good) {
@@ -101,24 +49,7 @@ abstract class BaseGoodListOpenViewModel: BaseGoodListViewModel<TaskOpen, IOpenT
         }
     }
 
-    /**
-     * Метод ищет есть ли уже товар в задании по Sap коду,
-     * если есть то отправляет на его карточку
-     * если нет то создает товар
-     * */
-    private fun getGoodByMaterial(material: String) {
-        launchUITryCatch {
-            manager.clearEan()
-            navigator.showProgressLoadingData()
-            val foundGood = withContext(Dispatchers.IO) { manager.findGoodByMaterial(material) }
-            navigator.hideProgress()
-            foundGood?.let(::setFoundGood).orIfNull {
-                actionWhenGoodNotFoundByMaterial(material)
-            }
-        }
-    }
-
-    private suspend fun actionWhenGoodNotFoundByMaterial(material: String) {
+    override suspend fun actionWhenGoodNotFoundByMaterial(material: String) {
         if (task.value?.isStrict == false) {
             loadGoodInfoByMaterial(material)
         } else {
@@ -143,7 +74,7 @@ abstract class BaseGoodListOpenViewModel: BaseGoodListViewModel<TaskOpen, IOpenT
         )
     }
 
-    private fun checkMark(number: String) {
+    override fun checkMark(number: String) {
         launchUITryCatch {
             manager.clearEan()
             navigator.showProgressLoadingData()
@@ -165,7 +96,7 @@ abstract class BaseGoodListOpenViewModel: BaseGoodListViewModel<TaskOpen, IOpenT
         }
     }
 
-    private fun handleLoadGoodInfoResult(result: GoodInfoResult) {
+    override fun handleLoadGoodInfoResult(result: GoodInfoResult) {
         launchUITryCatch {
             val isGoodCorrespondToTask = manager.isGoodCorrespondToTask(result)
             val isGoodCanBeAdded = manager.isGoodCanBeAdded(result)

@@ -1,6 +1,7 @@
 package com.lenta.bp16.features.ingredient_details.add_attribute
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
 import com.lenta.bp16.model.AddAttributeProdInfo
 import com.lenta.bp16.model.managers.IAttributeManager
@@ -65,19 +66,16 @@ class IngredientAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
     private val producerDataInfo = MutableLiveData<List<ProducerDataInfoUI>>()
     override val zPartDataInfos = MutableLiveData<List<ZPartDataInfoUI>>()
     val orderIngredient = MutableLiveData<OrderIngredientDataInfoUI>()
-    val producerNameList = producerDataInfo.switchMap {
-        asyncLiveData<List<String>> {
-            val producerNameList = it.map { it.prodName }
+    val producerNameList = producerDataInfo.switchMap { producerDataInfoValue ->
+        liveData {
+            val producerNameList = producerDataInfoValue.map { it.prodName  }
+            val producerCodes = producerDataInfoValue.map { it.prodCode  }
+            producerCodeList.value = producerCodes
             emit(producerNameList)
         }
     }
 
-    private val producerCodeList = producerDataInfo.switchMap {
-        asyncLiveData<List<String>> {
-            val producerCodeList = it.map { it.prodCode }
-            emit(producerCodeList)
-        }
-    }
+    private val producerCodeList = MutableLiveData<List<String>>()
 
     val selectedProducerPosition = MutableLiveData(0)
 
@@ -163,7 +161,7 @@ class IngredientAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
                 year !in YEAR_RANGE_2000_TO_2100 -> false
                 monthWith31Days.contains(month) -> day <= MONTH_WITH_31_DAY
                 monthWith30Days.contains(month) && month != 2 -> day <= MONTH_WITH_30_DAY
-                leapYear  -> day <= MONTH_WITH_29_DAY
+                leapYear -> day <= MONTH_WITH_29_DAY
                 month == 2 -> day <= MONTH_WITH_28_DAY
                 else -> false
             }

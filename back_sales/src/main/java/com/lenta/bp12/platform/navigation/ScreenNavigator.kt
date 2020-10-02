@@ -658,6 +658,16 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showScanMarksIndividiuallyAlert() {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    pageNumber = "98",
+                    message = context.getString(R.string.scan_marks_individually),
+                    iconRes = R.drawable.ic_warning_red_80dp
+            ))
+        }
+    }
+
     override fun showChooseProviderFirst() {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
@@ -757,6 +767,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun showMarkScanError(errorText: String)
 
     fun showAlertDialogWithRedTriangle(errorText: String, screenNumber: String = "97")
+    fun showScanMarksIndividiuallyAlert()
 }
 
 inline fun <reified T : CoreFragment<*, *>> IScreenNavigator.goBackIfBasketIsEmpty(isBasketEmpty: Boolean) {

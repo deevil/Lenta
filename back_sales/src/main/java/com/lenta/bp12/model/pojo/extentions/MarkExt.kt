@@ -12,6 +12,14 @@ fun List<Mark>.isAnyAlreadyIn(inputMarks: List<Mark>): Boolean {
     }
 }
 
+fun List<Mark>.isAllAlreadyIn(inputMarks: List<Mark>): Boolean {
+    return this.all { tempMark ->
+        inputMarks.all {
+            tempMark.number == it.number
+        }
+    }
+}
+
 fun List<MarkInfo>.mapToMarkList(foundGood: Good): List<Mark> {
     return this.map {
         Mark(

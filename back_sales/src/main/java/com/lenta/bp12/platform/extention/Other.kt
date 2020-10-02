@@ -145,23 +145,34 @@ fun CreateTaskBasketInfo.getControlType(): ControlType {
         else -> ControlType.UNKNOWN
     }
 }
-
 /**
- * Метод проверяет по регулярке есть ли второй минус в строке (учитывая что в строку может попасть только цифры и минус)
+ * Если товар обычный то удаляет второй минус
+ * если Алко то первый
  * Использовать вместе с
  * TextViewBindingAdapter.AfterTextChanged
  * fun afterTextChanged(s: Editable?)
  * */
-fun Editable?.returnWithNoSecondMinus(): String {
-    val regex = Regex(Constants.STRING_WITH_ONLY_ONE_MINUS_IN_BEGINNING_PATTERN)
-    val quantity = this.toString()
+fun Editable?.resolveMinuses(isGoodCommon: Boolean): String {
+    return if (isGoodCommon) {
+        this.toString().returnWithNoMinuses(Constants.STRING_WITH_ONLY_ONE_MINUS_IN_BEGINNING_PATTERN)
+    } else {
+        this.toString().returnWithNoMinuses(Constants.STRING_WITH_ONLY_DIGITS_PATTERN)
+    }
+}
+
+/**
+ * Метод проверяет по регулярке есть ли минус в строке
+ * */
+
+fun String.returnWithNoMinuses(pattern: String): String {
+    val regex = Regex(pattern)
+    val quantity = this
     return if (!quantity.matches(regex)) {
-        quantity.deleteSecondMinus()
+        quantity.deleteMinus()
     } else {
         quantity
     }
 }
-
 
 fun TaskType.isWholesaleType(): Boolean {
     return this.code == TypeCode.WHOLESALE.code
@@ -197,7 +208,9 @@ fun ScanInfoResult.getParts(good: Good, date: String, providerCode: String, prod
                 providerCode = providerCode,
                 producerCode = producerCode,
                 date = formattedDate
-        )
+        ).apply {
+            quantity = partFromServer.quantity?.toDoubleOrNull().orIfNull { ZERO_QUANTITY }
+        }
     }.orEmpty()
 }
 

@@ -1,28 +1,30 @@
 package com.lenta.bp14.features.not_exposed.good_info
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.lenta.bp14.features.base.BaseGoodInfoViewModel
 import com.lenta.bp14.models.check_price.IPriceInfoParser
 import com.lenta.bp14.models.data.GoodType
 import com.lenta.bp14.models.data.getGoodType
 import com.lenta.bp14.models.not_exposed.INotExposedTask
 import com.lenta.bp14.models.ui.ItemStockUi
+import com.lenta.bp14.models.ui.ZPartUi
 import com.lenta.bp14.platform.navigation.IScreenNavigator
 import com.lenta.shared.exception.Failure
-import com.lenta.shared.fmp.resources.dao_ext.getMaxPositionsProdWkl
-import com.lenta.shared.fmp.resources.fast.ZmpUtz14V001
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.models.core.getMatrixType
-import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.requests.combined.scan_info.ScanCodeInfo
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequest
 import com.lenta.shared.requests.combined.scan_info.ScanInfoRequestParams
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.actionByNumber
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.orIfNull
 import com.mobrun.plugin.api.HyperHive
 import javax.inject.Inject
 
-class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
+class GoodInfoNeViewModel : BaseGoodInfoViewModel(), PageSelectionListener {
 
     @Inject
     lateinit var navigator: IScreenNavigator
@@ -39,18 +41,13 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
     @Inject
     lateinit var hyperHive: HyperHive
 
-
-    private val maxQuantity: Double? by lazy {
-        ZmpUtz14V001(hyperHive).getMaxPositionsProdWkl()
-    }
-
     val goodInfo by lazy {
-        task.getProcessedProductInfoResult()!!.goodInfo
+        task.getProcessedProductInfoResult()?.goodInfo
     }
 
     val productParamsUi: MutableLiveData<ProductParamsUi> by lazy {
         MutableLiveData<ProductParamsUi>(
-                goodInfo.let {
+                goodInfo?.let {
                     ProductParamsUi(
                             matrixType = getMatrixType(it.productInfo.matrixType),
                             sectionId = it.productInfo.sectionNumber,
@@ -64,27 +61,38 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
 
     val stocks: MutableLiveData<List<ItemStockUi>> by lazy {
         MutableLiveData<List<ItemStockUi>>(
-                goodInfo.let { goodInfo ->
+                goodInfo?.let { goodInfo ->
                     goodInfo.stocks.mapIndexed { index, stock ->
+                        val goodInfoUnits = goodInfo.units?.name.orEmpty()
+                        val quantity = "${stock.quantity.toStringFormatted()} $goodInfoUnits"
                         ItemStockUi(
                                 number = "${index + 1}",
-                                storage = stock.lgort,
-                                quantity = "${stock.stock.toStringFormatted()} ${goodInfo.units?.name
-                                       .orEmpty()}"
+                                storage = stock.storage,
+                                quantity = quantity,
+                                zPartsQuantity = stock.getZPartQuantity(goodInfoUnits)
                         )
-
                     }
                 }
         )
     }
+
+    override val zParts: LiveData<List<ZPartUi>> by unsafeLazy {
+        asyncLiveData<List<ZPartUi>> {
+            val result = goodInfo?.zParts.mapToZPartUiList(goodInfo?.units?.name.orEmpty())
+            emit(result)
+        }
+    }
+
 
     val originalProcessedProductInfo by lazy {
         task.getProcessedCheckInfo()
     }
 
     val marketStorage by lazy {
-        "${(goodInfo.stocks.sumByDouble { it.stock }).toStringFormatted()} ${goodInfo.units?.name
-               .orEmpty()}"
+        val stocksQuantitySum = (goodInfo?.stocks?.sumByDouble { it.quantity }).toStringFormatted()
+        val goodUnitsName = goodInfo?.units?.name.orEmpty()
+
+        "$stocksQuantitySum $goodUnitsName"
     }
 
     val quantityField by lazy {
@@ -111,7 +119,7 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
 
     val totalQuantity: MutableLiveData<String> by lazy {
         totalQuantityValue.map {
-            "${it.dropZeros()} ${goodInfo.units?.name.orEmpty()}"
+            "${it.dropZeros()} ${goodInfo?.units?.name.orEmpty()}"
         }
     }
 
@@ -162,8 +170,8 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
     }
 
     fun getTitle(): String? {
-        goodInfo.productInfo.let {
-            return "${it.matNr.takeLast(6)} ${it.name}"
+        return goodInfo?.productInfo?.run {
+            return "${matNr.takeLast(LAST_MATNR_TITLE_PART_COUNT)} $name"
         }
     }
 
@@ -214,9 +222,9 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
             ).also {
                 navigator.hideProgress()
             }.either(::handleFailure) { scanInfoResult ->
-                if (scanInfoResult.productInfo.materialNumber == goodInfo.productInfo.matNr) {
+                if (scanInfoResult.productInfo.materialNumber == goodInfo?.productInfo?.matNr) {
                     if (isEmptyPlaceMarked.value == null) {
-                        val newQuantity = ((quantityValue.value ?: 0.0) + scanInfoResult.quantity)
+                        val newQuantity = ((quantityValue.value ?: DEFAULT_QUANTITY_VALUE) + scanInfoResult.quantity)
                         //TODO maxQuantity - это максимальное количество позиций в задании. Нужно переделать
                         /*if (maxQuantity != null && newQuantity > maxQuantity!!) {
                             navigator.showMaxCountProductAlert()
@@ -261,11 +269,24 @@ class GoodInfoNeViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
+    fun onStockItemClick(itemIndex: Int) {
+        stocks.value?.getOrNull(itemIndex)?.let { stock ->
+            navigator.openStorageZPartsNeScreen(stock.storage)
+        }.orIfNull {
+            Logg.w { "Stock value is null!" }
+            navigator.showAlertWithStockItemNotFound()
+        }
+    }
+
     override fun handleFailure(failure: Failure) {
         super.handleFailure(failure)
         navigator.openAlertScreen(failure)
     }
 
+    companion object {
+        private const val LAST_MATNR_TITLE_PART_COUNT = 6
+        private const val DEFAULT_QUANTITY_VALUE = 0.0
+    }
 }
 
 data class ProductParamsUi(

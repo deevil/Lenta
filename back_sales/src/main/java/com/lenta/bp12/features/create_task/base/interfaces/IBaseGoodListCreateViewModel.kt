@@ -13,11 +13,8 @@ import com.lenta.bp12.request.pojo.good_info.GoodInfoResult
 interface IBaseGoodListCreateViewModel {
 
     var manager: ICreateTaskManager
-    fun getGoodByMaterial(material: String)
     fun checkMark(number: String)
-    suspend fun loadGoodInfoByEan(ean: String)
     suspend fun loadGoodInfoByMaterial(material: String)
-    fun handleLoadGoodInfoResult(result: GoodInfoResult)
     fun setGood(result: GoodInfoResult)
     fun onScanResult(data: String)
     fun onClickDelete()

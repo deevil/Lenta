@@ -10,9 +10,11 @@ import com.lenta.bp14.features.check_list.goods_list.GoodsListClFragment
 import com.lenta.bp14.features.job_card.JobCardFragment
 import com.lenta.bp14.features.list_of_differences.ListOfDifferencesFragment
 import com.lenta.bp14.features.loading.fast.FastDataLoadingFragment
+import com.lenta.bp14.features.long_z_part.LongZPartInfoFragment
 import com.lenta.bp14.features.main_menu.MainMenuFragment
 import com.lenta.bp14.features.not_exposed.good_info.GoodInfoNeFragment
 import com.lenta.bp14.features.not_exposed.goods_list.GoodsListNeFragment
+import com.lenta.bp14.features.not_exposed.storage_z_parts.StorageZPartsNotExposedFragment
 import com.lenta.bp14.features.price_check.good_info.GoodInfoPcFragment
 import com.lenta.bp14.features.price_check.goods_list.GoodsListPcFragment
 import com.lenta.bp14.features.price_check.price_scanner.PriceScannerFragment
@@ -28,6 +30,7 @@ import com.lenta.bp14.features.work_list.good_info.GoodInfoWlFragment
 import com.lenta.bp14.features.work_list.good_sales.GoodSalesFragment
 import com.lenta.bp14.features.work_list.goods_list.GoodsListWlFragment
 import com.lenta.bp14.features.work_list.storage_z_parts.StorageZPartsFragment
+import com.lenta.bp14.models.ui.ZPartUi
 import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.features.alert.AlertFragment
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
@@ -505,6 +508,17 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun openStorageZPartsNeScreen(storage: String) {
+        runOrPostpone {
+            getFragmentStack()?.push(StorageZPartsNotExposedFragment.newInstance(storage))
+        }
+    }
+
+    override fun openZPartInfoFragment(zPart: ZPartUi) {
+        runOrPostpone {
+            getFragmentStack()?.push(LongZPartInfoFragment.newInstance(zPart))
+        }
+    }
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -565,4 +579,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun openPictogrammInfoHealthyFood()
     fun openConfirmationNotSaveChanges(yesCallback: () -> Unit)
     fun openStorageZPartsScreen(storage: String)
+    fun openStorageZPartsNeScreen(storage: String)
+    fun openZPartInfoFragment(zPart: ZPartUi)
 }

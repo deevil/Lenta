@@ -25,7 +25,7 @@ abstract class BaseGoodInfoOpenViewModel : BaseGoodInfoViewModel<TaskOpen, IOpen
                 buildString {
                     append(quantity.dropZeros())
                     if (isPlannedQuantityMoreThanZero) {
-                        append(" $FROM_STRING ${it.planQuantity.dropZeros()}")
+                        append(resource.fromPlannedQuantity(it.planQuantity.dropZeros()))
                     }
                     append(" ")
                     append(it.commonUnits.name)
@@ -53,8 +53,8 @@ abstract class BaseGoodInfoOpenViewModel : BaseGoodInfoViewModel<TaskOpen, IOpen
     }
 
     override fun isFactQuantityMoreThanPlanned(): Boolean {
-        val totalQuantity = good.value?.getTotalQuantity() ?: 0.0
-        val quantityValue = quantity.value ?: 0.0
+        val totalQuantity = good.value?.getTotalQuantity() ?: ZERO_QUANTITY
+        val quantityValue = quantity.value ?: ZERO_QUANTITY
         val quantitySum = quantityValue + totalQuantity
         val isFactQuantityMoreThanPlanned = quantitySum > plannedQuantity
         return isPlannedQuantityMoreThanZero && isFactQuantityMoreThanPlanned
