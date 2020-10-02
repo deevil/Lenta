@@ -1,6 +1,7 @@
 package com.lenta.shared
 
 import android.app.Application
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.lenta.shared.di.CoreComponent
 import com.lenta.shared.di.CoreComponentProvider
 import com.lenta.shared.di.CoreModule
@@ -27,6 +28,11 @@ abstract class CoreApplication : Application(), CoreComponentProvider {
     }
 
     abstract fun getDefaultConnectionSettings(): DefaultConnectionSettings
+
+    override fun onCreate() {
+        super.onCreate()
+        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(!BuildConfig.DEBUG)
+    }
 
     private fun setDefaultUncaughtExceptionHandler(coreComponent: CoreComponent) {
 
