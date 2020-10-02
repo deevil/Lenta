@@ -6,6 +6,7 @@ import androidx.lifecycle.switchMap
 import com.lenta.bp12.features.create_task.marked_good_info.GoodProperty
 import com.lenta.bp12.features.create_task.marked_good_info.GoodPropertyItem
 import com.lenta.bp12.features.open_task.base.BaseGoodInfoOpenViewModel
+import com.lenta.bp12.features.open_task.good_list.GoodListFragment
 import com.lenta.bp12.managers.interfaces.IMarkManager
 import com.lenta.bp12.managers.interfaces.IOpenTaskManager
 import com.lenta.bp12.model.MarkScreenStatus
@@ -306,7 +307,7 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
      */
 
     override fun onBackPressed() {
-        super.onBackPressed()
+        handleBackPress<GoodListFragment>()
         markManager.clearData()
     }
 

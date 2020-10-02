@@ -808,4 +808,8 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
             isEnteredMoreThanZeroAndProviderSelected
         }
     }
+
+    override fun onBackPressed(){
+        handleBackPress<TaskContentFragment>()
+    }
 }

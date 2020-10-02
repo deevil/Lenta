@@ -4,6 +4,10 @@ import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.TaskType
 
+/**
+ * @see com.lenta.bp12.model.pojo.create_task.TaskCreate
+ * @see com.lenta.bp12.model.pojo.open_task.TaskOpen
+ * */
 interface Taskable{
 
     val name: String

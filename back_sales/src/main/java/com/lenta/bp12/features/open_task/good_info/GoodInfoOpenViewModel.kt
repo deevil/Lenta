@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
 import com.lenta.bp12.features.open_task.base.BaseGoodInfoOpenViewModel
+import com.lenta.bp12.features.open_task.good_list.GoodListFragment
 import com.lenta.bp12.managers.interfaces.IOpenTaskManager
 import com.lenta.bp12.model.*
 import com.lenta.bp12.model.pojo.Good
@@ -733,19 +734,6 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
         }
     }
 
-    /**
-    Обработка нажатий кнопок
-     */
-    override fun onBackPressed() {
-        if (isExistUnsavedData()) {
-            navigator.showUnsavedDataWillBeLost {
-                navigator.goBack()
-            }
-        } else {
-            navigator.goBack()
-        }
-    }
-
     override fun onClickRollback() {
         good.value?.let { good ->
             thereWasRollback = true
@@ -827,6 +815,10 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
         }
     }
 
+
+    override fun onBackPressed(){
+        handleBackPress<GoodListFragment>()
+    }
 
     companion object {
         private const val DEFAULT_QUANTITY_STRING_FOR_EAN = "1"

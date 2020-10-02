@@ -15,6 +15,7 @@ import com.lenta.bp12.platform.*
 import com.lenta.bp12.platform.extention.isWholesaleType
 import com.lenta.bp12.platform.extention.resolveMinuses
 import com.lenta.bp12.platform.navigation.IScreenNavigator
+import com.lenta.bp12.platform.navigation.goBackIfBasketIsEmpty
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
 import com.lenta.bp12.request.GoodInfoNetRequest
@@ -23,6 +24,7 @@ import com.lenta.bp12.request.ScanInfoResult
 import com.lenta.bp12.request.pojo.ProducerInfo
 import com.lenta.bp12.request.pojo.ProviderInfo
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.*
@@ -347,14 +349,16 @@ abstract class BaseGoodInfoViewModel<R : Taskable, T : ITaskManager<R>> : CoreVi
         }
     }
 
-    open fun onBackPressed() {
+    inline fun <reified T: CoreFragment<*, *>> handleBackPress() {
         with(navigator) {
+            val isBasketEmpty = manager.currentBasket.value == null
+
             if (isExistUnsavedData()) {
                 showUnsavedDataWillBeLost {
-                    goBack()
+                    goBackIfBasketIsEmpty<T>(isBasketEmpty)
                 }
             } else {
-                goBack()
+                goBackIfBasketIsEmpty<T>(isBasketEmpty)
             }
         }
     }
@@ -370,4 +374,5 @@ abstract class BaseGoodInfoViewModel<R : Taskable, T : ITaskManager<R>> : CoreVi
     abstract fun onClickRollback()
     abstract fun loadBoxInfo(number: String)
     abstract fun isExistUnsavedData(): Boolean
+    abstract fun onBackPressed()
 }
