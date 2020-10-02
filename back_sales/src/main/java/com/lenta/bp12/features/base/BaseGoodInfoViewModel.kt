@@ -272,7 +272,7 @@ abstract class BaseGoodInfoViewModel<R : Taskable, T : ITaskManager<R>> : CoreVi
     }
 
     abstract var manager: T
-    abstract val quantity: MutableLiveData<Double>
+    abstract val quantity: LiveData<Double>
     abstract val quantityField: MutableLiveData<String>
     abstract val applyEnabled: LiveData<Boolean>
     abstract val totalWithUnits: MutableLiveData<String>
