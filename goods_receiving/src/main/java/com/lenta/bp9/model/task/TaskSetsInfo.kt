@@ -23,10 +23,10 @@ data class TaskSetsInfo (
                 }
                 val uomInfo = zmpUtz07V001.getUomInfo(restData.uomCode)
                 return@withContext TaskSetsInfo(
-                        setNumber = restData.setNumber,
-                        componentNumber = restData.componentNumber,
-                        quantity = restData.quantity.toDouble() ?: 0.0,
-                        uom = Uom(code = uomInfo?.uom ?: "", name = uomInfo?.name ?: "")
+                        setNumber = restData.setNumber.orEmpty(),
+                        componentNumber = restData.componentNumber.orEmpty(),
+                        quantity = restData.quantity?.toDouble() ?: 0.0,
+                        uom = Uom(code = uomInfo?.uom.orEmpty(), name = uomInfo?.name.orEmpty())
                 )
             }
         }
@@ -36,11 +36,11 @@ data class TaskSetsInfo (
 
 data class TaskSetsRestData(
         @SerializedName("MATNR_OSN")
-        val setNumber: String, //Номер набора
+        val setNumber: String?, //Номер набора
         @SerializedName("MATNR")
-        val componentNumber: String, //Номер компонента
+        val componentNumber: String?, //Номер компонента
         @SerializedName("MENGE")
-        val quantity: String, //Количество вложенного
+        val quantity: String?, //Количество вложенного
         @SerializedName("MEINS")
-        val uomCode: String //Базисная единица измерения
+        val uomCode: String? //Базисная единица измерения
 )

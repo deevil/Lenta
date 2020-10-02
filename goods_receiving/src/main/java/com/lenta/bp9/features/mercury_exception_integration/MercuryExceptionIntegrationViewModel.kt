@@ -67,6 +67,7 @@ class MercuryExceptionIntegrationViewModel : CoreViewModel(), OnPositionClickLis
         }
     }
 
+    @Suppress("UNUSED_PARAMETER")
     private fun handleSuccess(result: ExclusionFromIntegrationResult) {
         screenNavigator.openFinishReviseLoadingScreen()
     }

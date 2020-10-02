@@ -77,6 +77,7 @@ class MemoryTaskReviseDocumentsRepository : ITaskReviseDocumentsRepository {
         return invoiceInfo
     }
 
+    @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
     override fun updateInvoiceInfo(newInvoice: InvoiceRevise) {
         invoiceInfo = newInvoice
     }
@@ -166,6 +167,7 @@ class MemoryTaskReviseDocumentsRepository : ITaskReviseDocumentsRepository {
         return complexDocuments
     }
 
+    @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
     override fun updateComplexDocuments(newComplexDocuments: List<ComplexDocumentRevise>) {
         complexDocuments.clear()
         complexDocuments.addAll(newComplexDocuments)

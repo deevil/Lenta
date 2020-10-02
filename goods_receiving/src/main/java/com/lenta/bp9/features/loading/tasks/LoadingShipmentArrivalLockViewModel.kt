@@ -10,8 +10,10 @@ import com.lenta.bp9.requests.network.ZmpUtzGrz36V001Result
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.loading.CoreLoadingViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.extentions.getDeviceIp
 import com.lenta.shared.utilities.extentions.launchUITryCatch
+import com.lenta.shared.utilities.orIfNull
 import javax.inject.Inject
 
 class LoadingShipmentArrivalLockViewModel : CoreLoadingViewModel() {
@@ -35,22 +37,26 @@ class LoadingShipmentArrivalLockViewModel : CoreLoadingViewModel() {
     override val sizeInMb: MutableLiveData<Float> = MutableLiveData()
 
     val taskDescription: String by lazy {
-        "\"" + (taskManager.getReceivingTask()?.taskDescription?.currentStatus?.stringValue() ?: "") + "\" -> \"" + taskManager.getReceivingTask()?.taskDescription?.nextStatusText + "\""
+        "\"" + (taskManager.getReceivingTask()?.taskDescription?.currentStatus?.stringValue().orEmpty()) + "\" -> \"" + taskManager.getReceivingTask()?.taskDescription?.nextStatusText + "\""
     }
 
     init {
         launchUITryCatch {
             progress.value = true
-            taskManager.getReceivingTask()?.let { task ->
-                val params = ZmpUtzGrz36V001Params(
-                        deviceIP = context.getDeviceIp(),
-                        taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
-                        personalNumber = sessionInfo.personnelNumber ?: "",
-                        driverData = TaskDriverDataInfoRestData.from(driverDataInfo.value!!),
-                        arrivalDate = taskManager.getReceivingTask()?.taskDescription?.nextStatusDate ?: "",
-                        arrivalTime = taskManager.getReceivingTask()?.taskDescription?.nextStatusTime ?: ""
-                )
-                zmpUtzGrz36V001NetRequest(params).either(::handleFailure, ::handleSuccess)
+            taskManager.getReceivingTask()?.let { _ ->
+                driverDataInfo.value?.let { driverDataInfoValue ->
+                    val params = ZmpUtzGrz36V001Params(
+                            deviceIP = context.getDeviceIp(),
+                            taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber.orEmpty(),
+                            personalNumber = sessionInfo.personnelNumber.orEmpty(),
+                            driverData = TaskDriverDataInfoRestData.from(driverDataInfoValue),
+                            arrivalDate = taskManager.getReceivingTask()?.taskDescription?.nextStatusDate.orEmpty(),
+                            arrivalTime = taskManager.getReceivingTask()?.taskDescription?.nextStatusTime.orEmpty()
+                    )
+                    zmpUtzGrz36V001NetRequest(params).either(::handleFailure, ::handleSuccess)
+                }.orIfNull {
+                    Logg.e { "driverDataInfo.value is NULL" }
+                }
             }
             progress.value = false
         }

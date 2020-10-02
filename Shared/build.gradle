@@ -36,6 +36,10 @@ android {
         dataBinding = true
     }
 
+    configurations.all {
+        resolutionStrategy.preferProjectModules()
+    }
+
     testOptions {
         unitTests.returnDefaultValues = true
     }
@@ -70,9 +74,15 @@ dependencies {
 
     api deps.constraint_layout
 
+
+    // Firebase
+    api deps.firebase
+    // Crashlytics
+    api deps.crashlytics
+
     //Room
-    api deps.room.room_runtime
-    kapt deps.room.room_compiler
+    //api deps.room.room_runtime
+    //kapt deps.room.room_compiler
 
     api project(':hhive')
     api 'com.cronutils:cron-utils:4.1.3'
@@ -82,9 +92,9 @@ dependencies {
     testImplementation deps.junit
 
     testImplementation 'org.mockito:mockito-core:2.23.0'
-    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0"
-    testImplementation 'org.mockito:mockito-inline:2.13.0'
-    testImplementation("io.mockk:mockk:1.9.3")
+    //testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0"
+    //testImplementation 'org.mockito:mockito-inline:2.13.0'
+    //testImplementation("io.mockk:mockk:1.9.3")
 
     // Mask for EditText
     implementation 'com.redmadrobot:input-mask-android:6.0.0'

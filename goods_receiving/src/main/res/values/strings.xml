@@ -170,6 +170,7 @@
     <string name="mercury_exception_integration_header">Укажите причину исключения поставки из автоматической интеграции с ГИС \"Меркурий\"</string>
     <string name="vet_with_production_date">По ВСД (%1$s) с датой производства</string>
     <string name="alert_vad_product_not_matched">По товару %1$s не были подобраны ВСД</string>
+    <string name="alert_product_document_not_found">Мы не смогли найти документ для показа</string>
     <string name="discrepancies_inconsistency_vet_docs_dialog">Остались неподтверждёнными обязательные документы по товарам. Пометить все эти товары как расхождения - \"Несоответствие документов\"?</string>
     <string name="discrepancies_no_vad_dialog">По всем вет.товарам нет сверенных сертификатов. Исключить поставку из автоматической интеграции или пометить эти товары как расхождение - \"Нет ВСД/недогруз\"</string>
     <string name="processing_mercury_quant_great_in_vet_doc">Введенное кол-во больше чем в ВСД, измените кол-во</string>

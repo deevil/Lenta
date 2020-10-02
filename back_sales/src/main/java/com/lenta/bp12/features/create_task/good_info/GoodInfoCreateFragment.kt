@@ -56,6 +56,8 @@ class GoodInfoCreateFragment : CoreFragment<FragmentGoodInfoCreateBinding, GoodI
             R.id.b_3 -> vm.onClickDetails()
             R.id.b_4 -> vm.onClickClose()
             R.id.b_5 -> vm.onClickApply()
+            //ForTesting
+            //R.id.b_3 -> vm.onScanResult("2711189005000")
         }
     }
 

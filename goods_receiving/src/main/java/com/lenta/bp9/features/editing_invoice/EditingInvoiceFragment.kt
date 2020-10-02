@@ -90,7 +90,7 @@ class EditingInvoiceFragment : KeyDownCoreFragment<FragmentEditingInvoiceBinding
                                     onItemBind = { binding: ItemTileEditingInvoiceTotalBinding, position: Int ->
                                         binding.tvItemNumber.tag = position
                                         binding.tvItemNumber.setOnClickListener(onClickSelectionListener)
-                                        binding.etQuantity.setOnFocusChangeListener { v, hasFocus ->
+                                        binding.etQuantity.setOnFocusChangeListener { _, hasFocus ->
                                             if (!hasFocus) {
                                                 vm.finishedInput(position)
                                             }

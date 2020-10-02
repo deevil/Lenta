@@ -122,6 +122,7 @@ class MarkingGoodsDetailsViewModel : CoreViewModel(), PageSelectionListener {
             when(getMarkingGoodsRegime(taskManager, product)) {
                 MarkingGoodsRegime.UomStWithoutBoxes -> processMarkingProductService.delBlockDiscrepancy(typeDiscrepancies)
                 MarkingGoodsRegime.UomStWithBoxes -> processMarkingBoxProductService.delBoxAndBlockDiscrepancy(typeDiscrepancies)
+                else -> Unit
             }
         }
     }
