@@ -11,8 +11,20 @@ class ResourceManager @Inject constructor(val context: Context) : IResourceManag
         context.getString(SERVER_CONNECTION_ERROR)
     }
 
-    override val zPartInfoPattern: String by unsafeLazy {
-        context.getString(Z_PART_INFO_PATTERN)
+    override val threeLinesPattern: String by unsafeLazy {
+        context.getString(THREE_LINES_PATTERN)
+    }
+
+    override val prodDatePattern: String by unsafeLazy {
+        context.getString(PROD_DATE_PATTERN)
+    }
+
+    override val expirDatePattern: String by unsafeLazy {
+        context.getString(EXPIR_DATE_PATTERN)
+    }
+
+    override val datesDivider: String by unsafeLazy {
+        context.getString(DATES_DIVIDER)
     }
 
     override val storageZPartsPattern: String by unsafeLazy {
@@ -21,7 +33,10 @@ class ResourceManager @Inject constructor(val context: Context) : IResourceManag
 
     companion object {
         private const val SERVER_CONNECTION_ERROR = R.string.server_connection_error
-        private const val Z_PART_INFO_PATTERN = R.string.z_part_info_pattern
+        private const val THREE_LINES_PATTERN = R.string.three_lines_pattern
+        private const val PROD_DATE_PATTERN = R.string.prod_date_pattern
+        private const val EXPIR_DATE_PATTERN = R.string.expir_date_pattern
+        private const val DATES_DIVIDER = R.string.dates_divider
         private const val STORAGE_Z_PARTS_PATTERN = R.string.storage_z_parts_pattern
     }
 }
