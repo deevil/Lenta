@@ -23,7 +23,6 @@ interface IOpenTaskManager : ITaskManager<TaskOpen> {
 
     fun updateTasks(taskList: List<TaskOpen>?)
     fun updateFoundTasks(taskList: List<TaskOpen>?)
-    fun updateCurrentTask(task: TaskOpen?)
 
     fun isGoodCorrespondToTask(goodInfo: GoodInfoResult): Boolean
     fun finishCurrentTask()

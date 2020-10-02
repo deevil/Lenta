@@ -596,6 +596,10 @@ class ScreenNavigator(
         openInfoScreen(context.getString(R.string.processing_mercury_quant_great_in_invoice))
     }
 
+    override fun openAlertProductDocumentsNotFoundScreen() {
+        openInfoScreen(context.getString(R.string.alert_product_document_not_found))
+    }
+
     override fun openAlertCertificatesLostRelevance(nextCallbackFunc: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
@@ -1860,6 +1864,7 @@ interface IScreenNavigator : ICoreNavigator {
     fun openDiscrepanciesNoVerifiedVadDialog(excludeCallbackFunc: () -> Unit, markCallbackFunc: () -> Unit)
     fun openAlertQuantGreatInVetDocScreen()
     fun openAlertQuantGreatInInvoiceScreen()
+    fun openAlertProductDocumentsNotFoundScreen()
     fun openAlertCertificatesLostRelevance(nextCallbackFunc: () -> Unit)
     fun openAlertElectronicVadLostRelevance(browsingCallbackFunc: () -> Unit, countVad: String, countGoods: String)
     fun openUnloadingStartRDSLoadingScreen()

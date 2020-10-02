@@ -7,8 +7,6 @@ import com.lenta.shared.account.IAuthenticator
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.analytics.IAnalytics
-import com.lenta.shared.analytics.db.RoomAppDatabase
-import com.lenta.shared.analytics.db.dao.LogDao
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.app_updates.AppUpdateViewModel
 import com.lenta.shared.features.auxiliary_menu.AuxiliaryMenuViewModel
@@ -77,8 +75,6 @@ interface CoreComponent {
     fun getIProgressUseCaseInformator(): IProgressUseCaseInformator
     fun getScanInfoRequest(): ScanInfoRequest
     fun getBackResultHelper(): BackFragmentResultHelper
-    fun getRoomAppDatabase(): RoomAppDatabase
-    fun getLogDao(): LogDao
     fun getAnalyticsHelper(): AnalyticsHelper
     fun getFmpRequestsHelper(): FmpRequestsHelper
     fun getLockManager(): LockManager

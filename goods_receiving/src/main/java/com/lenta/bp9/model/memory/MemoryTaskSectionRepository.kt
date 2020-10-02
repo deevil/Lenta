@@ -65,6 +65,7 @@ class MemoryTaskSectionRepository : ITaskSectionRepository {
         }.any()
     }
 
+    @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
     override fun addSectionProduct(sectionProducts: TaskSectionProducts): Boolean {
         var index = -1
         for (i in sectionProductsInfo.indices) {
@@ -86,6 +87,7 @@ class MemoryTaskSectionRepository : ITaskSectionRepository {
         return false
     }
 
+    @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
     override fun addSectionProductsList(sectionProducts: List<TaskSectionProducts>): Boolean {
         return sectionProducts.map {
             addSectionProduct(it)

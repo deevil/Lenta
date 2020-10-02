@@ -162,10 +162,13 @@ class TransportConditionsReviseViewModel : CoreViewModel(), PageSelectionListene
             if (conditionsSize-1 >= position) {
                 val condition = if (selectedPage.value == 0) conditionsToCheck.value?.get(position) else checkedConditions.value?.get(position)
                 condition?.let {
-                    taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getTransportConditions()?.findLast {unit ->
+                    taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getTransportConditions()?.findLast { unit ->
                         unit.conditionID == it.id && unit.value != it.value.value
-                    }?.let {findUnit ->
-                        taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.changeTransportConditionValue(it.id, it.value.value ?: "")
+                    }?.let { _ ->
+                        taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.changeTransportConditionValue(
+                                id = it.id,
+                                newValue = it.value.value.orEmpty()
+                        )
                         updateVMs()
                     }
                 }

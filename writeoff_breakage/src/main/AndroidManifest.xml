@@ -26,9 +26,6 @@
                 android:resource="@xml/provider_paths" />
         </provider>
 
-        <meta-data
-            android:name="io.fabric.ApiKey"
-            android:value="c9e0b6b582d5dcd9003ee56a70c75fa689ef0939" />
         <activity
             android:name=".activity.main.MainActivity"
             android:excludeFromRecents="true"

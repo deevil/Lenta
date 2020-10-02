@@ -35,15 +35,15 @@ data class TaskMercuryDiscrepancies(
             return withContext(Dispatchers.IO) {
                 val uomInfo = ZmpUtz07V001(hyperHive).getUomInfo(restData.unit) //zmpUtz07V001.getUomInfo(restData.unit)
                 return@withContext TaskMercuryDiscrepancies(
-                        materialNumber= restData.materialNumber,
-                        vetDocumentID = restData.vetDocumentID,
-                        volume = restData.volume.toDouble(),
+                        materialNumber = restData.materialNumber.orEmpty(),
+                        vetDocumentID = restData.vetDocumentID.orEmpty(),
+                        volume = restData.volume?.toDouble() ?: 0.0,
                         uom = Uom(code = uomInfo?.uom.orEmpty(), name = uomInfo?.name.orEmpty()),
-                        typeDiscrepancies = restData.typeDiscrepancies,
-                        numberDiscrepancies = restData.numberDiscrepancies.toDouble(),
-                        productionDate = restData.productionDate,
-                        manufacturer = restData.manufacturer,
-                        productionDateTo = restData.productionDateTo
+                        typeDiscrepancies = restData.typeDiscrepancies.orEmpty(),
+                        numberDiscrepancies = restData.numberDiscrepancies?.toDouble() ?: 0.0,
+                        productionDate = restData.productionDate.orEmpty(),
+                        manufacturer = restData.manufacturer.orEmpty(),
+                        productionDateTo = restData.productionDateTo.orEmpty()
                 )
             }
         }
@@ -52,23 +52,23 @@ data class TaskMercuryDiscrepancies(
 
 data class TaskMercuryDiscrepanciesRestData(
         @SerializedName("MATNR")
-        val materialNumber: String,
+        val materialNumber: String?,
         @SerializedName("VSDID")
-        val vetDocumentID: String,
+        val vetDocumentID: String?,
         @SerializedName("VSDVOLUME")
-        val volume: String,
+        val volume: String?,
         @SerializedName("VRKME")
-        val unit: String,
+        val unit: String?,
         @SerializedName("GRUND")
-        val typeDiscrepancies: String,
+        val typeDiscrepancies: String?,
         @SerializedName("LFIMG_DIFF")
-        val numberDiscrepancies: String,
+        val numberDiscrepancies: String?,
         @SerializedName("PRODDATE")
-        val productionDate: String,
+        val productionDate: String?,
         @SerializedName("PROD_NAME")
-        val manufacturer: String,
+        val manufacturer: String?,
         @SerializedName("PRODDATE_TO")
-        val productionDateTo: String
+        val productionDateTo: String?
 ) {
 
     companion object {
