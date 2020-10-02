@@ -356,6 +356,7 @@
     <string name="alert_not_correct_time">Некорректное время</string>
     <string name="stamps_control_in_box">Контроль марок в кор.</string>
     <string name="control_boxes">Контроль коробов</string>
+    <string name="goods_details">Детали по товару</string>
     <string name="day_abbreviated">сут</string>
     <string name="general_shelf_life_abbr">ОБЩ СГ</string>
     <string name="remaining_shelf_life_abbr">ОСТ СГ</string>

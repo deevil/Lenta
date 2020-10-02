@@ -90,7 +90,7 @@ class ProcessMarkingBoxPGEProductService
                                         .filter { box -> box.isScan }
                             }
 
-                    var countNotScannedStamps = 0.0
+                    var countNotScannedStamps = DEFAULT_DOUBLE_VALUE
                     processedBox
                             .forEach { boxScanned ->
                                 countNotScannedStamps +=
@@ -117,21 +117,21 @@ class ProcessMarkingBoxPGEProductService
 
                     return countNotScannedStamps + countScannedStamps
                 }
-                ?: 0.0
+                ?: DEFAULT_DOUBLE_VALUE
     }
 
     override fun getCountBlocksUnderload(paramGrzGrundMarkCode: String): Double {
-        return  taskManager
-                        .getReceivingTask()
-                        ?.run {
-                            taskRepository
-                                    .getProductsDiscrepancies()
-                                    .findProductDiscrepanciesOfProduct(productInfo)
-                                    .findLast { it.typeDiscrepancies == paramGrzGrundMarkCode }
-                                    ?.numberDiscrepancies
-                                    ?.toDouble()
-                        }
-                        ?: 0.0
+        return taskManager
+                .getReceivingTask()
+                ?.run {
+                    taskRepository
+                            .getProductsDiscrepancies()
+                            .findProductDiscrepanciesOfProduct(productInfo)
+                            .findLast { it.typeDiscrepancies == paramGrzGrundMarkCode }
+                            ?.numberDiscrepancies
+                            ?.toDouble()
+                }
+                ?: DEFAULT_DOUBLE_VALUE
 
     }
 
@@ -245,7 +245,7 @@ class ProcessMarkingBoxPGEProductService
         }
     }
 
-    fun addStampDiscrepancies(stampInfo: TaskExciseStampInfo,isScan: Boolean) {
+    fun addStampDiscrepancies(stampInfo: TaskExciseStampInfo, isScan: Boolean) {
         val boxNumber = stamps
                 .findLast { it.boxNumber == stampInfo.boxNumber }
                 ?.boxNumber
@@ -256,22 +256,22 @@ class ProcessMarkingBoxPGEProductService
                         .findLast { it.materialNumber == stampInfo.materialNumber }
 
         foundStampDiscrepancy = foundStampDiscrepancy
-                        ?.let {
-                            it.copy()
-                        }
-                        ?: TaskExciseStampDiscrepancies(
-                                        materialNumber = stampInfo.materialNumber.orEmpty(),
-                                        code = stampInfo.code.orEmpty(),
-                                        processingUnitNumber = stampInfo.processingUnitNumber.orEmpty(),
-                                        typeDiscrepancies = "",
-                                        isScan = isScan,
-                                        boxNumber = boxNumber,
-                                        packNumber = "",
-                                        isMSC = false,
-                                        organizationCodeEGAIS = "",
-                                        bottlingDate =  "",
-                                        isUnknown = false
-                        )
+                ?.let {
+                    it.copy()
+                }
+                ?: TaskExciseStampDiscrepancies(
+                        materialNumber = stampInfo.materialNumber.orEmpty(),
+                        code = stampInfo.code.orEmpty(),
+                        processingUnitNumber = stampInfo.processingUnitNumber.orEmpty(),
+                        typeDiscrepancies = "",
+                        isScan = isScan,
+                        boxNumber = boxNumber,
+                        packNumber = "",
+                        isMSC = false,
+                        organizationCodeEGAIS = "",
+                        bottlingDate = "",
+                        isUnknown = false
+                )
 
 
         currentStampDiscrepancies.removeItemFromListWithPredicate { stamp ->
@@ -305,7 +305,7 @@ class ProcessMarkingBoxPGEProductService
         currentBoxDiscrepancies.add(foundBoxDiscrepancy)
 
         //сохраняем все необработанные блоки для коробки без isScan
-        var countAddStamps = 0
+        var countAddStamps = DEFAULT_INT_VALUE
         val stampsFromBox = stamps.filter { it.boxNumber == boxNumber }
         stampsFromBox
                 .filter { stamp ->
@@ -347,7 +347,7 @@ class ProcessMarkingBoxPGEProductService
 
 
     fun isOverLimit(count: Double): Boolean {
-        return productInfo.origQuantity.toDouble() < (getCountAcceptOfProduct() + getCountRefusalOfProduct() + count)
+        return productInfo.orderQuantity.toDouble() / productInfo.quantityInvest.toDouble() < (getCountAcceptOfProduct() + getCountRefusalOfProduct() + count)
     }
 
     fun searchStamp(stampNumber: String): TaskExciseStampInfo? {
@@ -383,7 +383,7 @@ class ProcessMarkingBoxPGEProductService
                             .filter { productDiscrepancies -> productDiscrepancies.typeDiscrepancies == typeDiscrepancies }
                             .sumByDouble { it.numberDiscrepancies.toDouble() }
                 }
-                ?: 0.0
+                ?: DEFAULT_DOUBLE_VALUE
     }
 
     fun getCountAcceptOfProduct(): Double {
@@ -394,7 +394,7 @@ class ProcessMarkingBoxPGEProductService
                             .filter { productDiscrepancies -> productDiscrepancies.typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM }
                             .sumByDouble { it.numberDiscrepancies.toDouble() }
                 }
-                ?: 0.0
+                ?: DEFAULT_DOUBLE_VALUE
     }
 
     fun getCountRefusalOfProduct(): Double {
@@ -405,7 +405,7 @@ class ProcessMarkingBoxPGEProductService
                             .filter { productDiscrepancies -> productDiscrepancies.typeDiscrepancies != TYPE_DISCREPANCIES_QUALITY_NORM }
                             .sumByDouble { it.numberDiscrepancies.toDouble() }
                 }
-                ?: 0.0
+                ?: DEFAULT_DOUBLE_VALUE
     }
 
     private fun addTypeLastStampScanned(typeLastStampScanned: TypeLastStampScanned) {
@@ -456,4 +456,23 @@ class ProcessMarkingBoxPGEProductService
         }
     }
 
+    fun apply() {
+        currentStampDiscrepancies.forEach {
+            taskRepository
+                    ?.getExciseStampsDiscrepancies()
+                    ?.changeExciseStampDiscrepancy(it)
+        }
+
+        currentBoxDiscrepancies.forEach {
+            taskRepository
+                    ?.getBoxesDiscrepancies()
+                    ?.changeBoxDiscrepancy(it)
+        }
+    }
+
+    companion object {
+        private const val DEFAULT_DOUBLE_VALUE = 0.0
+        private const val DEFAULT_INT_VALUE = 0
+    }
 }
+

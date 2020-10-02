@@ -29,7 +29,7 @@ data class TaskMarkingGoodsProperties (
 data class TaskMarkingGoodsPropertiesRestData(
         @SerializedName("EAN")
         val ean: String?, //Номер набора
-        @SerializedName("PROPERTIES")
+        @SerializedName("PROPERTIES", alternate = ["NAME"])
         val properties: String?, // название свойства
         @SerializedName("VALUE")
         val value: String? //значение для свойства
