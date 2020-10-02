@@ -8,8 +8,6 @@ import com.lenta.bp9.R
 import com.lenta.bp9.databinding.FragmentMarkingInfoBoxPgeBinding
 import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.extentions.getAppComponent
-import com.lenta.shared.keys.KeyCode
-import com.lenta.shared.keys.OnKeyDownListener
 import com.lenta.shared.platform.activity.OnBackPresserListener
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
@@ -25,7 +23,7 @@ class MarkingInfoBoxPGEFragment : CoreFragment<FragmentMarkingInfoBoxPgeBinding,
         ToolbarButtonsClickListener,
         OnScanResultListener,
         OnBackPresserListener
-//        , OnKeyDownListener
+ //       , OnKeyDownListener  для тестов
 {
 
     private var productInfo by state<TaskProductInfo?>(null)
