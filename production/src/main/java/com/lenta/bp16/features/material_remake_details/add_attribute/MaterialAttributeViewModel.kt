@@ -1,6 +1,7 @@
 package com.lenta.bp16.features.material_remake_details.add_attribute
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
 import com.lenta.bp16.features.ingredient_details.add_attribute.IngredientAttributeViewModel
 import com.lenta.bp16.model.AddAttributeProdInfo
@@ -69,19 +70,16 @@ class MaterialAttributeViewModel : CoreViewModel(), IZpartVisibleConditions {
 
     // значение параметра OBJ_CODE из родительского компонента заказа
     var parentCode: String by Delegates.notNull()
-    val producerNameList = producerDataInfo.switchMap {
-        asyncLiveData<List<String>> {
-            val producerNameList = it.map { it.prodName }
+    val producerNameList = producerDataInfo.switchMap { producerDataInfoValue ->
+        liveData {
+            val producerNameList = producerDataInfoValue.map { it.prodName  }
+            val producerCodes = producerDataInfoValue.map { it.prodCode  }
+            producerCodeList.value = producerCodes
             emit(producerNameList)
         }
     }
 
-    val producerCodeList = producerDataInfo.switchMap {
-        asyncLiveData<List<String>> {
-            val producerCodeList = it.map { it.prodCode }
-            emit(producerCodeList)
-        }
-    }
+    private val producerCodeList = MutableLiveData<List<String>>()
 
     val selectedProducerPosition = MutableLiveData(0)
 
