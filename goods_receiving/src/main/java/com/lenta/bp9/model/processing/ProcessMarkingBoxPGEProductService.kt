@@ -456,4 +456,26 @@ class ProcessMarkingBoxPGEProductService
         }
     }
 
+    fun apply() {
+        currentStampDiscrepancies
+                .takeIf { it.isNotEmpty() }
+                ?.apply {
+                    forEach { stamp ->
+                                taskRepository
+                                        ?.getExciseStampsDiscrepancies()
+                                        ?.changeExciseStampDiscrepancy(stamp)
+                            }
+                }
+
+        currentBoxDiscrepancies
+                .takeIf { it.isNotEmpty() }
+                ?.apply {
+                    forEach { box ->
+                        taskRepository
+                                ?.getBoxesDiscrepancies()
+                                ?.changeBoxDiscrepancy(box)
+                    }
+                }
+    }
+
 }

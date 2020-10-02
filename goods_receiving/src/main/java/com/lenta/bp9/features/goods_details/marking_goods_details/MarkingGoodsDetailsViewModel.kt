@@ -135,9 +135,7 @@ class MarkingGoodsDetailsViewModel : CoreViewModel(), PageSelectionListener {
         goodsDetails.postValue(
                 productInfo.value
                         ?.let { product ->
-                            taskRepository
-                                    ?.getProductsDiscrepancies()
-                                    ?.findProductDiscrepanciesOfProduct(product)
+                            taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(product)
                         }
                         ?.mapIndexed { index, discrepancy ->
                             val isNormDiscrepancies = discrepancy.typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM
