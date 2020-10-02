@@ -51,7 +51,9 @@
                         app:requestFocus="@{vm.quantityFieldEnabled}"
                         app:suffix="@{vm.good.commonUnits.name}"
                         tools:drawableEnd="@drawable/ic_bei_12dp"
-                        tools:text="1 шт" />
+                        android:maxLength="8"
+                        tools:text="1 шт"
+                        />
 
                 </LinearLayout>
 

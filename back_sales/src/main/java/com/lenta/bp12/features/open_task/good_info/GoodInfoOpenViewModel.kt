@@ -1,7 +1,5 @@
 package com.lenta.bp12.features.open_task.good_info
 
-import android.text.Editable
-import androidx.databinding.adapters.TextViewBindingAdapter
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
@@ -15,10 +13,7 @@ import com.lenta.bp12.model.pojo.extentions.addMark
 import com.lenta.bp12.model.pojo.extentions.addMarks
 import com.lenta.bp12.model.pojo.extentions.addPosition
 import com.lenta.bp12.model.pojo.extentions.getScreenStatus
-import com.lenta.bp12.platform.DEFAULT_QUANTITY_STRING
-import com.lenta.bp12.platform.FIRST_POSITION
-import com.lenta.bp12.platform.ZERO_QUANTITY
-import com.lenta.bp12.platform.ZERO_VOLUME
+import com.lenta.bp12.platform.*
 import com.lenta.bp12.platform.extention.*
 import com.lenta.bp12.request.ScanInfoParams
 import com.lenta.bp12.request.ScanInfoResult
@@ -39,7 +34,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapter.AfterTextChanged {
+class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel() {
 
     @Inject
     override lateinit var manager: IOpenTaskManager
@@ -85,7 +80,7 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
     Ввод количества
      */
 
-    override val quantityField = MutableLiveData("0")
+    override val quantityField = MutableLiveData(ZERO_QUANTITY_STRING)
 
     override val quantity = quantityField.map {
         it?.toDoubleOrNull() ?: ZERO_QUANTITY
@@ -832,12 +827,8 @@ class GoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), TextViewBindingAdapte
         }
     }
 
-    override fun afterTextChanged(s: Editable?) {
-        quantityField.value = s.returnWithNoSecondMinus()
-    }
 
     companion object {
         private const val DEFAULT_QUANTITY_STRING_FOR_EAN = "1"
-        private const val ZERO_QUANTITY_STRING = "0"
     }
 }

@@ -18,7 +18,6 @@ import com.lenta.bp14.models.work_list.repo.WorkListRepo
 import com.lenta.bp14.platform.resource.IResourceFormatter
 import com.lenta.bp14.platform.resource.ResourceFormatter
 import com.lenta.bp14.requests.work_list.*
-import com.lenta.shared.di.AppScope
 import dagger.Binds
 import dagger.Component
 import dagger.Module

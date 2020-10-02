@@ -1,7 +1,5 @@
 package com.lenta.bp12.features.create_task.good_info
 
-import android.text.Editable
-import androidx.databinding.adapters.TextViewBindingAdapter
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
@@ -36,7 +34,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAdapter.AfterTextChanged {
+class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel() {
 
     @Inject
     override lateinit var manager: ICreateTaskManager
@@ -809,9 +807,5 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
         } else {
             isEnteredMoreThanZeroAndProviderSelected
         }
-    }
-
-    override fun afterTextChanged(s: Editable?) {
-        quantityField.value = s.returnWithNoSecondMinus()
     }
 }

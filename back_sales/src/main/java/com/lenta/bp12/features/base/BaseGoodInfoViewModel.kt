@@ -1,5 +1,7 @@
 package com.lenta.bp12.features.base
 
+import android.text.Editable
+import androidx.databinding.adapters.TextViewBindingAdapter
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
@@ -11,6 +13,7 @@ import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.extentions.getQuantityOfGood
 import com.lenta.bp12.platform.*
 import com.lenta.bp12.platform.extention.isWholesaleType
+import com.lenta.bp12.platform.extention.resolveMinuses
 import com.lenta.bp12.platform.navigation.IScreenNavigator
 import com.lenta.bp12.platform.resource.IResourceManager
 import com.lenta.bp12.repository.IDatabaseRepository
@@ -40,7 +43,7 @@ import javax.inject.Inject
  * @see com.lenta.bp12.features.create_task.marked_good_info.MarkedGoodInfoCreateViewModel
  * */
 abstract class BaseGoodInfoViewModel<R : Taskable, T : ITaskManager<R>> : CoreViewModel(),
-        OnOkInSoftKeyboardListener {
+        OnOkInSoftKeyboardListener, TextViewBindingAdapter.AfterTextChanged {
 
     /** "ZMP_UTZ_BKS_05_V001"
      * Получение данных товара по ШК / SAP-коду
@@ -269,11 +272,11 @@ abstract class BaseGoodInfoViewModel<R : Taskable, T : ITaskManager<R>> : CoreVi
     }
 
     abstract var manager: T
-    abstract val quantity: MutableLiveData<Double>
+    abstract val quantity: LiveData<Double>
+    abstract val quantityField: MutableLiveData<String>
     abstract val applyEnabled: LiveData<Boolean>
     abstract val totalWithUnits: MutableLiveData<String>
     abstract val closeEnabled: MutableLiveData<Boolean>
-    abstract val quantityField: LiveData<String>
 
     protected suspend fun findGoodByMaterial(material: String): Good? {
         navigator.showProgressLoadingData()
@@ -354,6 +357,10 @@ abstract class BaseGoodInfoViewModel<R : Taskable, T : ITaskManager<R>> : CoreVi
                 goBack()
             }
         }
+    }
+
+    override fun afterTextChanged(s: Editable?) {
+        quantityField.value = s.resolveMinuses(good.value?.isCommon() == true)
     }
 
     abstract fun checkSearchNumber(number: String)

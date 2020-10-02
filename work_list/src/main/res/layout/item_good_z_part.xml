@@ -48,6 +48,7 @@
             <View style="@style/VerticalDivider" />
 
             <LinearLayout
+                android:id="@+id/layoutInfo"
                 style="@style/LinearCellStyle"
                 android:layout_weight="@integer/four_four_3">
 
