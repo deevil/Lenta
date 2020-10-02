@@ -236,7 +236,7 @@ class IngredientsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInS
     }
 
     private fun openAlertBlockedTaskByMe(userName: String, selectedIngredient: IngredientInfoUI, barcode: OrderByBarcodeUI){
-        navigator.showAlertBlockedTaskByMe(userName) {
+        navigator.showAlertBlockedTaskByMe {
             if (selectedIngredient.isByOrder) {
                 navigator.openOrderDetailsScreen(selectedIngredient, barcode)
             } else {
