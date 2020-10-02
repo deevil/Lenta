@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".features.task_list.TaskListFragment">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
         <variable
             name="vm"
-            type="com.lenta.bp14.features.not_exposed.good_info.GoodInfoNeViewModel" />
+            type="com.lenta.bp14.features.not_exposed.storage_z_parts.StorageZPartsNotExposedViewModel" />
 
         <variable
             name="rvConfig"
@@ -17,21 +15,20 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
 
-        <!-- Наименования колонок -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="horizontal">
 
             <LinearLayout style="@style/FirstRowStyle">
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/four_three_1">
+                    android:layout_weight="@integer/three_three_1">
 
                     <TextView
                         style="@style/FirstRowTextStyle"
@@ -41,51 +38,34 @@
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/four_three_2">
-
-                    <TextView
-                        style="@style/FirstRowTextStyle"
-                        android:text="@string/storage" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:layout_weight="@integer/four_three_3">
-
-                    <TextView
-                        style="@style/FirstRowTextStyle"
-                        android:text="@string/quantity" />
-
-                </LinearLayout>
-                <LinearLayout
-                    style="@style/LinearCellStyle"
-                    android:visibility="@{vm.goodInfo.hasZParts}"
-                    android:layout_weight="@integer/four_three_4">
+                    android:layout_weight="@integer/three_three_2">
 
                     <TextView
                         style="@style/FirstRowTextStyle"
                         android:text="@string/z_parts" />
 
                 </LinearLayout>
+
+                <LinearLayout
+                    style="@style/LinearCellStyle"
+                    android:layout_weight="@integer/three_three_3">
+
+                    <TextView
+                        style="@style/FirstRowTextStyle"
+                        android:text="@string/quantity" />
+
+                </LinearLayout>
             </LinearLayout>
-
-            <View
-                style="@style/HorizontalDivider" />
-
         </LinearLayout>
 
+        <View style="@style/HorizontalDivider" />
 
-        <!-- Список остатков -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv"
+            rv_config="@{rvConfig}"
+            tools:listitem="@layout/item_storage_z_part"
+            items="@{vm.zParts}"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            app:items="@{vm.stocks}"
-            app:rv_config="@{rvConfig}"
-            tools:listitem="@layout/item_storage_stock" />
-
+            android:layout_height="wrap_content"/>
     </LinearLayout>
-
 </layout>

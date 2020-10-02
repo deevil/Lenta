@@ -68,10 +68,10 @@ fun String.isDateCorrectAndNotAfterToday(): Boolean {
  * Метод удаляет второй минус в строке
  * Использовать только если строка не проходит по регулярке Constants.STRING_WITH_ONLY_ONE_MINUS_IN_BEGINNING_PATTERN
  * */
-fun String.deleteSecondMinus(): String {
+fun String.deleteMinus(): String {
     val newString = this
     val indexOfLast = newString.indexOfLast { it == '-' }
-    return if (indexOfLast > 0) {
+    return if (indexOfLast >= 0) {
         buildString {
             append(newString.substring(0, indexOfLast))
             append(newString.substring(indexOfLast + 1, newString.length))
