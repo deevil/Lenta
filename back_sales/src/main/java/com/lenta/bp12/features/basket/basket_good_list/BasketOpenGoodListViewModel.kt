@@ -185,28 +185,36 @@ class BasketOpenGoodListViewModel : BaseGoodListOpenViewModel(), OnOkInSoftKeybo
     }
 
     fun onClickClose() {
-        navigator.showCloseBasketDialog(yesCallback = {
-            lockAndUpdateBasketAndTask(isNeedLock = true)
-        })
+        navigator.showCloseBasketDialog(
+                yesCallback = {
+                    handleYesOnOpenCloseBasket(true)
+                }
+        )
     }
 
     fun onClickOpen() {
-        navigator.showOpenBasketDialog(yesCallback = {
-            lockAndUpdateBasketAndTask(isNeedLock = false)
-        })
+        navigator.showOpenBasketDialog(
+                yesCallback = {
+                    handleYesOnOpenCloseBasket(false)
+                }
+        )
     }
 
-    private fun lockAndUpdateBasketAndTask(isNeedLock: Boolean) {
-        val taskValue = task.value
-        val basketValue = basket.value
-        if (taskValue != null && basketValue != null) {
-            basketValue.isLocked = isNeedLock
-            taskValue.updateBasket(basketValue)
-            with(manager) {
-                updateCurrentBasket(basketValue)
-                updateCurrentTask(taskValue)
+    private fun handleYesOnOpenCloseBasket(isNeedLock: Boolean) {
+        task.value?.let { task ->
+            basket.value?.let { basket ->
+                lockAndUpdateBasketAndTask<GoodListFragment, BasketOpenGoodListFragment>(
+                        isNeedLock = isNeedLock,
+                        task = task,
+                        basket = basket
+                )
+            }.orIfNull {
+                Logg.e { "basket null" }
+                navigator.showInternalError(resource.basketNotFoundErrorMsg)
             }
-            navigator.goBackTo(GoodListFragment::class.simpleName)
+        }.orIfNull {
+            Logg.e { "task null" }
+            navigator.showInternalError(resource.taskNotFoundErrorMsg)
         }
     }
 }
