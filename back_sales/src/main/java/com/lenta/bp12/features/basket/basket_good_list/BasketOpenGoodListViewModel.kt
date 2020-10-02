@@ -9,7 +9,6 @@ import com.lenta.bp12.features.open_task.good_list.GoodListFragment
 import com.lenta.bp12.managers.interfaces.IOpenTaskManager
 import com.lenta.bp12.model.MarkType
 import com.lenta.bp12.model.pojo.Basket
-import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.extentions.*
 import com.lenta.bp12.model.pojo.open_task.TaskOpen
 import com.lenta.bp12.platform.ZERO_QUANTITY
@@ -127,10 +126,6 @@ class BasketOpenGoodListViewModel : BaseGoodListOpenViewModel(), OnOkInSoftKeybo
         navigator.goBackTo(GoodListFragment::class.simpleName)
     }
 
-    fun onClickProperties() {
-        navigator.openBasketPropertiesScreen()
-    }
-
     fun onClickDelete() {
         val materials = getSelectedGoodsNumbers()
         deleteGoodsFromBasketAndTask(materials)
@@ -190,45 +185,36 @@ class BasketOpenGoodListViewModel : BaseGoodListOpenViewModel(), OnOkInSoftKeybo
     }
 
     fun onClickClose() {
-        navigator.showCloseBasketDialog(yesCallback = {
-            lockAndUpdateBasketAndTask(isNeedLock = true)
-        })
+        navigator.showCloseBasketDialog(
+                yesCallback = {
+                    handleYesOnOpenCloseBasket(true)
+                }
+        )
     }
 
     fun onClickOpen() {
-        navigator.showOpenBasketDialog(yesCallback = {
-            lockAndUpdateBasketAndTask(isNeedLock = false)
-        })
+        navigator.showOpenBasketDialog(
+                yesCallback = {
+                    handleYesOnOpenCloseBasket(false)
+                }
+        )
     }
 
-    private fun lockAndUpdateBasketAndTask(isNeedLock: Boolean) {
-        val taskValue = task.value
-        val basketValue = basket.value
-        if (taskValue != null && basketValue != null) {
-            basketValue.isLocked = isNeedLock
-            taskValue.updateBasket(basketValue)
-            with(manager) {
-                updateCurrentBasket(basketValue)
-                updateCurrentTask(taskValue)
+    private fun handleYesOnOpenCloseBasket(isNeedLock: Boolean) {
+        task.value?.let { task ->
+            basket.value?.let { basket ->
+                lockAndUpdateBasketAndTask<GoodListFragment, BasketOpenGoodListFragment>(
+                        isNeedLock = isNeedLock,
+                        task = task,
+                        basket = basket
+                )
+            }.orIfNull {
+                Logg.e { "basket null" }
+                navigator.showInternalError(resource.basketNotFoundErrorMsg)
             }
-            navigator.goBackTo(GoodListFragment::class.simpleName)
+        }.orIfNull {
+            Logg.e { "task null" }
+            navigator.showInternalError(resource.taskNotFoundErrorMsg)
         }
-    }
-
-    private fun getMrc(good: Good, task: TaskOpen): String {
-        val mrc = good.maxRetailPrice
-
-        return mrc.takeIf { isDivByMrcAndItsNotZero(mrc, task) }
-                ?.let { resource.mrcDashCostRub(it) }
-                .orEmpty()
-    }
-
-    private fun isDivByMrcAndItsNotZero(mrc: String, task: TaskOpen): Boolean {
-        val isDivByMinimalPrice = task.type?.isDivByMinimalPrice == true
-        return isDivByMinimalPrice && (mrc.isEmpty().not() && mrc != ZERO_MRC_STRING)
-    }
-
-    companion object {
-        private const val ZERO_MRC_STRING = "0"
     }
 }

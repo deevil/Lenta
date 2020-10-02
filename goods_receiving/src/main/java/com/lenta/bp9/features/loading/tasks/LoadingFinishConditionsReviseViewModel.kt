@@ -39,12 +39,12 @@ class LoadingFinishConditionsReviseViewModel : CoreLoadingViewModel() {
     init {
         launchUITryCatch {
             progress.value = true
-            taskManager.getReceivingTask()?.let { task ->
+            taskManager.getReceivingTask()?.let { _ ->
                 val params = FinishConditionsReviseRequestParameters(
                         deviceIP = context.getDeviceIp(),
-                        personalNumber = sessionInfo.personnelNumber ?: "",
-                        taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
-                        conditions = taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getTransportConditions()?.map { TransportConditionRestData.from(it) } ?: emptyList()
+                        personalNumber = sessionInfo.personnelNumber.orEmpty(),
+                        taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber.orEmpty(),
+                        conditions = taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getTransportConditions()?.map { TransportConditionRestData.from(it) }.orEmpty()
                 )
                 finishConditionsReviseRequest(params).either(::handleFailure, ::handleSuccess)
             }

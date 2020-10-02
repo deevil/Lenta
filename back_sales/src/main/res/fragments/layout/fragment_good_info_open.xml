@@ -198,7 +198,8 @@
 
                 </LinearLayout>
 
-                <View style="@style/HorizontalDivider" />
+                <View style="@style/HorizontalDivider"
+                    android:visibility="@{!vm.isCommonGood}"/>
 
             </LinearLayout>
 

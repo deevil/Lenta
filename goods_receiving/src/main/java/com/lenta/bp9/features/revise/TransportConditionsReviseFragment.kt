@@ -87,12 +87,12 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
                                     val cb = view as? CheckBox
                                     cb?.let { vm.checkedChanged(position, it.isChecked) }
                                 }
-                                binding.etEditText.setOnFocusChangeListener { v, hasFocus ->
+                                binding.etEditText.setOnFocusChangeListener { _, hasFocus ->
                                     if (!hasFocus) {
                                         vm.finishedInput(position)
                                     }
                                 }
-                                binding.etEditText.setOnEditorActionListener { v, actionId, event ->
+                                binding.etEditText.setOnEditorActionListener { _, actionId, _ ->
                                     when (actionId) {
                                         EditorInfo.IME_ACTION_DONE -> {
                                             vm.finishedInput(position)
@@ -142,24 +142,25 @@ class TransportConditionsReviseFragment : CoreFragment<FragmentTransportConditio
                                     val cb = view as? CheckBox
                                     cb?.let { vm.checkedChanged(position, it.isChecked) }
                                 }
-                                if ((vm.checkedConditions.value?.size ?: 0) - 1 >= position) {
+                                val checkedConditionsValue = vm.checkedConditions.value?.size ?: 0
+                                if ((checkedConditionsValue - 1) >= position) {
                                     binding.cbChecked.visibility = when (vm.checkedConditions.value?.get(position)?.conditionType) {
                                         ConditionType.Checkbox -> View.VISIBLE
                                         else -> View.INVISIBLE
                                     }
                                 }
-                                if ((vm.checkedConditions.value?.size ?: 0) - 1 >= position) {
+                                if ((checkedConditionsValue - 1) >= position) {
                                     binding.etConditionValue.visibility = when (vm.checkedConditions.value?.get(position)?.conditionType) {
                                         ConditionType.Input -> View.VISIBLE
                                         else -> View.INVISIBLE
                                     }
                                 }
-                                binding.etConditionValue.setOnFocusChangeListener { v, hasFocus ->
+                                binding.etConditionValue.setOnFocusChangeListener { _, hasFocus ->
                                     if (!hasFocus) {
                                         vm.finishedInput(position)
                                     }
                                 }
-                                binding.etConditionValue.setOnEditorActionListener { v, actionId, event ->
+                                binding.etConditionValue.setOnEditorActionListener { _, actionId, _ ->
                                     when (actionId) {
                                         EditorInfo.IME_ACTION_DONE -> {
                                             vm.finishedInput(position)
