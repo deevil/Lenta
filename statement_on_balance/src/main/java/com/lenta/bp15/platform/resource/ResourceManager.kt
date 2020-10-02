@@ -10,10 +10,13 @@ class ResourceManager @Inject constructor(
 
     override fun tk(number: String): String = context.getString(R.string.tk_number, number)
 
+    override fun processingProgress(processed: String, total: String): String = context.getString(R.string.processing_progress, processed, total)
+
 }
 
 interface IResourceManager {
 
     fun tk(number: String): String
+    fun processingProgress(processed: String, total: String): String
 
 }

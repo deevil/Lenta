@@ -14,31 +14,35 @@ data class Good(
         val marks: List<Mark> = mutableListOf()
 ) {
 
-    fun getNameWithShortMaterial(): String {
+    fun getShortMaterialWithName(): String {
         return "${material.takeLast(6)} $name"
     }
 
-    fun getQuantityToProcessing(): Int {
-        return planQuantity - getProcessedMarks().size
+    private fun getQuantityToProcessing(): Int {
+        return planQuantity - getProcessedMarksCount()
     }
 
-    fun isProcessed(): Boolean {
-        return getProcessedMarks().size == planQuantity
-    }
-
-    fun isExistUnprocessedMarks(): Boolean {
-        return marks.any { !it.isScan }
+    fun getProcessedMarksCount(): Int {
+        return marks.filter { it.isScan }.size
     }
 
     private fun getProcessedMarks(): List<Mark> {
         return marks.filter { it.isScan }
     }
 
+    fun isProcessed(): Boolean {
+        return !isExistUnprocessedMarks()
+    }
+
+    fun isExistUnprocessedMarks(): Boolean {
+        return marks.any { !it.isScan }
+    }
+
     fun convertToItemGoodUi(index: Int): ItemGoodUi {
         return ItemGoodUi(
                 position = "${index + 1}",
                 material = material,
-                name = getNameWithShortMaterial(),
+                name = getShortMaterialWithName(),
                 quantity = "${getQuantityToProcessing()}"
         )
     }

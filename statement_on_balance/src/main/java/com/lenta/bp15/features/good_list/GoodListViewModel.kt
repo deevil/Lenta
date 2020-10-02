@@ -5,8 +5,6 @@ import androidx.lifecycle.map
 import com.lenta.bp15.features.task_list.TaskListFragment
 import com.lenta.bp15.model.ITaskManager
 import com.lenta.bp15.platform.navigation.IScreenNavigator
-import com.lenta.bp15.platform.resource.IResourceManager
-import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.actionByNumber
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
@@ -33,7 +31,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     val title by lazy {
-        task.map { it.getTitleForGoodList() }
+        task.map { it.getCodeWithName() }
     }
 
     val numberField = MutableLiveData("")

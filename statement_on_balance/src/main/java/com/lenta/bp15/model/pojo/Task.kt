@@ -73,7 +73,7 @@ data class Task(
         return startHashState == NO_HASH
     }
 
-    fun getTitleForGoodList(): String {
+    fun getCodeWithName(): String {
         return "$firstLine / $secondLine"
     }
 

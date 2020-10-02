@@ -27,6 +27,7 @@
     <string name="invalid_barcode_format_scanned">Отсканирован неверный формат штрихкода.</string>
     <string name="scanned_stamp_is_not_on_task">Отсканированная марка не числится в задании.</string>
     <string name="task_unsent_data_will_be_deleted">По заданию \"%1$s\" будут удалены все непереданные данные</string>
+    <string name="unsaved_data_will_be_removed">Несохраненные данные будут удалены. Продолжить?</string>
 
     // Описание иконок
     <string name="marked_good">Маркированный товар</string>
@@ -40,6 +41,7 @@
 
     // Строки в коде
     <string name="tk_number">ТК - %1$s</string>
+    <string name="processing_progress">%1$s из %2$s</string>
     <string name="total_with_converting_info">Итого %1$s</string>
 
     // Разное

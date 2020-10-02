@@ -228,6 +228,18 @@ class ScreenNavigator @Inject constructor(
         }
     }
 
+    override fun showUnsavedDataWillBeRemoved(nextCallback: () -> Unit) {
+        runOrPostpone {
+            getFragmentStack()?.push(AlertFragment.create(
+                    message = context.getString(R.string.unsaved_data_will_be_removed),
+                    iconRes = R.drawable.ic_question_yellow_80dp,
+                    codeConfirmForRight = backFragmentResultHelper.setFuncForResult(nextCallback),
+                    leftButtonDecorationInfo = ButtonDecorationInfo.back,
+                    rightButtonDecorationInfo = ButtonDecorationInfo.next
+            ))
+        }
+    }
+
 }
 
 interface IScreenNavigator : ICoreNavigator {
@@ -257,5 +269,6 @@ interface IScreenNavigator : ICoreNavigator {
     fun showInvalidBarcodeFormatScanned()
     fun showScannedStampIsNotOnTask()
     fun showTaskUnsentDataWillBeDeleted(taskName: String, applyCallback: () -> Unit)
+    fun showUnsavedDataWillBeRemoved(nextCallback: () -> Unit)
 
 }

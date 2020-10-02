@@ -1,12 +1,12 @@
 package com.lenta.bp15.model.enum
 
-enum class ShoesMarkType {
+enum class ShoesMarkType(val description: String) {
 
-    UNKNOWN,
-    MAN,
-    WOMAN,
-    CHILDREN,
-    UNISEX;
+    UNKNOWN("Unknown type"),
+    MAN("Обувь мужская"),
+    WOMAN("Обувь женская"),
+    CHILDREN("Обувь детская"),
+    UNISEX("Обувь унисекс");
 
     companion object {
         fun from(code: String): ShoesMarkType {

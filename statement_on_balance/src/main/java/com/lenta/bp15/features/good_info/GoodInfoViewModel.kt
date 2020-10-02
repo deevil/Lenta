@@ -2,11 +2,14 @@ package com.lenta.bp15.features.good_info
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.map
+import com.lenta.bp15.features.good_list.GoodListFragment
+import com.lenta.bp15.model.ITaskManager
 import com.lenta.bp15.platform.navigation.IScreenNavigator
 import com.lenta.bp15.platform.resource.IResourceManager
-import com.lenta.shared.account.ISessionInfo
-import com.lenta.shared.models.core.MatrixType
+import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.extentions.combineLatest
+import com.lenta.shared.utilities.extentions.mapSkipNulls
 import javax.inject.Inject
 
 class GoodInfoViewModel : CoreViewModel() {
@@ -15,58 +18,83 @@ class GoodInfoViewModel : CoreViewModel() {
     lateinit var navigator: IScreenNavigator
 
     @Inject
-    lateinit var sessionInfo: ISessionInfo
-
-    @Inject
     lateinit var resource: IResourceManager
 
+    @Inject
+    lateinit var manager: ITaskManager
 
-    val title by lazy {
-        "000044 Туфли"
+
+    /**
+    Переменные
+     */
+
+    private val task by lazy {
+        manager.currentTask
     }
 
-    private val quantity = MutableLiveData("0")
+    private val good by lazy {
+        manager.currentGood
+    }
 
-    val quantityWithUnits by lazy {
-        quantity.map {
-            val quantity = it.toIntOrNull() ?: 0
-            "$quantity шт"
-        }
+    val title by lazy {
+        good.map { it.getShortMaterialWithName() }
+    }
+
+    private val scannedMarks = MutableLiveData(mutableListOf<String>())
+
+    val quantity = scannedMarks.map { it.size }
+
+    val quantityWithUnits = quantity.map { quantity ->
+        "$quantity ${Uom.ST.name}"
     }
 
     val goodInfo by lazy {
-        GoodInfoUi(
-                markType = "Обувь женская",
-                matrix = MatrixType.Active,
-                section = "02"
-        )
+        good.mapSkipNulls { good ->
+            GoodInfoUi(
+                    markType = good.markType.description,
+                    matrix = good.matrix,
+                    section = good.section
+            )
+        }
     }
 
-    private val totalToProcessing = 1000
-
-    private val processed by lazy {
-        MutableLiveData(521)
+    private val processedMarks by lazy {
+        good.map { it.getProcessedMarksCount() }
     }
 
-    val processedOf by lazy {
-        processed.map {
-            "$it из $totalToProcessing"
+    private val totalMarks by lazy {
+        good.map { it.planQuantity }
+    }
+
+    val markScanProgress by lazy {
+        quantity.map { currentScannedQuantity ->
+            val processed = processedMarks.value ?: 0 + currentScannedQuantity
+            val total = totalMarks.value ?: 0
+            resource.processingProgress("$processed", "$total")
         }
     }
 
     val allMarkProcessed by lazy {
-        quantity.map {
-            val quantity = it.toIntOrNull() ?: 0
-            quantity == totalToProcessing
+        quantity.map { currentScannedQuantity ->
+            val processed = processedMarks.value ?: 0 + currentScannedQuantity
+            val total = totalMarks.value ?: 0
+            processed == total
         }
     }
 
-    val rollbackEnabled = MutableLiveData(false)
+    val applyEnabled = quantity.map { it > 0 }
 
-    val applyEnabled = MutableLiveData(false)
+    val rollbackEnabled = quantity.map { it > 0 }
+
+    /**
+    Методы
+     */
 
     fun onClickRollback() {
-
+        scannedMarks.value?.let { marks ->
+            marks.removeAt(marks.lastIndex)
+            scannedMarks.value = marks
+        }
     }
 
     fun onClickApply() {
@@ -78,7 +106,15 @@ class GoodInfoViewModel : CoreViewModel() {
     }
 
     fun onBackPressed() {
-
+        quantity.value?.let { quantity ->
+            if (quantity > 0) {
+                navigator.showUnsavedDataWillBeRemoved {
+                    navigator.goBackTo(GoodListFragment::class.simpleName)
+                }
+            } else {
+                navigator.goBack()
+            }
+        }
     }
 
 }

@@ -71,7 +71,7 @@
                         style="@style/CellTextStyle"
                         android:layout_width="0dp"
                         android:layout_weight="1"
-                        android:text="@{vm.processedOf}"
+                        android:text="@{vm.markScanProgress}"
                         tools:text="548 из 1000" />
 
                     <CheckBox
