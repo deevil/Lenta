@@ -25,7 +25,7 @@ class MarkingInfoBoxPGEFragment : CoreFragment<FragmentMarkingInfoBoxPgeBinding,
         ToolbarButtonsClickListener,
         OnScanResultListener,
         OnBackPresserListener
-//        , OnKeyDownListener
+ //       , OnKeyDownListener  для тестов
 {
 
     private var productInfo by state<TaskProductInfo?>(null)
@@ -98,7 +98,7 @@ class MarkingInfoBoxPGEFragment : CoreFragment<FragmentMarkingInfoBoxPgeBinding,
 
     override fun onResume() {
         super.onResume()
-        vm.requestFocusToCount.value = false
+       vm.requestFocusToCount.value = false
     }
 
     override fun onBackPressed(): Boolean {
