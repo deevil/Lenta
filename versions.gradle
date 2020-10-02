@@ -116,7 +116,7 @@ deps.mock_web_server = "com.squareup.okhttp3:mockwebserver:$versions.mockwebserv
 deps.hamcrest = "org.hamcrest:hamcrest-all:$versions.hamcrest"
 deps.android_gradle_plugin = "com.android.tools.build:gradle:$versions.android_gradle_plugin"
 deps.crashlytics = "com.google.firebase:firebase-crashlytics-ktx:$versions.firebase_crashlytics"
-deps.firebase = "com.google.firebase:firebase-analytics:$versions.firebase"
+deps.firebase = "com.google.firebase:firebase-analytics-ktx:$versions.firebase"
 
 
 ext.deps = deps

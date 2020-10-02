@@ -1,0 +1,296 @@
+{
+  "project_info": {
+    "project_number": "819961206670",
+    "firebase_url": "https://lenta-bpx.firebaseio.com",
+    "project_id": "lenta-bpx",
+    "storage_bucket": "lenta-bpx.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:819961206670:android:a360a064f7348c4e7076df",
+        "android_client_info": {
+          "package_name": "com.lenta.bp10"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "819961206670-6d3n46ftj03924p84pp1qku40b6gekk5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxtutjiG_egscpAFIj6LWk4c88Km5VT3Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "819961206670-6d3n46ftj03924p84pp1qku40b6gekk5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:819961206670:android:89880fe8739b87f77076df",
+        "android_client_info": {
+          "package_name": "com.lenta.bp11"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "819961206670-6d3n46ftj03924p84pp1qku40b6gekk5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxtutjiG_egscpAFIj6LWk4c88Km5VT3Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "819961206670-6d3n46ftj03924p84pp1qku40b6gekk5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:819961206670:android:e667cba3241d5b297076df",
+        "android_client_info": {
+          "package_name": "com.lenta.bp12"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "819961206670-kjorvlaaqgspi0bp8q546102i56vjm32.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lenta.bp12",
+            "certificate_hash": "9b8c139207aa036bb007b3b7b04fbce43a058027"
+          }
+        },
+        {
+          "client_id": "819961206670-6d3n46ftj03924p84pp1qku40b6gekk5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxtutjiG_egscpAFIj6LWk4c88Km5VT3Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "819961206670-6d3n46ftj03924p84pp1qku40b6gekk5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:819961206670:android:c2f5410d0cf695747076df",
+        "android_client_info": {
+          "package_name": "com.lenta.bp13"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "819961206670-i872tvtlao944dgr9kn7uvv6nc2o64op.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lenta.bp13",
+            "certificate_hash": "9b8c139207aa036bb007b3b7b04fbce43a058027"
+          }
+        },
+        {
+          "client_id": "819961206670-6d3n46ftj03924p84pp1qku40b6gekk5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxtutjiG_egscpAFIj6LWk4c88Km5VT3Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "819961206670-6d3n46ftj03924p84pp1qku40b6gekk5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:819961206670:android:c409f304310d77597076df",
+        "android_client_info": {
+          "package_name": "com.lenta.bp14"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "819961206670-6d3n46ftj03924p84pp1qku40b6gekk5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxtutjiG_egscpAFIj6LWk4c88Km5VT3Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "819961206670-6d3n46ftj03924p84pp1qku40b6gekk5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:819961206670:android:a31817400a6676ef7076df",
+        "android_client_info": {
+          "package_name": "com.lenta.bp16"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "819961206670-6d3n46ftj03924p84pp1qku40b6gekk5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxtutjiG_egscpAFIj6LWk4c88Km5VT3Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "819961206670-6d3n46ftj03924p84pp1qku40b6gekk5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:819961206670:android:54efcde69bd2a4cc7076df",
+        "android_client_info": {
+          "package_name": "com.lenta.bp18"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "819961206670-st64cob01k70iccce2ku2qjb4q697jud.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lenta.bp18",
+            "certificate_hash": "9b8c139207aa036bb007b3b7b04fbce43a058027"
+          }
+        },
+        {
+          "client_id": "819961206670-6d3n46ftj03924p84pp1qku40b6gekk5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxtutjiG_egscpAFIj6LWk4c88Km5VT3Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "819961206670-6d3n46ftj03924p84pp1qku40b6gekk5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:819961206670:android:cf3537e9d2f9c9947076df",
+        "android_client_info": {
+          "package_name": "com.lenta.bp7"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "819961206670-6d3n46ftj03924p84pp1qku40b6gekk5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxtutjiG_egscpAFIj6LWk4c88Km5VT3Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "819961206670-6d3n46ftj03924p84pp1qku40b6gekk5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:819961206670:android:78aa1f195be32c3a7076df",
+        "android_client_info": {
+          "package_name": "com.lenta.bp9"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "819961206670-6d3n46ftj03924p84pp1qku40b6gekk5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxtutjiG_egscpAFIj6LWk4c88Km5VT3Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "819961206670-6d3n46ftj03924p84pp1qku40b6gekk5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

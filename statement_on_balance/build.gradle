@@ -4,13 +4,15 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'de.mannodermaus.android-junit5'
 apply from: '../fmp_settings.gradle'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'
 
 def prefixAppVersion = "15"
 
 android {
     compileSdkVersion build_versions.target_sdk
     defaultConfig {
-        applicationId "com.lenta.bp12"
+        applicationId "com.lenta.bp15"
         minSdkVersion build_versions.min_sdk
         targetSdkVersion build_versions.target_sdk
         versionCode getCodeVersion()
@@ -52,7 +54,7 @@ android {
     applicationVariants.all { variant ->
         if (variant.buildType.name == "release") {
             variant.outputs.all {
-                def name = outputFileName.replace("app-", "LentaProduction-")
+                def name = outputFileName.replace("app-", "LentaStatement-")
                 outputFileName = name.replace(".apk", "-${variant.versionName}-${variant.versionCode}.apk")
             }
         }
@@ -60,7 +62,7 @@ android {
 
         if (variant.buildType.name == "debug") {
             variant.outputs.all {
-                def name = outputFileName.replace("app-", "LentaBackSales-debug")
+                def name = outputFileName.replace("app-", "LentaStatement")
                 outputFileName = name.replace(".apk", "-${variant.versionName}-${variant.versionCode}.apk")
             }
         }
@@ -120,7 +122,6 @@ dependencies {
     // Mockito
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0"
     testImplementation "io.mockk:mockk:1.9.3"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 }
 
 repositories {
