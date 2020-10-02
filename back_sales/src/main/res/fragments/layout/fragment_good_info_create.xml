@@ -42,17 +42,16 @@
 
                     <com.lenta.shared.view.EditTextWithSuffix
                         style="@style/CellEditTextStyle"
+                        android:afterTextChanged="@{vm}"
                         android:enabled="@{vm.quantityFieldEnabled}"
                         android:text="@={vm.quantityField}"
                         app:digitsForUom="@{vm.good.commonUnits}"
+                        app:onOkInSoftKeyboard="@{vm}"
                         app:quantityTypeIcon="@{vm.good.isDifferentUnits()}"
+                        app:requestFocus="@{vm.quantityFieldEnabled}"
                         app:suffix="@{vm.good.commonUnits.name}"
                         tools:drawableEnd="@drawable/ic_bei_12dp"
-                        android:afterTextChanged="@{vm}"
-                        tools:text="1 шт"
-                        app:onOkInSoftKeyboard="@{vm}"
-                        app:requestFocus="@{vm.quantityFieldEnabled}"
-                        />
+                        tools:text="1 шт" />
 
                 </LinearLayout>
 
@@ -198,7 +197,9 @@
 
                 </LinearLayout>
 
-                <View style="@style/HorizontalDivider" />
+                <View
+                    style="@style/HorizontalDivider"
+                    android:visibility="@{!vm.isCommonGood}" />
 
             </LinearLayout>
 
@@ -220,8 +221,8 @@
 
                 <TextView
                     style="@style/BottomCircleIconStyle"
-                    app:section="@{vm.good.section}"
                     android:visibility="@{!vm.good.section.isEmpty()}"
+                    app:section="@{vm.good.section}"
                     tools:text="02" />
 
             </LinearLayout>
