@@ -63,7 +63,7 @@ class MarkingInfoBoxPGEViewModel : BaseGoodsInfo() {
     val isUnitBox: MutableLiveData<Boolean> = MutableLiveData(true)
     val enabled: MutableLiveData<Boolean> = MutableLiveData(false)
     val enabledBox: MutableLiveData<Boolean> = MutableLiveData(true)
-    private val unprocessedQuantityOfBox: MutableLiveData<Double> = MutableLiveData(0.0)
+    private val unprocessedQuantityOfBox: MutableLiveData<Double> = MutableLiveData(DEFAULT_DOUBLE_VALUE)
 
     private val enteredCountInStampUnits: Double
         get() {

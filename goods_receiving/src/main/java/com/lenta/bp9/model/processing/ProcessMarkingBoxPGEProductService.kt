@@ -121,17 +121,17 @@ class ProcessMarkingBoxPGEProductService
     }
 
     override fun getCountBlocksUnderload(paramGrzGrundMarkCode: String): Double {
-        return  taskManager
-                        .getReceivingTask()
-                        ?.run {
-                            taskRepository
-                                    .getProductsDiscrepancies()
-                                    .findProductDiscrepanciesOfProduct(productInfo)
-                                    .findLast { it.typeDiscrepancies == paramGrzGrundMarkCode }
-                                    ?.numberDiscrepancies
-                                    ?.toDouble()
-                        }
-                        ?: 0.0
+        return taskManager
+                .getReceivingTask()
+                ?.run {
+                    taskRepository
+                            .getProductsDiscrepancies()
+                            .findProductDiscrepanciesOfProduct(productInfo)
+                            .findLast { it.typeDiscrepancies == paramGrzGrundMarkCode }
+                            ?.numberDiscrepancies
+                            ?.toDouble()
+                }
+                ?: 0.0
 
     }
 
@@ -245,7 +245,7 @@ class ProcessMarkingBoxPGEProductService
         }
     }
 
-    fun addStampDiscrepancies(stampInfo: TaskExciseStampInfo,isScan: Boolean) {
+    fun addStampDiscrepancies(stampInfo: TaskExciseStampInfo, isScan: Boolean) {
         val boxNumber = stamps
                 .findLast { it.boxNumber == stampInfo.boxNumber }
                 ?.boxNumber
@@ -256,22 +256,22 @@ class ProcessMarkingBoxPGEProductService
                         .findLast { it.materialNumber == stampInfo.materialNumber }
 
         foundStampDiscrepancy = foundStampDiscrepancy
-                        ?.let {
-                            it.copy()
-                        }
-                        ?: TaskExciseStampDiscrepancies(
-                                        materialNumber = stampInfo.materialNumber.orEmpty(),
-                                        code = stampInfo.code.orEmpty(),
-                                        processingUnitNumber = stampInfo.processingUnitNumber.orEmpty(),
-                                        typeDiscrepancies = "",
-                                        isScan = isScan,
-                                        boxNumber = boxNumber,
-                                        packNumber = "",
-                                        isMSC = false,
-                                        organizationCodeEGAIS = "",
-                                        bottlingDate =  "",
-                                        isUnknown = false
-                        )
+                ?.let {
+                    it.copy()
+                }
+                ?: TaskExciseStampDiscrepancies(
+                        materialNumber = stampInfo.materialNumber.orEmpty(),
+                        code = stampInfo.code.orEmpty(),
+                        processingUnitNumber = stampInfo.processingUnitNumber.orEmpty(),
+                        typeDiscrepancies = "",
+                        isScan = isScan,
+                        boxNumber = boxNumber,
+                        packNumber = "",
+                        isMSC = false,
+                        organizationCodeEGAIS = "",
+                        bottlingDate = "",
+                        isUnknown = false
+                )
 
 
         currentStampDiscrepancies.removeItemFromListWithPredicate { stamp ->
@@ -347,7 +347,7 @@ class ProcessMarkingBoxPGEProductService
 
 
     fun isOverLimit(count: Double): Boolean {
-        return productInfo.orderQuantity.toDouble()/productInfo.quantityInvest.toDouble() < (getCountAcceptOfProduct() + getCountRefusalOfProduct() + count)
+        return productInfo.orderQuantity.toDouble() / productInfo.quantityInvest.toDouble() < (getCountAcceptOfProduct() + getCountRefusalOfProduct() + count)
     }
 
     fun searchStamp(stampNumber: String): TaskExciseStampInfo? {
@@ -457,25 +457,17 @@ class ProcessMarkingBoxPGEProductService
     }
 
     fun apply() {
-        currentStampDiscrepancies
-                .takeIf { it.isNotEmpty() }
-                ?.apply {
-                    forEach { stamp ->
-                                taskRepository
-                                        ?.getExciseStampsDiscrepancies()
-                                        ?.changeExciseStampDiscrepancy(stamp)
-                            }
-                }
+        currentStampDiscrepancies.forEach {
+            taskRepository
+                    ?.getExciseStampsDiscrepancies()
+                    ?.changeExciseStampDiscrepancy(it)
+        }
 
-        currentBoxDiscrepancies
-                .takeIf { it.isNotEmpty() }
-                ?.apply {
-                    forEach { box ->
-                        taskRepository
-                                ?.getBoxesDiscrepancies()
-                                ?.changeBoxDiscrepancy(box)
-                    }
-                }
+        currentBoxDiscrepancies.forEach {
+            taskRepository
+                    ?.getBoxesDiscrepancies()
+                    ?.changeBoxDiscrepancy(it)
+        }
     }
-
 }
+
