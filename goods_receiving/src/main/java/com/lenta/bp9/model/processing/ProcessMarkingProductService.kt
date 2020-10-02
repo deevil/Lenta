@@ -154,7 +154,9 @@ class ProcessMarkingProductService
         taskRepository
                 ?.getProductsDiscrepancies()
                 ?.deleteProductDiscrepancy(productInfo.materialNumber, TYPE_DISCREPANCIES_QUALITY_NORM)
+
         addProduct(confirmedByScanning.toString(), TYPE_DISCREPANCIES_QUALITY_NORM)
+
         addProduct(notConfirmedByScanning.toString(), typeDiscrepancies)
     }
 
@@ -202,7 +204,7 @@ class ProcessMarkingProductService
 
         taskRepository
                 ?.getProductsDiscrepancies()
-                ?.changeProductDiscrepancy(foundDiscrepancy)
+                ?.changeProductDiscrepancyOfProcessingUnit(foundDiscrepancy)
     }
 
     fun addBlockDiscrepancies(blockInfo: TaskBlockInfo, typeDiscrepancies: String, isScan: Boolean, isGtinControlPassed: Boolean) {

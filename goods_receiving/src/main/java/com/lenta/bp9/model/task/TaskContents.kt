@@ -1,11 +1,6 @@
 package com.lenta.bp9.model.task
 
 import android.annotation.SuppressLint
-import android.content.Context
-import androidx.lifecycle.MutableLiveData
-import com.lenta.bp9.model.processing.ProcessExciseAlcoBoxAccService
-import com.lenta.bp9.repos.IDataBaseRepo
-import com.lenta.bp9.repos.IRepoInMemoryHolder
 import com.lenta.bp9.requests.network.*
 import com.lenta.shared.fmp.resources.dao_ext.getEanInfoFromMaterial
 import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
@@ -16,13 +11,8 @@ import com.lenta.shared.fmp.resources.slow.ZmpUtz25V001
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.models.core.getMatrixType
 import com.lenta.shared.models.core.getProductType
-import com.lenta.shared.platform.constants.Constants
-import com.lenta.shared.platform.constants.Constants.DATE_FORMAT_dd_mm_yyyy
 import com.lenta.shared.platform.constants.Constants.DATE_FORMAT_yyyyMMdd
 import com.lenta.shared.platform.constants.Constants.DATE_FORMAT_yyyy_mm_dd
-import com.lenta.shared.utilities.Logg
-import com.lenta.shared.utilities.extentions.getFormattedDate
-import com.lenta.shared.utilities.getStringFromDate
 import com.mobrun.plugin.api.HyperHive
 import java.text.SimpleDateFormat
 import javax.inject.Inject
@@ -37,7 +27,7 @@ class TaskContents
     private val formatterEN = SimpleDateFormat(DATE_FORMAT_yyyy_mm_dd)
 
     @SuppressLint("SimpleDateFormat")
-    private val formatterERP = SimpleDateFormat(DATE_FORMAT_yyyyMMdd)
+    private val formatterERP = SimpleDateFormat(DATE_FORMAT_yyyy_mm_dd)
 
     suspend fun getTaskContentsInfo(startRecountRestInfo: DirectSupplierStartRecountRestInfo) : TaskContentsInfo {
         return TaskContentsInfo(
@@ -245,7 +235,7 @@ class TaskContents
                     materialNumber = materialInfo?.material.orEmpty(),
                     description = materialInfo?.name.orEmpty(),
                     uom = Uom(code = uomInfo?.uom.orEmpty(), name = uomInfo?.name.orEmpty()),
-                    type = getProductType(isAlco = it.isAlco == "X", isExcise = it.isExc == "X"),
+                    type = getProductType(isAlco = it.isAlco == "X", isExcise = it.isExc == "X", isZBatch = (it.isZBatches == "X" && it.isVet == "")),
                     isSet = it.isSet == "X",
                     sectionId = materialInfo?.abtnr.orEmpty(),
                     matrixType = getMatrixType(materialInfo?.matrType.orEmpty()),
@@ -285,7 +275,9 @@ class TaskContents
                     numeratorConvertBaseUnitMeasure = eanInfo?.umrez?.toDouble() ?: 0.0,
                     denominatorConvertBaseUnitMeasure = eanInfo?.umren?.toDouble() ?: 0.0,
                     isZBatches = it.isZBatches == "X",
-                    isNeedPrint = it.isNeedPrint == "X"
+                    isNeedPrint = it.isNeedPrint == "X",
+                    alternativeUnitMeasure = it.alternativeUnitMeasure.orEmpty(),
+                    quantityAlternativeUnitMeasure = it.quantityAlternativeUnitMeasure?.toDoubleOrNull() ?: 0.0
             )
         }
     }

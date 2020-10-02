@@ -61,10 +61,8 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
     private var originalSearchNumber = ""
 
     val accountingType by unsafeLazy {
-        resource.typeMark()
+        resource.typeMark
     }
-
-    private var isExistUnsavedData = false
 
     private var thereWasRollback = false
 
@@ -114,7 +112,7 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
     /**
     Ввод количества
      */
-    val quantityField by unsafeLazy {
+    override val quantityField by unsafeLazy {
         tempMarks.switchMap {
             liveData {
                 val size = "${it.size}"
@@ -286,7 +284,6 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
     }
 
     private fun setMarksAndProperties() {
-        isExistUnsavedData = true
         tempMarks.value = markManager.getTempMarks()
         properties.value = markManager.getProperties()
         setMrc()
@@ -297,7 +294,6 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
             saveChanges()
             markManager.handleYesSaveAndOpenAnotherBox()
             tempMarks.value = markManager.getTempMarks()
-            isExistUnsavedData = true
             setMrc()
         }
     }
@@ -341,18 +337,15 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
      */
 
     override fun onBackPressed() {
-        with(navigator) {
-            val isBasketEmpty = manager.currentBasket.value?.goods?.isEmpty() == true
+        super.onBackPressed()
+        markManager.clearData()
+    }
 
-            if (isExistUnsavedData) {
-                showUnsavedDataWillBeLost {
-                    goBackIfBasketIsEmpty<TaskContentFragment>(isBasketEmpty)
-                }
-            } else {
-                goBackIfBasketIsEmpty<TaskContentFragment>(isBasketEmpty)
-            }
-            markManager.clearData()
-        }
+    override fun isExistUnsavedData(): Boolean {
+        val size = tempMarks.value?.size
+        val isSizeIsNotZero = size != null && size > 0
+        val isProducerChanged = isProducerEnabledAndChanged() == true
+        return isSizeIsNotZero || isProducerChanged
     }
 
     override fun onClickRollback() {
@@ -368,7 +361,6 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
     override fun saveChangesAndExit(result: ScanInfoResult?) {
         launchUITryCatch {
             with(navigator) {
-                isExistUnsavedData = false
                 showProgressLoadingData()
                 saveChanges(result)
                 hideProgress()
@@ -401,7 +393,6 @@ class MarkedGoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), PageSelecti
                 val tempMarksValue = tempMarks.value
                 val size = tempMarksValue?.size
                 if (size != null && size > 0) {
-                    isExistUnsavedData = true
                     lastScannedMarks = tempMarksValue
                 }
             }.orIfNull {

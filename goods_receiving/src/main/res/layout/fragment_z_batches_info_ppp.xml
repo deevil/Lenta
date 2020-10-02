@@ -226,20 +226,20 @@
                 android:background="@color/color_divider"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/spinner_entered_date" />
+                app:layout_constraintTop_toBottomOf="@+id/spinner_term_control" />
 
             <com.lenta.shared.view.ClickableSpinner
-                android:id="@+id/spinner_entered_date"
+                android:id="@+id/spinner_term_control"
                 android:layout_width="0dp"
                 android:layout_height="32dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
-                app:items="@{vm.spinEnteredDate}"
+                app:items="@{vm.spinTermControl}"
                 app:layout_constraintEnd_toStartOf="@+id/div_vert1"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:position="@{vm.spinEnteredDateSelectedPosition}"
+                app:position="@{vm.spinTermControlSelectedPosition}"
                 tools:entries="@array/test_list" />
 
             <LinearLayout
@@ -361,7 +361,7 @@
                 android:ellipsize="end"
                 android:gravity="start|center_vertical"
                 android:maxLines="1"
-                android:text='@{vm.generalShelfLife }'
+                android:text='@{vm.tvGeneralShelfLife}'
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/div_vert3"
                 app:layout_constraintTop_toTopOf="parent"
@@ -388,7 +388,7 @@
                 android:ellipsize="end"
                 android:gravity="start|center_vertical"
                 android:maxLines="1"
-                android:text='@{vm.remainingShelfLife }'
+                android:text='@{vm.tvRemainingShelfLife }'
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/div_vert3"
                 app:layout_constraintTop_toBottomOf="@+id/tv_general_shelf_life_val"

@@ -44,89 +44,79 @@ class GoodListViewModel : BaseGoodListOpenViewModel(), PageSelectionListener, On
     }
 
     val description by lazy {
-        resource.goodList()
+        resource.goodList
     }
 
-    //TODO REFACTOR TO ASYNCLIVEDATA, COMBINE TWO CYCLES IN ONE, GET RID OF LET
+
     val processing by lazy {
-        task.map { currentTask ->
-            currentTask?.let { task ->
-                task.goods.filter { !it.isDeleted && !it.isCounted }.let { filtered ->
-                    filtered.mapIndexed { index, good ->
-                        ItemGoodProcessingUi(
-                                position = "${filtered.size - index}",
-                                name = good.getNameWithMaterial(),
-                                material = good.material,
-                                providerCode = good.provider.code.orEmpty(),
-                                quantity = chooseQuantityForProcessing(good),
-                                good = good
-                        )
-                    }
-                }
+        task.switchMap { currentTask ->
+            asyncTryCatchLiveData {
+                currentTask.goods.mapIndexedNotNull { index, good ->
+                    ItemGoodProcessingUi(
+                            position = "${index + 1}",
+                            name = good.getNameWithMaterial(),
+                            material = good.material,
+                            providerCode = good.provider.code.orEmpty(),
+                            quantity = chooseQuantityForProcessing(good),
+                            good = good
+                    ).takeIf { !good.isDeleted && !good.isCounted }
+                }.reversed()
             }
         }
     }
 
-    //TODO REFACTOR TO ASYNCLIVEDATA, COMBINE TWO CYCLES IN ONE, GET RID OF LET
     val processed by lazy {
-        task.map { currentTask ->
-            currentTask?.let { task ->
-                task.goods.filter { it.isCounted }.let { filtered ->
-                    filtered.mapIndexed { index, good ->
-                        ItemGoodProcessedUi(
-                                position = "${filtered.size - index}",
-                                name = good.getNameWithMaterial(),
-                                quantity = "${good.getTotalQuantity().dropZeros()} ${good.commonUnits.name}",
-                                material = good.material,
-                                providerCode = good.provider.code.orEmpty(),
-                                good = good
-                        )
-                    }
-                }
+        task.switchMap { currentTask ->
+            asyncTryCatchLiveData {
+                currentTask.goods.mapIndexedNotNull { index, good ->
+                    ItemGoodProcessedUi(
+                            position = "${index + 1}",
+                            name = good.getNameWithMaterial(),
+                            quantity = "${good.getTotalQuantity().dropZeros()} ${good.commonUnits.name}",
+                            material = good.material,
+                            providerCode = good.provider.code.orEmpty(),
+                            good = good
+                    ).takeIf { good.isCounted }
+                }.reversed()
             }
         }
     }
 
-    //TODO REFACTOR TO ASYNCLIVEDATA, COMBINE TWO CYCLES IN ONE, GET RID OF LET
+
     val commonBaskets by lazy {
-        task.map {
-            it?.let { task ->
-                task.baskets.reversed().mapIndexed { index, basket ->
-                    val position = task.baskets.size - index
-                    ItemCommonBasketUi(
-                            basket = basket,
-                            position = "$position",
-                            name = resource.basket("${basket.index}"),
-                            description = basket.getDescription(
-                                    isDivBySection = task.type?.isDivBySection ?: false,
-                                    isWholeSale = false
-                            ),
-                            quantity = basket.getQuantityFromGoodList().toString()
-                    )
-                }
+        task.mapSkipNulls { task ->
+            task.baskets.reversed().mapIndexed { index, basket ->
+                val position = task.baskets.size - index
+                ItemCommonBasketUi(
+                        basket = basket,
+                        position = "$position",
+                        name = resource.basket("${basket.index}"),
+                        description = basket.getDescription(
+                                isDivBySection = task.type?.isDivBySection ?: false,
+                                isWholeSale = false
+                        ),
+                        quantity = basket.getQuantityFromGoodList().toString()
+                )
             }
         }
     }
 
-    //TODO REFACTOR TO ASYNCLIVEDATA, COMBINE TWO CYCLES IN ONE, GET RID OF LET
     val wholesaleBaskets by lazy {
-        task.map {
-            it?.let { task ->
-                task.baskets.reversed().mapIndexed { index, basket ->
-                    val position = task.baskets.size - index
-                    ItemWholesaleBasketUi(
-                            basket = basket,
-                            position = "$position",
-                            name = resource.basket("${basket.index}"),
-                            description = basket.getDescription(
-                                    isDivBySection = task.type?.isDivBySection ?: false,
-                                    isWholeSale = true
-                            ),
-                            quantity = basket.getQuantityFromGoodList().toString(),
-                            isPrinted = basket.isPrinted,
-                            isLocked = basket.isLocked
-                    )
-                }
+        task.mapSkipNulls { task ->
+            task.baskets.reversed().mapIndexed { index, basket ->
+                val position = task.baskets.size - index
+                ItemWholesaleBasketUi(
+                        basket = basket,
+                        position = "$position",
+                        name = resource.basket("${basket.index}"),
+                        description = basket.getDescription(
+                                isDivBySection = task.type?.isDivBySection ?: false,
+                                isWholeSale = true
+                        ),
+                        quantity = basket.getQuantityFromGoodList().toString(),
+                        isPrinted = basket.isPrinted,
+                        isLocked = basket.isLocked
+                )
             }
         }
     }
@@ -175,12 +165,6 @@ class GoodListViewModel : BaseGoodListOpenViewModel(), PageSelectionListener, On
     val printEnabled by lazy {
         wholesaleBaskets.map {
             it?.isNotEmpty()
-        }
-    }
-
-    val saveEnabled by lazy {
-        task.map {
-            it?.isExistProcessedGood()
         }
     }
 

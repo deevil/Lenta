@@ -51,10 +51,8 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
     private var originalSearchNumber = ""
 
     val accountingType by unsafeLazy {
-        resource.typeMark()
+        resource.typeMark
     }
-
-    private var isExistUnsavedData = false
 
     private var thereWasRollback = false
 
@@ -101,7 +99,7 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
     /**
     Ввод количества
      */
-    val quantityField by unsafeLazy {
+    override val quantityField by unsafeLazy {
         tempMarks.switchMap {
             liveData {
                 val size = "${it.size}"
@@ -287,7 +285,6 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
             markManager.handleYesDeleteMappedMarksFromTempCallBack()
             val tempMarksFromMarkManager = markManager.getTempMarks()
             tempMarks.postValue(tempMarksFromMarkManager)
-            isExistUnsavedData = true
             setMrc()
         }
     }
@@ -322,19 +319,16 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
      */
 
     override fun onBackPressed() {
-        with(navigator) {
-            val isBasketEmpty = manager.currentBasket.value?.goods?.isEmpty() == true
-            if (isExistUnsavedData) {
-                showUnsavedDataWillBeLost {
-                    goBackIfBasketIsEmpty<GoodListFragment>(isBasketEmpty)
-                }
-            } else {
-                goBackIfBasketIsEmpty<TaskContentFragment>(isBasketEmpty)
-            }
-            markManager.clearData()
-        }
+        super.onBackPressed()
+        markManager.clearData()
     }
 
+    override fun isExistUnsavedData(): Boolean {
+        val size = tempMarks.value?.size
+        val isSizeIsNotZero = size != null && size > 0
+        val isProducerChanged = isProducerEnabledAndChanged() == true
+        return isSizeIsNotZero || isProducerChanged
+    }
 
     override fun onClickRollback() {
         thereWasRollback = true
@@ -355,7 +349,6 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
     override fun saveChangesAndExit(result: ScanInfoResult?) {
         launchUITryCatch {
             with(navigator) {
-                isExistUnsavedData = false
                 showProgressLoadingData()
                 saveChanges(result)
                 hideProgress()
@@ -371,7 +364,6 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
     }
 
     private fun setMarksAndProperties() {
-        isExistUnsavedData = true
         tempMarks.value = markManager.getTempMarks()
         properties.value = markManager.getProperties()
         setMrc()
@@ -392,7 +384,6 @@ class MarkedGoodInfoOpenViewModel : BaseGoodInfoOpenViewModel(), PageSelectionLi
                 val tempMarksValue = tempMarks.value
                 val size = tempMarksValue?.size
                 if (size != null && size > 0) {
-                    isExistUnsavedData = true
                     lastScannedMarks = tempMarksValue
                 }
             }.orIfNull {

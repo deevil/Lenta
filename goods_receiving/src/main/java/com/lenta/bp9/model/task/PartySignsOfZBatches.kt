@@ -1,8 +1,5 @@
 package com.lenta.bp9.model.task
 
-import com.lenta.bp9.features.goods_information.base.IBaseCurrentProductionDate
-import com.lenta.shared.models.core.Uom
-
 //партионные признаки для Z-партий
 data class PartySignsOfZBatches(
         val materialNumber: String,

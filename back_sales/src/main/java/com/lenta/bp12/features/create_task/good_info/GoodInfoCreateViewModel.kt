@@ -18,7 +18,6 @@ import com.lenta.bp12.model.pojo.extentions.addPosition
 import com.lenta.bp12.model.pojo.extentions.getScreenStatus
 import com.lenta.bp12.platform.*
 import com.lenta.bp12.platform.extention.*
-import com.lenta.bp12.platform.navigation.goBackIfBasketIsEmpty
 import com.lenta.bp12.request.ScanInfoParams
 import com.lenta.bp12.request.ScanInfoResult
 import com.lenta.bp12.request.pojo.ProducerInfo
@@ -61,9 +60,9 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
     val accountingType by unsafeLazy {
         screenStatus.map { status ->
             when (status) {
-                ScreenStatus.MARK_150, ScreenStatus.MARK_68 -> resource.typeMark()
-                ScreenStatus.ALCOHOL, ScreenStatus.PART -> resource.typePart()
-                else -> resource.typeQuantity()
+                ScreenStatus.MARK_150, ScreenStatus.MARK_68 -> resource.typeMark
+                ScreenStatus.ALCOHOL, ScreenStatus.PART -> resource.typePart
+                else -> resource.typeQuantity
             }
         }
     }
@@ -76,8 +75,6 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
 
     private val scanInfoResult = MutableLiveData<ScanInfoResult>()
 
-    private var isExistUnsavedData = false
-
     private var isEanLastScanned = false
 
     private var thereWasRollback = false
@@ -86,7 +83,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
     Ввод количества
      */
 
-    val quantityField = MutableLiveData(ZERO_QUANTITY_STRING)
+    override val quantityField = MutableLiveData(ZERO_QUANTITY_STRING)
 
     override val quantity = quantityField.map {
         it?.toDoubleOrNull() ?: ZERO_QUANTITY
@@ -99,41 +96,6 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
                 else -> false
             }
         }
-    }
-
-    /**
-    Список производителей
-     */
-
-    private val sourceProducers = MutableLiveData(mutableListOf<ProducerInfo>())
-
-    private val producers = sourceProducers.mapSkipNulls { producers ->
-        producers.toMutableList().apply {
-            if (size > 1) {
-                add(0, ProducerInfo(name = resource.chooseProducer()))
-            }
-        }
-    }
-
-    val producerList by lazy {
-        producers.mapSkipNulls { list ->
-            list.map { it.name }
-        }
-    }
-
-    val producerEnabled by lazy {
-        producers.map { producers ->
-            producers?.size ?: 0 > 1
-        }
-    }
-
-    val producerPosition = MutableLiveData(FIRST_POSITION)
-
-    private val isProducerSelected = producerEnabled.combineLatest(producerPosition).map {
-        val isEnabled = it?.first ?: false
-        val position = it?.second ?: FIRST_POSITION
-
-        (isEnabled && position > FIRST_POSITION) || (!isEnabled && position == FIRST_POSITION)
     }
 
     /**
@@ -421,7 +383,6 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
     }
 
     private suspend fun findByMaterialOrSetGood(result: GoodInfoResult, number: String) {
-        isExistUnsavedData = true
         result.materialInfo?.material?.let { material ->
             findGoodByMaterial(material)?.let { good ->
                 good.eans[number] = result.eanInfo.getQuantityForBox()
@@ -512,14 +473,14 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
                 val alcoCodeInfoList = database.getAlcoCodeInfoList(number.extractAlcoCode())
 
                 if (alcoCodeInfoList.isEmpty()) {
-                    navigator.openAlertScreen(resource.unknownAlcocode())
+                    navigator.openAlertScreen(resource.unknownAlcocode)
                     return
                 }
 
                 if (alcoCodeInfoList.find { it.material == good.value?.material } != null) {
                     addPartInfo(result)
                 } else {
-                    navigator.openAlertScreen(resource.alcocodeDoesNotApplyToThisGood())
+                    navigator.openAlertScreen(resource.alcocodeDoesNotApplyToThisGood)
                 }
             }
         }
@@ -527,7 +488,6 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
 
     private fun addMarkExciseInfo(result: ScanInfoResult) {
         lastSuccessSearchNumber = originalSearchNumber
-        isExistUnsavedData = true
         scanInfoResult.value = result
         quantityField.value = "1"
 
@@ -550,7 +510,6 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
     private fun addPartInfo(result: ScanInfoResult) {
         screenStatus.value = ScreenStatus.PART
         lastSuccessSearchNumber = originalSearchNumber
-        isExistUnsavedData = true
         scanInfoResult.value = result
         quantityField.value = "1"
     }
@@ -585,7 +544,6 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
     private fun addBoxInfo(result: ScanInfoResult) {
         screenStatus.value = ScreenStatus.BOX
         lastSuccessSearchNumber = originalSearchNumber
-        isExistUnsavedData = true
         scanInfoResult.value = result
         quantityField.value = result.exciseMarks?.size?.toString().orIfNull { ZERO_QUANTITY_STRING }
         try {
@@ -642,6 +600,8 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
                 providerPosition.value?.let { position ->
                     providerCode = providers.getOrNull(position)?.code.orEmpty()
                 }
+            }.orIfNull {
+                Logg.e { "getProviderCode() providers is null" }
             }
         }
 
@@ -655,6 +615,8 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
                 producerPosition.value?.let { position ->
                     producerCode = producers.getOrNull(position)?.code.orEmpty()
                 }
+            }.orIfNull {
+                Logg.e { "getProducerCode() producers is null" }
             }
         }
 
@@ -669,7 +631,6 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
         screenStatus.value?.let { status ->
             good.value?.let { good ->
                 manager.saveGoodInTask(good)
-                isExistUnsavedData = false
             }.orIfNull {
                 Logg.e { "good null" }
                 navigator.showInternalError(resource.goodNotFoundErrorMsg)
@@ -732,8 +693,9 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
                     date = date.value.orEmpty(),
                     providerCode = getProviderCode(),
                     producerCode = getProducerCode()
-            )
-            parts?.forEach { part ->
+            ).orEmpty()
+
+            parts.forEach { part ->
                 manager.addOrDeleteGoodToBasket(
                         good = changedGood,
                         part = part,
@@ -759,6 +721,7 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
                     )
                 }
                 changedGood.addMarks(mappedMarks)
+
                 mappedMarks.forEach { markFromBox ->
                     Logg.d { "--> add mark from box = $markFromBox" }
                     manager.addGoodToBasketWithMark(
@@ -767,6 +730,8 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
                             provider = getProvider()
                     )
                 }
+            }.orIfNull {
+                Logg.e { "scanInfoResult.value?.exciseMarks is null" }
             }
             manager.updateCurrentGood(changedGood)
         }.orIfNull {
@@ -779,20 +744,6 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
     Обработка нажатий кнопок
      */
 
-
-    override fun onBackPressed() {
-        with(navigator) {
-            val isBasketEmpty = manager.currentBasket.value?.goods?.isEmpty() == true
-
-            if (isExistUnsavedData) {
-                showUnsavedDataWillBeLost {
-                    goBackIfBasketIsEmpty<TaskContentFragment>(isBasketEmpty)
-                }
-            } else {
-                goBackIfBasketIsEmpty<TaskContentFragment>(isBasketEmpty)
-            }
-        }
-    }
 
     override fun onClickRollback() {
         good.value?.let { good ->
@@ -813,7 +764,8 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
                             if (status == PartStatus.FOUND.code) {
                                 saveChangesAndExit(result)
                             } else {
-                                navigator.showAlertDialogWithRedTriangle(result.statusDescription ?: resource.error)
+                                navigator.showAlertDialogWithRedTriangle(result.statusDescription
+                                        ?: resource.error)
                             }
                         }
                     }
@@ -849,12 +801,18 @@ class GoodInfoCreateViewModel : BaseGoodInfoCreateViewModel(), TextViewBindingAd
         }
     }
 
+    override fun isExistUnsavedData(): Boolean {
+        val isProducerChanged = isProducerEnabledAndChanged()
+        val isEnteredMoreThanZeroAndProviderSelected = isQuantityFieldChanged() || isProviderEnabledAndChanged()
+        val isDateEntered = date.value?.isEmpty() != true
+        return if (isGoodOrExciseAlco()) {
+            isEnteredMoreThanZeroAndProviderSelected || isProducerChanged || isDateEntered
+        } else {
+            isEnteredMoreThanZeroAndProviderSelected
+        }
+    }
+
     override fun afterTextChanged(s: Editable?) {
         quantityField.value = s.returnWithNoSecondMinus()
     }
-
-    companion object {
-        private const val ZERO_QUANTITY_STRING = "0"
-    }
-
 }
