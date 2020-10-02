@@ -7,134 +7,136 @@ import androidx.lifecycle.MutableLiveData
 @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 @SuppressLint("ApplySharedPref")
 class AppSettings(
-        val sharedPrefferences: SharedPreferences,
-        val defaultConnectionSettings: DefaultConnectionSettings
+        private val sharedPreferences: SharedPreferences,
+        private val defaultConnectionSettings: DefaultConnectionSettings
 ) : IAppSettings {
 
     override var isTest: Boolean
-        get() = sharedPrefferences.getBoolean(FmpSettingsKey.fmpSettings_isTest.name, false)
+        get() = sharedPreferences.getBoolean(FmpSettingsKey.fmpSettings_isTest.name, false)
         set(value) {
-            sharedPrefferences.edit().putBoolean(FmpSettingsKey.fmpSettings_isTest.name, value).commit()
+            sharedPreferences.edit().putBoolean(FmpSettingsKey.fmpSettings_isTest.name, value).commit()
         }
 
     override var serverAddress: String
-        get() = sharedPrefferences.getString(FmpSettingsKey.fmpSettings_serverAddress.name, defaultConnectionSettings.serverAddress)
+        get() = sharedPreferences.getString(FmpSettingsKey.fmpSettings_serverAddress.name, defaultConnectionSettings.serverAddress).orEmpty()
         set(value) {
-            sharedPrefferences.edit().putString(FmpSettingsKey.fmpSettings_serverAddress.name, value).commit()
+            sharedPreferences.edit().putString(FmpSettingsKey.fmpSettings_serverAddress.name, value).commit()
         }
     override var environment: String
-        get() = sharedPrefferences.getString(FmpSettingsKey.fmpSettings_environment.name, defaultConnectionSettings.environment)
+        get() = sharedPreferences.getString(FmpSettingsKey.fmpSettings_environment.name, defaultConnectionSettings.environment).orEmpty()
         set(value) {
-            sharedPrefferences.edit().putString(FmpSettingsKey.fmpSettings_environment.name, value).commit()
+            sharedPreferences.edit().putString(FmpSettingsKey.fmpSettings_environment.name, value).commit()
         }
     override var project: String
-        get() = sharedPrefferences.getString(FmpSettingsKey.fmpSettings_project.name, defaultConnectionSettings.project)
+        get() = sharedPreferences.getString(FmpSettingsKey.fmpSettings_project.name, defaultConnectionSettings.project).orEmpty()
         set(value) {
-            sharedPrefferences.edit().putString(FmpSettingsKey.fmpSettings_project.name, value).commit()
+            sharedPreferences.edit().putString(FmpSettingsKey.fmpSettings_project.name, value).commit()
         }
 
     override var testServerAddress: String
-        get() = sharedPrefferences.getString(FmpSettingsKey.fmpSettings_test_serverAddress.name, defaultConnectionSettings.testServerAddress)
+        get() = sharedPreferences.getString(FmpSettingsKey.fmpSettings_test_serverAddress.name, defaultConnectionSettings.testServerAddress).orEmpty()
         set(value) {
-            sharedPrefferences.edit().putString(FmpSettingsKey.fmpSettings_test_serverAddress.name, value).commit()
+            sharedPreferences.edit().putString(FmpSettingsKey.fmpSettings_test_serverAddress.name, value).commit()
         }
     override var testEnvironment: String
-        get() = sharedPrefferences.getString(FmpSettingsKey.fmpSettings_test_environment.name, defaultConnectionSettings.testEnvironment)
+        get() = sharedPreferences.getString(FmpSettingsKey.fmpSettings_test_environment.name, defaultConnectionSettings.testEnvironment).orEmpty()
         set(value) {
-            sharedPrefferences.edit().putString(FmpSettingsKey.fmpSettings_test_environment.name, value).commit()
+            sharedPreferences.edit().putString(FmpSettingsKey.fmpSettings_test_environment.name, value).commit()
         }
     override var testProject: String
-        get() = sharedPrefferences.getString(FmpSettingsKey.fmpSettings_test_project.name, defaultConnectionSettings.testProject)
+        get() = sharedPreferences.getString(FmpSettingsKey.fmpSettings_test_project.name, defaultConnectionSettings.testProject).orEmpty()
         set(value) {
-            sharedPrefferences.edit().putString(FmpSettingsKey.fmpSettings_test_project.name, value).commit()
+            sharedPreferences.edit().putString(FmpSettingsKey.fmpSettings_test_project.name, value).commit()
         }
 
     override var techLogin: String
-        get() = sharedPrefferences.getString(FmpSettingsKey.fmpSettings_tech_login.name, defaultConnectionSettings.techLogin)
+        get() = sharedPreferences.getString(FmpSettingsKey.fmpSettings_tech_login.name, defaultConnectionSettings.techLogin).orEmpty()
         set(value) {
-            sharedPrefferences.edit().putString(FmpSettingsKey.fmpSettings_tech_login.name, value).commit()
+            sharedPreferences.edit().putString(FmpSettingsKey.fmpSettings_tech_login.name, value).commit()
         }
 
     override var techPassword: String
-        get() = sharedPrefferences.getString(FmpSettingsKey.fmpSettings_tech_password.name, defaultConnectionSettings.techPassword)
+        get() = sharedPreferences.getString(FmpSettingsKey.fmpSettings_tech_password.name, defaultConnectionSettings.techPassword).orEmpty()
         set(value) {
-            sharedPrefferences.edit().putString(FmpSettingsKey.fmpSettings_tech_password.name, value).commit()
+            sharedPreferences.edit().putString(FmpSettingsKey.fmpSettings_tech_password.name, value).commit()
         }
 
 
     override var printer: String?
-        get() = sharedPrefferences.getString("printer", null)
+        get() = sharedPreferences.getString("printer", null)
         set(value) {
-            sharedPrefferences.edit().putString("printer", value).commit()
+            sharedPreferences.edit().putString("printer", value).commit()
         }
 
     override var printerNotVisible: Boolean = false
 
 
     override var printerNumber: String?
-        get() = sharedPrefferences.getString("printerNumber", null)
+        get() = sharedPreferences.getString("printerNumber", null)
         set(value) {
-            sharedPrefferences.edit().putString("printerNumber", value).commit()
+            sharedPreferences.edit().putString("printerNumber", value).commit()
             printerNumberLiveData.value = value
         }
 
     override var weightEquipmentName: String?
-        get() = sharedPrefferences.getString("weightEquipmentName", null)
+        get() = sharedPreferences.getString("weightEquipmentName", null)
         set(value) {
-            sharedPrefferences.edit().putString("weightEquipmentName", value).commit()
+            sharedPreferences.edit().putString("weightEquipmentName", value).commit()
         }
 
     override var printerIpAddress: String?
-        get() = sharedPrefferences.getString("printerIpAddress", null)
+        get() = sharedPreferences.getString("printerIpAddress", null)
         set(value) {
-            sharedPrefferences.edit().putString("printerIpAddress", value).commit()
+            sharedPreferences.edit().putString("printerIpAddress", value).commit()
         }
 
     override var lastLogin: String?
-        get() = sharedPrefferences.getString("lastLogin", null)
+        get() = sharedPreferences.getString("lastLogin", null)
         set(value) {
-            sharedPrefferences.edit().putString("lastLogin", value).commit()
+            sharedPreferences.edit().putString("lastLogin", value).commit()
         }
 
     override var lastJobType: String?
-        get() = sharedPrefferences.getString("lastJobType$lastLogin", null)
+        get() = sharedPreferences.getString("lastJobType$lastLogin", null)
         set(value) {
-            sharedPrefferences.edit().putString("lastJobType$lastLogin", value).commit()
+            sharedPreferences.edit().putString("lastJobType$lastLogin", value).commit()
         }
 
     override var lastTK: String?
-        get() = sharedPrefferences.getString("lastTK$lastLogin", null)
+        get() = sharedPreferences.getString("lastTK$lastLogin", null)
         set(value) {
-            sharedPrefferences.edit().putString("lastTK$lastLogin", value).commit()
+            sharedPreferences.edit().putString("lastTK$lastLogin", value).commit()
         }
     override var lastGroup: String?
-        get() = sharedPrefferences.getString("lastGroup$lastLogin",null)
+        get() = sharedPreferences.getString("lastGroup$lastLogin", null)
         set(value) {
-            sharedPrefferences.edit().putString("lastGroup$lastLogin",value).commit()
+            sharedPreferences.edit().putString("lastGroup$lastLogin", value).commit()
         }
 
     override var warehouseReceiverPosition: Int?
-        get() = sharedPrefferences.getInt("warehouseReceiverPosition$lastLogin", 0)
+        get() = sharedPreferences.getInt("warehouseReceiverPosition$lastLogin", 0)
         set(value) {
-            sharedPrefferences.edit().putInt("warehouseReceiverPosition$lastLogin",value ?: 0).commit()
+            sharedPreferences.edit().putInt("warehouseReceiverPosition$lastLogin", value
+                    ?: 0).commit()
         }
 
     override var warehouseSenderPosition: Int?
-        get() = sharedPrefferences.getInt("warehouseSenderPosition$lastLogin", 0)
+        get() = sharedPreferences.getInt("warehouseSenderPosition$lastLogin", 0)
         set(value) {
-            sharedPrefferences.edit().putInt("warehouseSenderPosition$lastLogin",value ?: 0).commit()
+            sharedPreferences.edit().putInt("warehouseSenderPosition$lastLogin", value
+                    ?: 0).commit()
         }
 
     override var lastPersonnelNumber: String?
-        get() = sharedPrefferences.getString("lastPersonnelNumber$lastLogin", null)
+        get() = sharedPreferences.getString("lastPersonnelNumber$lastLogin", null)
         set(value) {
-            sharedPrefferences.edit().putString("lastPersonnelNumber$lastLogin", value).commit()
+            sharedPreferences.edit().putString("lastPersonnelNumber$lastLogin", value).commit()
         }
 
     override var lastPersonnelFullName: String?
-        get() = sharedPrefferences.getString("lastPersonnelFullName$lastLogin", null)
+        get() = sharedPreferences.getString("lastPersonnelFullName$lastLogin", null)
         set(value) {
-            sharedPrefferences.edit().putString("lastPersonnelFullName$lastLogin", value).commit()
+            sharedPreferences.edit().putString("lastPersonnelFullName$lastLogin", value).commit()
         }
 
     override fun getCurrentServerAddress(): String {
@@ -152,7 +154,7 @@ class AppSettings(
     override val printerNumberLiveData: MutableLiveData<String?> = MutableLiveData(printerNumber)
 
     override fun cleanFmpSettings() {
-        sharedPrefferences.edit().let { editor ->
+        sharedPreferences.edit().let { editor ->
             FmpSettingsKey.values().forEach {
                 editor.remove(it.name)
             }
@@ -161,7 +163,7 @@ class AppSettings(
     }
 
     override fun isConnectionSettingsWasChangedByUser(): Boolean {
-        return isTest && sharedPrefferences.contains(Companion.FmpSettingsKey.fmpSettings_serverAddress.name)
+        return isTest && sharedPreferences.contains(Companion.FmpSettingsKey.fmpSettings_serverAddress.name)
     }
 
     companion object {

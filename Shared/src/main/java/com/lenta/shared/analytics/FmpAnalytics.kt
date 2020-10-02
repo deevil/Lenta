@@ -4,53 +4,71 @@ import androidx.annotation.WorkerThread
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.lenta.shared.utilities.Logg
 import com.mobrun.plugin.api.HyperHive
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
+import kotlin.coroutines.CoroutineContext
 
-class FmpAnalytics @Inject constructor(val hyperHive: HyperHive) : IAnalytics {
+class FmpAnalytics @Inject constructor(val hyperHive: HyperHive) : IAnalytics, CoroutineScope {
 
     private var isEnabledLogs = false
+    private val crashlyticsInstance by lazy { FirebaseCrashlytics.getInstance() }
+
+    private val job = SupervisorJob()
+
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Main + job
 
     override fun enableLogs(enable: Boolean) {
         this.isEnabledLogs = enable
     }
-
 
     override fun init() {
         //hyperHive.loggingAPI.initAutoSendingLogs()
     }
 
 
-    override fun logTrace(tag: String?, message: String) {
+    override fun logTrace(tag: String?, message: String?) {
         if (!isEnabledLogs) {
             return
         }
-        val logMessage = "logTrace: $tag, message: $message"
-        Logg.d { logMessage }
-        FirebaseCrashlytics.getInstance().log("${Date()} - $logMessage")
+
+        launch {
+            val logMessage = "logTrace: $tag, message: $message"
+            Logg.d { logMessage }
+            crashlyticsInstance.log("${Date()} - $logMessage")
+        }
+
         //logDao.insert(LogMessage(Date(), InfoLevel.INFO, message))
         //enableLogsFuncDisableLogs(tag, message, hyperHive.loggingAPI::logTrace)
     }
 
 
-    override fun logError(tag: String?, message: String) {
+    override fun logError(tag: String?, message: String?) {
         if (!isEnabledLogs) {
             return
         }
-        val logMessage = "logError: $tag, message: $message"
-        Logg.e { logMessage }
-        FirebaseCrashlytics.getInstance().log("${Date()} - $logMessage")
+        launch {
+            val logMessage = "logError: $tag, message: $message"
+            Logg.e { logMessage }
+            crashlyticsInstance.log("${Date()} - $logMessage")
+        }
         //logDao.insert(LogMessage(Date(), InfoLevel.ERROR, message))
         //enableLogsFuncDisableLogs(tag, message, hyperHive.loggingAPI::logWarning)
     }
 
-    override fun logFatal(tag: String?, message: String) {
+    override fun logFatal(tag: String?, message: String?) {
         if (!isEnabledLogs) {
             return
         }
-        val logMessage = "logFatal: $tag, message: $message"
-        Logg.d { logMessage }
-        FirebaseCrashlytics.getInstance().log("${Date()} - $logMessage")
+        launch {
+            val logMessage = "logFatal: $tag, message: $message"
+            Logg.d { logMessage }
+            crashlyticsInstance.log("${Date()} - $logMessage")
+        }
         //logDao.insert(LogMessage(Date(), InfoLevel.FATAL, message))
         //enableLogsFuncDisableLogs(tag, message, hyperHive.loggingAPI::logFatal)
     }
@@ -60,7 +78,7 @@ class FmpAnalytics @Inject constructor(val hyperHive: HyperHive) : IAnalytics {
         if (!isEnabledLogs) {
             return
         }
-        hyperHive.databaseAPI.query(hyperHive.loggingAPI.loggingBasePath, "DELETE FROM hyperhive_journal").execute()
+        //hyperHive.databaseAPI.query(hyperHive.loggingAPI.loggingBasePath, "DELETE FROM hyperhive_journal").execute()
     }
 
     @WorkerThread
