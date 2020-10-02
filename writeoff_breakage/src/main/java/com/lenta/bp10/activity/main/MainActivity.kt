@@ -1,15 +1,11 @@
 package com.lenta.bp10.activity.main
 
-import android.os.Bundle
 import androidx.lifecycle.ViewModelProvider
-import com.crashlytics.android.Crashlytics
 import com.lenta.bp10.di.AppComponent
 import com.lenta.bp10.platform.extentions.getAppComponent
 import com.lenta.shared.di.FromParentToCoreProvider
 import com.lenta.shared.platform.activity.main_activity.CoreMainActivity
 import com.lenta.shared.platform.fragment.CoreFragment
-import com.lenta.shared.utilities.runIfRelease
-import io.fabric.sdk.android.Fabric
 
 
 class MainActivity : CoreMainActivity() {
@@ -20,13 +16,6 @@ class MainActivity : CoreMainActivity() {
 
     val appComponent: AppComponent by lazy {
         getAppComponent(coreComponent)
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        runIfRelease {
-            Fabric.with(this, Crashlytics())
-        }
     }
 
     override fun getViewModel(): MainViewModel {

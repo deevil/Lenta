@@ -37,18 +37,19 @@ class LoadingShipmentFinishViewModel : CoreLoadingViewModel() {
     override val sizeInMb: MutableLiveData<Float> = MutableLiveData()
 
     val taskDescription: String by lazy {
-        "\"" + (taskManager.getReceivingTask()?.taskDescription?.currentStatus?.stringValue() ?: "") + "\" -> \"" + taskManager.getReceivingTask()?.taskDescription?.nextStatusText + "\""
+        "\"" + (taskManager.getReceivingTask()?.taskDescription?.currentStatus?.stringValue().orEmpty()) + "\" -> \"" + taskManager.getReceivingTask()?.taskDescription?.nextStatusText + "\""
     }
 
     init {
         launchUITryCatch {
             progress.value = true
-            taskManager.getReceivingTask()?.let { task ->
+            taskManager.getReceivingTask()?.let { _ ->
                 val params = ZmpUtzGrz38V001Params(
                         deviceIP = context.getDeviceIp(),
-                        taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
-                        personalNumber = sessionInfo.personnelNumber ?: "",
-                        transportConditions = taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getTransportConditions()?.map { TransportConditionRestData.from(it) } ?: emptyList()
+                        taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber.orEmpty(),
+                        personalNumber = sessionInfo.personnelNumber.orEmpty(),
+                        transportConditions = taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getTransportConditions()?.map { TransportConditionRestData.from(it) }
+                                ?: emptyList()
                 )
                 zmpUtzGrz38V001NetRequest(params).either(::handleFailure, ::handleSuccess)
             }

@@ -46,6 +46,7 @@ class TakenToWorkViewModel : CoreViewModel() {
                     screenNavigator.openGoodsListScreen("00")
                 }
                 RecountType.ParallelByStorePlaces -> screenNavigator.openStoragesList()
+                else -> Unit
             }
         }
     }

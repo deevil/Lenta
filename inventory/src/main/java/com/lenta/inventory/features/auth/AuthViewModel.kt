@@ -52,17 +52,14 @@ class AuthViewModel : CoreAuthViewModel() {
                 if (login.value == "MAKAROV") {
                     password.value = "1q2w3e4r"
                 }
-
             }
         }
     }
-
 
     override val enterEnabled: MutableLiveData<Boolean> by lazy {
         login.combineLatest(password).map { isValidLoginFields(login = it?.first, password = it?.second) }
                 .combineLatest(progress).map { isEnterEnabled(isFieldsValid = it?.first, inProgress = it?.second) }
     }
-
 
     override fun onClickEnter() {
         launchUITryCatch {
@@ -87,20 +84,14 @@ class AuthViewModel : CoreAuthViewModel() {
     }
 
     private fun handleAuthSuccess(permissionsResult: PermissionsResult) {
-
         repoInMemoryHolder.permissions = permissionsResult
-
-
-
         navigator.openSelectMarketScreen()
     }
 
     override fun handleFailure(failure: Failure) {
-        super.handleFailure(failure)
         progress.value = false
         navigator.openAlertScreen(failure, pageNumber = "97")
     }
-
 
     override fun onClickAuxiliaryMenu() {
         navigator.openAuxiliaryMenuScreen()
@@ -131,6 +122,4 @@ class AuthViewModel : CoreAuthViewModel() {
             }
         }
     }
-
-
 }

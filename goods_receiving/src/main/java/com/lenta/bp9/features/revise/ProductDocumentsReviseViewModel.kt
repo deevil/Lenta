@@ -5,15 +5,19 @@ import androidx.lifecycle.MutableLiveData
 import com.lenta.bp9.features.task_card.TaskCardViewModel
 import com.lenta.bp9.model.task.IReceivingTaskManager
 import com.lenta.bp9.model.task.TaskType
+import com.lenta.bp9.model.task.revise.ProductBatchRevise
 import com.lenta.bp9.model.task.revise.ProductDocumentType
+import com.lenta.bp9.model.task.revise.ProductVetDocumentRevise
 import com.lenta.bp9.platform.navigation.IScreenNavigator
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.fmp.resources.dao_ext.getProductInfoByMaterial
 import com.lenta.shared.fmp.resources.slow.ZfmpUtz48V001
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.map
+import com.lenta.shared.utilities.orIfNull
 import com.mobrun.plugin.api.HyperHive
 import javax.inject.Inject
 
@@ -153,36 +157,57 @@ class ProductDocumentsReviseViewModel : CoreViewModel(), PageSelectionListener {
         if (document.isVisibileArrow) {
             val batches = taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getProductBatches()?.filter { it.productNumber == document.matnr }
             if (!batches.isNullOrEmpty()) {
-                if (batches.size > 1) {
-                    screenNavigator.openAlcoholBatchSelectScreen(document.matnr, document.type)
-                } else {
-                    when (document.type) {
-                        ProductDocumentType.AlcoImport -> {
-                            screenNavigator.openImportAlcoFormReviseScreen(batches.first().productNumber, batches.first().batchNumber)
-                        }
-                        ProductDocumentType.AlcoRus -> {
-                            screenNavigator.openRussianAlcoFormReviseScreen(batches.first().productNumber, batches.first().batchNumber)
-                        }
-                    }
-                }
+                actionWhenBatchesIsNotEmpty(batches, document)
             } else {
-                when (document.type) {
-                    ProductDocumentType.Mercury -> {
-                        taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getProductVetDocuments()?.filter {
-                            it.productNumber == document.matnr
-                        }.let {
-                            if (it.isNullOrEmpty()) {
-                                screenNavigator.openAlertVADProductNotMatchedScreen(document.productName)
-                            } else {
-                                val productDoc = taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getProductDocuments()?.findLast {dpdr ->
-                                    dpdr.documentID == document.id
-                                }!!
-                                screenNavigator.openMercuryListScreen(productDoc)
-                            }
-                        }
-                    }
-                }
+                actionWhenBatchesIsEmpty(document)
             }
+        }
+    }
+
+    private fun actionWhenBatchesIsEmpty(document: ProductDocumentVM) {
+        when (document.type) {
+            ProductDocumentType.Mercury -> {
+                actionsWhenProductDocumentIsMercury(document)
+            }
+            else -> Unit
+        }
+    }
+
+    private fun actionsWhenProductDocumentIsMercury(document: ProductDocumentVM) {
+        val products = taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getProductVetDocuments()?.filter {
+            it.productNumber == document.matnr
+        }
+        if (products.isNullOrEmpty()) {
+            screenNavigator.openAlertVADProductNotMatchedScreen(document.productName)
+        } else {
+            taskManager.getReceivingTask()?.taskRepository?.getReviseDocuments()?.getProductDocuments()?.findLast { dpdr ->
+                dpdr.documentID == document.id
+            }?.let { productDoc ->
+                screenNavigator.openMercuryListScreen(productDoc)
+            }.orIfNull {
+                Logg.e { "productDoc is null or not finded" }
+                screenNavigator.openAlertProductDocumentsNotFoundScreen()
+            }
+        }
+    }
+
+    private fun actionWhenBatchesIsNotEmpty(batches: List<ProductBatchRevise>, document: ProductDocumentVM) {
+        if (batches.size > 1) {
+            screenNavigator.openAlcoholBatchSelectScreen(document.matnr, document.type)
+        } else {
+            actionsForDocumentType(batches, document)
+        }
+    }
+
+    private fun actionsForDocumentType(batches: List<ProductBatchRevise>, document: ProductDocumentVM) {
+        when (document.type) {
+            ProductDocumentType.AlcoImport -> {
+                screenNavigator.openImportAlcoFormReviseScreen(batches.first().productNumber, batches.first().batchNumber)
+            }
+            ProductDocumentType.AlcoRus -> {
+                screenNavigator.openRussianAlcoFormReviseScreen(batches.first().productNumber, batches.first().batchNumber)
+            }
+            else -> Unit
         }
     }
 

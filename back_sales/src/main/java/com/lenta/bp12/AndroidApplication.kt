@@ -1,5 +1,6 @@
 package com.lenta.bp12
 
+import com.google.firebase.FirebaseApp
 import com.lenta.bp12.platform.extention.getAppComponent
 import com.lenta.shared.CoreApplication
 import com.lenta.shared.settings.DefaultConnectionSettings
@@ -19,6 +20,11 @@ class AndroidApplication : CoreApplication() {
                 techLogin = getString(R.string.ds_techLogin),
                 techPassword = getString(R.string.ds_techPassword)
         )
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        FirebaseApp.initializeApp(this)
     }
 
     override fun onHandleException() {

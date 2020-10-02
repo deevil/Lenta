@@ -11,8 +11,6 @@ interface ICreateTaskManager: ITaskManager<TaskCreate> {
 
     var isWasAddedProvider: Boolean
 
-    fun updateCurrentTask(task: TaskCreate?)
-
     fun removeGoodByMaterials(materialList: List<String>)
     fun addProviderInCurrentGood(providerInfo: ProviderInfo)
 }
