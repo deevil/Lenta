@@ -72,6 +72,12 @@
 
             <ImageView
                 style="@style/BottomIconStyle"
+                android:visibility="@{vm.goodInfo.hasZParts}"
+                android:onClick="@{(v) -> vm.navigator.openPictogrammInfoZPart()}"
+                android:src="@drawable/ic_z"/>
+
+            <ImageView
+                style="@style/BottomIconStyle"
                 app:goodTypeIcon="@{vm.productParamsUi.type}"
                 tools:src="@drawable/ic_excise_alcohol_white_32dp" />
 

@@ -131,9 +131,15 @@ class GoodInfoWlFragment : CoreFragment<FragmentGoodInfoWlBinding, GoodInfoWlVie
                 R.layout.layout_wl_good_parts_stocks,
                 container,
                 false).run {
-            rvConfig = DataBindingRecyclerViewConfig<ItemGoodZPartBinding>(
+            rvConfig = initRecycleAdapterDataBinding<ItemGoodZPartBinding>(
                     layoutId = R.layout.item_good_z_part,
-                    itemId = BR.zPart)
+                    itemId = BR.zPart,
+                    onItemBind = { binding, item ->
+                        binding.layoutInfo.setOnClickListener {
+                            this@GoodInfoWlFragment.vm.showZPartInfo(item)
+                        }
+                    }
+            )
 
             vm = this@GoodInfoWlFragment.vm
             lifecycleOwner = viewLifecycleOwner

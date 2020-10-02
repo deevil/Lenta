@@ -37,6 +37,7 @@
             <View style="@style/VerticalDivider" />
 
             <LinearLayout
+                android:id="@+id/layoutZPart"
                 style="@style/LinearCellStyle"
                 android:layout_weight="@integer/three_three_2">
 
