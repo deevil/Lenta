@@ -14,12 +14,12 @@ fun Double?.toStringFormatted(): String {
         String.format("%s", this)
 }
 
-fun Double?.sumWith(other: Double?, numberOfZeroes: Int = 2): Double {
+fun Double?.sumWith(other: Double?, numberOfZeroes: Int = 3): Double {
     val sum = ((this ?: 0.0).toBigDecimal() + (other ?: 0.0).toBigDecimal()).toDouble()
     return sum.roundTo(numberOfZeroes)
 }
 
-fun Double?.minus(other: Double?, numberOfZeroes: Int = 2): Double {
+fun Double?.minus(other: Double?, numberOfZeroes: Int = 3): Double {
     val sub = ((this ?: 0.0).toBigDecimal() - (other ?: 0.0).toBigDecimal()).toDouble()
     return sub.roundTo(numberOfZeroes)
 }

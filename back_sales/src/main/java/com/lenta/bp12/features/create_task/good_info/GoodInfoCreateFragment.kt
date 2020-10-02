@@ -17,7 +17,7 @@ import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
 
 class GoodInfoCreateFragment : CoreFragment<FragmentGoodInfoCreateBinding, GoodInfoCreateViewModel>(),
-        ToolbarButtonsClickListener, OnScanResultListener, OnBackPresserListener {
+        ToolbarButtonsClickListener, OnScanResultListener, OnBackPresserListener/*, OnKeyDownListener*/ {
 
     override fun getLayoutId(): Int = R.layout.fragment_good_info_create
 
@@ -58,6 +58,7 @@ class GoodInfoCreateFragment : CoreFragment<FragmentGoodInfoCreateBinding, GoodI
             R.id.b_5 -> vm.onClickApply()
             //ForTesting
             //R.id.b_3 -> vm.onScanResult("2711189005000")
+            //R.id.b_3 -> vm.onScanResult("2406786000018")
         }
     }
 
@@ -75,6 +76,22 @@ class GoodInfoCreateFragment : CoreFragment<FragmentGoodInfoCreateBinding, GoodI
         vm.updateData()
     }
 
+//    override fun onKeyDown(keyCode: KeyCode): Boolean {
+//        return when (keyCode) {
+//            //351076 150
+//            KeyCode.KEYCODE_0 -> {
+//                vm.onScanResult("147300249826851018001FZSIZAB5I6KZKWEQKPKZJHW6MYKVGAETXLPV7M5AIF7OXTQFIM347EWQGXAK65QGJFKTR7EQDHJQTJFSW5DNWTBU3BRLKVM7D6YZMYRBV6IOQY5ZXLPKLBHUZPBTRFTLQ")
+//                true
+//            }
+//            //351078 68
+//            KeyCode.KEYCODE_1 -> {
+//                vm.onScanResult("22N00002NWKKIF6RWF30123456789012345678901234567890123456789000000004")
+//                true
+//            }
+//            else -> false
+//        }
+//    }
+
     companion object {
         fun newInstance(quantity: String): GoodInfoCreateFragment {
             val args = Bundle()
@@ -83,7 +100,7 @@ class GoodInfoCreateFragment : CoreFragment<FragmentGoodInfoCreateBinding, GoodI
             fragment.arguments = args
             return fragment
         }
-        
+
         private const val SCREEN_NUMBER = "12"
         private const val QUANTITY_KEY = "QUANTITY_KEY"
     }

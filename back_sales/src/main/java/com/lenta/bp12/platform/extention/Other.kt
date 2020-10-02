@@ -208,7 +208,9 @@ fun ScanInfoResult.getParts(good: Good, date: String, providerCode: String, prod
                 providerCode = providerCode,
                 producerCode = producerCode,
                 date = formattedDate
-        )
+        ).apply {
+            quantity = partFromServer.quantity?.toDoubleOrNull().orIfNull { ZERO_QUANTITY }
+        }
     }.orEmpty()
 }
 

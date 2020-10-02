@@ -6,7 +6,6 @@ import com.lenta.bp12.managers.interfaces.ICreateTaskManager
 import com.lenta.bp12.model.GoodKind
 import com.lenta.bp12.model.MarkScreenStatus
 import com.lenta.bp12.model.WorkType
-import com.lenta.bp12.model.actionByNumber
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.create_task.TaskCreate
 import com.lenta.bp12.platform.ZERO_VOLUME
@@ -16,12 +15,8 @@ import com.lenta.bp12.platform.extention.getMarkType
 import com.lenta.bp12.request.pojo.good_info.GoodInfoParams
 import com.lenta.bp12.request.pojo.good_info.GoodInfoResult
 import com.lenta.shared.models.core.getMatrixType
-import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.extentions.launchUITryCatch
-import com.lenta.shared.utilities.orIfNull
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 /**
  * Базовый класс вьюмодели ответственный за список товаров
@@ -32,49 +27,8 @@ import kotlinx.coroutines.withContext
 abstract class BaseGoodListCreateViewModel : BaseGoodListViewModel<TaskCreate, ICreateTaskManager>(),
         IBaseGoodListCreateViewModel, OnOkInSoftKeyboardListener {
 
-    /**
-     * Метод проверяет длину отсканированного/введенного кода
-     * */
-    override fun checkSearchNumber(number: String) {
-        manager.ean = number
-        actionByNumber(
-                number = number,
-                funcForEan = ::getGoodByEan,
-                funcForMaterial = ::getGoodByMaterial,
-                funcForSapOrBar = navigator::showTwelveCharactersEntered,
-                funcForMark = ::checkMark,
-                funcForNotValidBarFormat = navigator::showIncorrectEanFormat
-        )
-        numberField.value = ""
-    }
-
-    /**
-     * Метод ищет есть ли уже товар в задании по EAN,
-     * если есть то отправляет на его карточку
-     * если нет то создает товар
-     * */
-    override fun getGoodByEan(ean: String) {
-        launchUITryCatch {
-            navigator.showProgressLoadingData()
-            val foundGood = withContext(Dispatchers.IO) { manager.findGoodByEan(ean) }
-            navigator.hideProgress()
-            foundGood?.let(::setFoundGood).orIfNull { loadGoodInfoByEan(ean) }
-        }
-    }
-
-    /**
-     * Метод ищет есть ли уже товар в задании по Sap коду,
-     * если есть то отправляет на его карточку
-     * если нет то создает товар
-     * */
-    override fun getGoodByMaterial(material: String) {
-        launchUITryCatch {
-            manager.clearEan()
-            navigator.showProgressLoadingData()
-            val foundGood = withContext(Dispatchers.IO) { manager.findGoodByMaterial(material) }
-            navigator.hideProgress()
-            foundGood?.let(::setFoundGood).orIfNull { loadGoodInfoByMaterial(material) }
-        }
+    override suspend fun actionWhenGoodNotFoundByEan(ean: String) {
+        loadGoodInfoByEan(ean)
     }
 
     override fun checkMark(number: String) {
@@ -83,15 +37,20 @@ abstract class BaseGoodListCreateViewModel : BaseGoodListViewModel<TaskCreate, I
                 manager.clearEan()
                 showProgressLoadingData()
                 val screenStatus = markManager.checkMark(number, WorkType.CREATE, false)
-                Logg.d { "--> MarkScreenStatus: ${screenStatus.name}" }
                 hideProgress()
-                when (screenStatus) {
-                    MarkScreenStatus.OK -> openMarkedGoodInfoCreateScreen()
-                    MarkScreenStatus.CANT_SCAN_PACK -> showCantScanPackAlert()
-                    MarkScreenStatus.NO_MARKTYPE_IN_SETTINGS -> navigator.showNoMarkTypeInSettings()
-                    MarkScreenStatus.INCORRECT_EAN_FORMAT -> navigator.showIncorrectEanFormat()
-                    else -> Unit
-                }
+                processScreenStatusFromMark(screenStatus)
+            }
+        }
+    }
+
+    private fun processScreenStatusFromMark(screenStatus: MarkScreenStatus) {
+        with(navigator){
+            when (screenStatus) {
+                MarkScreenStatus.OK -> openMarkedGoodInfoCreateScreen()
+                MarkScreenStatus.CANT_SCAN_PACK -> showCantScanPackAlert()
+                MarkScreenStatus.NO_MARKTYPE_IN_SETTINGS -> navigator.showNoMarkTypeInSettings()
+                MarkScreenStatus.INCORRECT_EAN_FORMAT -> navigator.showIncorrectEanFormat()
+                else -> Unit
             }
         }
     }
@@ -109,19 +68,8 @@ abstract class BaseGoodListCreateViewModel : BaseGoodListViewModel<TaskCreate, I
         }
     }
 
-    override suspend fun loadGoodInfoByEan(ean: String) {
-        navigator.showProgressLoadingData(::handleFailure)
-        goodInfoNetRequest(
-                GoodInfoParams(
-                        tkNumber = sessionInfo.market.orEmpty(),
-                        ean = ean,
-                        taskType = task.value?.type?.code.orEmpty()
-                )
-        ).also {
-            navigator.hideProgress()
-        }.either(::handleFailure) {
-            handleLoadGoodInfoResult(it)
-        }
+    override suspend fun actionWhenGoodNotFoundByMaterial(material: String) {
+        loadGoodInfoByMaterial(material)
     }
 
     override suspend fun loadGoodInfoByMaterial(material: String) {
@@ -134,9 +82,10 @@ abstract class BaseGoodListCreateViewModel : BaseGoodListViewModel<TaskCreate, I
                 )
         ).also {
             navigator.hideProgress()
-        }.either(::handleFailure) { result ->
-            handleLoadGoodInfoResult(result)
-        }
+        }.either(
+                fnL = ::handleFailure,
+                fnR = ::handleLoadGoodInfoResult
+        )
     }
 
     override fun handleLoadGoodInfoResult(result: GoodInfoResult) {

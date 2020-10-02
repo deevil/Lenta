@@ -342,7 +342,8 @@ abstract class BaseGoodInfoViewModel<R : Taskable, T : ITaskManager<R>> : CoreVi
     suspend fun getBasket(): Basket? {
         val good = good.value
         return good?.let {
-            manager.getBasket(it.provider.code.orEmpty(), it, false)
+            val providerCode = getProvider().code.orEmpty()
+            manager.getBasket(providerCode, it, false)
         }
     }
 
