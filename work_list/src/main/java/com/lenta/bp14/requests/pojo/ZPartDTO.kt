@@ -15,6 +15,9 @@ data class ZPartDTO(
         /** SAP-Производитель партии */
         @SerializedName("PRODUCER")
         val producer: String?,
+        /** SAP-Производитель партии */
+        @SerializedName("PRODUCER_NAME")
+        val producerName: String?,
         /** Количество */
         @SerializedName("QUANTITY")
         val quantity: String?,

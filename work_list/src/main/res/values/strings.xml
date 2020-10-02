@@ -128,9 +128,6 @@
     <string name="self_life">Срок годности</string>
 
     <!-- ZPart info -->
-    <string name="z_part_info_pattern">
-        %s\n
-        %s\n
-        ДП:%s / СГ:%s</string>
+    <string name="z_part_info_pattern">%s\n%s\nДП:%s / СГ:%s</string>
     <string name="storage_z_parts_pattern">Z-партии склада %s</string>
 </resources>

@@ -32,7 +32,7 @@ abstract class BaseGoodInfoNetRequest {
     private fun ZPartDTO.toZPart() = ZPart(
             batch = batch.orEmpty(),
             stock = stock.orEmpty(),
-            producer = producer.orEmpty(),
+            producer = producerName.orEmpty(),
             quantity = quantity.toDoubleOrZero(),
             meins = meins.orEmpty(),
             dateExpir = dateExpir.orEmpty(),
