@@ -45,6 +45,9 @@ class GoodInfoNeViewModel : BaseGoodInfoViewModel(), PageSelectionListener {
     @Inject
     lateinit var hyperHive: HyperHive
 
+    @Inject
+    lateinit var screenNavigator: IScreenNavigator
+
     private val maxQuantity: Double? by lazy {
         ZmpUtz14V001(hyperHive).getMaxPositionsProdWkl()
     }
@@ -283,6 +286,15 @@ class GoodInfoNeViewModel : BaseGoodInfoViewModel(), PageSelectionListener {
         }.orIfNull {
             Logg.w { "Stock value is null!" }
             navigator.showAlertWithStockItemNotFound()
+        }
+    }
+
+    fun showZPartInfo(index: Int) {
+        zParts.value?.getOrNull(index)?.let { zPart ->
+            screenNavigator.openZPartInfoFragment(zPart)
+        }.orIfNull {
+            Logg.w { "ZPart value is null!" }
+            screenNavigator.showAlertWithStockItemNotFound()
         }
     }
 

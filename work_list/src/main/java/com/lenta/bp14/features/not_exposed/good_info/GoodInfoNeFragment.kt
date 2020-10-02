@@ -103,7 +103,12 @@ class GoodInfoNeFragment : CoreFragment<FragmentGoodInfoNeBinding, GoodInfoNeVie
                 false).run {
             rvConfig = initRecycleAdapterDataBinding<ItemGoodZPartBinding>(
                     layoutId = R.layout.item_good_z_part,
-                    itemId = BR.zPart
+                    itemId = BR.zPart,
+                    onItemBind = {binding, item ->
+                        binding.layoutInfo.setOnClickListener {
+                            this@GoodInfoNeFragment.vm.showZPartInfo(item)
+                        }
+                    }
             )
 
             vm = this@GoodInfoNeFragment.vm

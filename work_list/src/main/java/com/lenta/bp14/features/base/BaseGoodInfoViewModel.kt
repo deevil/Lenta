@@ -2,7 +2,6 @@ package com.lenta.bp14.features.base
 
 import com.lenta.bp14.models.ui.ZPartUi
 import com.lenta.bp14.models.work_list.Stock
-import com.lenta.bp14.models.work_list.WorkListTask
 import com.lenta.bp14.models.work_list.ZPart
 import com.lenta.bp14.platform.resource.IResourceFormatter
 import com.lenta.shared.platform.viewmodel.CoreViewModel
@@ -25,10 +24,11 @@ abstract class BaseGoodInfoViewModel : CoreViewModel() {
         return this?.mapIndexed { index, zPart ->
             val quantity = "${zPart.quantity.dropZeros()} $goodUnitsName"
             ZPartUi(
-                    "${index + 1}",
-                    zPart.stock,
-                    resourceFormatter.getFormattedZPartInfo(zPart),
-                    quantity
+                    index = "${index + 1}",
+                    stock = zPart.stock,
+                    info = resourceFormatter.getFormattedZPartInfo(zPart),
+                    largeInfo = resourceFormatter.getLargeFormattedZPartInfo(zPart),
+                    quantity = quantity
             )
         }.orEmpty()
     }

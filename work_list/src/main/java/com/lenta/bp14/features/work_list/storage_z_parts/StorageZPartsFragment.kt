@@ -9,7 +9,6 @@ import com.lenta.bp14.databinding.FragmentStorageZPartsBinding
 import com.lenta.bp14.databinding.ItemStorageZPartBinding
 import com.lenta.bp14.di.WorkListComponent
 import com.lenta.bp14.platform.extentions.getHelperComponent
-import com.lenta.shared.di.CoreInjectHelper
 import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
@@ -44,7 +43,12 @@ class StorageZPartsFragment : CoreFragment<FragmentStorageZPartsBinding, Storage
         super.onViewCreated(view, savedInstanceState)
         binding?.rvConfig = initRecycleAdapterDataBinding<ItemStorageZPartBinding>(
                 layoutId = R.layout.item_storage_z_part,
-                itemId = BR.stock
+                itemId = BR.stock,
+                onItemBind = { binding, index ->
+                    binding.layoutZPart.setOnClickListener {
+                        vm.showZPartInfo(index)
+                    }
+                }
         )
     }
 

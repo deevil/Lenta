@@ -4,6 +4,7 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'io.fabric'
 apply from: '../fmp_settings.gradle'
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'kotlin-android-extensions'
 
 def prefixAppVersion = "14"
 

@@ -47,7 +47,12 @@ class StorageZPartsNotExposedFragment : CoreFragment<FragmentStorageZPartsNotExp
         super.onViewCreated(view, savedInstanceState)
         binding?.rvConfig = initRecycleAdapterDataBinding<ItemStorageZPartBinding>(
                 layoutId = R.layout.item_storage_z_part,
-                itemId = BR.stock
+                itemId = BR.stock,
+                onItemBind = { binding, index ->
+                    binding.layoutZPart.setOnClickListener {
+                        vm.showZPartInfo(index)
+                    }
+                }
         )
     }
 
