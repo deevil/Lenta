@@ -48,20 +48,24 @@ class MemoryTaskMercuryDiscrepanciesRepository : ITaskMercuryDiscrepanciesReposi
         return addMercuryDiscrepancy(discrepancy)
     }
 
+    @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
     override fun deleteMercuryDiscrepancy(delDiscrepancy: TaskMercuryDiscrepancies): Boolean {
-        mercuryDiscrepancies.map { it }.filter {discrepancy ->
-            if (delDiscrepancy.materialNumber == discrepancy.materialNumber &&
-                    delDiscrepancy.vetDocumentID == discrepancy.vetDocumentID &&
-                    (delDiscrepancy.typeDiscrepancies == discrepancy.typeDiscrepancies
-                            || discrepancy.typeDiscrepancies.isEmpty())) {
+        mercuryDiscrepancies.map { it }.filter { discrepancy ->
+            val isNeedToRemove = discrepancy.isDiscrepancyNeedToRemove()
+            if (isNeedToRemove) {
                 mercuryDiscrepancies.remove(discrepancy)
-                return@filter true
             }
-            return@filter false
-
+            return@filter isNeedToRemove
         }.let {
             return it.isNotEmpty()
         }
+    }
+
+    private fun TaskMercuryDiscrepancies.isDiscrepancyNeedToRemove(): Boolean {
+        return (this.materialNumber == this.materialNumber &&
+                this.vetDocumentID == this.vetDocumentID &&
+                (this.typeDiscrepancies == this.typeDiscrepancies
+                        || this.typeDiscrepancies.isEmpty()))
     }
 
     private fun changeGroupByMercuryDiscrepancies(delDiscrepancy: TaskMercuryDiscrepancies) {
@@ -71,7 +75,6 @@ class MemoryTaskMercuryDiscrepanciesRepository : ITaskMercuryDiscrepanciesReposi
 
     override fun deleteMercuryDiscrepancyOfProduct(materialNumber: String, typeDiscrepancies: String) {
         findMercuryDiscrepanciesOfProduct(materialNumber)
-                .asSequence()
                 .groupBy {
                     it.typeDiscrepancies == typeDiscrepancies
                 }
@@ -83,7 +86,6 @@ class MemoryTaskMercuryDiscrepanciesRepository : ITaskMercuryDiscrepanciesReposi
 
     override fun deleteMercuryDiscrepanciesForProduct(product: TaskProductInfo) {
         findMercuryDiscrepanciesOfProduct(product.materialNumber)
-                .asSequence()
                 .groupBy { it.vetDocumentID }
                 .map { groupByMercuryDiscrepancies ->
                     groupByMercuryDiscrepancies.value.map { changeGroupByMercuryDiscrepancies(it)}

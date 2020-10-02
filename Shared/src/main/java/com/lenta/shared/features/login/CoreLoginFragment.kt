@@ -11,7 +11,8 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.scan.OnScanResultListener
 
-abstract class CoreLoginFragment : CoreFragment<com.lenta.shared.databinding.FragmentLoginBinding, CoreAuthViewModel>(), OnBackPresserListener, ToolbarButtonsClickListener, OnScanResultListener {
+abstract class CoreLoginFragment : CoreFragment<com.lenta.shared.databinding.FragmentLoginBinding, CoreAuthViewModel>(),
+        OnBackPresserListener, ToolbarButtonsClickListener, OnScanResultListener {
 
     private var viewFocus: View? = null
 
@@ -34,7 +35,7 @@ abstract class CoreLoginFragment : CoreFragment<com.lenta.shared.databinding.Fra
         bottomToolbarUiModel.uiModelButton5.let { buttonUiModel ->
             buttonUiModel.show(ButtonDecorationInfo.enterToApp)
             buttonUiModel.requestFocus()
-            vm.enterEnabled.observe(this, Observer { buttonUiModel.enabled.value = it })
+            vm.enterEnabled.observe(this, { buttonUiModel.enabled.value = it })
         }
     }
 

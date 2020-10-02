@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Handler
 import android.preference.PreferenceManager
-import androidx.room.Room
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.lenta.shared.BuildConfig
@@ -16,9 +15,6 @@ import com.lenta.shared.account.SessionInfo
 import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.analytics.FmpAnalytics
 import com.lenta.shared.analytics.IAnalytics
-import com.lenta.shared.analytics.db.FileArchivator
-import com.lenta.shared.analytics.db.RoomAppDatabase
-import com.lenta.shared.analytics.db.dao.LogDao
 import com.lenta.shared.exception.CoreFailureInterpreter
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.only_one_app.LockManager
@@ -56,7 +52,6 @@ import com.lenta.shared.settings.DefaultConnectionSettings
 import com.lenta.shared.settings.DefaultSettingsManager
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.Logg
-import com.lenta.shared.utilities.extentions.isWriteExternalStoragePermissionGranted
 import com.lenta.shared.utilities.prepareFolder
 import com.mobrun.plugin.api.HyperHive
 import com.mobrun.plugin.api.HyperHiveState
@@ -212,8 +207,8 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
 
     @Provides
     @Singleton
-    internal fun provideIAnalitycs(hyperHive: HyperHive, logDao: LogDao): IAnalytics {
-        return FmpAnalytics(hyperHive, logDao)
+    internal fun provideIAnalitycs(hyperHive: HyperHive): IAnalytics {
+        return FmpAnalytics(hyperHive)
     }
 
     @Provides
@@ -237,46 +232,6 @@ class CoreModule(val application: Application, val defaultConnectionSettings: De
     @Singleton
     internal fun provideBackResultHelper(): BackFragmentResultHelper {
         return BackFragmentResultHelper()
-    }
-
-    @Provides
-    @Singleton
-    fun provideRoomDB(context: Context): RoomAppDatabase {
-        val logsDbPath = "$DB_PATH/logs/${context.packageName}"
-
-        prepareFolder(logsDbPath)
-
-        val dbLogName = "logs_${context.packageName}.sqlite"
-        val dbLogFilePath = "$logsDbPath/$dbLogName"
-
-
-        var isBackUpCreating = false
-
-        if (context.isWriteExternalStoragePermissionGranted()) {
-            val fileArchivator = FileArchivator(filePath = dbLogFilePath,
-                    archivePath = "$logsDbPath/archives")
-
-            isBackUpCreating = fileArchivator.backup()
-
-        }
-
-        return Room.databaseBuilder(
-                context,
-                RoomAppDatabase::class.java, dbLogFilePath
-        ).allowMainThreadQueries()
-                .build().apply {
-                    if (isBackUpCreating) {
-                        this.clearAllTables()
-                    }
-                }
-
-
-    }
-
-    @Provides
-    @Singleton
-    fun provideLogDao(roomAppDatabase: RoomAppDatabase): LogDao {
-        return roomAppDatabase.logDao()
     }
 
     @Provides

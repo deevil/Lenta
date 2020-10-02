@@ -164,7 +164,7 @@ class ExternalSupplyTaskListViewModel : CoreViewModel(), PageSelectionListener, 
             task.taskInfo.apply {
                 when (blockType) {
                     "2" -> navigator.showAlertBlockedTaskAnotherUser(lockUser, lockIp)
-                    "1" -> navigator.showAlertBlockedTaskByMe(lockUser) { openTask(task) }
+                    "1" -> navigator.showAlertBlockedTaskByMe { openTask(task) }
                     else -> openTask(task)
                 }
             }

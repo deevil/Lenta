@@ -47,6 +47,7 @@ class CompositeDocReviseViewModel : CoreViewModel() {
     }
 
 
+    @Suppress("UNUSED_PARAMETER")
     fun checkedChanged(position: Int, checked: Boolean) {
         listComplexDoc.value = listComplexDoc.value
     }
