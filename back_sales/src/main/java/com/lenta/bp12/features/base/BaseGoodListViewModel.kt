@@ -64,6 +64,10 @@ abstract class BaseGoodListViewModel<R : Taskable, T : ITaskManager<R>> : CoreVi
     abstract fun getGoodByEan(ean: String)
     abstract fun setFoundGood(foundGood: Good)
 
+    fun onClickProperties() {
+        navigator.openBasketPropertiesScreen()
+    }
+
     fun checkThatNoneOfGoodAreMarkType(goodTitle: String) {
         if (task.value?.goods?.none { it.isMarked() } == true) {
             navigator.showForGoodNeedScanFirstMark(goodTitle)
@@ -72,5 +76,22 @@ abstract class BaseGoodListViewModel<R : Taskable, T : ITaskManager<R>> : CoreVi
 
     fun onScanResult(data: String) {
         checkSearchNumber(data)
+    }
+
+    fun getMrc(good: Good, task: R): String {
+        val mrc = good.maxRetailPrice
+
+        return mrc.takeIf { isDivByMrcAndItsNotZero(mrc, task) }
+                ?.let { resource.mrcDashCostRub(it) }
+                .orEmpty()
+    }
+
+    private fun isDivByMrcAndItsNotZero(mrc: String, task: R): Boolean {
+        val isDivByMinimalPrice = task.type?.isDivByMinimalPrice == true
+        return isDivByMinimalPrice && (mrc.isEmpty().not() && mrc != ZERO_MRC_STRING)
+    }
+
+    companion object {
+        private const val ZERO_MRC_STRING = "0"
     }
 }

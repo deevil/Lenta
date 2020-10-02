@@ -7,7 +7,6 @@ import com.lenta.bp12.features.create_task.base.BaseGoodListCreateViewModel
 import com.lenta.bp12.features.create_task.task_content.TaskContentFragment
 import com.lenta.bp12.managers.interfaces.ICreateTaskManager
 import com.lenta.bp12.model.pojo.Basket
-import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.model.pojo.create_task.TaskCreate
 import com.lenta.bp12.model.pojo.extentions.*
 import com.lenta.shared.utilities.Logg
@@ -119,10 +118,6 @@ class BasketCreateGoodListViewModel : BaseGoodListCreateViewModel(), OnOkInSoftK
         navigator.goBackTo(TaskContentFragment::class.simpleName)
     }
 
-    fun onClickProperties() {
-        navigator.openBasketPropertiesScreen()
-    }
-
     fun onClickClose() {
         navigator.showCloseBasketDialog(
                 yesCallback = {
@@ -201,11 +196,5 @@ class BasketCreateGoodListViewModel : BaseGoodListCreateViewModel(), OnOkInSoftK
             }
             navigator.goBackTo(TaskContentFragment::class.simpleName)
         }
-    }
-
-    private fun getMrc(good: Good, task: TaskCreate): String {
-        val mrc = good.maxRetailPrice
-        val mrcString = resource.mrcDashCostRub(mrc)
-        return mrcString.takeIf { task.type.isDivByMinimalPrice && mrc.isEmpty().not() }.orEmpty()
     }
 }
