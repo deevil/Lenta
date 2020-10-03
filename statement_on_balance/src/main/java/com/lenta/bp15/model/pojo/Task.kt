@@ -3,7 +3,7 @@ package com.lenta.bp15.model.pojo
 import com.lenta.bp15.features.task_card.TaskCardUi
 import com.lenta.bp15.features.task_list.ItemTaskUi
 import com.lenta.bp15.repository.database.pojo.TaskType
-import com.lenta.bp15.repository.net_requests.pojo.MarkRawInfo
+import com.lenta.bp15.repository.requests.pojo.MarkRawInfo
 import com.lenta.shared.utilities.extentions.toSapBooleanString
 
 data class Task(

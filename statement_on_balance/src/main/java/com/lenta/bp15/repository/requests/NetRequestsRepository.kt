@@ -1,6 +1,6 @@
-package com.lenta.bp15.repository.net_requests
+package com.lenta.bp15.repository.requests
 
-import com.lenta.bp15.repository.net_requests.pojo.*
+import com.lenta.bp15.repository.requests.pojo.*
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.fmp.ObjectRawStatus
 import com.lenta.shared.functional.Either

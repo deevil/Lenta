@@ -18,7 +18,7 @@ import com.lenta.bp15.main.MainViewModel
 import com.lenta.bp15.platform.navigation.IScreenNavigator
 import com.lenta.bp15.platform.resource.IResourceManager
 import com.lenta.bp15.repository.database.IDatabaseRepository
-import com.lenta.bp15.repository.net_requests.INetRequestsRepository
+import com.lenta.bp15.repository.requests.INetRequestsRepository
 import com.lenta.shared.di.AppScope
 import com.lenta.shared.di.CoreComponent
 import dagger.Component

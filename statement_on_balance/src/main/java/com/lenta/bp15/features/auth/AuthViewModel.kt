@@ -3,8 +3,8 @@ package com.lenta.bp15.features.auth
 import androidx.lifecycle.MutableLiveData
 import com.lenta.bp15.platform.navigation.IScreenNavigator
 import com.lenta.bp15.repository.IRepoInMemoryHolder
-import com.lenta.bp15.repository.net_requests.INetRequestsRepository
-import com.lenta.bp15.repository.net_requests.pojo.UserPermissionsParams
+import com.lenta.bp15.repository.requests.INetRequestsRepository
+import com.lenta.bp15.repository.requests.pojo.UserPermissionsParams
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.features.login.CoreAuthViewModel

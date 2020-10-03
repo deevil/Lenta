@@ -1,4 +1,4 @@
-package com.lenta.bp15.repository.net_requests.pojo
+package com.lenta.bp15.repository.requests.pojo
 
 import com.google.gson.annotations.SerializedName
 import com.lenta.bp15.model.enum.ShoesMarkType

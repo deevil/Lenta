@@ -7,8 +7,9 @@ import com.lenta.bp15.model.pojo.Good
 import com.lenta.bp15.model.pojo.Task
 import com.lenta.bp15.platform.navigation.IScreenNavigator
 import com.lenta.bp15.repository.database.IDatabaseRepository
-import com.lenta.bp15.repository.net_requests.INetRequestsRepository
-import com.lenta.bp15.repository.net_requests.pojo.*
+import com.lenta.bp15.repository.persist.IPersistRepository
+import com.lenta.bp15.repository.requests.INetRequestsRepository
+import com.lenta.bp15.repository.requests.pojo.*
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.device_info.DeviceInfo
@@ -27,7 +28,8 @@ class TaskManager @Inject constructor(
         private val sessionInfo: ISessionInfo,
         private val deviceInfo: DeviceInfo,
         private val database: IDatabaseRepository,
-        private val netRequests: INetRequestsRepository
+        private val netRequests: INetRequestsRepository,
+        private val persistRepository: IPersistRepository
 ) : ITaskManager, CoroutineScope {
 
     private val job = SupervisorJob()
@@ -171,8 +173,19 @@ class TaskManager @Inject constructor(
     }
 
     override fun backupCurrentTask() {
-        // Сохранить текущую задачу в базу данных
+        currentTask.value?.let { task ->
+            persistRepository.saveTaskData(task)
+        }
+    }
 
+    override fun restoreCurrentTask() {
+        persistRepository.getSavedTaskData()?.let { task ->
+            currentTask.value = task
+        }
+    }
+
+    override fun removeCurrentTaskBackup() {
+        persistRepository.clearSavedData()
     }
 
     private fun handleFailure(failure: Failure) {
@@ -204,6 +217,7 @@ interface ITaskManager {
     suspend fun getMaterialByEan(ean: String): String?
     suspend fun saveTaskDataToServer(handleSaveDataSuccess: () -> Unit)
     fun backupCurrentTask()
-
+    fun restoreCurrentTask()
+    fun removeCurrentTaskBackup()
 
 }

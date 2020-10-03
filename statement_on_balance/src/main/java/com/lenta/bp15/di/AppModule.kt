@@ -6,12 +6,14 @@ import com.lenta.bp15.platform.navigation.IScreenNavigator
 import com.lenta.bp15.platform.navigation.ScreenNavigator
 import com.lenta.bp15.platform.resource.IResourceManager
 import com.lenta.bp15.platform.resource.ResourceManager
-import com.lenta.bp15.repository.database.DatabaseRepository
-import com.lenta.bp15.repository.database.IDatabaseRepository
 import com.lenta.bp15.repository.IRepoInMemoryHolder
 import com.lenta.bp15.repository.RepoInMemoryHolder
-import com.lenta.bp15.repository.net_requests.INetRequestsRepository
-import com.lenta.bp15.repository.net_requests.NetRequestsRepository
+import com.lenta.bp15.repository.database.DatabaseRepository
+import com.lenta.bp15.repository.database.IDatabaseRepository
+import com.lenta.bp15.repository.persist.IPersistRepository
+import com.lenta.bp15.repository.persist.PersistRepository
+import com.lenta.bp15.repository.requests.INetRequestsRepository
+import com.lenta.bp15.repository.requests.NetRequestsRepository
 import com.lenta.shared.di.AppScope
 import dagger.Binds
 import dagger.Module
@@ -33,6 +35,10 @@ class AppModule {
         @Binds
         @AppScope
         fun bindNetRequestsRepository(realisation: NetRequestsRepository): INetRequestsRepository
+
+        @Binds
+        @AppScope
+        fun bindPersistTaskData(realisation: PersistRepository): IPersistRepository
 
         @Binds
         @AppScope

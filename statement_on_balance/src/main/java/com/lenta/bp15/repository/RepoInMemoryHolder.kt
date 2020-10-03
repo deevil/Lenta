@@ -1,6 +1,6 @@
 package com.lenta.bp15.repository
 
-import com.lenta.bp15.repository.net_requests.pojo.UserPermissionsResult
+import com.lenta.bp15.repository.requests.pojo.UserPermissionsResult
 import com.lenta.shared.requests.PermissionsResult
 import javax.inject.Inject
 
