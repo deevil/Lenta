@@ -7,7 +7,7 @@ data class ItemTaskUi(
         val number: String,
         val firstLine: String,
         val secondLine: String,
-        val isFinished: Boolean,
+        val isNotFinished: Boolean,
         val lockType: BlockType,
         val goodsQuantity: String
 )

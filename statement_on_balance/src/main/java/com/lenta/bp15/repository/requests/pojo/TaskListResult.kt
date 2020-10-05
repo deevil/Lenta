@@ -37,7 +37,7 @@ data class TaskListResult(
                             user = taskRawInfo.lockUser,
                             ip = taskRawInfo.lockIp
                     ),
-                    isFinished = !taskRawInfo.isNotFinish.isSapTrue(),
+                    isNotFinished = taskRawInfo.isNotFinish.isSapTrue(),
                     comment = taskRawInfo.comment
             )
         }

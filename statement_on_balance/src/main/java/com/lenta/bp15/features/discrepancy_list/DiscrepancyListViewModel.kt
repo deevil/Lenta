@@ -4,7 +4,6 @@ import androidx.lifecycle.map
 import com.lenta.bp15.features.task_list.TaskListFragment
 import com.lenta.bp15.model.ITaskManager
 import com.lenta.bp15.platform.navigation.IScreenNavigator
-import com.lenta.bp15.platform.resource.IResourceManager
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.mapSkipNulls
@@ -45,10 +44,12 @@ class DiscrepancyListViewModel : CoreViewModel() {
 
     fun onClickSkip() {
         navigator.showUnprocessedGoodsInTask(
-                publishedCallback = ::saveTaskData,
+                publishedCallback = {
+                    manager.makeCurrentTaskUnfinished()
+                    saveTaskData()
+                },
                 processedCallback = {
                     navigator.showRequiredToDestroyNonGluedMarks {
-                        manager.finishCurrentTask()
                         saveTaskData()
                     }
                 }

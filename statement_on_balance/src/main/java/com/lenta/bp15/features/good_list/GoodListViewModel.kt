@@ -116,7 +116,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                 navigator.openDiscrepancyListScreen()
             } else {
                 launchUITryCatch {
-                    manager.finishCurrentTask()
+                    manager.makeCurrentTaskUnfinished()
                     manager.saveTaskDataToServer(::handleSaveDataSuccess)
                 }
             }
@@ -124,6 +124,7 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     private fun handleSaveDataSuccess() {
+        manager.prepareToUpdateTaskList()
         navigator.goBackTo(TaskListFragment::class.simpleName)
         navigator.showSuccessSaveData()
     }

@@ -16,7 +16,7 @@ data class Task(
         val goodsQuantity: Int,
         val marksQuantity: Int,
         val block: Block,
-        var isFinished: Boolean,
+        var isNotFinished: Boolean,
         val comment: String,
         var goods: List<Good> = emptyList()
 ) {
@@ -37,7 +37,7 @@ data class Task(
                 number = number,
                 firstLine = firstLine,
                 secondLine = secondLine,
-                isFinished = isFinished,
+                isNotFinished = isNotFinished,
                 lockType = block.type,
                 goodsQuantity = "$goodsQuantity"
         )
@@ -64,10 +64,6 @@ data class Task(
             this.hashCode() != startHashState
         } else false
     }
-
-    /*fun clearStartState() {
-        startHashState = NO_HASH
-    }*/
 
     private fun isNotSavedStartState(): Boolean {
         return startHashState == NO_HASH

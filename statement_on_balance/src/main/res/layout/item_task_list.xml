@@ -80,7 +80,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_play_arrow_gray_24dp"
-                    android:visibility="@{!item.finished}" />
+                    android:visibility="@{item.notFinished}" />
 
                 <ImageView
                     android:layout_width="wrap_content"

@@ -86,6 +86,10 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         selectedPage.value = position
     }
 
+    fun isNeedUpdateTaskList(): Boolean {
+        return manager.isNeedUpdateTaskList
+    }
+
     override fun onOkInSoftKeyboard(): Boolean {
         return false
     }

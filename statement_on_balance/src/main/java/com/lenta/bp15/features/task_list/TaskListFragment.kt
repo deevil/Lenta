@@ -62,7 +62,9 @@ class TaskListFragment : KeyDownCoreFragment<FragmentTaskListBinding, TaskListVi
     override fun onResume() {
         super.onResume()
 
-        vm.updateTaskList()
+        if (vm.isNeedUpdateTaskList()) {
+            vm.updateTaskList()
+        }
 
         if (vm.selectedPage.value == 0) {
             vm.requestFocusToProcessingField.value = true

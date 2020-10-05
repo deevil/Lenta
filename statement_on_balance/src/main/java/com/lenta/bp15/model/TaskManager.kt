@@ -38,6 +38,8 @@ class TaskManager @Inject constructor(
 
     private val failure = SingleLiveEvent<Failure>()
 
+    override var isNeedUpdateTaskList = true
+
     override val processingTasks = MutableLiveData<List<Task>>(emptyList())
 
     override val searchTasks = MutableLiveData<List<Task>>(emptyList())
@@ -79,6 +81,8 @@ class TaskManager @Inject constructor(
                 }
             }
 
+            isNeedUpdateTaskList = false
+
             navigator.hideProgress()
         }
     }
@@ -102,6 +106,11 @@ class TaskManager @Inject constructor(
 
             navigator.hideProgress()
         }
+    }
+
+    override fun prepareToUpdateTaskList() {
+        searchTasks.value = emptyList()
+        isNeedUpdateTaskList = true
     }
 
     private suspend fun getTaskListFromResult(result: TaskListResult): List<Task> {
@@ -152,9 +161,9 @@ class TaskManager @Inject constructor(
         navigator.hideProgress()
     }
 
-    override fun finishCurrentTask() {
+    override fun makeCurrentTaskUnfinished() {
         currentTask.value?.let { task ->
-            task.isFinished = true
+            task.isNotFinished = true
             updateCurrentTask(task)
         }
     }
@@ -167,7 +176,7 @@ class TaskManager @Inject constructor(
                     taskNumber = task.number,
                     userNumber = sessionInfo.personnelNumber.orEmpty(),
                     deviceIp = deviceInfo.getDeviceIp(),
-                    isFinish = task.isFinished.toSapBooleanString(),
+                    isFinish = (!task.isNotFinished).toSapBooleanString(),
                     marks = task.getProcessedMarkListForSave()
             )).either(::handleFailure) {
                 removeCurrentTaskBackup()
@@ -208,6 +217,8 @@ class TaskManager @Inject constructor(
 
 interface ITaskManager {
 
+    var isNeedUpdateTaskList: Boolean
+
     val processingTasks: MutableLiveData<List<Task>>
     val searchTasks: MutableLiveData<List<Task>>
     val currentTask: MutableLiveData<Task>
@@ -223,10 +234,11 @@ interface ITaskManager {
     fun loadContentToCurrentTask()
     suspend fun unlockTask(task: Task)
     suspend fun getMaterialByEan(ean: String): String?
-    fun finishCurrentTask()
+    fun makeCurrentTaskUnfinished()
     suspend fun saveTaskDataToServer(handleSaveDataSuccess: () -> Unit)
     fun backupCurrentTask()
     fun restoreCurrentTask()
     fun removeCurrentTaskBackup()
+    fun prepareToUpdateTaskList()
 
 }
