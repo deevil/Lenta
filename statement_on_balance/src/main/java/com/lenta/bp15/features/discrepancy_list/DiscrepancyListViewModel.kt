@@ -1,10 +1,13 @@
 package com.lenta.bp15.features.discrepancy_list
 
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.map
+import com.lenta.bp15.features.task_list.TaskListFragment
+import com.lenta.bp15.model.ITaskManager
 import com.lenta.bp15.platform.navigation.IScreenNavigator
 import com.lenta.bp15.platform.resource.IResourceManager
-import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.platform.viewmodel.CoreViewModel
+import com.lenta.shared.utilities.extentions.launchUITryCatch
+import com.lenta.shared.utilities.extentions.mapSkipNulls
 import javax.inject.Inject
 
 class DiscrepancyListViewModel : CoreViewModel() {
@@ -13,29 +16,54 @@ class DiscrepancyListViewModel : CoreViewModel() {
     lateinit var navigator: IScreenNavigator
 
     @Inject
-    lateinit var sessionInfo: ISessionInfo
-
-    @Inject
-    lateinit var resource: IResourceManager
+    lateinit var manager: ITaskManager
 
 
-    val title by lazy {
-        "ПНБ(ТК)-303 / Постановка на баланс"
+    /**
+    Переменные
+     */
+
+    private val task by lazy {
+        manager.currentTask
     }
 
-    val discrepancyList = MutableLiveData(
-            List((3..7).random()) {
-                val position = (it + 1).toString()
-                ItemDiscrepancyUi(
-                        position = position,
-                        name = "Test name $position",
-                        quantity = (1..25).random().toString()
-                )
+    val title by lazy {
+        task.map { it.getCodeWithName() }
+    }
+
+    val discrepancyList by lazy {
+        task.mapSkipNulls { task ->
+            task.goods.filter { it.isExistUnprocessedMarks() }.mapIndexed { index, good ->
+                good.convertToItemDiscrepancyUi(index)
             }
-    )
+        }
+    }
+
+    /**
+    Методы
+     */
 
     fun onClickSkip() {
+        navigator.showUnprocessedGoodsInTask(
+                publishedCallback = ::saveTaskData,
+                processedCallback = {
+                    navigator.showRequiredToDestroyNonGluedMarks {
+                        manager.finishCurrentTask()
+                        saveTaskData()
+                    }
+                }
+        )
+    }
 
+    private fun saveTaskData() {
+        launchUITryCatch {
+            manager.saveTaskDataToServer(::handleSaveDataSuccess)
+        }
+    }
+
+    private fun handleSaveDataSuccess() {
+        navigator.goBackTo(TaskListFragment::class.simpleName)
+        navigator.showSuccessSaveData()
     }
 
 }

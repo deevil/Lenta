@@ -152,6 +152,13 @@ class TaskManager @Inject constructor(
         navigator.hideProgress()
     }
 
+    override fun finishCurrentTask() {
+        currentTask.value?.let { task ->
+            task.isFinished = true
+            updateCurrentTask(task)
+        }
+    }
+
     override suspend fun saveTaskDataToServer(handleSaveDataSuccess: () -> Unit) {
         currentTask.value?.let { task ->
             navigator.showProgressLoadingData()
@@ -160,9 +167,10 @@ class TaskManager @Inject constructor(
                     taskNumber = task.number,
                     userNumber = sessionInfo.personnelNumber.orEmpty(),
                     deviceIp = deviceInfo.getDeviceIp(),
-                    isFinish = (!task.isExistUnprocessedGoods()).toSapBooleanString(),
+                    isFinish = task.isFinished.toSapBooleanString(),
                     marks = task.getProcessedMarkListForSave()
             )).either(::handleFailure) {
+                removeCurrentTaskBackup()
                 handleSaveDataSuccess.invoke()
             }
         }
@@ -215,6 +223,7 @@ interface ITaskManager {
     fun loadContentToCurrentTask()
     suspend fun unlockTask(task: Task)
     suspend fun getMaterialByEan(ean: String): String?
+    fun finishCurrentTask()
     suspend fun saveTaskDataToServer(handleSaveDataSuccess: () -> Unit)
     fun backupCurrentTask()
     fun restoreCurrentTask()

@@ -16,7 +16,7 @@ data class Task(
         val goodsQuantity: Int,
         val marksQuantity: Int,
         val block: Block,
-        val isFinished: Boolean,
+        var isFinished: Boolean,
         val comment: String,
         var goods: List<Good> = emptyList()
 ) {

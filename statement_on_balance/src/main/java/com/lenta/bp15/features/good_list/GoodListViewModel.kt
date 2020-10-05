@@ -111,11 +111,14 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     }
 
     fun onClickComplete() {
-        if (isExistUnprocessedGoods()) {
-            navigator.openDiscrepancyListScreen()
-        } else {
-            launchUITryCatch {
-                manager.saveTaskDataToServer(::handleSaveDataSuccess)
+        navigator.showMakeTaskProcessedAndClose {
+            if (isExistUnprocessedGoods()) {
+                navigator.openDiscrepancyListScreen()
+            } else {
+                launchUITryCatch {
+                    manager.finishCurrentTask()
+                    manager.saveTaskDataToServer(::handleSaveDataSuccess)
+                }
             }
         }
     }

@@ -137,6 +137,7 @@ class GoodInfoViewModel : CoreViewModel() {
         quantity.value?.let { quantity ->
             if (quantity > 0) {
                 navigator.showUnsavedDataWillBeRemoved {
+                    manager.removeCurrentTaskBackup()
                     navigator.goBack()
                     navigator.goBack()
                 }

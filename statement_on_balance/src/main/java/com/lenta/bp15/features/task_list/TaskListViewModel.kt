@@ -124,7 +124,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         with(task) {
             when (block.type) {
                 BlockType.LOCK -> navigator.showAlertBlockedTaskAnotherUser(block.user, block.ip)
-                BlockType.SELF_LOCK -> navigator.showAlertBlockedTaskByMe(block.user) { openTaskCard(task) }
+                BlockType.SELF_LOCK -> navigator.showAlertBlockedTaskByMe { openTaskCard(task) }
                 else -> openTaskCard(task)
             }
         }
@@ -139,7 +139,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         updateTaskList()
     }
 
-    private fun updateTaskList() {
+    fun updateTaskList() {
         manager.loadProcessingTaskList()
     }
 
