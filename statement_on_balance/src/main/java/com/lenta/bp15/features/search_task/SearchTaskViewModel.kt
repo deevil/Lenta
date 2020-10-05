@@ -61,6 +61,22 @@ class SearchTaskViewModel : CoreViewModel() {
         isUnisex.value = false
     }
 
+    fun onScanResult(data: String) {
+        actionByNumber(
+                number = data,
+                funcForEan = { ean, _ -> actionWithEan(ean) },
+                funcForNotValidFormat = navigator::showIncorrectEanFormat
+        )
+    }
+
+    private fun actionWithEan(ean: String) {
+        launchUITryCatch {
+            manager.getMaterialByEan(ean)?.takeLast(6)?.let { material ->
+                number.value = material
+            }
+        }
+    }
+
     fun onClickSearch() {
         launchUITryCatch {
             manager.loadSearchTaskList(TaskSearchParams(
@@ -80,13 +96,6 @@ class SearchTaskViewModel : CoreViewModel() {
             isUnisex.value == true -> ShoesMarkType.UNISEX.code
             else -> ShoesMarkType.UNKNOWN.code
         }
-    }
-
-    fun onScanResult(data: String) {
-        actionByNumber(
-                number = data,
-                funcForNotValidFormat = navigator::showIncorrectEanFormat
-        )
     }
 
 }
