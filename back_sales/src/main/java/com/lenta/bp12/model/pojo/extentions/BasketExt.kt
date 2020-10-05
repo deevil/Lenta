@@ -3,15 +3,18 @@ package com.lenta.bp12.model.pojo.extentions
 import com.lenta.bp12.model.pojo.Basket
 import com.lenta.bp12.model.pojo.Good
 import com.lenta.bp12.platform.ZERO_QUANTITY
+import com.lenta.shared.utilities.extentions.minus
+import com.lenta.shared.utilities.extentions.sumWith
+import com.lenta.shared.utilities.extentions.times
 import com.lenta.shared.utilities.orIfNull
 
 fun Basket.addGood(good: Good, quantity: Double) {
     val goodsOneUnitVolume = good.getVolumeCorrespondingToUom()
-    val goodWholeVolume = goodsOneUnitVolume * quantity
+    val goodWholeVolume = goodsOneUnitVolume.times(quantity, 6)
     if (freeVolume >= goodWholeVolume) {
-        freeVolume -= (goodsOneUnitVolume * quantity)
+        freeVolume = freeVolume.minus(goodWholeVolume, 6)
         val oldQuantity = goods[good].orIfNull { ZERO_QUANTITY }
-        val newQuantity = quantity + oldQuantity
+        val newQuantity = quantity.sumWith(oldQuantity)
         goods[good] = newQuantity
     }
 }
@@ -19,10 +22,10 @@ fun Basket.addGood(good: Good, quantity: Double) {
 fun Basket.deleteGood(good: Good) {
     val goodsOneUnitVolume = good.getVolumeCorrespondingToUom()
     val oldQuantity = goods[good].orIfNull { ZERO_QUANTITY }
-    val volumeToReturnToBasket = oldQuantity * goodsOneUnitVolume
-    val basketsFreeVolumePlusGoodsVolume = freeVolume + volumeToReturnToBasket
+    val volumeToReturnToBasket = oldQuantity.times(goodsOneUnitVolume, 6)
+    val basketsFreeVolumePlusGoodsVolume = freeVolume.sumWith(volumeToReturnToBasket, 6)
     if (basketsFreeVolumePlusGoodsVolume <= volume) {
-        freeVolume += volumeToReturnToBasket
+        freeVolume = basketsFreeVolumePlusGoodsVolume
         goods.remove(good)
     }
 }

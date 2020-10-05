@@ -50,6 +50,7 @@ class LoadingUnlockTaskViewModel : CoreLoadingViewModel() {
         screenNavigator.openAlertScreen(failure)
     }
 
+    @Suppress("UNUSED_PARAMETER")
     private fun handleSuccess(result: UnlockTaskRequestResult) {
         when (taskManager.getTaskType()) {
             TaskType.DirectSupplier, TaskType.ReceptionDistributionCenter, TaskType.OwnProduction, TaskType.ShoppingMall -> screenNavigator.openTaskListLoadingScreen(TaskListLoadingMode.Receiving) // ППП\ПРЦ\ПСП\ПТК

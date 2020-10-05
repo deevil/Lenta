@@ -31,11 +31,11 @@
                         android:drawableEnd="@drawable/spinner_arrow_down_disabled"
                         android:enabled="false"
                         android:focusable="false"
-                        android:text="@{vm.accountingType}"
-                        tools:text="Количество"
                         android:importantForAutofill="no"
                         android:inputType="textNoSuggestions"
-                        tools:ignore="LabelFor" />
+                        android:text="@{vm.accountingType}"
+                        tools:ignore="LabelFor"
+                        tools:text="Количество" />
 
                 </LinearLayout>
 
@@ -45,13 +45,16 @@
 
                     <com.lenta.shared.view.EditTextWithSuffix
                         style="@style/CellEditTextStyle"
+                        android:afterTextChanged="@{vm}"
                         android:enabled="@{vm.quantityFieldEnabled}"
+                        android:maxLength="8"
                         android:text="@={vm.quantityField}"
                         app:digitsForUom="@{vm.good.commonUnits}"
+                        app:onOkInSoftKeyboard="@{vm}"
                         app:quantityTypeIcon="@{vm.good.isDifferentUnits()}"
+                        app:requestFocus="@{vm.quantityFieldEnabled}"
                         app:suffix="@{vm.good.commonUnits.name}"
                         tools:drawableEnd="@drawable/ic_bei_12dp"
-                        android:afterTextChanged="@{vm}"
                         tools:text="1 шт" />
 
                 </LinearLayout>
@@ -104,8 +107,8 @@
             <!-- Производитель -->
             <LinearLayout
                 style="@style/LinearRowStyle"
-                android:visibility="@{!vm.isWholesaleTaskType}"
-                android:baselineAligned="false">
+                android:baselineAligned="false"
+                android:visibility="@{!vm.isWholesaleTaskType}">
 
                 <LinearLayout
                     style="@style/LinearCellStyle"
@@ -116,11 +119,11 @@
                         style="@style/CellEditTextStyle"
                         android:drawableEnd="@drawable/spinner_arrow_down_disabled"
                         android:enabled="false"
-                        android:text="@{vm.good.provider.name}"
-                        tools:text="123123 ООО Поставщик"
                         android:importantForAutofill="no"
                         android:inputType="textNoSuggestions"
-                        tools:ignore="LabelFor" />
+                        android:text="@{vm.good.provider.name}"
+                        tools:ignore="LabelFor"
+                        tools:text="123123 ООО Поставщик" />
 
                 </LinearLayout>
 
@@ -138,7 +141,8 @@
                 android:visibility="@{!vm.isCommonGood}">
 
                 <!-- Импортер -->
-                <LinearLayout style="@style/LinearRowStyle"
+                <LinearLayout
+                    style="@style/LinearRowStyle"
                     android:baselineAligned="false">
 
                     <LinearLayout style="@style/LinearCellStyle">
@@ -183,18 +187,19 @@
                             style="@style/CellEditTextStyle"
                             android:digits="1234567890."
                             android:enabled="@{vm.dateEnabled}"
+                            android:importantForAutofill="no"
                             android:inputType="number"
                             android:text="@={vm.date}"
                             app:maskPattern='@{"[00]{.}[00]{.}[0000]"}'
-                            tools:text="25.12.2016"
-                            android:importantForAutofill="no"
-                            tools:ignore="LabelFor" />
+                            tools:ignore="LabelFor"
+                            tools:text="25.12.2016" />
 
                     </LinearLayout>
 
                 </LinearLayout>
 
-                <View style="@style/HorizontalDivider" />
+                <View style="@style/HorizontalDivider"
+                    android:visibility="@{!vm.isCommonGood}"/>
 
             </LinearLayout>
 
@@ -236,17 +241,17 @@
                     android:background="@drawable/bg_white_circle"
                     android:gravity="center"
                     android:textSize="@dimen/text_12sp"
-                    app:section="@{vm.good.section}"
                     android:visibility="@{!vm.good.section.isEmpty()}"
+                    app:section="@{vm.good.section}"
                     tools:text="02" />
 
             </LinearLayout>
 
             <ImageView
                 style="@style/BottomIconStyle"
+                android:contentDescription="@string/good_type"
                 app:goodKindIcon="@{vm.good.kind}"
-                tools:src="@drawable/ic_excise_alcohol_white_32dp"
-                android:contentDescription="@string/good_type" />
+                tools:src="@drawable/ic_excise_alcohol_white_32dp" />
 
             <FrameLayout style="@style/BottomIconStyle">
 
@@ -254,8 +259,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:src="@drawable/ic_clear_basket_32dp"
-                    android:contentDescription="@string/basket" />
+                    android:contentDescription="@string/basket"
+                    android:src="@drawable/ic_clear_basket_32dp" />
 
                 <TextView
                     android:layout_width="wrap_content"

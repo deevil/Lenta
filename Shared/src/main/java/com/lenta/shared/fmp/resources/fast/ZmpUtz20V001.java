@@ -1,5 +1,7 @@
 package com.lenta.shared.fmp.resources.fast;
 
+import androidx.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 import com.mobrun.plugin.api.HyperHive;
 import com.mobrun.plugin.api.helper.LocalTableResourceHelper;
@@ -37,22 +39,27 @@ public class ZmpUtz20V001 {
 
     public static class ItemLocal_ET_GRUNDS {
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("TID")
         public String tid;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("GRUNDCAT")
         public String grundcat;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("GRUND")
         public String grund;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("IS_ACCBL")
         public String isAccbl;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
+        @Nullable
         @SerializedName("GTEXT")
         public String gtext;
 

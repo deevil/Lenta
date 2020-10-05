@@ -60,7 +60,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
     private val formatterRU = SimpleDateFormat("dd.MM.yyyy")
 
     @SuppressLint("SimpleDateFormat")
-    private val formatterERP = SimpleDateFormat(Constants.DATE_FORMAT_yyyyMMdd)
+    private val formatterERP = SimpleDateFormat(Constants.DATE_FORMAT_yyyy_mm_dd)
 
     val countedSelectionsHelper = SelectionItemsHelper()
     val toProcessingSelectionsHelper = SelectionItemsHelper()
@@ -115,8 +115,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
 
     init {
         launchUITryCatch {
-            searchProductDelegate.init(viewModelScope = this@GoodsListViewModel::viewModelScope,
-                    scanResultHandler = this@GoodsListViewModel::handleProductSearchResult)
+            searchProductDelegate.init(scanResultHandler = this@GoodsListViewModel::handleProductSearchResult)
         }
     }
 
@@ -219,7 +218,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
                                                     nameBatch = "$partySign-$shelfLifeOrProductionDate // ${getManufacturerNameZBatch(zBatch.manufactureCode)}",
                                                     visibilityNameBatch = true,
                                                     countAcceptWithUom = getAcceptTotalCountWithUomZBatch(zBatch, uom),
-                                                    countRefusalWithUom = "",
+                                                    countRefusalWithUom = "", //todo надо это для ПГЕ добавить if (taskType.value == TaskType.RecalculationCargoUnit) getRefusalTotalCountWithUomZBatch(zBatch, uom) else "",
                                                     isNotEdit = productInfo.isNotEdit,
                                                     productInfo = productInfo,
                                                     zBatchDiscrepancies = zBatch,
@@ -569,7 +568,7 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
 
     fun onClickFourthBtn() {
         if (taskType.value == TaskType.ShipmentPP) {//https://trello.com/c/3WVovfmE
-            if (selectedPage.value == GoodsListViewPages.GOODS_LIST_VIEW_PAGE_COUNTED_OR_TO_PROCESSING) {
+            if (selectedPage.value == GOODS_LIST_VIEW_PAGE_COUNTED_OR_TO_PROCESSING) {
                 missingGoodsForShipmentPP()
             } else {
                 cleanGoodsForShipmentPP()
@@ -774,6 +773,32 @@ class GoodsListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKey
         }
         return if (acceptTotalCountBatch != 0.0) {
             "+ ${acceptTotalCountBatch.toStringFormatted()} ${uom.name}"
+        } else {
+            "0 ${uom.name}"
+        }
+    }
+
+    private fun getRefusalTotalCountWithUomZBatch(discrepancies: TaskZBatchesDiscrepancies?, uom: Uom): String {
+        val currentTaskType =
+                taskManager.getReceivingTask()
+                        ?.taskHeader
+                        ?.taskType
+
+        val refusalTotalCountBatch = discrepancies?.let {
+            if (currentTaskType == TaskType.RecalculationCargoUnit) {
+                taskManager.getReceivingTask()
+                        ?.taskRepository
+                        ?.getZBatchesDiscrepancies()
+                        ?.getCountAcceptOfZBatchPGE(discrepancies)
+            } else {
+                taskManager.getReceivingTask()
+                        ?.taskRepository
+                        ?.getZBatchesDiscrepancies()
+                        ?.getCountAcceptOfZBatch(discrepancies)
+            }
+        }
+        return if (refusalTotalCountBatch != 0.0) {
+            "+ ${refusalTotalCountBatch.toStringFormatted()} ${uom.name}"
         } else {
             "0 ${uom.name}"
         }

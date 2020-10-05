@@ -74,5 +74,7 @@ data class ProductInfoResult(
         @SerializedName("ET_RETCODE")
         val retCodes: List<RetCode>,
         @SerializedName("ET_STOCKS")
-        val stocks: List<Stock>
+        val stocks: List<Stock>,
+        @SerializedName("ET_ZPARTS")
+        val zParts: List<ZPartDTO>
 )

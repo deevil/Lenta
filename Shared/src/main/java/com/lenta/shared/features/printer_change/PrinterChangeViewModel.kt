@@ -46,8 +46,8 @@ class PrinterChangeViewModel : CoreViewModel(), OnPositionClickListener {
             printers.value = list.mapIndexed { index, printerInfo ->
                 PrinterUi(
                         number = "${index + 1}",
-                        printerName = printerInfo.printerName,
-                        printerInfo = printerInfo.printerInfo
+                        printerName = printerInfo.printerName.orEmpty(),
+                        printerInfo = printerInfo.printerInfo.orEmpty()
                 )
             }
 

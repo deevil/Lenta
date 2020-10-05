@@ -10,6 +10,7 @@ import com.lenta.bp12.request.TaskListNetRequest
 import com.lenta.bp12.request.TaskListParams
 import com.lenta.bp12.request.TaskListResult
 import com.lenta.shared.account.ISessionInfo
+import com.lenta.shared.exception.Failure
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.settings.IAppSettings
 import com.lenta.shared.utilities.BlockType
@@ -217,7 +218,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         with(task) {
             when (block.type) {
                 BlockType.LOCK -> navigator.showAlertBlockedTaskAnotherUser(block.user, block.ip)
-                BlockType.SELF_LOCK -> navigator.showAlertBlockedTaskByMe(block.user) { openTask(task) }
+                BlockType.SELF_LOCK -> navigator.showAlertBlockedTaskByMe { openTask(task) }
                 else -> openTask(task)
             }
         }
@@ -290,7 +291,16 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
                     )
             ).also {
                 navigator.hideProgress()
-            }.either(::handleFailure, ::handleTaskListResult)
+            }.either(
+                    fnL = {
+                        if (it is Failure.SapError) {
+                            navigator.showAlertDialogWithRedTriangle(it.message)
+                        } else {
+                            handleFailure(it)
+                        }
+                    },
+                    fnR = ::handleTaskListResult
+            )
         }
     }
 

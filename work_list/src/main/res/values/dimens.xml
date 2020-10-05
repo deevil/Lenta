@@ -43,4 +43,16 @@
     <integer name="four_two_3">22</integer>
     <integer name="four_two_4">22</integer>
 
+    <!-- Четыре колонки / Тип 3 -->
+    <integer name="four_three_1">15</integer>
+    <integer name="four_three_2">41</integer>
+    <integer name="four_three_3">22</integer>
+    <integer name="four_three_4">35</integer>
+
+    <!-- Четыре колонки / Тип 4 -->
+    <integer name="four_four_1">15</integer>
+    <integer name="four_four_2">20</integer>
+    <integer name="four_four_3">40</integer>
+    <integer name="four_four_4">25</integer>
+
 </resources>

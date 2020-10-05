@@ -41,7 +41,6 @@ class DatabaseRepository @Inject constructor(
     private val returnReasons: ZmpUtz44V001 by lazy { ZmpUtz44V001(hyperHive) } // Причины возврата
     private val providers: ZmpUtz09V001 by lazy { ZmpUtz09V001(hyperHive) } // Поставщики
     private val alcoCodes: ZmpUtz22V001 by lazy { ZmpUtz22V001(hyperHive) } // Алкокоды
-    private val goods: ZmpUtz30V001 by lazy { ZmpUtz30V001(hyperHive) } // Товары
     private val producers: ZmpUtz43V001 by lazy { ZmpUtz43V001(hyperHive) } // Производители
     private val markGroup: ZmpUtz109V001 by lazy { ZmpUtz109V001(hyperHive) } //группы маркировки
 
@@ -50,9 +49,10 @@ class DatabaseRepository @Inject constructor(
     override suspend fun getGoodInfoByMaterial(material: String): GoodInfo? {
         return withContext(Dispatchers.IO) {
             products.getProductInfoByMaterial(material)?.let { goodInfo ->
+
                 GoodInfo(
                         ean = getEanByMaterialUnits(material, goodInfo.buom.orEmpty()),
-                        eans = getEanListByMaterialUnits(material, goodInfo.buom.orEmpty()),
+                        eans = getEanMapByMaterialUnits(material, goodInfo.buom.orEmpty()),
                         material = material,
                         name = goodInfo.name.orEmpty(),
                         kind = goodInfo.getGoodKind(),
@@ -73,6 +73,12 @@ class DatabaseRepository @Inject constructor(
     override suspend fun getEanListByMaterialUnits(material: String, unitsCode: String): List<String> {
         return withContext(Dispatchers.IO) {
             eanInfo.getEanListByMaterialUnits(material, unitsCode)
+        }
+    }
+
+    override suspend fun getEanMapByMaterialUnits(material: String, unitsCode: String): MutableMap<String, Float> {
+        return withContext(Dispatchers.IO) {
+            eanInfo.getEanMapByMaterialUnits(material, unitsCode)
         }
     }
 
@@ -223,6 +229,7 @@ class DatabaseRepository @Inject constructor(
 interface IDatabaseRepository {
     suspend fun getGoodInfoByMaterial(material: String): GoodInfo?
     suspend fun getEanListByMaterialUnits(material: String, unitsCode: String): List<String>
+    suspend fun getEanMapByMaterialUnits(material: String, unitsCode: String): MutableMap<String, Float>
     suspend fun getEanInfo(ean: String): com.lenta.shared.requests.combined.scan_info.pojo.EanInfo?
     suspend fun getAllowedAppVersion(): String?
     suspend fun getUnitsByCode(code: String): Uom

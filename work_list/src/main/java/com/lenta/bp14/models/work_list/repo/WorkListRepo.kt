@@ -164,7 +164,6 @@ class WorkListRepo @Inject constructor(
             return@withContext units.getUnitName(code)?.toLowerCase(Locale.getDefault()).orEmpty()
         }
     }
-
 }
 
 interface IWorkListRepo {

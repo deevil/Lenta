@@ -9,7 +9,6 @@ import androidx.lifecycle.LiveData
 import com.lenta.shared.R
 import com.lenta.shared.analytics.AnalyticsHelper
 import com.lenta.shared.analytics.IAnalytics
-import com.lenta.shared.analytics.db.RoomAppDatabase
 import com.lenta.shared.exception.Failure
 import com.lenta.shared.exception.IFailureInterpreter
 import com.lenta.shared.features.alert.AlertFragment
@@ -33,6 +32,7 @@ import com.lenta.shared.fmp.resources.dao_ext.IconCode
 import com.lenta.shared.interactor.UseCase
 import com.lenta.shared.models.core.MatrixType
 import com.lenta.shared.platform.activity.ForegroundActivityProvider
+import com.lenta.shared.platform.fragment.CoreFragment
 import com.lenta.shared.platform.navigation.pictogram.IIconDescriptionHelper
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.utilities.extentions.getApplicationName
@@ -51,7 +51,6 @@ class CoreNavigator @Inject constructor(
         private val failureInterpreter: IFailureInterpreter,
         private val analytics: IAnalytics,
         private val analyticsHelper: AnalyticsHelper,
-        private val roomAppDatabase: RoomAppDatabase,
         override val backFragmentResultHelper: BackFragmentResultHelper,
         private val iconDescriptionHelper: IIconDescriptionHelper
 ) : ICoreNavigator {
@@ -101,7 +100,7 @@ class CoreNavigator @Inject constructor(
     override fun goBackTo(fragmentName: String?) {
         runOrPostpone {
             analyticsHelper.onGoBack()
-                getFragmentStack()?.pop(fragmentName)
+            getFragmentStack()?.pop(fragmentName)
 
         }
     }
@@ -110,7 +109,6 @@ class CoreNavigator @Inject constructor(
         runOrPostpone {
             foregroundActivityProvider.getActivity()?.finish()
             analytics.cleanLogs()
-            roomAppDatabase.close()
             hyperHive.databaseAPI.closeDefaultBase()
             hyperHive.authAPI.unAuth()
             if (restart) {
@@ -122,12 +120,14 @@ class CoreNavigator @Inject constructor(
 
     }
 
-    override fun openAlertScreen(message: String,
-                                 iconRes: Int,
-                                 textColor: Int?,
-                                 pageNumber: String?,
-                                 timeAutoExitInMillis: Int?,
-                                 onlyIfFirstAlert: Boolean) {
+    override fun openAlertScreen(
+            message: String,
+            iconRes: Int,
+            textColor: Int?,
+            pageNumber: String?,
+            timeAutoExitInMillis: Int?,
+            onlyIfFirstAlert: Boolean
+    ) {
         runOrPostpone {
             getFragmentStack()?.let {
 
@@ -506,7 +506,7 @@ class CoreNavigator @Inject constructor(
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
                     message = context.getString(R.string.task_block_user_with_tsd_ip, userName, deviceIp),
-                    iconRes = R.drawable.ic_info_pink_80dp,
+                    iconRes = R.drawable.ic_warning_red_80dp,
                     pageNumber = "94",
                     leftButtonDecorationInfo = ButtonDecorationInfo.back
             )
@@ -514,10 +514,10 @@ class CoreNavigator @Inject constructor(
         }
     }
 
-    override fun showAlertBlockedTaskByMe(userName: String, yesCallback: () -> Unit) {
+    override fun showAlertBlockedTaskByMe(yesCallback: () -> Unit) {
         runOrPostpone {
             getFragmentStack()?.push(AlertFragment.create(
-                    message = context.getString(R.string.user_self_block_task, userName),
+                    message = context.getString(R.string.user_self_block_task),
                     iconRes = R.drawable.ic_question_yellow_80dp,
                     pageNumber = "94",
                     leftButtonDecorationInfo = ButtonDecorationInfo.back,
@@ -585,13 +585,16 @@ interface ICoreNavigator {
     fun goBackWithResultCode(code: Int?)
     fun goBack()
     fun goBackTo(fragmentName: String?)
+
     fun finishApp(restart: Boolean = false)
-    fun openAlertScreen(message: String,
-                        iconRes: Int = 0,
-                        textColor: Int? = null,
-                        pageNumber: String? = null,
-                        timeAutoExitInMillis: Int? = null,
-                        onlyIfFirstAlert: Boolean = false)
+    fun openAlertScreen(
+            message: String,
+            iconRes: Int = 0,
+            textColor: Int? = null,
+            pageNumber: String? = null,
+            timeAutoExitInMillis: Int? = null,
+            onlyIfFirstAlert: Boolean = false
+    )
 
     fun openAlertScreen(failure: Failure, pageNumber: String = "96", timeAutoExitInMillis: Int? = null)
     fun openSupportScreen()
@@ -632,7 +635,7 @@ interface ICoreNavigator {
     fun showProgressConnection()
     fun showAlertBlockedTaskAnotherUser(userName: String)
     fun showAlertBlockedTaskAnotherUser(userName: String, deviceIp: String)
-    fun showAlertBlockedTaskByMe(userName: String, yesCallback: () -> Unit)
+    fun showAlertBlockedTaskByMe(yesCallback: () -> Unit)
     fun openCode128InfoScreen()
     fun openGS1InfoScreen()
     fun openPlanInfoScreen()
@@ -643,6 +646,10 @@ interface ICoreNavigator {
     fun openExceptionsShelfLifeScreen()
     fun showTwelveCharactersEntered(sapCallback: () -> Unit, barCallback: () -> Unit)
     fun showIncorrectEanFormat()
+}
+
+inline fun <reified T : CoreFragment<*, *>> ICoreNavigator.backTo() {
+    this.goBackTo(T::class.java.simpleName)
 }
 
 class FunctionsCollector(private val needCollectLiveData: LiveData<Boolean>) {

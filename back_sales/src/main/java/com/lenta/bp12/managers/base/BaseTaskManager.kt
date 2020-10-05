@@ -299,7 +299,7 @@ abstract class BaseTaskManager<T : Taskable> : ITaskManager<T> {
         }
     }
 
-    fun updateCurrentTask(task: T?) {
+    override fun updateCurrentTask(task: T?) {
         currentTask.postValue(task)
     }
 
@@ -313,6 +313,10 @@ abstract class BaseTaskManager<T : Taskable> : ITaskManager<T> {
 
     override fun clearCurrentGood() {
         currentGood.value = null
+    }
+
+    override fun clearCurrentBasket() {
+        currentBasket.value = null
     }
 
     override fun saveGoodInTask(good: Good) {
@@ -389,12 +393,25 @@ abstract class BaseTaskManager<T : Taskable> : ITaskManager<T> {
     override fun removeBaskets(basketList: MutableList<Basket>) {
         currentTask.value?.let { task ->
             task.removeBaskets(basketList)
+            if (basketList.contains(currentBasket.value)) {
+                clearCurrentBasket()
+            }
             updateCurrentTask(task)
         }
     }
 
     override fun clearEan() {
         this.ean = ""
+    }
+
+    override fun deleteGood(good: Good) {
+        currentTask.value?.run {
+            goods.remove(good)
+            baskets.forEach { it.deleteGood(good) }
+            removeEmptyGoods()
+            removeEmptyBaskets()
+            updateCurrentTask(this)
+        }
     }
 
     companion object {

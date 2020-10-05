@@ -2,6 +2,7 @@ package com.lenta.bp10.features.good_information.base
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.lenta.bp10.features.good_information.*
 import com.lenta.bp10.features.goods_list.SearchProductDelegate
@@ -52,57 +53,73 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardLis
 
     val productInfo: MutableLiveData<ProductInfo> = MutableLiveData()
 
-    val writeOffReasons: MutableLiveData<List<WriteOffReason>> = MutableLiveData()
+    private val writeOffReasons: LiveData<List<WriteOffReason>> = productInfo.switchMap {
+        asyncLiveData<List<WriteOffReason>> {
+            val reasons = getWriteOffReasons()
+            val taskCode = getTaskDescription().taskType.code
+            val reasonCode = goodInformationRepo.getStartReasonPosition(taskCode, it.sectionId)
+            val positionIndex = reasons.indexOfFirst { it.code == reasonCode }
+            reasonPosition.postValue(positionIndex)
+            emit(reasons)
+        }
+    }
 
-    val writeOffReasonTitles: LiveData<List<String>> = writeOffReasons.map { it?.map { reason -> reason.name } }
+    val writeOffReasonTitles: LiveData<List<String>> by unsafeLazy {
+        writeOffReasons.switchMap {
+            asyncLiveData<List<String>> {
+                val reasons = it.map { reason ->
+                    reason.name
+                }
+                emit(reasons)
+            }
+        }
+    }
 
-    val count: MutableLiveData<String> by lazy {
+    val count: MutableLiveData<String> by unsafeLazy {
         initCountLiveData()
     }
 
-    val suffix = MutableLiveData("")
+    val suffix = productInfo.mapSkipNulls {
+        it.uom.name
+    }
 
     val requestFocusToQuantity = MutableLiveData(false)
 
     internal var limitsChecker: LimitsChecker? = null
 
-    protected val countValue: MutableLiveData<Double> by lazy {
-        count.map {
-            (it?.toDoubleOrNull() ?: 0.0)
+    protected val countValue by unsafeLazy {
+        count.mapSkipNulls {
+            it.toDoubleOrNull() ?: 1.0
         }
     }
 
-    val totalCount: MutableLiveData<Double> by lazy {
-        countValue.map {
-            (it ?: 0.0) + getProcessTotalCount()
+    val totalCount: MutableLiveData<Double> by unsafeLazy {
+        countValue.mapSkipNulls {
+            (it ?: DEFAULT_COUNT_VALUE) + getProcessTotalCount()
         }
     }
 
     val isSpecialMode = MutableLiveData(false)
 
-    open val totalCountWithUom: MutableLiveData<String> by lazy {
-        totalCount.map { getCountWithUom(count = it, productInfo = productInfo) }
+    open val totalCountWithUom: MutableLiveData<String> by unsafeLazy {
+        totalCount.mapSkipNulls {
+            getCountWithUom(count = it, productInfo = productInfo)
+        }
     }
 
     val reasonPosition = MutableLiveData(0)
-
-    val onSelectReason = object : OnPositionClickListener {
-        override fun onClickPosition(position: Int) {
-            reasonPosition.value = position
-        }
-    }
 
     /**
     Кнопки нижнего тулбара
      */
 
-    val enabledDetailsButton: MutableLiveData<Boolean> by lazy {
+    val enabledDetailsButton: MutableLiveData<Boolean> by unsafeLazy {
         totalCount.map {
             isEnabledDetailsButton(getProcessTotalCount())
         }
     }
 
-    open val enabledApplyButton: MutableLiveData<Boolean> by lazy {
+    open val enabledApplyButton: MutableLiveData<Boolean> by unsafeLazy {
         countValue.combineLatest(reasonPosition).map {
             isEnabledApplyButtons(
                     count = it?.first,
@@ -114,7 +131,7 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardLis
         }
     }
 
-    val damagedEnabled: LiveData<Boolean> by lazy {
+    val damagedEnabled: LiveData<Boolean> by unsafeLazy {
         enabledApplyButton.combineLatest(isSpecialMode).mapSkipNulls {
             val (enabledApplyButton, isSpecialMode) = it
             if (isSpecialMode) isSpecialMode else enabledApplyButton
@@ -126,43 +143,44 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardLis
      */
 
     init {
+        initViewModel()
+    }
+
+    private fun initViewModel() {
         launchUITryCatch {
             initSpecialMode()
 
-            limitsChecker = LimitsChecker(
-                    limit = goodInformationRepo.getLimit(getTaskDescription().taskType.code, productInfo.value!!.type),
-                    observer = { navigator.openLimitExceededScreen() },
-                    countLiveData = totalCount,
-                    viewModelScope = this@BaseProductInfoViewModel::viewModelScope
+            productInfo.value?.let {
+                val taskCode = getTaskDescription().taskType.code
+                val taskType = it.type
 
-            )
+                limitsChecker = LimitsChecker(
+                        limit = goodInformationRepo.getLimit(taskCode, taskType),
+                        observer = navigator::openLimitExceededScreen,
+                        countLiveData = totalCount,
+                        viewModelScope = this@BaseProductInfoViewModel::viewModelScope
 
-            searchProductDelegate.init(
-                    scanResultHandler = this@BaseProductInfoViewModel::handleProductSearchResult,
-                    limitsChecker = limitsChecker
-            )
+                )
 
-            processServiceManager.getWriteOffTask()?.let {
-                getTaskDescription().moveTypes.let { reasons ->
-                    writeOffReasons.value = if (reasons.isEmpty()) {
-                        listOf(WriteOffReason.emptyWithTitle(resourceManager.emptyCategory()))
-                    } else {
-                        mutableListOf(WriteOffReason.empty).apply {
-                            addAll(reasons)
-                        }.filter { writeOffReason ->
-                            filterReason(writeOffReason)
-                        }
-                    }
-                }
+                searchProductDelegate.init(
+                        scanResultHandler = this@BaseProductInfoViewModel::handleProductSearchResult,
+                        limitsChecker = limitsChecker
+                )
             }
-
-            suffix.value = productInfo.value?.uom?.name
         }
     }
 
     /**
     Методы
      */
+
+    private fun getWriteOffReasons(): List<WriteOffReason> {
+        val reasons = getTaskDescription().moveTypes.toMutableList()
+        reasons.add(0, WriteOffReason.emptyWithTitle(resourceManager.emptyCategory()))
+        return reasons.filter { writeOffReason ->
+            filterReason(writeOffReason)
+        }
+    }
 
     private suspend fun initSpecialMode() {
         val taskType = getTaskDescription().taskType.code
@@ -177,7 +195,9 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardLis
     }
 
     open fun filterReason(writeOffReason: WriteOffReason): Boolean {
-        return writeOffReason === WriteOffReason.empty || writeOffReason.gisControl == productInfo.value?.type?.code
+        val typeCode = productInfo.value?.type?.code.orEmpty()
+        val gisControl = writeOffReason.gisControl
+        return writeOffReason === WriteOffReason.empty || gisControl == typeCode
     }
 
     fun setProductInfo(productInfo: ProductInfo) {
@@ -227,10 +247,15 @@ abstract class BaseProductInfoViewModel : CoreViewModel(), OnOkInSoftKeyboardLis
 
     fun initCount(it: Double) {
         launchUITryCatch {
-            delay(100)
+            delay(DEFAULT_DELAY)
             count.value = it.toStringFormatted()
             requestFocusToQuantity.value = true
         }
+    }
+
+    companion object {
+        const val DEFAULT_COUNT_VALUE = 0.0
+        private const val DEFAULT_DELAY = 100L
     }
 
 }

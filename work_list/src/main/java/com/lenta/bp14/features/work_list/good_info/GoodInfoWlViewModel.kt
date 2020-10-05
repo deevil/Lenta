@@ -1,7 +1,11 @@
 package com.lenta.bp14.features.work_list.good_info
 
 import android.widget.EditText
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.liveData
+import androidx.lifecycle.switchMap
+import com.lenta.bp14.features.base.BaseGoodInfoViewModel
 import com.lenta.bp14.models.check_price.IPriceInfoParser
 import com.lenta.bp14.models.data.GoodType
 import com.lenta.bp14.models.data.ScanInfoMode
@@ -19,24 +23,21 @@ import com.lenta.bp14.requests.work_list.IAdditionalGoodInfoNetRequest
 import com.lenta.bp14.requests.work_list.ICheckMarkNetRequest
 import com.lenta.shared.account.ISessionInfo
 import com.lenta.shared.exception.Failure
-import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.Logg
 import com.lenta.shared.utilities.actionByNumber
 import com.lenta.shared.utilities.databinding.OnOkInSoftKeyboardListener
 import com.lenta.shared.utilities.databinding.PageSelectionListener
 import com.lenta.shared.utilities.extentions.*
+import com.lenta.shared.utilities.orIfNull
 import com.lenta.shared.view.OnPositionClickListener
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 
-class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
+class GoodInfoWlViewModel : BaseGoodInfoViewModel(), PageSelectionListener, OnOkInSoftKeyboardListener {
 
     @Inject
     lateinit var navigator: IScreenNavigator
-
-    @Inject
-    lateinit var task: WorkListTask
 
     @Inject
     lateinit var additionalGoodInfoNetRequest: IAdditionalGoodInfoNetRequest
@@ -53,6 +54,10 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
     @Inject
     lateinit var resourceManager: IResourceManager
 
+    @Inject
+    lateinit var task: WorkListTask
+
+    val good by lazy { task.currentGood }
 
     val loadingIndicatorVisibility = MutableLiveData<Boolean>(true)
 
@@ -67,27 +72,32 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
     val commentsPosition = MutableLiveData(0)
     val shelfLifeTypePosition = MutableLiveData(0)
 
-    val good by lazy { task.currentGood }
-
     val title = MutableLiveData<String>("")
 
     val quantity = MutableLiveData<String>("")
 
-    private val totalQuantityValue: MutableLiveData<Double> by lazy {
-        good.combineLatest(quantity).map {
-            it?.first?.getTotalQuantity().sumWith(it?.second?.toDoubleOrNull() ?: 0.0)
+    private val totalQuantityValue: LiveData<Double> by lazy {
+        good.switchMap { goodValue ->
+            quantity.switchMap { quantityValue ->
+                liveData {
+                    val totalQuantity = goodValue.getTotalQuantity()
+                    val currentQuantity = quantityValue.toDoubleOrNull() ?: 0.0
+                    val result = totalQuantity.sumWith(currentQuantity)
+                    emit(result)
+                }
+            }
         }
     }
 
     val totalQuantity: MutableLiveData<String> by lazy {
-        totalQuantityValue.map {
-            it?.dropZeros()
+        totalQuantityValue.mapSkipNulls {
+            it.dropZeros()
         }
     }
 
     val totalMarks: MutableLiveData<String> by lazy {
-        good.map { good ->
-            good?.marks?.size.toString()
+        good.mapSkipNulls { good ->
+            good.marks.size.toString()
         }
     }
 
@@ -151,7 +161,8 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
                         commonPrice = "${additional.commonPrice.dropZeros()}р.",
                         discountPrice = "${additional.discountPrice.dropZeros()}р.",
                         promoName = additional.promoName,
-                        promoPeriod = additional.promoPeriod
+                        promoPeriod = additional.promoPeriod,
+                        hasZParts = additional.hasZPart
                 )
             }
         }
@@ -160,11 +171,22 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
     val stocks: MutableLiveData<List<ItemStockUi>> by lazy {
         good.map { good ->
             good?.additional?.stocks?.mapIndexed { index, stock ->
+                val goodUnitsName = good.units.name
                 ItemStockUi(
                         number = (index + 1).toString(),
                         storage = stock.storage,
-                        quantity = "${stock.quantity.dropZeros()} ${good.units.name}"
+                        quantity = "${stock.quantity.dropZeros()} $goodUnitsName",
+                        zPartsQuantity = stock.getZPartQuantity(goodUnitsName)
                 )
+            }
+        }
+    }
+
+    override val zParts: LiveData<List<ZPartUi>> by unsafeLazy {
+        good.switchMap { good ->
+            asyncLiveData<List<ZPartUi>> {
+                val result = good?.additional?.zParts.mapToZPartUiList(good.units.name)
+                emit(result)
             }
         }
     }
@@ -183,14 +205,14 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
     }
 
     val options: MutableLiveData<OptionsUi> by lazy {
-        good.map { good ->
-            good?.options?.let { options ->
+        good.mapSkipNulls { good ->
+            good.options.run {
                 OptionsUi(
-                        matrixType = options.matrixType,
-                        goodType = options.goodType,
-                        section = options.section,
-                        healthFood = options.healthFood,
-                        novelty = options.novelty
+                        matrixType = matrixType,
+                        goodType = goodType,
+                        section = section,
+                        healthFood = healthFood,
+                        novelty = novelty
                 )
             }
         }
@@ -238,28 +260,29 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
         launchUITryCatch {
             title.value = good.value?.getFormattedMaterialWithName()
             quantity.value = good.value?.defaultValue.dropZeros()
-
+            navigator.showProgressLoadingData()
             loadAdditionalInfo()
+            navigator.hideProgress()
         }
     }
 
     // -----------------------------
 
-    private fun loadAdditionalInfo() {
-        launchUITryCatch {
-            additionalGoodInfoNetRequest(AdditionalGoodInfoParams(
-                    tkNumber = sessionInfo.market.orEmpty(),
-                    ean = good.value?.ean,
-                    matNr = good.value?.material
-            )).also {
-                loadingIndicatorVisibility.value = false
-            }.either(::handleAdditionalInfoFailure, ::updateAdditionalGoodInfo)
-        }
+    private suspend fun loadAdditionalInfo() {
+        additionalGoodInfoNetRequest(AdditionalGoodInfoParams(
+                tkNumber = sessionInfo.market.orEmpty(),
+                ean = good.value?.ean,
+                matNr = good.value?.material
+        )).also {
+            loadingIndicatorVisibility.value = false
+        }.either(::handleAdditionalInfoFailure, ::updateAdditionalGoodInfo)
+
     }
 
     private fun handleAdditionalInfoFailure(failure: Failure) {
         super.handleFailure(failure)
-        dataLoadingError.value = if (failure is Failure.SapError) failure.message else resourceManager.serverConnectionError()
+        val error = if (failure is Failure.SapError) failure.message else resourceManager.serverConnectionError
+        dataLoadingError.value = error
         dataLoadingErrorVisibility.value = true
     }
 
@@ -335,6 +358,15 @@ class GoodInfoWlViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKe
                 funcForCigaretteBox = ::actionForMarkedGood,
                 funcForNotValidFormat = navigator::showGoodNotFound
         )
+    }
+
+    fun onStockItemClick(itemIndex: Int) {
+        stocks.value?.getOrNull(itemIndex)?.let { stock ->
+            navigator.openStorageZPartsScreen(stock.storage)
+        }.orIfNull {
+            Logg.w { "Stock value is null!" }
+            navigator.showAlertWithStockItemNotFound()
+        }
     }
 
     private fun searchCode(ean: String? = null, material: String? = null) {

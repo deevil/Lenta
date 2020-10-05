@@ -12,6 +12,7 @@ import com.lenta.bp9.model.task.TaskProductInfo
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_DELIVERY_ERRORS
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_REASON_REJECTION_NOT_ORDER
+import com.lenta.shared.models.core.BarcodeData
 import com.lenta.shared.platform.constants.Constants
 import com.lenta.shared.platform.time.ITimeMonitor
 import com.lenta.shared.requests.combined.scan_info.ScanInfoResult
@@ -32,40 +33,20 @@ import javax.inject.Inject
 class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
 
     @Inject
-    lateinit var searchProductDelegate: SearchProductDelegate
-
-    @Inject
-    lateinit var timeMonitor: ITimeMonitor
-
-    @Inject
     lateinit var processZBatchesPPPService: ProcessZBatchesPPPService
 
     val requestFocusToCount: MutableLiveData<Boolean> = MutableLiveData(false)
+    val barcodeData: MutableLiveData<BarcodeData> = MutableLiveData()
     val spinQuality: MutableLiveData<List<String>> = MutableLiveData()
-    private val termControlInfo: MutableLiveData<List<QualityInfo>> = MutableLiveData()
-    val spinEnteredDate: MutableLiveData<List<String>> = MutableLiveData()
-    val spinEnteredDateSelectedPosition: MutableLiveData<Int> = MutableLiveData(-1)
+    val spinTermControl: MutableLiveData<List<String>> = MutableLiveData()
     val spinReasonRejection: MutableLiveData<List<String>> = MutableLiveData()
     val enteredDate: MutableLiveData<String> = MutableLiveData("")
     val enteredTime: MutableLiveData<String> = MutableLiveData("")
     val suffix: MutableLiveData<String> = MutableLiveData()
     val generalShelfLife: MutableLiveData<String> = MutableLiveData()
+    val tvGeneralShelfLife: MutableLiveData<String> = MutableLiveData("")
     val remainingShelfLife: MutableLiveData<String> = MutableLiveData()
-    val count: MutableLiveData<String> = MutableLiveData("0")
-    val isDiscrepancy: MutableLiveData<Boolean> = MutableLiveData(false)
-
-    private val currentTermControlCode: String
-        get() {
-            val position = spinEnteredDateSelectedPosition.value ?: -1
-            return position
-                    .takeIf { it >= 0 }
-                    ?.let {
-                        termControlInfo.value
-                                ?.getOrNull(it)
-                                ?.code
-                                .orEmpty()
-                    }.orEmpty()
-        }
+    val tvRemainingShelfLife: MutableLiveData<String> = MutableLiveData("")
 
     val tvAccept: MutableLiveData<String> by lazy {
         val isEizUnit = productInfo.value?.purchaseOrderUnits?.code != productInfo.value?.uom?.code
@@ -87,17 +68,15 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
             val quantity =
                     denominatorConvertBaseUnitMeasure
                             .takeIf { it > 0.0 }
-                            ?.let { numeratorConvertBaseUnitMeasure / denominatorConvertBaseUnitMeasure }
+                            ?.let { numeratorConvertBaseUnitMeasure / it }
                             ?: 0.0
 
             MutableLiveData(context.getString(R.string.accept, "$purchaseOrderUnitsName=${quantity.toStringFormatted()} $uomName"))
         }
     }
 
-    private val countValue: MutableLiveData<Double> = count.map { it?.toDoubleOrNull() ?: 0.0 }
     private val currentDate: MutableLiveData<Date> = MutableLiveData()
     private val expirationDate: MutableLiveData<Calendar> = MutableLiveData()
-    private val infoForSpinEnteredDate: MutableLiveData<List<QualityInfo>> = MutableLiveData()
     private val addGoods: MutableLiveData<Boolean> = MutableLiveData(false)
     private val isClickApply: MutableLiveData<Boolean> = MutableLiveData(false)
     private val paramGrsGrundNeg: MutableLiveData<String> = MutableLiveData("")
@@ -135,50 +114,6 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
                     .orEmpty()
         }
 
-    val acceptTotalCount: MutableLiveData<Double> =
-            countValue
-                    .combineLatest(spinQualitySelectedPosition)
-                    .map {
-                        val enteredCount = it?.first ?: 0.0
-                        if (currentQualityInfoCode == TYPE_DISCREPANCIES_QUALITY_NORM) {
-                            enteredCount + countAcceptOfProduct
-                        } else {
-                            countAcceptOfProduct
-                        }
-                    }
-
-    val acceptTotalCountWithUom: MutableLiveData<String> = acceptTotalCount.map {
-        val acceptTotalCountValue = it ?: 0.0
-        val purchaseOrderUnits = productInfo.value?.purchaseOrderUnits?.name.orEmpty()
-
-        acceptTotalCountValue
-                .takeIf { count -> count > 0.0 }
-                ?.run { "+ ${this.toStringFormatted()} $purchaseOrderUnits" }
-                ?: "0 $purchaseOrderUnits"
-    }
-
-    val refusalTotalCount: MutableLiveData<Double> =
-            countValue
-                    .combineLatest(spinQualitySelectedPosition)
-                    .map {
-                        val enteredCount = it?.first ?: 0.0
-                        if (currentQualityInfoCode != TYPE_DISCREPANCIES_QUALITY_NORM) {
-                            enteredCount + countRefusalOfProduct
-                        } else {
-                            countRefusalOfProduct
-                        }
-                    }
-
-    val refusalTotalCountWithUom: MutableLiveData<String> = refusalTotalCount.map {
-        val refusalTotalCountValue = it ?: 0.0
-        val purchaseOrderUnits = productInfo.value?.purchaseOrderUnits?.name.orEmpty()
-
-        refusalTotalCountValue
-                .takeIf { count -> count > 0.0 }
-                ?.let { count -> "- ${count.toStringFormatted()} $purchaseOrderUnits" }
-                ?: "0 $purchaseOrderUnits"
-    }
-
     init {
         launchUITryCatch {
             productInfo.value
@@ -192,8 +127,7 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
                         return@launchUITryCatch
                     }
 
-            searchProductDelegate.init(viewModelScope = this@ZBatchesInfoPPPViewModel::viewModelScope,
-                    scanResultHandler = this@ZBatchesInfoPPPViewModel::handleProductSearchResult)
+            searchProductDelegate.init(scanResultHandler = this@ZBatchesInfoPPPViewModel::handleProductSearchResult)
 
             currentDate.value = timeMonitor.getServerDate()
             expirationDate.value = Calendar.getInstance()
@@ -216,6 +150,17 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
                                 ?.indexOfLast { it.code == TYPE_DISCREPANCIES_QUALITY_DELIVERY_ERRORS }
                                 ?: -1
             } else {
+                //https://trello.com/c/mcEA3n84
+                barcodeData.value?.let {
+                    if (it.barcodeInfo.isWeight) {
+                        val weightInGrams = it.barcodeInfo.weight.toDoubleOrNull() ?: 0.0
+                        if (productInfo.value?.purchaseOrderUnits?.code?.toUpperCase(Locale.getDefault()) == UNIT_KG) {
+                            count.value = (weightInGrams / 1000).toStringFormatted()
+                        } else {
+                            count.value = weightInGrams.toStringFormatted()
+                        }
+                    }
+                }
                 qualityInfo.value = dataBase.getQualityMercuryInfo().orEmpty()
             }
 
@@ -229,9 +174,8 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
                             ?.map { it.key }
                             ?: listOf(context.getString(R.string.no_manufacturer_selection_required))
 
-            infoForSpinEnteredDate.value = dataBase.getTermControlInfo()
-            termControlInfo.value = dataBase.getTermControlInfo()
-            spinEnteredDate.value = termControlInfo.value?.map { it.name }.orEmpty()
+            termControlType.value = dataBase.getTermControlInfo()
+            spinTermControl.value = termControlType.value?.map { it.name }.orEmpty()
 
             /** Z-партии всегда скоропорт */
             val productGeneralShelfLife = productInfo.value?.generalShelfLife?.toInt() ?: 0
@@ -246,6 +190,9 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
                 generalShelfLife.value = productMhdhbDays.toString()
                 remainingShelfLife.value = productMhdrzDays.toString()
             }
+
+            tvGeneralShelfLife.value = "${generalShelfLife.value} ${context.getString(R.string.day_abbreviated)}"
+            tvRemainingShelfLife.value = "${remainingShelfLife.value} ${context.getString(R.string.day_abbreviated)}"
 
             paramGrsGrundNeg.value = dataBase.getParamGrsGrundNeg().orEmpty()
 
@@ -265,8 +212,12 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
         productInfo.value = initProductInfo
     }
 
-    fun initDiscrepancy(initDiscrepancy: Boolean) {
-        isDiscrepancy.value = initDiscrepancy
+    fun initDiscrepancy(_initDiscrepancy: Boolean) {
+        isDiscrepancy.value = _initDiscrepancy
+    }
+
+    fun initBarcodeData(_initBarcodeData: BarcodeData) {
+        barcodeData.value = _initBarcodeData
     }
 
     fun getTitle(): String {
@@ -334,8 +285,8 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
         spinManufacturersSelectedPosition.value = position
     }
 
-    fun onClickPositionSpinsEnteredDate(position: Int) {
-        spinEnteredDateSelectedPosition.value = position
+    fun onClickPositionSpinTermControl(position: Int) {
+        spinTermControlSelectedPosition.value = position
     }
 
     fun onClickPositionSpinRejectRejection(position: Int) {
@@ -394,7 +345,7 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
         }
 
         //блок 6.131
-        if (spinEnteredDateSelectedPosition.value == infoForSpinEnteredDate.value?.indexOfLast { it.code == "001" }) {
+        if (spinTermControlSelectedPosition.value == termControlType.value?.indexOfLast { it.code == TERM_CONTROL_CODE_SHELF_LIFE }) {
             //блок 6.146
             expirationDate.value?.time = formatterRU.parse(enteredDate.value)
         } else {
@@ -405,7 +356,7 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
 
 
         if (expirationDate.value!!.time <= currentDate.value
-                && currentTypeDiscrepanciesCode == TYPE_DISCREPANCIES_QUALITY_NORM) {
+                && currentTypeDiscrepanciesCodeByTaskType == TYPE_DISCREPANCIES_QUALITY_NORM) {
             //блок 6.158
             screenNavigator.openShelfLifeExpiredDialog(
                     //блок 6.170
@@ -612,7 +563,7 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
     private fun saveCategory() {
         processZBatchesPPPService.add(
                 count = count.value.orEmpty(),
-                typeDiscrepancies = currentTypeDiscrepanciesCode,
+                typeDiscrepancies = currentTypeDiscrepanciesCodeByTaskType,
                 manufactureCode = currentManufactureCode,
                 shelfLifeDate = getShelfLifeDate(),
                 shelfLifeTime = getShelfLifeTime(),
@@ -625,8 +576,8 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
     }
 
     private fun getShelfLifeDate(): String {
-        try {
-            return if (currentTermControlCode == TERM_CONTROL_CODE_PRODUCTION_DATE
+        return try {
+            if (currentTermControlCode == TERM_CONTROL_CODE_PRODUCTION_DATE
                     && currentQualityInfoCode == TYPE_DISCREPANCIES_QUALITY_NORM) {
                 val shelfLife = Calendar.getInstance()
                 shelfLife.time = formatterRU.parse(enteredDate.value)
@@ -638,16 +589,15 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
                         ?.let { formatterERP.format(formatterRU.parse(it)) }
                         .orEmpty()
             }
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             Logg.e { "Get shelf life date exception: $e" }
-            return ""
+            ""
         }
     }
 
     private fun getProductionDate(): String {
-        try {
-            return if (currentTermControlCode == TERM_CONTROL_CODE_SHELF_LIFE
+        return try {
+            if (currentTermControlCode == TERM_CONTROL_CODE_SHELF_LIFE
                     && currentQualityInfoCode == TYPE_DISCREPANCIES_QUALITY_NORM) {
                 val productionDate = Calendar.getInstance()
                 val generalShelfLifeValue = generalShelfLife.value?.toInt() ?: 0
@@ -660,10 +610,9 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
                         ?.let { formatterERP.format(formatterRU.parse(it)) }
                         .orEmpty()
             }
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             Logg.e { "Get production date exception: $e" }
-            return ""
+            ""
         }
     }
 
@@ -696,5 +645,6 @@ class ZBatchesInfoPPPViewModel : BaseGoodsInfo() {
     companion object {
         private const val TERM_CONTROL_CODE_SHELF_LIFE = "001"
         private const val TERM_CONTROL_CODE_PRODUCTION_DATE = "002"
+        private const val UNIT_KG = "KG"
     }
 }

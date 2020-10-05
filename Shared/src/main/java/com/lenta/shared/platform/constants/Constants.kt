@@ -12,7 +12,6 @@ object Constants {
     const val TIME_FORMAT_HHmm = "HH:mm"
     const val TIME_FORMAT_mmss = "mm:ss"
     const val TIME_FORMAT_hhmmss = "HH:mm:ss"
-    const val TIME_FORMAT_ERP_hhmmss = "HHmmss"
     const val TIME_FORMAT_LOGS = "yyyy-MM-dd_HH-mm-ss-SSS"
     const val CHECK_DATA_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss"
     const val TIME_FORMAT_HH = "HH"
@@ -37,6 +36,7 @@ object Constants {
     const val SAP_6 = 6
     const val SAP_18 = 18
     const val SAP_OR_BAR_12 = 12
+    const val SAP_OR_BAR_13 = 13
 
     // Mark code length
     const val EXCISE_MARK_150 = 150
@@ -57,6 +57,7 @@ object Constants {
     const val SHOES_MARK_PATTERN = "^(?<barcode>01(?<gtin>\\d{14})21(?<serial>\\S{13})).?(?:240(?<tradeCode>\\d{4}))?.?(?:91(?<verificationKey>\\S{4}))?.?(?:92(?<verificationCode>\\S{88}))?\$"
     const val GTIN_REGEX_PATTERN = "(0{6}(?<ean8gs1>\\d{8})|0(?<ean13gs1>\\d{13}))"
     const val STRING_WITH_ONLY_ONE_MINUS_IN_BEGINNING_PATTERN = "^-?\$|^\\d+\$|^(-?\\d+)\$"
+    const val STRING_WITH_ONLY_DIGITS_PATTERN = "\\d+"
 
     // ERP Requests
     const val OPERATING_SYSTEM_WINDOWS = "1"
@@ -65,5 +66,6 @@ object Constants {
 
     //Other
     const val DIV_TO_KG = 1000
+    const val DIV_TO_RUB = 100
 
 }

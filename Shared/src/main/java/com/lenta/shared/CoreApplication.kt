@@ -1,6 +1,7 @@
 package com.lenta.shared
 
 import android.app.Application
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.lenta.shared.di.CoreComponent
 import com.lenta.shared.di.CoreComponentProvider
 import com.lenta.shared.di.CoreModule
@@ -15,7 +16,6 @@ abstract class CoreApplication : Application(), CoreComponentProvider {
 
     protected lateinit var coreComponent: CoreComponent
 
-
     override fun provideCoreComponent(): CoreComponent {
         if (!this::coreComponent.isInitialized) {
             coreComponent = DaggerCoreComponent.builder()
@@ -27,9 +27,12 @@ abstract class CoreApplication : Application(), CoreComponentProvider {
         return coreComponent
     }
 
-
     abstract fun getDefaultConnectionSettings(): DefaultConnectionSettings
 
+    override fun onCreate() {
+        super.onCreate()
+        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(!BuildConfig.DEBUG)
+    }
 
     private fun setDefaultUncaughtExceptionHandler(coreComponent: CoreComponent) {
 
@@ -42,12 +45,11 @@ abstract class CoreApplication : Application(), CoreComponentProvider {
                                     "Thread:${thread.name}")
                     sendLogs()
                 }
-                Thread(Runnable {
+                Thread {
                     onHandleException()
                     Thread.sleep(200)
-                    coreComponent.getRoomAppDatabase().close()
                     exitProcess(1)
-                }).run()
+                }.run()
 
             }
         }

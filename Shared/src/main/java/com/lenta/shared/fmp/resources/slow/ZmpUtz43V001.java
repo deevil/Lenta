@@ -1,5 +1,7 @@
 package com.lenta.shared.fmp.resources.slow;
 
+import androidx.annotation.Nullable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.mobrun.plugin.api.HyperHive;
@@ -39,11 +41,13 @@ public class ZmpUtz43V001 {
     public static class ItemLocal_ET_ZPROD {
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
         @Expose
+        @Nullable
         @SerializedName("ZPROD")
         public String zprod;
 
         //  type: TEXT, source: {'name': 'SAP', 'type': 'C'}
         @Expose
+        @Nullable
         @SerializedName("PROD_NAME")
         public String prodName;
 

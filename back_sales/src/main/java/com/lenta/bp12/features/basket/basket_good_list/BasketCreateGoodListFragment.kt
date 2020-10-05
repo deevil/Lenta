@@ -2,7 +2,6 @@ package com.lenta.bp12.features.basket.basket_good_list
 
 import android.os.Bundle
 import android.view.View
-import androidx.viewbinding.ViewBinding
 import com.lenta.bp12.BR
 import com.lenta.bp12.R
 import com.lenta.bp12.databinding.FragmentBasketCreateGoodListBinding
@@ -68,6 +67,8 @@ class BasketCreateGoodListFragment : CoreFragment<FragmentBasketCreateGoodListBi
             R.id.b_3 -> vm.onClickDelete()
             R.id.b_4 -> vm.onClickProperties()
             R.id.b_5 -> vm.onClickNext()
+//ForTesting
+//R.id.b_4 -> vm.onScanResult("4607149780488")
         }
     }
 

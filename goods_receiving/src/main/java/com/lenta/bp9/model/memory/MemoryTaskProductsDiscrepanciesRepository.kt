@@ -4,6 +4,8 @@ import com.lenta.bp9.model.repositories.ITaskProductsDiscrepanciesRepository
 import com.lenta.bp9.model.task.TaskMercuryDiscrepancies
 import com.lenta.bp9.model.task.TaskProductDiscrepancies
 import com.lenta.bp9.model.task.TaskProductInfo
+import com.lenta.shared.utilities.extentions.addItemToListWithPredicate
+import com.lenta.shared.utilities.extentions.removeItemFromListWithPredicate
 
 class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepository {
 
@@ -18,28 +20,26 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepo
     }
 
     override fun findProductDiscrepanciesOfProduct(materialNumber: String): List<TaskProductDiscrepancies> {
-        val foundDiscrepancies = ArrayList<TaskProductDiscrepancies>()
-        for (i in productsDiscrepancies.indices) {
-            if (materialNumber == productsDiscrepancies[i].materialNumber) {
-                foundDiscrepancies.add(productsDiscrepancies[i])
-            }
-        }
-        return foundDiscrepancies
+        return productsDiscrepancies.filter { it.materialNumber == materialNumber }
+    }
+
+    override fun findProductDiscrepanciesOfProductOfProcessingUnit(product: TaskProductInfo): List<TaskProductDiscrepancies> {
+        return findProductDiscrepanciesOfProductOfProcessingUnit(product.materialNumber, product.processingUnit)
+    }
+
+    override fun findProductDiscrepanciesOfProductOfProcessingUnit(materialNumber: String, processingUnitNumber: String): List<TaskProductDiscrepancies> {
+        return productsDiscrepancies
+                .filter { it.materialNumber == materialNumber
+                        && it.processingUnitNumber == processingUnitNumber
+                }
     }
 
     override fun addProductDiscrepancy(discrepancy: TaskProductDiscrepancies): Boolean {
-        var index = -1
-        for (i in productsDiscrepancies.indices) {
-            if (discrepancy.materialNumber == productsDiscrepancies[i].materialNumber && discrepancy.typeDiscrepancies == productsDiscrepancies[i].typeDiscrepancies) {
-                index = i
-            }
+        return productsDiscrepancies.addItemToListWithPredicate(discrepancy) {
+            it.materialNumber == discrepancy.materialNumber
+                    && it.typeDiscrepancies == discrepancy.typeDiscrepancies
+                    && it.processingUnitNumber == discrepancy.processingUnitNumber
         }
-
-        if (index == -1) {
-            productsDiscrepancies.add(discrepancy)
-            return true
-        }
-        return false
     }
 
     override fun addProductDiscrepancyOfMercuryDiscrepancy(mercuryDiscrepancies: List<TaskMercuryDiscrepancies>) {
@@ -66,7 +66,7 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepo
     }
 
     override fun updateProductsDiscrepancy(newProductsDiscrepancies: List<TaskProductDiscrepancies>) {
-        productsDiscrepancies.clear()
+        clear()
         newProductsDiscrepancies.map {
             addProductDiscrepancy(it)
         }
@@ -82,20 +82,24 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepo
     }
 
     override fun deleteProductDiscrepancy(materialNumber: String, typeDiscrepancies: String): Boolean {
-        productsDiscrepancies.map { it }.filter {discrepancies ->
-            if (materialNumber == discrepancies.materialNumber && typeDiscrepancies == discrepancies.typeDiscrepancies) {
-                if (discrepancies.isNotEdit) { //не редактируемое расхождение https://trello.com/c/Mo9AqreT
-                    productsDiscrepancies.remove(discrepancies)
-                    productsDiscrepancies.add(discrepancies)
-                } else {
-                    productsDiscrepancies.remove(discrepancies)
-                }
-                return@filter true
-            }
-            return@filter false
+        return productsDiscrepancies.removeItemFromListWithPredicate {
+            it.materialNumber == materialNumber
+                    && it.typeDiscrepancies == typeDiscrepancies
+                    && !it.isNotEdit
+        }
+    }
 
-        }.let {
-            return it.isNotEmpty()
+    override fun changeProductDiscrepancyOfProcessingUnit(discrepancy: TaskProductDiscrepancies): Boolean {
+        deleteProductDiscrepancyOfProcessingUnit(discrepancy.materialNumber, discrepancy.typeDiscrepancies, discrepancy.processingUnitNumber)
+        return addProductDiscrepancy(discrepancy)
+    }
+
+    override fun deleteProductDiscrepancyOfProcessingUnit(materialNumber: String, typeDiscrepancies: String, processingUnitNumber: String): Boolean {
+        return productsDiscrepancies.removeItemFromListWithPredicate {
+            it.materialNumber == materialNumber
+                    && it.processingUnitNumber == processingUnitNumber
+                    && it.typeDiscrepancies == typeDiscrepancies
+                    && !it.isNotEdit
         }
     }
 
@@ -223,10 +227,12 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepo
                         ?.let { it - quantityByDiscrepancyForBatch }
                         ?: 0.0
 
-
-        findProductDiscrepanciesOfProduct(materialNumber)
-                .findLast { it.typeDiscrepancies == typeDiscrepancies }
-                ?.let { changeProductDiscrepancy(it.copy(numberDiscrepancies = residueByDiscrepancyForProduct.toString())) }
+        val productDiscrepanciesOfProduct = findProductDiscrepanciesOfProduct(materialNumber).findLast { it.typeDiscrepancies == typeDiscrepancies }
+        if (residueByDiscrepancyForProduct > 0.0) {
+            productDiscrepanciesOfProduct?.let { changeProductDiscrepancy(it.copy(numberDiscrepancies = residueByDiscrepancyForProduct.toString())) }
+        } else {
+            productDiscrepanciesOfProduct?.let { deleteProductDiscrepancy(it) }
+        }
     }
 
     override fun getCountAcceptOfProduct(product: TaskProductInfo): Double {
@@ -250,7 +256,7 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepo
     }
 
     override fun getCountProductNotProcessedOfProduct(product: TaskProductInfo) : Double {
-        return product.origQuantity.toDouble() - getCountAcceptOfProduct(product) - getCountRefusalOfProduct(product)
+        return String.format("%.3f", product.origQuantity.toDouble() - getCountAcceptOfProduct(product) - getCountRefusalOfProduct(product)).toDoubleOrNull() ?: 0.0
     }
 
     override fun getCountAcceptOfProductPGE(product: TaskProductInfo): Double {
@@ -281,9 +287,9 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepo
         return orderQuantity - getCountAcceptOfProductPGE(product) - getCountRefusalOfProductPGE(product)
     }
 
-    override fun getCountOfDiscrepanciesOfProduct(product: TaskProductInfo, typeDiscrepancies: String): Double {
+    override fun getCountOfDiscrepanciesOfProductOfProcessingUnit(product: TaskProductInfo, typeDiscrepancies: String, processingUnitNumber: String): Double {
         var countDiscrepancies = 0.0
-        findProductDiscrepanciesOfProduct(product).filter {
+        findProductDiscrepanciesOfProductOfProcessingUnit(product.materialNumber, processingUnitNumber).filter {
             it.typeDiscrepancies == typeDiscrepancies
         }.map {discrepancies ->
             countDiscrepancies += discrepancies.numberDiscrepancies.toDouble()
@@ -291,9 +297,9 @@ class MemoryTaskProductsDiscrepanciesRepository : ITaskProductsDiscrepanciesRepo
         return countDiscrepancies
     }
 
-    override fun getCountOfDiscrepanciesOfProduct(materialNumber: String, typeDiscrepancies: String): Double {
+    override fun getCountOfDiscrepanciesOfProductOfProcessingUnit(materialNumber: String, typeDiscrepancies: String, processingUnitNumber: String): Double {
         var countDiscrepancies = 0.0
-        findProductDiscrepanciesOfProduct(materialNumber).filter {
+        findProductDiscrepanciesOfProductOfProcessingUnit(materialNumber, processingUnitNumber).filter {
             it.typeDiscrepancies == typeDiscrepancies
         }.map {discrepancies ->
             countDiscrepancies += discrepancies.numberDiscrepancies.toDouble()

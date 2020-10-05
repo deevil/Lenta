@@ -6,7 +6,7 @@ interface ITaskRepository {
     fun getExciseStamps(): ITaskExciseStampRepository
     fun getExciseStampsDiscrepancies(): ITaskExciseStampDiscrepanciesRepository
     fun getExciseStampsBad(): ITaskExciseStampBadRepository
-    fun getBoxes(): ITaskBoxesRepository
+    fun getBoxesRepository(): ITaskBoxesRepository
     fun getBoxesDiscrepancies(): ITaskBoxesDiscrepanciesRepository
     fun getNotifications(): ITaskNotificationsRepository
     fun getReviseDocuments(): ITaskReviseDocumentsRepository

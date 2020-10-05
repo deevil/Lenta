@@ -52,7 +52,7 @@ class MemoryTaskExciseStampRepository : ITaskExciseStampRepository {
     }
 
     override fun updateExciseStamps(newExciseStamps: List<TaskExciseStampInfo>) {
-        stamps.clear()
+        clear()
         newExciseStamps.map {
             addExciseStamp(it)
         }

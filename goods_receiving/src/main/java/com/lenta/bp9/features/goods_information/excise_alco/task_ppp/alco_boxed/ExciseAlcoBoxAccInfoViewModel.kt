@@ -270,8 +270,7 @@ class ExciseAlcoBoxAccInfoViewModel : CoreViewModel(), OnPositionClickListener {
                         return@launchUITryCatch
                     }
 
-            searchProductDelegate.init(viewModelScope = this@ExciseAlcoBoxAccInfoViewModel::viewModelScope,
-                    scanResultHandler = this@ExciseAlcoBoxAccInfoViewModel::handleProductSearchResult)
+            searchProductDelegate.init(scanResultHandler = this@ExciseAlcoBoxAccInfoViewModel::handleProductSearchResult)
 
             suffix.value = productInfo.value?.purchaseOrderUnits?.name
             qualityInfo.value = dataBase.getQualityInfo()

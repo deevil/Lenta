@@ -186,7 +186,7 @@
     <string name="verify">К сверке</string>
     <string name="another_user_block_task">Задание заблокировано логином \"%1$s\".</string>
     <string name="task_block_user_with_tsd_ip">Задание заблокировано пользователем %1$s на ТСД %2$s</string>
-    <string name="user_self_block_task">Обработка задания начата исполнителем с логином \"%1$s\". Все равно продолжить?</string>
+    <string name="user_self_block_task">Задание было заблокировано своим логином. Разблокировать задание и продолжить его обработку?</string>
     <string name="to_verify">К сверке</string>
     <string name="to_recount">К пересчёту</string>
     <string name="to_tie">Привязать</string>
@@ -224,7 +224,9 @@
     <string name="open">Открыть</string>
     <string name="twelve_characters_entered">Введено 12 знаков. Какой код вы ввели?</string>
     <string name="incorrect_ean_format">Неверный формат штрихкода</string>
+    <string name="client">Клиент</string>
     <string name="detected_discrepancies">Обнаруженные расхождения</string>
 
+    <string name="zbatch_goods">Z-партии</string>
     <string name="vet_good">Ветиринарный товар</string>
 </resources>

@@ -46,7 +46,7 @@ class MemoryTaskBatchesRepository : ITaskBatchesRepository {
     }
 
     override fun updateBatches(newBatches: List<TaskBatchInfo>) {
-        batchesInfo.clear()
+        clear()
         newBatches.map {
             addBatch(it)
         }

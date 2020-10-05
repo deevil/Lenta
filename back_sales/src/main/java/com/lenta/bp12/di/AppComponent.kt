@@ -12,6 +12,7 @@ import com.lenta.bp12.features.create_task.marked_good_info.MarkedGoodInfoCreate
 import com.lenta.bp12.features.create_task.task_card.TaskCardCreateViewModel
 import com.lenta.bp12.features.create_task.task_content.TaskContentViewModel
 import com.lenta.bp12.features.enter_employee_number.EnterEmployeeNumberViewModel
+import com.lenta.bp12.features.enter_mrc.EnterMrcViewModel
 import com.lenta.bp12.features.loading.fast.FastLoadingViewModel
 import com.lenta.bp12.features.main_menu.MainMenuViewModel
 import com.lenta.bp12.features.open_task.discrepancy_list.DiscrepancyListViewModel
@@ -75,4 +76,5 @@ interface AppComponent : CoreComponent {
     fun inject(it: GoodInfoOpenViewModel)
     fun inject(it: MarkedGoodInfoOpenViewModel)
     fun inject(it: MarkedGoodInfoCreateViewModel)
+    fun inject(it: EnterMrcViewModel)
 }

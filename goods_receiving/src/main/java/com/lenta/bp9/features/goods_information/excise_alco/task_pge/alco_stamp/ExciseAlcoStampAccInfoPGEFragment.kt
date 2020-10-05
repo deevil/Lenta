@@ -22,7 +22,6 @@ class ExciseAlcoStampAccInfoPGEFragment : CoreFragment<FragmentExciseAlcoStampAc
         OnScanResultListener,
         OnBackPresserListener {
 
-
     private var productInfo by state<TaskProductInfo?>(null)
 
     override fun getLayoutId(): Int = R.layout.fragment_excise_alco_stamp_acc_info_pge
@@ -70,7 +69,7 @@ class ExciseAlcoStampAccInfoPGEFragment : CoreFragment<FragmentExciseAlcoStampAc
     override fun onFragmentResult(arguments: Bundle) {
         if (arguments.getInt(KEY_MANUFACTURER_POSITION) != 0 && arguments.getString(KEY_BOTTLING_DATE) != null) {
             super.onFragmentResult(arguments)
-            vm.onBatchSignsResult(arguments.getInt(KEY_MANUFACTURER_POSITION), arguments.getString(KEY_BOTTLING_DATE))
+            vm.onBatchSignsResult(arguments.getInt(KEY_MANUFACTURER_POSITION), arguments.getString(KEY_BOTTLING_DATE, "").orEmpty())
         } else {
             vm.onBatchSignsResult()
         }
@@ -81,7 +80,13 @@ class ExciseAlcoStampAccInfoPGEFragment : CoreFragment<FragmentExciseAlcoStampAc
         return false
     }
 
+    override fun onResume() {
+        super.onResume()
+        vm.requestFocusToCount.value = true
+    }
+
     companion object {
+
         private const val KEY_MANUFACTURER_POSITION = "manufacturerSelectedPosition"
         private const val KEY_BOTTLING_DATE = "bottlingDate"
 

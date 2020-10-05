@@ -38,12 +38,12 @@
     // Информационные сообщения
     <string name="unsent_data_found_on_device">На устройстве обнаружены непереданные данные. Перейти к данным?</string>
     <string name="twelve_characters_entered">Введено 12 знаков. Какой код вы ввели?</string>
-    <string name="unsaved_data_will_be_lost">Несохраненные данные будут утеряны. Продолжить?</string>
+    <string name="unsaved_data_will_be_lost">Несохраненные данные будут удалены. Продолжить?</string>
     <string name="make_task_counted_and_close">Перевести задание в статус \"Посчитано\" и закрыть его для редактирования?</string>
     <string name="task_unsent_data_will_be_deleted">По заданию \"%1$s\" будут удалены все непереданные данные</string>
     <string name="scanned_mark_belongs_to_product">Отсканированная марка принадлежит товару %1$s</string>
     <string name="for_excise_alcohol_need_scan_first_mark">Для акцизного алкогольного товара необходимо отсканировать первую акцизную марку. По ней будет определена категория \"Марочно\", с помарочным сканированием или \"Партионно\", с ручным вводом количеств.</string>
-    <string name="raw_goods_remained_in_task">В задании остались необработанные товары. Сохранить в статусе "Опубликовано" и оставить доступным для продолжения пересчета?</string>
+    <string name="raw_goods_remained_in_task">В задании остались необработанные товары. Сохранить в статусе \"Опубликовано\" и оставить доступным для продолжения пересчета?</string>
     <string name="box_was_last_scanned">Последней была отсканирована коробка. Будут удалены все добавленные марки этой коробки.</string>
     <string name="do_you_really_want_set_zero_quantity">Вы действительно хотите установить 0 в поле количество для (%1$d) товаров из списка?</string>
     <string name="not_match_task_settings_gis_error">Товар не соответствует настройкам задания. Ошибка в ГИС-контроле.</string>
@@ -59,7 +59,7 @@
     <string name="good_is_missing_in_task">Товар отсутствует в задании</string>
     <string name="incorrect_ean_format">Неверный формат штрихкода</string>
     <string name="cant_scan_tobacco_pack_scan_carton">Добавление отдельной пачки запрещено. Отсканируйте целый блок.</string>
-    <string name="for_good_need_scan_first_mark">Для данного товара, необходимо дополнительно отсканировать марку.</string>
+    <string name="for_good_need_scan_first_mark">Для данного товара необходимо дополнительно отсканировать марку.</string>
     <string name="cant_scan_excise_for_wholesale_task">Невозможно добавление акцизного алкоголя в тип задания "ПКО"</string>
     <string name="cant_scan_vet_for_wholesale_task">Невозможно добавление товаров ветеринарного контроля в тип задания "ПКО"</string>
 
@@ -75,6 +75,7 @@
     <string name="basket_not_found_error_msg">корзина не найдена</string>
     <string name="task_not_found_error_msg">задание не найдено</string>
     <string name="no_status_mark">Статус марки не найден</string>
+    <string name="wrong_date_error_msg">Внутренняя ошибка программы: неправильная дата</string>
 
     <string name="quantity_more_than_planned">Превышено плановое количество. Добавление невозможно.</string>
     <string name="mark_already_scanned_delete">Отсканированная марка уже была добавлена в задание. Удалить марку?</string>
@@ -83,6 +84,9 @@
     <string name="scanned_wrong_mrc">Отсканированный МРЦ товара, 1%s 2%s, не соответствует МРЦ заказа.</string>
     <string name="no_settings_for_that_markType">Не заведена настройка присвоения группы маркировки текущему типу маркировки</string>
     <string name="scanned_mark_with_different_mrc">Отсканирована марка с МРЦ, отличающаяся от МРЦ текущей корзинки. Сохранить подсчет текущей корзинки и открыть другую?</string>
+    <string name="enter_mrc_from_box">Введите МРЦ, указанный на блоке из отсканированной коробки</string>
+    <string name="enter_mrc">Введите МРЦ</string>
+    <string name="scan_marks_individually">Часть марок коробки уже добавлено. Отсканируйте каждую марку отдельно</string>
 
     // Описание иконок
     <string name="alcohol_good">Алкогольный товар</string>
@@ -136,5 +140,7 @@
     <string name="rub">руб</string>
     <string name="mrc_dash_cost_rub">МРЦ-%s руб.</string>
     <string name="mrc_space_rub">%s руб.</string>
+    <string name="page_not_found_error_msg">экран содержит ошибку</string>
+    <string name="from_planned_quantity"> из %1$s</string>
 
 </resources>

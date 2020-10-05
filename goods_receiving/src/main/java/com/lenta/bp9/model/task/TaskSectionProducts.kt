@@ -31,11 +31,11 @@ data class TaskSectionProducts(
                                 }
                                 val uomInfo = zmpUtz07V001.getUomInfo(restData.uom)
                                 return@withContext TaskSectionProducts(
-                                        sectionNumber = restData.sectionNumber,
-                                        materialNumber = restData.materialNumber,
-                                        materialName = materialInfo?.name ?: "",
-                                        quantity = restData.quantity.toDouble() ?: 0.0,
-                                        uom = Uom(code = uomInfo?.uom ?: "", name = uomInfo?.name ?: "")
+                                        sectionNumber = restData.sectionNumber.orEmpty(),
+                                        materialNumber = restData.materialNumber.orEmpty(),
+                                        materialName = materialInfo?.name.orEmpty(),
+                                        quantity = restData.quantity?.toDouble() ?: 0.0,
+                                        uom = Uom(code = uomInfo?.uom.orEmpty(), name = uomInfo?.name.orEmpty())
                                 )
                         }
                 }
@@ -44,11 +44,11 @@ data class TaskSectionProducts(
 
 data class TaskSectionProductsRestData(
         @SerializedName("ABTNR")
-        val sectionNumber: String, //Номер секции
+        val sectionNumber: String?, //Номер секции
         @SerializedName("MATNR")
-        val materialNumber: String, //Номер товара
+        val materialNumber: String?, //Номер товара
         @SerializedName("MENGE")
-        val quantity: String, //Количество
+        val quantity: String?, //Количество
         @SerializedName("MEINS")
-        val uom: String //базисная единица измерения
+        val uom: String? //базисная единица измерения
 )

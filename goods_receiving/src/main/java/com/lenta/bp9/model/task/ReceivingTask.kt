@@ -1,10 +1,17 @@
 package com.lenta.bp9.model.task
 
+import android.annotation.SuppressLint
+import com.lenta.bp9.features.goods_information.z_batches.task_pge.ZBatchesInfoPGEViewModel
 import com.lenta.bp9.model.repositories.ITaskRepository
 import com.lenta.bp9.model.task.revise.DeliveryDocumentRevise
 import com.lenta.bp9.model.task.revise.DeliveryProductDocumentRevise
 import com.lenta.bp9.platform.TypeDiscrepanciesConstants
+import com.lenta.bp9.platform.TypeDiscrepanciesConstants.TYPE_DISCREPANCIES_QUALITY_NORM
 import com.lenta.shared.models.core.ProductType
+import com.lenta.shared.platform.constants.Constants
+import com.lenta.shared.utilities.Logg
+import java.text.SimpleDateFormat
+import java.util.*
 
 class ReceivingTask(val taskHeader: TaskInfo,
                     val taskDescription: TaskDescription,
@@ -47,7 +54,7 @@ class ReceivingTask(val taskHeader: TaskInfo,
     }
 
     fun getProcessedBoxes(): List<TaskBoxInfo> {
-        return taskRepository.getBoxes().getBoxes()
+        return taskRepository.getBoxesRepository().getTaskBoxes()
     }
 
     fun getProcessedBoxesDiscrepancies(): List<TaskBoxDiscrepancies> {
@@ -80,6 +87,10 @@ class ReceivingTask(val taskHeader: TaskInfo,
 
     fun getProcessedSections(): List<TaskSectionInfo> {
         return taskRepository.getSections().getSections()
+    }
+
+    fun getProcessedTransportMarriage(): List<TaskTransportMarriageInfo> {
+        return taskRepository.getTransportMarriage().getTransportMarriage()
     }
 
     fun getCargoUnits(): List<TaskCargoUnitInfo> {
@@ -145,7 +156,7 @@ class ReceivingTask(val taskHeader: TaskInfo,
                 .getExciseStampsBad()
                 .updateExciseStampBad(taskContentsInfo.taskExciseStampBad)
         taskRepository
-                .getBoxes()
+                .getBoxesRepository()
                 .updateBoxes(taskContentsInfo.taskBoxes)
         taskRepository
                 .getBoxesDiscrepancies()
@@ -159,12 +170,54 @@ class ReceivingTask(val taskHeader: TaskInfo,
         taskRepository
                 .getZBatchesDiscrepancies()
                 .updateZBatchesDiscrepancy(taskContentsInfo.taskZBatchesDiscrepancies)
+        /**обновляем ZBatchesDiscrepancy, а также обновляем PartySignsOfZBatches, чтобы брать данные для экрана Список товаров в разрезе партий,
+         * а именно, PartySignsTypeOfZBatches //партионный признак (ДП-дата производства, СГ-срок годности, изначально указываем ДП, если на карточке товара не было изменено),
+         * и дату производста, которую расчитываем из срока годности, т.к. в ZBatch приходит только срок годности, а дата производства не приходит*/
+        taskContentsInfo
+                .taskZBatchesDiscrepancies
+                .map {
+                    taskRepository
+                            .getZBatchesDiscrepancies()
+                            .updatePartySignFromZBatch(it, getProductionDateForPartySignFromZBatch(it))
+                }
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    private fun getProductionDateForPartySignFromZBatch(zBatch: TaskZBatchesDiscrepancies): String {
+        val formatterERP = SimpleDateFormat(Constants.DATE_FORMAT_yyyyMMdd)
+        val formatterEN = SimpleDateFormat(Constants.DATE_FORMAT_yyyy_mm_dd)
+        val productInfo = taskRepository.getProducts().findProduct(zBatch.materialNumber)
+        val productGeneralShelfLife = productInfo?.generalShelfLife?.toInt() ?: 0
+        val productMhdhbDays = productInfo?.mhdhbDays ?: 0
+        val generalShelfLife: String
+
+        generalShelfLife =
+                if (productGeneralShelfLife > 0) {
+                    productGeneralShelfLife.toString()
+                } else {
+                    productMhdhbDays.toString()
+                }
+
+        return try {
+            if (zBatch.typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM) {
+                val productionDate = Calendar.getInstance()
+                val generalShelfLifeValue = generalShelfLife.toInt()
+                productionDate.time = formatterEN.parse(zBatch.shelfLifeDate)
+                productionDate.add(Calendar.DATE, -generalShelfLifeValue)
+                productionDate.time?.let { formatterERP.format(it) }.orEmpty()
+            } else {
+                zBatch.shelfLifeDate
+            }
+        } catch (e: Exception) {
+            Logg.e { "Get production date exception: $e" }
+            ""
+        }
     }
 
     //количество коробов для товара прошедших контроль
     fun countBoxesPassedControlOfProduct(productInfo: TaskProductInfo): Int { //https://trello.com/c/Z1SPfmAJ-контроль коробов, https://trello.com/c/Hve509E5 - контроль короба
         return taskRepository
-                .getBoxes()
+                .getBoxesRepository()
                 .findBoxesOfProduct(productInfo)
                 ?.filter { taskBoxInfo ->
                     val countProcessedBoxes = taskRepository
@@ -214,18 +267,16 @@ class ReceivingTask(val taskHeader: TaskInfo,
     private fun changeProductDiscrepancyToBatch(productInfo: TaskProductInfo, batchDiscrepancies: TaskBatchesDiscrepancies) {
         val countOfDiscrepanciesOfProduct = taskRepository
                 .getProductsDiscrepancies()
-                .getCountOfDiscrepanciesOfProduct(
+                .getCountOfDiscrepanciesOfProductOfProcessingUnit(
                         product = productInfo,
-                        typeDiscrepancies = batchDiscrepancies.typeDiscrepancies
+                        typeDiscrepancies = batchDiscrepancies.typeDiscrepancies,
+                        processingUnitNumber = batchDiscrepancies.processingUnitNumber
                 )
         val countAdd = countOfDiscrepanciesOfProduct + batchDiscrepancies.numberDiscrepancies.toDouble()
         val foundDiscrepancy = taskRepository
                 .getProductsDiscrepancies()
-                .findProductDiscrepanciesOfProduct(productInfo)
-                .findLast {
-                    it.materialNumber == productInfo.materialNumber
-                            && it.typeDiscrepancies == batchDiscrepancies.typeDiscrepancies
-                }
+                .findProductDiscrepanciesOfProductOfProcessingUnit(productInfo)
+                .findLast { it.typeDiscrepancies == batchDiscrepancies.typeDiscrepancies }
 
         if (foundDiscrepancy == null) {
             taskRepository
@@ -233,7 +284,7 @@ class ReceivingTask(val taskHeader: TaskInfo,
                     .changeProductDiscrepancy(
                             TaskProductDiscrepancies(
                                     materialNumber = productInfo.materialNumber,
-                                    processingUnitNumber = productInfo.processingUnit,
+                                    processingUnitNumber = batchDiscrepancies.processingUnitNumber,
                                     numberDiscrepancies = countAdd.toString(),
                                     uom = productInfo.uom,
                                     typeDiscrepancies = batchDiscrepancies.typeDiscrepancies,

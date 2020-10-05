@@ -1,10 +1,11 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'io.fabric'
 apply plugin: 'de.mannodermaus.android-junit5'
 apply from: '../fmp_settings.gradle'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'
 
 def prefixAppVersion = "15"
 
@@ -53,7 +54,7 @@ android {
     applicationVariants.all { variant ->
         if (variant.buildType.name == "release") {
             variant.outputs.all {
-                def name = outputFileName.replace("app-", "LentaProduction-")
+                def name = outputFileName.replace("app-", "LentaStatement-")
                 outputFileName = name.replace(".apk", "-${variant.versionName}-${variant.versionCode}.apk")
             }
         }
@@ -61,12 +62,11 @@ android {
 
         if (variant.buildType.name == "debug") {
             variant.outputs.all {
-                def name = outputFileName.replace("app-", "LentaStatementOnBalance-debug")
+                def name = outputFileName.replace("app-", "LentaStatement")
                 outputFileName = name.replace(".apk", "-${variant.versionName}-${variant.versionCode}.apk")
             }
         }
     }
-
 
     sourceSets {
         main {
@@ -104,16 +104,12 @@ dependencies {
     implementation 'com.android.support:multidex:1.0.3'
 
     // Okhttp
-    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.5.0'
 
     // Dagger2
     kapt deps.dagger.compiler
 
     testImplementation deps.junit
-
-    implementation('com.crashlytics.sdk.android:crashlytics:2.10.1@aar') {
-        transitive = true
-    }
 
     // JUnit 5 tests
     testImplementation "org.junit.jupiter:junit-jupiter-api:5.3.2"
@@ -121,13 +117,11 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-params:5.3.2"
 
     // Support for older JUnit versions
-    testImplementation "junit:junit:4.12"
     testRuntimeOnly "org.junit.vintage:junit-vintage-engine:5.3.2"
 
     // Mockito
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0"
     testImplementation "io.mockk:mockk:1.9.3"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 }
 
 repositories {

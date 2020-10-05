@@ -14,11 +14,13 @@
 
     <dimen name="size_1dp">1dp</dimen>
     <dimen name="size_2dp">2dp</dimen>
+    <dimen name="size_4dp">4dp</dimen>
     <dimen name="size_6dp">6dp</dimen>
     <dimen name="size_8dp">8dp</dimen>
     <dimen name="size_10dp">10dp</dimen>
     <dimen name="size_12dp">12dp</dimen>
     <dimen name="size_16dp">16dp</dimen>
+    <dimen name="size_20dp">20dp</dimen>
     <dimen name="size_30dp">30dp</dimen>
     <dimen name="size_32dp">32dp</dimen>
     <dimen name="size_36dp">36dp</dimen>

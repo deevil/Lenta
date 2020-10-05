@@ -158,8 +158,7 @@ class NonExciseSetsPGEViewModel : CoreViewModel(),
                         return@launchUITryCatch
                     }
 
-            searchProductDelegate.init(viewModelScope = this@NonExciseSetsPGEViewModel::viewModelScope,
-                    scanResultHandler = this@NonExciseSetsPGEViewModel::handleProductSearchResult)
+            searchProductDelegate.init(scanResultHandler = this@NonExciseSetsPGEViewModel::handleProductSearchResult)
 
             suffix.value = productInfo.value?.uom?.name
             if (isDiscrepancy.value == true) {

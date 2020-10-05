@@ -170,6 +170,7 @@
     <string name="mercury_exception_integration_header">Укажите причину исключения поставки из автоматической интеграции с ГИС \"Меркурий\"</string>
     <string name="vet_with_production_date">По ВСД (%1$s) с датой производства</string>
     <string name="alert_vad_product_not_matched">По товару %1$s не были подобраны ВСД</string>
+    <string name="alert_product_document_not_found">Мы не смогли найти документ для показа</string>
     <string name="discrepancies_inconsistency_vet_docs_dialog">Остались неподтверждёнными обязательные документы по товарам. Пометить все эти товары как расхождения - \"Несоответствие документов\"?</string>
     <string name="discrepancies_no_vad_dialog">По всем вет.товарам нет сверенных сертификатов. Исключить поставку из автоматической интеграции или пометить эти товары как расхождение - \"Нет ВСД/недогруз\"</string>
     <string name="processing_mercury_quant_great_in_vet_doc">Введенное кол-во больше чем в ВСД, измените кол-во</string>
@@ -353,4 +354,13 @@
     <string name="no_ip_printer_alert">IP адрес принтера не указан</string>
     <string name="save_counted_quantities_and_go_to_label_printing">Сохранить посчитанные количества в SAP ERP и перейти к печати этикеток?</string>
     <string name="alert_not_correct_time">Некорректное время</string>
+    <string name="stamps_control_in_box">Контроль марок в кор.</string>
+    <string name="control_boxes">Контроль коробов</string>
+    <string name="goods_details">Детали по товару</string>
+    <string name="day_abbreviated">сут</string>
+    <string name="general_shelf_life_abbr">ОБЩ СГ</string>
+    <string name="remaining_shelf_life_abbr">ОСТ СГ</string>
+    <string name="alternative_unit_measure_abbr">АЕИ</string>
+    <string name="zbatch_with_production_date">Партия с датой производства</string>
+    <string name="zbatch_quantity_with_production_date">Партия (%1$s) с датой производства</string>
 </resources>

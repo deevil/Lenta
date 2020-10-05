@@ -50,7 +50,7 @@ class ProcessMarkingBoxProductService
 
                     boxes.clear()
                     taskRepository?.let { repository ->
-                        repository.getBoxes()
+                        repository.getBoxesRepository()
                                 .findBoxesOfProduct(productInfo)
                                 ?.mapTo(boxes) { it.copy() }
                     }
@@ -253,7 +253,7 @@ class ProcessMarkingBoxProductService
 
             repository
                     .getProductsDiscrepancies()
-                    .changeProductDiscrepancy(foundDiscrepancy)
+                    .changeProductDiscrepancyOfProcessingUnit(foundDiscrepancy)
         }
     }
 
@@ -577,7 +577,7 @@ class ProcessMarkingBoxProductService
 
         taskRepository?.let { repository ->
             repository
-                    .getBoxes()
+                    .getBoxesRepository()
                     .findBoxesOfProduct(productInfo)
                     ?.mapTo(boxes) { it.copy() }
 

@@ -96,25 +96,25 @@ class MarkingGoodsDetailsViewModel : CoreViewModel(), PageSelectionListener {
     private fun processSelectedPosition(position: Int, product: TaskProductInfo) {
         val isDiscrepanciesErrorUPD =
                 goodsDetails.value
-                        ?.get(position)
+                        ?.getOrNull(position)
                         ?.typeDiscrepancies == TYPE_DISCREPANCIES_REASON_REJECTION_ERROR_UPD
 
         val materialNumber =
                 goodsDetails.value
-                        ?.get(position)
+                        ?.getOrNull(position)
                         ?.materialNumber
                         .orEmpty()
 
         val typeDiscrepancies =
                 goodsDetails.value
-                        ?.get(position)
+                        ?.getOrNull(position)
                         ?.typeDiscrepancies
                         .orEmpty()
 
         if (!isDiscrepanciesErrorUPD) {
             taskRepository
                     ?.let {
-                        it.getProductsDiscrepancies().deleteProductDiscrepancy(materialNumber,typeDiscrepancies)
+                        it.getProductsDiscrepancies().deleteProductDiscrepancy(materialNumber, typeDiscrepancies)
                         it.getBoxesDiscrepancies().deleteBoxesDiscrepanciesForProductAndDiscrepancies(materialNumber, typeDiscrepancies)
                         it.getBlocksDiscrepancies().deleteBlocksDiscrepanciesForProductAndDiscrepancies(materialNumber,typeDiscrepancies)
                     }
@@ -122,6 +122,7 @@ class MarkingGoodsDetailsViewModel : CoreViewModel(), PageSelectionListener {
             when(getMarkingGoodsRegime(taskManager, product)) {
                 MarkingGoodsRegime.UomStWithoutBoxes -> processMarkingProductService.delBlockDiscrepancy(typeDiscrepancies)
                 MarkingGoodsRegime.UomStWithBoxes -> processMarkingBoxProductService.delBoxAndBlockDiscrepancy(typeDiscrepancies)
+                else -> Unit
             }
         }
     }
@@ -135,10 +136,9 @@ class MarkingGoodsDetailsViewModel : CoreViewModel(), PageSelectionListener {
         goodsDetails.postValue(
                 productInfo.value
                         ?.let { product ->
-                            taskRepository
-                                    ?.getProductsDiscrepancies()
-                                    ?.findProductDiscrepanciesOfProduct(product)
-                        }?.mapIndexed { index, discrepancy ->
+                            taskRepository?.getProductsDiscrepancies()?.findProductDiscrepanciesOfProduct(product)
+                        }
+                        ?.mapIndexed { index, discrepancy ->
                             val isNormDiscrepancies = discrepancy.typeDiscrepancies == TYPE_DISCREPANCIES_QUALITY_NORM
                             GoodsDetailsCategoriesItem(
                                     number = index + 1,
@@ -153,7 +153,8 @@ class MarkingGoodsDetailsViewModel : CoreViewModel(), PageSelectionListener {
                                     zBatchDiscrepancies = null,
                                     even = index % 2 == 0
                             )
-                        }?.reversed()
+                        }
+                        ?.reversed()
         )
 
         categoriesSelectionsHelper.clearPositions()

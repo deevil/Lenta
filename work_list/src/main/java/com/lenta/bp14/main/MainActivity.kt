@@ -1,17 +1,12 @@
 package com.lenta.bp14.main
 
 import android.Manifest
-import android.os.Bundle
 import androidx.lifecycle.ViewModelProvider
-import com.crashlytics.android.Crashlytics
 import com.lenta.bp14.di.AppComponent
 import com.lenta.bp14.platform.extentions.getAppComponent
 import com.lenta.shared.di.FromParentToCoreProvider
 import com.lenta.shared.platform.activity.main_activity.CoreMainActivity
 import com.lenta.shared.platform.fragment.CoreFragment
-import com.lenta.shared.utilities.runIfRelease
-import io.fabric.sdk.android.Fabric
-
 
 class MainActivity : CoreMainActivity() {
 
@@ -22,22 +17,14 @@ class MainActivity : CoreMainActivity() {
         getAppComponent(coreComponent)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        runIfRelease {
-            Fabric.with(this, Crashlytics())
-        }
-    }
-
     override fun getViewModel(): MainViewModel {
         appComponent.let { component ->
             component.inject(this)
             foregroundActivityProvider.setActivity(this)
-            ViewModelProvider(this).get(MainViewModel::class.java).let {
-                mainViewModel = it
-                component.inject(it)
+            return ViewModelProvider(this).get(MainViewModel::class.java).apply {
+                mainViewModel = this
+                component.inject(this)
             }
-            return mainViewModel!!
         }
     }
 

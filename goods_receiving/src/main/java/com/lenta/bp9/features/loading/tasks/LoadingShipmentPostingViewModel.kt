@@ -42,11 +42,11 @@ class LoadingShipmentPostingViewModel : CoreLoadingViewModel() {
     init {
         launchUITryCatch {
             progress.value = true
-            taskManager.getReceivingTask()?.let { task ->
+            taskManager.getReceivingTask()?.let { _ ->
                 val params = ZmpUtzGrz41V001Params(
                         deviceIP = context.getDeviceIp(),
-                        taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber ?: "",
-                        personalNumber = sessionInfo.personnelNumber ?: ""
+                        taskNumber = taskManager.getReceivingTask()?.taskHeader?.taskNumber.orEmpty(),
+                        personalNumber = sessionInfo.personnelNumber.orEmpty()
                 )
                 zmpUtzGrz41V001NetRequest(params).either(::handleFailure, ::handleSuccess)
             }
