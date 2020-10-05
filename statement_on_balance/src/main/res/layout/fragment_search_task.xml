@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.lenta.bp15.features.search_task.SearchTaskFragment">
 
@@ -23,7 +24,7 @@
 
                 <TextView
                     style="@style/CellTextStyle"
-                    android:text="@string/quantity"
+                    android:text="@string/good"
                     android:textColor="@color/color_text_title_header" />
 
             </LinearLayout>
@@ -36,7 +37,9 @@
 
                 <EditText
                     style="@style/CellEditTextStyle"
-                    android:text="@={vm.search}"
+                    android:text="@={vm.number}"
+                    android:inputType="number"
+                    android:maxLength="18"
                     tools:text="000044" />
 
             </LinearLayout>
@@ -67,14 +70,16 @@
                 <CheckBox
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:checked="@{vm.isMan}"
-                    android:layout_marginStart="@dimen/size_8dp" />
+                    android:layout_marginStart="@dimen/size_8dp"
+                    android:checked="@={vm.isMan}"
+                    app:clearOthersAfterChecked="@{vm.clearAllMarkType}"
+                    app:currentState="@{vm.isMan}" />
 
                 <TextView
                     style="@style/CellTextStyle"
                     android:layout_width="0dp"
                     android:layout_weight="1"
-                    tools:text="Обувь мужская" />
+                    android:text="@string/shoes_man" />
 
             </LinearLayout>
 
@@ -94,14 +99,16 @@
                 <CheckBox
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:checked="@{vm.isWoman}"
-                    android:layout_marginStart="@dimen/size_8dp" />
+                    android:layout_marginStart="@dimen/size_8dp"
+                    android:checked="@={vm.isWoman}"
+                    app:clearOthersAfterChecked="@{vm.clearAllMarkType}"
+                    app:currentState="@{vm.isWoman}" />
 
                 <TextView
                     style="@style/CellTextStyle"
                     android:layout_width="0dp"
                     android:layout_weight="1"
-                    tools:text="Обувь женская" />
+                    android:text="@string/shoes_woman" />
 
             </LinearLayout>
 
@@ -121,14 +128,16 @@
                 <CheckBox
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:checked="@{vm.isChildren}"
-                    android:layout_marginStart="@dimen/size_8dp" />
+                    android:layout_marginStart="@dimen/size_8dp"
+                    android:checked="@={vm.isChildren}"
+                    app:clearOthersAfterChecked="@{vm.clearAllMarkType}"
+                    app:currentState="@{vm.isChildren}" />
 
                 <TextView
                     style="@style/CellTextStyle"
                     android:layout_width="0dp"
                     android:layout_weight="1"
-                    tools:text="Обувь детская" />
+                    android:text="@string/shoes_children" />
 
             </LinearLayout>
 
@@ -148,14 +157,16 @@
                 <CheckBox
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:checked="@{vm.isUnisex}"
-                    android:layout_marginStart="@dimen/size_8dp" />
+                    android:layout_marginStart="@dimen/size_8dp"
+                    android:checked="@={vm.isUnisex}"
+                    app:clearOthersAfterChecked="@{vm.clearAllMarkType}"
+                    app:currentState="@{vm.isUnisex}" />
 
                 <TextView
                     style="@style/CellTextStyle"
                     android:layout_width="0dp"
                     android:layout_weight="1"
-                    tools:text="Обувь унисекс" />
+                    android:text="@string/shoes_unisex" />
 
             </LinearLayout>
 

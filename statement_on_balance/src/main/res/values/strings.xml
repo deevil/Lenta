@@ -48,5 +48,9 @@
     // Разное
     <string name="mark_quantity_to_processing">Количество марок к обработке</string>
     <string name="mark_type">Тип марки</string>
+    <string name="shoes_man">Обувь мужская</string>
+    <string name="shoes_woman">Обувь женская</string>
+    <string name="shoes_children">Обувь детская</string>
+    <string name="shoes_unisex">Обувь унисекс</string>
 
 </resources>
