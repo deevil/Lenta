@@ -65,13 +65,13 @@ class TaskManager @Inject constructor(
         currentGood.value = good
     }
 
-    override fun loadProcessingTaskList() {
+    override fun loadProcessingTaskList(value: String?) {
         launch {
             navigator.showProgressLoadingData()
 
             netRequests.getTaskList(TaskListParams(
                     tkNumber = sessionInfo.market.orEmpty(),
-                    userName = sessionInfo.userName.orEmpty(),
+                    value = value ?: sessionInfo.userName.orEmpty(),
                     userNumber = sessionInfo.personnelNumber.orEmpty(),
                     deviceIp = deviceInfo.getDeviceIp(),
                     mode = LoadTaskList.COMMON.mode
@@ -87,16 +87,16 @@ class TaskManager @Inject constructor(
         }
     }
 
-    override fun loadSearchTaskList(searchParams: TaskSearchParams) {
+    override fun loadSearchTaskList(value: String?, searchParams: TaskSearchParams?) {
         launch {
             navigator.showProgressLoadingData()
 
             netRequests.getTaskList(TaskListParams(
                     tkNumber = sessionInfo.market.orEmpty(),
-                    userName = sessionInfo.userName.orEmpty(),
+                    value = value ?: sessionInfo.userName.orEmpty(),
                     userNumber = sessionInfo.personnelNumber.orEmpty(),
                     deviceIp = deviceInfo.getDeviceIp(),
-                    mode = LoadTaskList.WITH_PARAMS.mode,
+                    mode = if (searchParams != null) LoadTaskList.WITH_PARAMS.mode else LoadTaskList.COMMON.mode,
                     searchParams = searchParams
             )).either(::handleFailure) { result ->
                 launch {
@@ -229,8 +229,8 @@ interface ITaskManager {
     fun updateCurrentTask(task: Task)
     fun updateCurrentGood(good: Good)
 
-    fun loadProcessingTaskList()
-    fun loadSearchTaskList(searchParams: TaskSearchParams)
+    fun loadProcessingTaskList(value: String? = null)
+    fun loadSearchTaskList(value: String? = null, searchParams: TaskSearchParams? = null)
     fun loadContentToCurrentTask()
     suspend fun unlockTask(task: Task)
     suspend fun getMaterialByEan(ean: String): String?

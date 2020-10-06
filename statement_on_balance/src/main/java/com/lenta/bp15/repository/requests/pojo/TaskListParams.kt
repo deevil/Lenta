@@ -8,7 +8,7 @@ data class TaskListParams(
         val tkNumber: String,
         /** Адресат или номер задания */
         @SerializedName("IV_EXEC_USER")
-        val userName: String,
+        val value: String,
         /** Режим обработки: 1 - обновление списка заданий, 2 - расширенный поиск заданий */
         @SerializedName("IV_MODE")
         val mode: Int,

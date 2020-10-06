@@ -15,7 +15,6 @@ import com.lenta.shared.platform.toolbar.bottom_toolbar.BottomToolbarUiModel
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ButtonDecorationInfo
 import com.lenta.shared.platform.toolbar.bottom_toolbar.ToolbarButtonsClickListener
 import com.lenta.shared.platform.toolbar.top_toolbar.TopToolbarUiModel
-import com.lenta.shared.scan.OnScanResultListener
 import com.lenta.shared.utilities.databinding.ViewPagerSettings
 import com.lenta.shared.utilities.extentions.generateScreenNumberFromPostfix
 import com.lenta.shared.utilities.extentions.provideViewModel
@@ -97,7 +96,7 @@ class TaskListFragment : KeyDownCoreFragment<FragmentTaskListBinding, TaskListVi
                 itemId = BR.item,
                 keyHandlerId = TAB_TASKS,
                 recyclerView = layoutBinding.rv,
-                items = vm.taskList,
+                items = vm.processingList,
                 onClickHandler = vm::onClickItemTaskPosition
         )
 
