@@ -103,15 +103,14 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
 
     private fun updateProcessingList() {
         when{
-            isEnteredLogin() || isEnteredUnknownTaskNumber() -> manager.loadProcessingTaskList(getEnteredValue())
+            isEnteredLogin() -> manager.loadProcessingTaskList(getEnteredValue())
             getEnteredValue().isNullOrEmpty() -> manager.loadProcessingTaskList()
         }
     }
 
-    // todo Понять как работает поиск до использования фильтра на соответствующем экране и после...
     private fun updateSearchList() {
         when{
-            isEnteredLogin() || isEnteredUnknownTaskNumber() -> manager.loadSearchTaskList(value = getEnteredValue())
+            isEnteredLogin() -> manager.loadSearchTaskList(value = getEnteredValue())
             getEnteredValue().isNullOrEmpty() -> manager.loadSearchTaskList()
         }
     }
@@ -120,22 +119,6 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         return getEnteredValue()?.let { numberOrLogin ->
             numberOrLogin.isNotEmpty() && !numberOrLogin.all { it.isDigit() }
         } ?: false
-    }
-
-    private fun isEnteredUnknownTaskNumber(): Boolean {
-        val isEnteredNotEmpty = getEnteredValue()?.isNotEmpty() ?: false
-        val isEnteredOnlyNumbers = getEnteredValue()?.all { it.isDigit() } ?: false
-        val isCurrentListEmpty = getCurrentTaskList().isNullOrEmpty()
-
-        return isEnteredNotEmpty && isEnteredOnlyNumbers && isCurrentListEmpty
-    }
-
-    private fun getCurrentTaskList(): List<ItemTaskUi>? {
-        return when (selectedPage.value) {
-            0 -> processingList.value
-            1 -> searchList.value
-            else -> throw IllegalArgumentException("Wrong pager position!")
-        }
     }
 
     private fun getEnteredValue(): String? {

@@ -79,7 +79,7 @@ class SearchTaskViewModel : CoreViewModel() {
 
     fun onClickSearch() {
         launchUITryCatch {
-            manager.loadSearchTaskList(TaskSearchParams(
+            manager.loadSearchTaskList(searchParams = TaskSearchParams(
                     material = number.value.orEmpty(),
                     markType = getMarkType()
             ))
