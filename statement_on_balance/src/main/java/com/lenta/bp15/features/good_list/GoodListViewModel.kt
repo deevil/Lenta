@@ -41,15 +41,15 @@ class GoodListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
     val processingList by lazy {
         task.mapSkipNulls { task ->
             task.goods.filter { it.isExistUnprocessedMarks() }.mapIndexed { index, good ->
-                good.convertToItemGoodUi(index)
+                good.convertToItemProcessingUi(index)
             }
         }
     }
 
     val processedList by lazy {
         task.mapSkipNulls { task ->
-            task.goods.filter { !it.isExistUnprocessedMarks() }.mapIndexed { index, good ->
-                good.convertToItemGoodUi(index)
+            task.goods.filter { it.isExistProcessedMarks() }.mapIndexed { index, good ->
+                good.convertToItemProcessedUi(index)
             }
         }
     }

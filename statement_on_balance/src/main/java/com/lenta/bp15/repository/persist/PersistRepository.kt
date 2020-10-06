@@ -23,7 +23,7 @@ class PersistRepository @Inject constructor(
     }
 
     override fun isExistUnsavedData(): Boolean {
-        return hyperHive.stateAPI.getParamFromDB(keyForSave) != null
+        return getSavedTaskData() != null
     }
 
     override fun clearSavedData() {

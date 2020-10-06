@@ -9,6 +9,7 @@ import com.lenta.bp15.platform.resource.IResourceManager
 import com.lenta.shared.models.core.Uom
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.actionByNumber
+import com.lenta.shared.utilities.extentions.combineLatest
 import com.lenta.shared.utilities.extentions.launchUITryCatch
 import com.lenta.shared.utilities.extentions.mapSkipNulls
 import javax.inject.Inject
@@ -43,9 +44,9 @@ class GoodInfoViewModel : CoreViewModel() {
 
     private val scannedMarks = MutableLiveData(mutableListOf<String>())
 
-    val quantity = scannedMarks.map { it.size }
+    private val currentQuantity = scannedMarks.map { it.size }
 
-    val quantityWithUnits = quantity.map { quantity ->
+    val currentQuantityWithUnits = currentQuantity.map { quantity ->
         "$quantity ${Uom.ST.name}"
     }
 
@@ -61,31 +62,37 @@ class GoodInfoViewModel : CoreViewModel() {
 
     private var allTaskMarks = emptyMap<String, Mark>()
 
-    private var processedMarksQuantity = 0
+    private val processedQuantity by lazy {
+        good.map { it.getProcessedMarksCount() }
+    }
 
     private val totalMarks by lazy {
         good.map { it.planQuantity }
     }
 
     val markScanProgress by lazy {
-        quantity.map { currentScannedQuantity ->
-            val processed = processedMarksQuantity + currentScannedQuantity
-            val total = totalMarks.value ?: 0
-            resource.processingProgress("$processed", "$total")
+        processedQuantity.combineLatest(currentQuantity).combineLatest(totalMarks).map {
+            val processed = it.first.first
+            val current = it.first.second
+            val total = it.second
+
+            resource.processingProgress("${processed + current}", "$total")
         }
     }
 
     val allMarkProcessed by lazy {
-        quantity.map { currentScannedQuantity ->
-            val processed = processedMarksQuantity + currentScannedQuantity
-            val total = totalMarks.value ?: 0
-            processed == total
+        processedQuantity.combineLatest(currentQuantity).combineLatest(totalMarks).map {
+            val processed = it.first.first
+            val current = it.first.second
+            val total = it.second
+
+            (processed + current) == total
         }
     }
 
-    val applyEnabled = quantity.map { it > 0 }
+    val applyEnabled = currentQuantity.map { it > 0 }
 
-    val rollbackEnabled = quantity.map { it > 0 }
+    val rollbackEnabled = currentQuantity.map { it > 0 }
 
     /**
     Блок инициализации
@@ -95,7 +102,6 @@ class GoodInfoViewModel : CoreViewModel() {
         launchUITryCatch {
             navigator.showProgressLoadingData()
 
-            processedMarksQuantity = good.value?.getProcessedMarksCount() ?: 0
             allTaskMarks = task.value?.getAllMarks() ?: emptyMap()
 
             navigator.hideProgress()
@@ -117,12 +123,13 @@ class GoodInfoViewModel : CoreViewModel() {
     private fun checkScannedMark(number: String) {
         good.value?.let { good ->
             allTaskMarks.get(number)?.let { mark ->
+                val isExistInScanList = scannedMarks.value?.contains(number) ?: false
                 when {
-                    mark.isScan -> navigator::showMarkAlreadyProcessed
+                    mark.isScan || isExistInScanList -> navigator.showMarkAlreadyProcessed()
                     mark.material != good.material -> navigator.showScannedMarkBelongsToAnotherGood(good.material)
                     else -> addMarkToList(number)
                 }
-            } ?: navigator::showScannedMarkIsNotOnTask
+            } ?: navigator.showScannedMarkIsNotOnTask()
         }
     }
 
@@ -134,7 +141,7 @@ class GoodInfoViewModel : CoreViewModel() {
     }
 
     fun onBackPressed() {
-        quantity.value?.let { quantity ->
+        currentQuantity.value?.let { quantity ->
             if (quantity > 0) {
                 navigator.showUnsavedDataWillBeRemoved {
                     manager.removeCurrentTaskBackup()

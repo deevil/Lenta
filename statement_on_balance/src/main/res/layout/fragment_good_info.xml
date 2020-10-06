@@ -40,7 +40,7 @@
                     <EditText
                         style="@style/CellEditTextStyle"
                         android:enabled="false"
-                        android:text="@{vm.quantityWithUnits}"
+                        android:text="@{vm.currentQuantityWithUnits}"
                         tools:text="1 шт" />
 
                 </LinearLayout>

@@ -182,6 +182,8 @@ class TaskManager @Inject constructor(
                 removeCurrentTaskBackup()
                 handleSaveDataSuccess.invoke()
             }
+
+            navigator.hideProgress()
         }
     }
 

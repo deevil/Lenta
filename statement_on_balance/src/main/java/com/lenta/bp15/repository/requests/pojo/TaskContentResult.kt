@@ -24,21 +24,18 @@ data class TaskContentResult(
             Good(
                     material = positionRawInfo.material,
                     planQuantity = (positionRawInfo.planQuantity.toDoubleOrNull() ?: 0.0).toInt(),
-                    markType = ShoesMarkType.from(positionRawInfo.markTypeCode)
+                    markType = ShoesMarkType.from(positionRawInfo.markTypeCode),
+                    marks = marks?.map { markRawInfo ->
+                        val key = markRawInfo.number
+                        val value = Mark(
+                                material = markRawInfo.material,
+                                number = markRawInfo.number,
+                                isScan = markRawInfo.isScan.isSapTrue()
+                        )
+                        key to value
+                    }?.toMap() ?: emptyMap()
             )
         } ?: emptyList()
-    }
-
-    fun convertToMarks(): Map<String, Mark> {
-        return marks?.map { markRawInfo ->
-            val key = markRawInfo.number
-            val value = Mark(
-                    material = markRawInfo.material,
-                    number = markRawInfo.number,
-                    isScan = markRawInfo.isScan.isSapTrue()
-            )
-            key to value
-        }?.toMap() ?: emptyMap()
     }
 
 }

@@ -37,16 +37,17 @@ class GoodInfoFragment : CoreFragment<FragmentGoodInfoBinding, GoodInfoViewModel
 
     override fun setupBottomToolBar(bottomToolbarUiModel: BottomToolbarUiModel) {
         bottomToolbarUiModel.uiModelButton1.show(ButtonDecorationInfo.back)
-        bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.rollback, enabled = false)
+        bottomToolbarUiModel.uiModelButton2.show(ButtonDecorationInfo.rollback/*, enabled = false*/)
         bottomToolbarUiModel.uiModelButton5.show(ButtonDecorationInfo.apply, enabled = false)
 
-        connectLiveData(vm.rollbackEnabled, bottomToolbarUiModel.uiModelButton2.enabled)
+        //connectLiveData(vm.rollbackEnabled, bottomToolbarUiModel.uiModelButton2.enabled)
         connectLiveData(vm.applyEnabled, bottomToolbarUiModel.uiModelButton5.enabled)
     }
 
     override fun onToolbarButtonClick(view: View) {
         when (view.id) {
-            R.id.b_2 -> vm.onClickRollback()
+            //R.id.b_2 -> vm.onClickRollback()
+            R.id.b_2 -> vm.onScanResult("0102900000006898217TjSoWgc:b9Sn")
             R.id.b_5 -> vm.onClickApply()
         }
     }

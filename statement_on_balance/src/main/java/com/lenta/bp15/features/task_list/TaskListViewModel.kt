@@ -129,7 +129,7 @@ class TaskListViewModel : CoreViewModel(), PageSelectionListener, OnOkInSoftKeyb
         }
     }
 
-    fun onClickItemTaskPosition(position: Int) {
+    fun onClickItemProcessingPosition(position: Int) {
         processingList.value?.getOrNull(position)?.number?.let { taskNumber ->
             manager.processingTasks.value?.find { it.number == taskNumber }?.let { task ->
                 prepareToOpenTask(task)

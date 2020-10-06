@@ -97,7 +97,7 @@ class TaskListFragment : KeyDownCoreFragment<FragmentTaskListBinding, TaskListVi
                 keyHandlerId = TAB_TASKS,
                 recyclerView = layoutBinding.rv,
                 items = vm.processingList,
-                onClickHandler = vm::onClickItemTaskPosition
+                onClickHandler = vm::onClickItemProcessingPosition
         )
 
         layoutBinding.vm = vm

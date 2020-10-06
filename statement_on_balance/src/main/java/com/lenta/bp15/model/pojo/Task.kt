@@ -27,9 +27,9 @@ data class Task(
         return goods.isEmpty()
     }
 
-    fun isExistUnprocessedGoods(): Boolean {
+    /*fun isExistUnprocessedGoods(): Boolean {
         return goods.any { it.isExistUnprocessedMarks() }
-    }
+    }*/
 
     fun convertToItemTaskUi(index: Int): ItemTaskUi {
         return ItemTaskUi(

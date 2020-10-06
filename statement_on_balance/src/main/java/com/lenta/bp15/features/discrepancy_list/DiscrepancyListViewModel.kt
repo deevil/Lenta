@@ -63,6 +63,7 @@ class DiscrepancyListViewModel : CoreViewModel() {
     }
 
     private fun handleSaveDataSuccess() {
+        manager.prepareToUpdateTaskList()
         navigator.goBackTo(TaskListFragment::class.simpleName)
         navigator.showSuccessSaveData()
     }

@@ -28,6 +28,10 @@ data class Good(
         return marks.filter { !it.value.isScan }.size
     }
 
+    fun isExistProcessedMarks(): Boolean {
+        return marks.any { it.value.isScan }
+    }
+
     fun isExistUnprocessedMarks(): Boolean {
         return marks.any { !it.value.isScan }
     }
@@ -38,12 +42,21 @@ data class Good(
         }
     }
 
-    fun convertToItemGoodUi(index: Int): ItemGoodUi {
+    fun convertToItemProcessingUi(index: Int): ItemGoodUi {
         return ItemGoodUi(
                 position = "${index + 1}",
                 material = material,
                 name = getShortMaterialWithName(),
-                quantity = "${marks.size}"
+                quantity = "${getUnprocessedMarksCount()}"
+        )
+    }
+
+    fun convertToItemProcessedUi(index: Int): ItemGoodUi {
+        return ItemGoodUi(
+                position = "${index + 1}",
+                material = material,
+                name = getShortMaterialWithName(),
+                quantity = "${getProcessedMarksCount()}"
         )
     }
 
