@@ -189,6 +189,10 @@ class TaskManager @Inject constructor(
         return database.getMaterialByEan(ean)
     }
 
+    override fun isExistUnsavedData(): Boolean {
+        return persistRepository.isExistUnsavedData()
+    }
+
     override fun backupCurrentTask() {
         currentTask.value?.let { task ->
             persistRepository.saveTaskData(task)
@@ -236,6 +240,7 @@ interface ITaskManager {
     suspend fun getMaterialByEan(ean: String): String?
     fun makeCurrentTaskUnfinished()
     suspend fun saveTaskDataToServer(handleSaveDataSuccess: () -> Unit)
+    fun isExistUnsavedData(): Boolean
     fun backupCurrentTask()
     fun restoreCurrentTask()
     fun removeCurrentTaskBackup()
