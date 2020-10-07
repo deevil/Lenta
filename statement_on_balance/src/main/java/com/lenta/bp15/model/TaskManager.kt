@@ -127,7 +127,7 @@ class TaskManager @Inject constructor(
         } ?: emptyList()
     }
 
-    override fun loadContentToCurrentTask() {
+    override fun loadContentToCurrentTask(handleLoadContentSuccess: () -> Unit) {
         launch {
             currentTask.value?.let { currentTask ->
                 navigator.showProgressLoadingData()
@@ -148,6 +148,8 @@ class TaskManager @Inject constructor(
 
                         currentTask.saveStartState()
                         updateCurrentTask(currentTask)
+
+                        handleLoadContentSuccess.invoke()
                     }
                 }
 
@@ -245,7 +247,7 @@ interface ITaskManager {
 
     fun loadProcessingTaskList(value: String? = null)
     fun loadSearchTaskList(value: String? = null, searchParams: TaskSearchParams? = null)
-    fun loadContentToCurrentTask()
+    fun loadContentToCurrentTask(handleLoadContentSuccess: () -> Unit)
     suspend fun unlockTask(task: Task)
     suspend fun getMaterialByEan(ean: String): String?
     fun makeCurrentTaskUnfinished()

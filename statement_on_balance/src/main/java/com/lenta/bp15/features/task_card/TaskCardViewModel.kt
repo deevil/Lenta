@@ -51,12 +51,15 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
     fun onClickNext() {
         task.value?.let { task ->
             if (task.isEmptyGoodList()) {
-                manager.loadContentToCurrentTask()
-                navigator.openGoodListScreen()
+                manager.loadContentToCurrentTask(::handleLoadContentSuccess)
             } else {
                 navigator.openGoodListScreen()
             }
         }
+    }
+
+    fun handleLoadContentSuccess() {
+        navigator.openGoodListScreen()
     }
 
     fun onBackPressed() {
