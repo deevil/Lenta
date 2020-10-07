@@ -2,6 +2,7 @@ package com.lenta.bp15.features.task_card
 
 import androidx.lifecycle.map
 import com.lenta.bp15.model.ITaskManager
+import com.lenta.bp15.model.pojo.Task
 import com.lenta.bp15.platform.navigation.IScreenNavigator
 import com.lenta.shared.platform.viewmodel.CoreViewModel
 import com.lenta.shared.utilities.databinding.PageSelectionListener
@@ -58,7 +59,7 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         }
     }
 
-    fun handleLoadContentSuccess() {
+    private fun handleLoadContentSuccess() {
         navigator.openGoodListScreen()
     }
 
@@ -66,14 +67,19 @@ class TaskCardViewModel : CoreViewModel(), PageSelectionListener {
         task.value?.let { task ->
             if (task.isChanged()) {
                 navigator.showTaskUnsentDataWillBeDeleted(task.firstLine) {
-                    navigator.goBack()
-                    launchUITryCatch {
-                        manager.unlockTask(task)
-                    }
+                    manager.prepareToUpdateTaskList()
+                    unlockTask(task)
                 }
             } else {
-                navigator.goBack()
+                unlockTask(task)
             }
+        }
+    }
+
+    private fun unlockTask(task: Task) {
+        launchUITryCatch {
+            navigator.goBack()
+            manager.unlockTask(task)
         }
     }
 
