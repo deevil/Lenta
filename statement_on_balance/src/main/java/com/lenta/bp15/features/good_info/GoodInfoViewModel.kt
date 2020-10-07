@@ -169,6 +169,9 @@ class GoodInfoViewModel : CoreViewModel() {
                 good.changeScanStatusFor(marks)
             }
 
+            manager.updateCurrentGood(good)
+            manager.updateGoodInTask(good)
+
             manager.backupCurrentTask()
 
             navigator.hideProgress()

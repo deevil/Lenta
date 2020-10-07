@@ -18,7 +18,7 @@ data class Task(
         val block: Block,
         var isNotFinished: Boolean,
         val comment: String,
-        var goods: List<Good> = emptyList()
+        var goods: MutableList<Good> = mutableListOf()
 ) {
 
     private var startHashState = NO_HASH
@@ -26,10 +26,6 @@ data class Task(
     fun isEmptyGoodList(): Boolean {
         return goods.isEmpty()
     }
-
-    /*fun isExistUnprocessedGoods(): Boolean {
-        return goods.any { it.isExistUnprocessedMarks() }
-    }*/
 
     fun convertToItemTaskUi(index: Int): ItemTaskUi {
         return ItemTaskUi(
@@ -80,6 +76,11 @@ data class Task(
         }
 
         return allMarks
+    }
+
+    fun updateGood(good: Good) {
+        goods.remove(goods.find { it.material == good.material })
+        goods.add(good)
     }
 
     fun getProcessedMarkListForSave(): List<MarkRawInfo> {

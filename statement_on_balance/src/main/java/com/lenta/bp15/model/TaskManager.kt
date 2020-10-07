@@ -65,6 +65,13 @@ class TaskManager @Inject constructor(
         currentGood.value = good
     }
 
+    override fun updateGoodInTask(good: Good) {
+        currentTask.value?.let { task ->
+            task.updateGood(good)
+            updateCurrentTask(task)
+        }
+    }
+
     override fun loadProcessingTaskList(value: String?) {
         launch {
             navigator.showProgressLoadingData()
@@ -137,7 +144,7 @@ class TaskManager @Inject constructor(
                                 good.putAdditionalInfo(additionalInfo)
                             }
                             good
-                        }
+                        }.toMutableList()
 
                         currentTask.saveStartState()
                         updateCurrentTask(currentTask)
@@ -234,6 +241,7 @@ interface ITaskManager {
     fun updateSearchTasks(tasks: List<Task>)
     fun updateCurrentTask(task: Task)
     fun updateCurrentGood(good: Good)
+    fun updateGoodInTask(good: Good)
 
     fun loadProcessingTaskList(value: String? = null)
     fun loadSearchTaskList(value: String? = null, searchParams: TaskSearchParams? = null)

@@ -20,25 +20,25 @@ data class Good(
         return "${material.takeLast(6)} $name"
     }
 
-    fun getProcessedMarksCount(): Int {
-        return marks.filter { it.value.isScan }.size
-    }
-
-    fun getUnprocessedMarksCount(): Int {
+    private fun getUnprocessedMarksCount(): Int {
         return marks.filter { !it.value.isScan }.size
     }
 
-    fun isExistProcessedMarks(): Boolean {
-        return marks.any { it.value.isScan }
+    fun getProcessedMarksCount(): Int {
+        return marks.filter { it.value.isScan }.size
     }
 
     fun isExistUnprocessedMarks(): Boolean {
         return marks.any { !it.value.isScan }
     }
 
+    fun isExistProcessedMarks(): Boolean {
+        return marks.any { it.value.isScan }
+    }
+
     fun changeScanStatusFor(scannedMarks: List<String>) {
         scannedMarks.forEach { number ->
-            marks.getValue(number).isScan = true
+            marks[number]?.isScan = true
         }
     }
 
