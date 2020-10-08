@@ -82,6 +82,16 @@ class SelectPersonnelNumberDelegate @Inject constructor(
     }
 
     fun onClickNext() {
+        savePersonnelNumber()
+
+        codeConfirm?.let {
+            coreNavigator.goBackWithResultCode(it)
+            return
+        }
+        onNextScreenOpen()
+    }
+
+    fun savePersonnelNumber() {
         (if (!fullName.value.isNullOrEmpty()) personnelNumber.value else null).let {
             sessionInfo.personnelNumber = it
             sessionInfo.personnelFullName = fullName.value
@@ -89,12 +99,6 @@ class SelectPersonnelNumberDelegate @Inject constructor(
             appSettings.lastPersonnelNumber = it
             appSettings.lastPersonnelFullName = fullName.value
         }
-
-        codeConfirm?.let {
-            coreNavigator.goBackWithResultCode(it)
-            return
-        }
-        onNextScreenOpen()
     }
 
     fun onResume() {

@@ -66,6 +66,7 @@ class EnterEmployeeNumberViewModel : CoreViewModel(), OnOkInSoftKeyboardListener
 
     fun onClickNext() {
         if (manager.isExistUnsavedData()) {
+            selectPersonnelNumberDelegate.savePersonnelNumber()
             navigator.showUnsavedDataFoundOnDevice(
                     deleteCallback = {
                         manager.removeCurrentTaskBackup()
