@@ -250,9 +250,9 @@ abstract class CoreFragment<T : ViewDataBinding, S : CoreViewModel> : Fragment()
     @LayoutRes
     abstract fun getLayoutId(): Int
 
-    abstract fun getPageNumber(): String?
-
     abstract fun getViewModel(): S
+
+    abstract fun getPageNumber(): String?
 
     abstract fun setupTopToolBar(topToolbarUiModel: TopToolbarUiModel)
 
